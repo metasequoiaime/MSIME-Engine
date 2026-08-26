@@ -13,6 +13,7 @@
 #include "fmt/base.h"
 #include "core/ime_session.h"
 #include "quanpin/quanpin_dictionary.h"
+#include "quanpin/quanpin_query.h"
 #include "sqlite3.h"
 #include "shuangpin/shuangpin_dictionary.h"
 #include "shuangpin/shuangpin_query.h"
@@ -461,6 +462,41 @@ void test_quanpin_query_timings()
     run_quanpin_query_case(dictionary, "keneng");
 }
 
+void test_quanpin_order_corrections()
+{
+    const std::vector<std::pair<std::string, std::string>> cases = {
+        {"laing", "liang"}, {"haung", "huang"}, {"bain", "bian"}, {"daun", "duan"},
+        {"laio", "liao"},  {"mihng", "ming"},   {"ahng", "hang"}, {"behng", "beng"},
+        {"woxainxin", "wo'xian'xin"},
+    };
+
+    for (const auto &[typed, expected] : cases)
+    {
+        const auto cuts = quanpin::cut_pinyin_by_mode(typed, "correction");
+        expect(!cuts.empty(), fmt::format("Expected '{}' to produce a corrected path.", typed));
+        expect(quanpin::join_segments(cuts.front()) == expected,
+               fmt::format("Expected '{}' to normalize to '{}', got '{}'.", typed, expected,
+                           quanpin::join_segments(cuts.front())));
+    }
+
+    const auto ambiguous = quanpin::cut_pinyin_by_mode("cehng", "correction");
+    expect(ambiguous.size() >= 2, "Expected cehng to retain both valid interpretations.");
+    expect(quanpin::join_segments(ambiguous.front()) == "cheng", "Expected cheng to be the primary interpretation.");
+    expect(std::any_of(ambiguous.begin(), ambiguous.end(), [](const quanpin::Segments &segments) {
+               return quanpin::join_segments(segments) == "ceng";
+           }),
+           "Expected ceng to remain available as an alternative interpretation.");
+
+    const auto ambiguous_ahng = quanpin::cut_pinyin_by_mode("ahng", "correction");
+    expect(ambiguous_ahng.size() >= 2, "Expected ahng to retain both valid interpretations.");
+    expect(quanpin::join_segments(ambiguous_ahng.front()) == "hang",
+           "Expected hang to be the primary interpretation.");
+    expect(std::any_of(ambiguous_ahng.begin(), ambiguous_ahng.end(), [](const quanpin::Segments &segments) {
+               return quanpin::join_segments(segments) == "ang";
+           }),
+           "Expected ang to remain available as an alternative interpretation.");
+}
+
 int main(int argc, char *argv[])
 {
     try
@@ -477,6 +513,7 @@ int main(int argc, char *argv[])
         test_shuangpin_dictionary_create_pin_delete();
         test_shuangpin_dictionary_create_pin_delete_three_syllables();
         test_shuangpin_query_manual_apostrophe();
+        test_quanpin_order_corrections();
         test_quanpin_query_timings();
         fmt::println("All tests passed.");
         return 0;
