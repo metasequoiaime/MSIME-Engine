@@ -467,6 +467,8 @@ void test_quanpin_order_corrections()
     const std::vector<std::pair<std::string, std::string>> cases = {
         {"laing", "liang"}, {"haung", "huang"}, {"bain", "bian"}, {"daun", "duan"},
         {"laio", "liao"},  {"mihng", "ming"},   {"ahng", "hang"}, {"behng", "beng"},
+        {"agn", "ang"},    {"zagn", "zang"},    {"egn", "eng"},   {"zhegn", "zheng"},
+        {"jv", "ju"},      {"wojv", "wo'ju"},   {"wo'jv", "wo'ju"},
         {"woxainxin", "wo'xian'xin"},
     };
 

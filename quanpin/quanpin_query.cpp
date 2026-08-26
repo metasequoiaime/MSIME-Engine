@@ -41,6 +41,14 @@ const CorrectionAliases &pinyin_correction_aliases()
 {
     static const CorrectionAliases kAliases = [] {
         CorrectionAliases aliases;
+        const auto add_alias = [&](const std::string &typed, const std::string &canonical) {
+            auto &canonical_syllables = aliases[typed];
+            if (std::find(canonical_syllables.begin(), canonical_syllables.end(), canonical) ==
+                canonical_syllables.end())
+            {
+                canonical_syllables.push_back(canonical);
+            }
+        };
         const auto add_suffix_aliases = [&](const std::string &canonical_suffix, const std::string &typed_suffix) {
             for (const auto &syllable : intact_pinyin_list())
             {
@@ -52,12 +60,7 @@ const CorrectionAliases &pinyin_correction_aliases()
                 }
 
                 const std::string prefix = syllable.substr(0, syllable.size() - canonical_suffix.size());
-                auto &canonical_syllables = aliases[prefix + typed_suffix];
-                if (std::find(canonical_syllables.begin(), canonical_syllables.end(), syllable) ==
-                    canonical_syllables.end())
-                {
-                    canonical_syllables.push_back(syllable);
-                }
+                add_alias(prefix + typed_suffix, syllable);
             }
         };
 
@@ -67,6 +70,10 @@ const CorrectionAliases &pinyin_correction_aliases()
         add_suffix_aliases("uan", "aun");
         add_suffix_aliases("iao", "aio");
         add_suffix_aliases("ing", "ihng");
+        add_suffix_aliases("ang", "agn");
+        add_suffix_aliases("eng", "egn");
+        add_alias("egn", "eng");
+        add_alias("jv", "ju");
 
         // Prefer a transposed h (ahng -> hang), while retaining the extra-h
         // interpretation as an alternative (ahng -> ang).
@@ -110,13 +117,13 @@ std::vector<Segments> cut_one_piece_with_corrections(const std::string &pinyin)
         {
             const std::string typed = pinyin.substr(index, end - index);
             std::vector<std::string> canonical_syllables;
-            if (valid_pinyin.find(typed) != valid_pinyin.end())
-            {
-                canonical_syllables.push_back(typed);
-            }
-            else if (const auto alias = aliases.find(typed); alias != aliases.end())
+            if (const auto alias = aliases.find(typed); alias != aliases.end())
             {
                 canonical_syllables = alias->second;
+            }
+            else if (valid_pinyin.find(typed) != valid_pinyin.end())
+            {
+                canonical_syllables.push_back(typed);
             }
             else
             {
