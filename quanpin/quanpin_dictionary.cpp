@@ -236,6 +236,16 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
         result.insert(result.end(), partial_result.begin(), partial_result.end());
     }
 
+    if (quanpin::has_only_complete_pinyin_segments(segments))
+    {
+        const quanpin::WordLatticeOptions lattice_options;
+        quanpin::merge_lattice_candidates(
+            result, segments,
+            quanpin::make_lattice_db_lookup(db_, statement_cache_, quanpin::QuerySource::Quanpin,
+                                            lattice_options.span_limit),
+            segmentation.empty() ? raw_input : segmentation, lattice_options);
+    }
+
     if (result.size() < kSparsePinyinFallbackThreshold)
     {
         result = append_sparse_pinyin_fallbacks(segments, std::move(result));

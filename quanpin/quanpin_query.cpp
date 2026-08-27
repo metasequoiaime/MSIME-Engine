@@ -1113,4 +1113,17 @@ std::vector<KeyedQueryItem> query_exact_segmentations_keyed_flat(
     return result;
 }
 
+WordLatticeLookup make_lattice_db_lookup(sqlite3 *db, std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
+                                         QuerySource source, int span_limit)
+{
+    return [db, &statement_cache, source, span_limit](const Segments &span) {
+        const auto rows = query_segments_keyed_flat(span, db, statement_cache, span_limit, source);
+        std::vector<LatticeLexeme> lexemes;
+        lexemes.reserve(rows.size());
+        for (const auto &row : rows)
+            lexemes.push_back({row.key, row.value, row.weight});
+        return lexemes;
+    };
+}
+
 } // namespace quanpin

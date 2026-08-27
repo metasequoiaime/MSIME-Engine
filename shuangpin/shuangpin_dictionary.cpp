@@ -193,6 +193,16 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generateSeries( //
                 break;
             }
         }
+
+        const std::string quanpin_segmentation =
+            ShuangpinUtil::convert_seg_shuangpin_to_seg_complete_pinyin(pinyin_segmentation, profile_);
+        const quanpin::WordLatticeOptions lattice_options;
+        quanpin::merge_lattice_candidates(
+            candidate_list, quanpin::split_segments(quanpin_segmentation),
+            quanpin::make_lattice_db_lookup(quanpin_db_, quanpin_statement_cache_, quanpin::QuerySource::Shuangpin,
+                                            lattice_options.span_limit),
+            pinyin_sequence, lattice_options);
+
         /* 缓存起来 */
         _cached_buffer_series.insert(effective_cache_key, candidate_list);
     }

@@ -48,6 +48,7 @@ set(
     "../quanpin/quanpin_dictionary.cpp"
     "../quanpin/quanpin_query.cpp"
     "../quanpin/quanpin_utils.cpp"
+    "../quanpin/word_lattice.cpp"
     "../shuangpin/engine.cpp"
     "../common/helpcode_utils.cpp"
     "../common/string_utils.cpp"
