@@ -35,6 +35,12 @@ set(METASEQUOIA_IME_ENGINE_SOURCES
     japanese/japanese_matrix_search.cpp
     japanese/japanese_sentence_decoder.cpp
     japanese/romaji_converter.cpp
+    local_modes/date_time_query.cpp
+    local_modes/emoji_query.cpp
+    local_modes/jianpin_query.cpp
+    local_modes/kaomoji_query.cpp
+    local_modes/quick_phrase_query.cpp
+    local_modes/unicode_query.cpp
     providers/japanese_candidate_provider.cpp
     providers/pinyin_candidate_provider.cpp
     providers/provider_registry.cpp
@@ -118,6 +124,32 @@ if(BUILD_TESTING)
     add_test(NAME engine_smoke COMMAND test_engine_smoke)
 
     add_executable(test_input_session tests/src/test_input_session.cpp)
+    target_compile_definitions(test_input_session PRIVATE METASEQUOIA_SKIP_FREQUENCY_TESTS)
     target_link_libraries(test_input_session PRIVATE MetasequoiaIme::Engine)
     add_test(NAME input_session COMMAND test_input_session)
+
+    add_executable(test_frequency_input_session tests/src/test_input_session.cpp)
+    target_compile_definitions(test_frequency_input_session PRIVATE METASEQUOIA_FREQUENCY_TESTS_ONLY)
+    target_link_libraries(test_frequency_input_session PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME frequency_input_session COMMAND test_frequency_input_session)
+
+    add_executable(test_english_input_session tests/src/test_english_input_session.cpp)
+    target_link_libraries(test_english_input_session PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME english_input_session COMMAND test_english_input_session)
+
+    add_executable(test_mixed_expressive_input_session tests/src/test_mixed_expressive_input_session.cpp)
+    target_link_libraries(test_mixed_expressive_input_session PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME mixed_expressive_input_session COMMAND test_mixed_expressive_input_session)
+
+    add_executable(test_jianpin_input_session tests/src/test_jianpin_input_session.cpp)
+    target_link_libraries(test_jianpin_input_session PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME jianpin_input_session COMMAND test_jianpin_input_session)
+
+    add_executable(test_temporary_input_session tests/src/test_temporary_input_session.cpp)
+    target_link_libraries(test_temporary_input_session PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME temporary_input_session COMMAND test_temporary_input_session)
+
+    add_executable(test_local_modes tests/src/test_local_modes.cpp)
+    target_link_libraries(test_local_modes PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME local_modes COMMAND test_local_modes)
 endif()
