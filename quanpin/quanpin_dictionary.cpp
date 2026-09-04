@@ -45,6 +45,31 @@ std::string series_cache_key(const std::string &raw_input, const std::string &se
     return prefix + (segmentation.empty() ? raw_input : segmentation);
 }
 
+struct SeriesQueryResolution
+{
+    std::string segmentation;
+    std::string cache_key;
+    quanpin::Segments corrected_segments;
+    bool corrected_input = false;
+};
+
+SeriesQueryResolution resolve_series_query(const std::string &raw_input, const std::string &segmentation,
+                                           const quanpin::Segments &segments, bool enable_autocorrect)
+{
+    SeriesQueryResolution result;
+    result.corrected_input =
+        enable_autocorrect && !segments.empty() && raw_input.find('\'') == std::string::npos &&
+        !quanpin::has_only_complete_pinyin_segments(segments) &&
+        !(result.corrected_segments = quanpin::autocorrect_cut(raw_input)).empty();
+    result.segmentation =
+        result.corrected_input
+            ? quanpin::join_segments(result.corrected_segments)
+            : (segmentation.empty() ? (segments.empty() ? raw_input : quanpin::join_segments(segments))
+                                    : segmentation);
+    result.cache_key = (result.corrected_input ? "C:" : "") + series_cache_key(raw_input, result.segmentation);
+    return result;
+}
+
 std::string escape_sql_text(std::string text)
 {
     size_t pos = 0;
@@ -114,23 +139,15 @@ std::vector<WordItem> QuanpinDictionary::query(const std::string &raw_input, con
     // segmentation becomes the primary key so that selection and weight
     // updates land on the right dictionary entries, and the original
     // (garbage-leaning) candidates stay behind as a fallback tail.
-    quanpin::Segments corrected;
-    const bool corrected_input = enable_autocorrect && !segments.empty() && raw_input.find('\'') == std::string::npos &&
-                                 !quanpin::has_only_complete_pinyin_segments(segments) &&
-                                 !(corrected = quanpin::autocorrect_cut(raw_input)).empty();
-
-    pinyin_segmentation_ =
-        corrected_input
-            ? quanpin::join_segments(corrected)
-            : (segmentation.empty() ? (segments.empty() ? raw_input : quanpin::join_segments(segments)) : segmentation);
+    const auto resolution = resolve_series_query(raw_input, segmentation, segments, enable_autocorrect);
+    pinyin_segmentation_ = resolution.segmentation;
 
     // Autocorrected results get their own cache slot so they never leak the
     // fallback tail into plain (correct) spellings sharing the same key.
-    const std::string cache_key = (corrected_input ? "C:" : "") + series_cache_key(raw_input, pinyin_segmentation_);
-    if (auto cached = series_cache_.get(cache_key))
+    if (auto cached = series_cache_.get(resolution.cache_key))
     {
         reset_cache_if_database_changed();
-        if (cached = series_cache_.get(cache_key))
+        if (cached = series_cache_.get(resolution.cache_key))
         {
             current_candidate_list_ = cached.value();
             return current_candidate_list_;
@@ -152,9 +169,9 @@ std::vector<WordItem> QuanpinDictionary::query(const std::string &raw_input, con
     }
 
     std::vector<WordItem> result;
-    if (corrected_input)
+    if (resolution.corrected_input)
     {
-        result = query_series(raw_input, pinyin_segmentation_, corrected);
+        result = query_series(raw_input, pinyin_segmentation_, resolution.corrected_segments);
         const std::string fallback_segmentation =
             segmentation.empty() ? quanpin::join_segments(segments) : segmentation;
         append_unique_words(result, query_series(raw_input, fallback_segmentation, segments));
@@ -168,7 +185,7 @@ std::vector<WordItem> QuanpinDictionary::query(const std::string &raw_input, con
                                                      alternative_segmentations, std::move(result));
         }
     }
-    series_cache_.insert(cache_key, result);
+    series_cache_.insert(resolution.cache_key, result);
     current_candidate_list_ = result;
     return current_candidate_list_;
 }
@@ -629,6 +646,26 @@ int QuanpinDictionary::insert_word_to_series_cache(const std::string &pinyin, co
     const auto cuts = quanpin::cut_pinyin_by_mode(pinyin, "correction");
     const std::string segmentation = cuts.empty() ? pinyin : quanpin::join_segments(cuts.front());
     const std::string cache_key = series_cache_key(pinyin, segmentation);
+    return insert_word_to_series_cache_key(cache_key, pinyin, word, source);
+}
+
+int QuanpinDictionary::insert_word_to_series_cache(const std::string &raw_input,
+                                                   const std::string &segmentation, bool enable_autocorrect,
+                                                   const std::string &word, CandidateSource source)
+{
+    if (raw_input.empty() || word.empty())
+    {
+        return ERROR_CODE;
+    }
+
+    const auto segments = resolve_segments(raw_input, segmentation);
+    const auto resolution = resolve_series_query(raw_input, segmentation, segments, enable_autocorrect);
+    return insert_word_to_series_cache_key(resolution.cache_key, raw_input, word, source);
+}
+
+int QuanpinDictionary::insert_word_to_series_cache_key(const std::string &cache_key, const std::string &pinyin,
+                                                       const std::string &word, CandidateSource source)
+{
     auto list = series_cache_.get(cache_key).value_or(std::vector<WordItem>{});
 
     // Keep at most one cloud/AI suggestion in the series cache for this key.
@@ -650,6 +687,19 @@ int QuanpinDictionary::insert_word_to_series_cache(const std::string &pinyin, co
         {
             const size_t index = source == CandidateSource::AiSuggestion ? std::min<size_t>(2, list.size()) : 1;
             list.insert(list.begin() + index, WordItem(pinyin, word, 1, source));
+        }
+    }
+
+    if (source == CandidateSource::CloudSuggestion)
+    {
+        const auto ai = std::find_if(list.begin(), list.end(), [](const WordItem &item) {
+            return item.source == CandidateSource::AiSuggestion;
+        });
+        if (ai != list.end())
+        {
+            WordItem ai_item = std::move(*ai);
+            list.erase(ai);
+            list.insert(list.begin() + std::min<size_t>(2, list.size()), std::move(ai_item));
         }
     }
 
