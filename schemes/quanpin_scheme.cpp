@@ -7,7 +7,7 @@
 
 namespace
 {
-bool is_alpha_vk(UINT vk)
+bool is_alpha_vk(ImeKeyCode vk)
 {
     return vk >= 'A' && vk <= 'Z';
 }
@@ -25,9 +25,9 @@ void QuanpinScheme::set_raw_input(const std::string &raw_input, const std::strin
     key_strokes_.clear();
 }
 
-void QuanpinScheme::handle_key(UINT vk, UINT modifiers_down, WCHAR wch)
+void QuanpinScheme::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch)
 {
-    if (vk == VK_BACK)
+    if (vk == ImeKey::Backspace)
     {
         if (!raw_input_.empty())
         {
@@ -40,13 +40,13 @@ void QuanpinScheme::handle_key(UINT vk, UINT modifiers_down, WCHAR wch)
         return;
     }
 
-    if (vk == VK_ESCAPE || vk == VK_RETURN)
+    if (vk == ImeKey::Escape || vk == ImeKey::Return)
     {
         reset();
         return;
     }
 
-    if (vk == VK_OEM_7)
+    if (vk == ImeKey::Apostrophe)
     {
         if (raw_input_.empty() || raw_input_.back() != '\'')
         {

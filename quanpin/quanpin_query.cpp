@@ -844,7 +844,7 @@ std::string segments_to_jianpin(const Segments &segments)
 
 std::string get_default_db_path()
 {
-    return shuangpin::get_local_appdata_path() + "\\" + shuangpin::get_app_name() + "\\msime.db";
+    return metasequoia::path_to_utf8(shuangpin::get_data_file_path("msime.db"));
 }
 
 void warm_up(sqlite3 *db, std::unordered_map<std::string, sqlite3_stmt *> &statement_cache)

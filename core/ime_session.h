@@ -13,7 +13,7 @@ class ImeSession
     explicit ImeSession(SchemeType scheme_type = SchemeType::Shuangpin,
                         const ShuangpinProfile &shuangpin_profile = GetXiaoheShuangpinProfile());
 
-    void handle_key(UINT vk, UINT modifiers_down = 0, WCHAR wch = 0);
+    void handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down = 0, ImeCharacter wch = 0);
     void switch_scheme(SchemeType scheme_type);
     void set_shuangpin_helpcode_enabled(bool enabled);
     void set_quanpin_helpcode_enabled(bool enabled);

@@ -68,7 +68,7 @@ bool QuanpinEngine::expand_initial_candidates(const QueryRequest &request, std::
     return dictionary_.expand_initial_candidates(segments.front(), candidates);
 }
 
-int QuanpinEngine::handleVkCode(UINT vk, UINT modifiers_down, WCHAR wch)
+int QuanpinEngine::handleVkCode(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch)
 {
     return dictionary_.handleVkCode(vk, modifiers_down, wch);
 }

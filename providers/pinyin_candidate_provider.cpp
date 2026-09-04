@@ -2,8 +2,6 @@
 #include "../core/scheme_type.h"
 #include "../shuangpin/shuangpin_query.h"
 #include "../shuangpin/shuangpin_utils.h"
-#include <fmt/core.h>
-#include <fmt/base.h>
 
 PinyinCandidateProvider::PinyinCandidateProvider(const ShuangpinProfile &shuangpin_profile)
     : shuangpin_profile_(shuangpin_profile), shuangpin_engine_(shuangpin_profile)

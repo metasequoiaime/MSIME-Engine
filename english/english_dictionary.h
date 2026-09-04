@@ -10,7 +10,7 @@
 class EnglishDictionary
 {
   public:
-    explicit EnglishDictionary(std::string db_path);
+    explicit EnglishDictionary(std::string db_path, bool initialize_schema = true);
     ~EnglishDictionary();
 
     EnglishDictionary(const EnglishDictionary &) = delete;

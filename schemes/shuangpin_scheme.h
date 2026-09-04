@@ -10,7 +10,7 @@ class ShuangpinScheme : public IInputScheme
   public:
     explicit ShuangpinScheme(const ShuangpinProfile &profile = GetXiaoheShuangpinProfile());
     void reset() override;
-    void handle_key(UINT vk, UINT modifiers_down, WCHAR wch) override;
+    void handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch) override;
     QueryRequest build_request() const override;
     std::string get_preedit() const override;
     SchemeType type() const override;

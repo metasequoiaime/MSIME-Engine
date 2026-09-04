@@ -10,6 +10,7 @@
 #include <limits>
 #include <mutex>
 #include <numeric>
+#include "../core/data_path.h"
 #include "../english/english_dictionary.h"
 
 namespace user_dictionary
@@ -63,6 +64,11 @@ Stmt prepare(sqlite3 *db, const std::string &sql)
     sqlite3_stmt *raw = nullptr;
     if (sqlite3_prepare_v2(db, sql.c_str(), -1, &raw, nullptr) != SQLITE_OK) return {};
     return Stmt(raw);
+}
+
+bool execute_sql(sqlite3 *db, const char *sql)
+{
+    return db != nullptr && sqlite3_exec(db, sql, nullptr, nullptr, nullptr) == SQLITE_OK;
 }
 
 bool bind_text(sqlite3_stmt *stmt, int index, const std::string &value)
@@ -303,11 +309,11 @@ bool apply_english(sqlite3 *db, const std::string &key, const std::string &value
     const std::string effective_display = display.empty() ? value : display;
     if (operation == "delete")
     {
-        auto stmt = prepare(db, "DELETE FROM english_words WHERE word=?1 AND display=?2");
+        auto stmt = prepare(db, "DELETE FROM replay_english.english_words WHERE word=?1 AND display=?2");
         return stmt && bind_text(stmt.get(), 1, key) && bind_text(stmt.get(), 2, effective_display) &&
                sqlite3_step(stmt.get()) == SQLITE_DONE;
     }
-    auto upsert = prepare(db, "INSERT INTO english_words(word,display,weight) VALUES(?1,?2,?3) "
+    auto upsert = prepare(db, "INSERT INTO replay_english.english_words(word,display,weight) VALUES(?1,?2,?3) "
                               "ON CONFLICT(word,display) DO UPDATE SET weight=excluded.weight");
     return upsert && bind_text(upsert.get(), 1, key) && bind_text(upsert.get(), 2, effective_display) &&
            sqlite3_bind_int64(upsert.get(), 3, weight) == SQLITE_OK &&
@@ -317,27 +323,33 @@ bool apply_english(sqlite3 *db, const std::string &key, const std::string &value
 
 std::string default_user_db_path()
 {
-    char *local_app_data = nullptr;
-    size_t length = 0;
-    const errno_t error = _dupenv_s(&local_app_data, &length, "LOCALAPPDATA");
-    const std::string base = error == 0 && local_app_data != nullptr ? local_app_data : "";
-    free(local_app_data);
-    return base + "\\metasequoiaime\\msime_user.db";
+    return metasequoia::path_to_utf8(metasequoia::data_file_path("msime_user.db"));
 }
 
 namespace
 {
+struct PersistentDefaultUserDatabase
+{
+    std::mutex mutex;
+    Db database;
+};
+
+PersistentDefaultUserDatabase &persistent_default_user_database_state()
+{
+    static PersistentDefaultUserDatabase state;
+    return state;
+}
+
 sqlite3 *persistent_default_user_database()
 {
-    static std::mutex mutex;
-    static Db database;
-    std::lock_guard lock(mutex);
-    if (!database)
+    PersistentDefaultUserDatabase &state = persistent_default_user_database_state();
+    std::lock_guard lock(state.mutex);
+    if (!state.database)
     {
-        database = open_database(default_user_db_path(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
-        if (database && !ensure_schema(database.get())) database.reset();
+        state.database = open_database(default_user_db_path(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+        if (state.database && !ensure_schema(state.database.get())) state.database.reset();
     }
-    return database.get();
+    return state.database.get();
 }
 
 class UserDatabase
@@ -364,6 +376,13 @@ private:
     sqlite3 *db_ = nullptr;
 };
 } // namespace
+
+void close_default_user_database()
+{
+    PersistentDefaultUserDatabase &state = persistent_default_user_database_state();
+    std::lock_guard lock(state.mutex);
+    state.database.reset();
+}
 
 bool ensure_user_database(const std::string &user_db_path)
 {
@@ -675,6 +694,8 @@ bool adjust_candidate_ranking(const std::string &main_db_path, const std::string
     if (!user_db) return false;
     auto journal_upsert = prepare_upsert_journal(user_db.get());
     if (!journal_upsert) return false;
+    if (!execute_sql(user_db.get(), "BEGIN IMMEDIATE")) return false;
+    const auto rollback_user = [&]() { (void)execute_sql(user_db.get(), "ROLLBACK"); };
     trigger_count = (std::max)(1, (std::min)(10, trigger_count));
     if (!force_top)
     {
@@ -684,8 +705,17 @@ bool adjust_candidate_ranking(const std::string &main_db_path, const std::string
             " RETURNING selection_count");
         if (!counter || !bind_text(counter.get(), 1, context_key) || !bind_text(counter.get(), 2, entry_key) ||
             !bind_text(counter.get(), 3, value) || sqlite3_step(counter.get()) != SQLITE_ROW)
+        {
+            rollback_user();
             return false;
-        if (sqlite3_column_int(counter.get(), 0) < trigger_count) return true;
+        }
+        if (sqlite3_column_int(counter.get(), 0) < trigger_count)
+        {
+            counter.reset();
+            const bool committed = execute_sql(user_db.get(), "COMMIT");
+            if (!committed) rollback_user();
+            return committed;
+        }
     }
 
     std::vector<WordItem> database_candidates;
@@ -701,17 +731,31 @@ bool adjust_candidate_ranking(const std::string &main_db_path, const std::string
     const auto selected = std::find_if(database_candidates.begin(), database_candidates.end(), [&](const WordItem &item) {
         return item.word == value;
     });
-    if (selected == database_candidates.end()) return false;
+    if (selected == database_candidates.end())
+    {
+        rollback_user();
+        return false;
+    }
     const size_t rank = static_cast<size_t>(selected - database_candidates.begin());
     if (rank == 0)
     {
         auto reset = prepare(user_db.get(), "DELETE FROM candidate_selection_state WHERE context_key=?1 AND entry_key=?2 AND value=?3");
-        if (reset) { bind_text(reset.get(),1,context_key); bind_text(reset.get(),2,entry_key); bind_text(reset.get(),3,value); sqlite3_step(reset.get()); }
-        return true;
+        const bool reset_ok = reset && bind_text(reset.get(), 1, context_key) &&
+            bind_text(reset.get(), 2, entry_key) && bind_text(reset.get(), 3, value) &&
+            sqlite3_step(reset.get()) == SQLITE_DONE;
+        reset.reset();
+        const bool committed = reset_ok && execute_sql(user_db.get(), "COMMIT");
+        if (!committed) rollback_user();
+        return committed;
     }
     const size_t target = ranking_target(rank, mode, linear_step, force_top);
     auto main_db = open_database(main_db_path, SQLITE_OPEN_READWRITE);
-    if (!main_db) return false;
+    if (!main_db || !execute_sql(main_db.get(), "BEGIN IMMEDIATE"))
+    {
+        rollback_user();
+        return false;
+    }
+    const auto rollback_main = [&]() { (void)execute_sql(main_db.get(), "ROLLBACK"); };
     // Keep learned weights in the same general range as the shipped dictionary
     // (currently below 77 million). Large spacing is unnecessary and previously
     // caused local rebalances to create values around 10^12. A later bug used a
@@ -793,8 +837,6 @@ bool adjust_candidate_ranking(const std::string &main_db_path, const std::string
                 upper + static_cast<std::int64_t>(target) * kRebalanceGap - kRebalanceGap;
             base = (std::min)(requested_base, kManagedWeightCeiling);
         }
-        sqlite3_exec(main_db.get(), "BEGIN IMMEDIATE", nullptr, nullptr, nullptr);
-        sqlite3_exec(user_db.get(), "BEGIN IMMEDIATE", nullptr, nullptr, nullptr);
         bool rebalance_ok = true;
         for (size_t i = rebalance_begin; i < rebalance_end && rebalance_ok; ++i)
         {
@@ -803,29 +845,49 @@ bool adjust_candidate_ranking(const std::string &main_db_path, const std::string
             rebalance_ok = update_ranked_weight(main_db.get(), journal_upsert.get(), kind, entry_key,
                                                 database_candidates[i].word, weight);
         }
-        sqlite3_exec(main_db.get(), rebalance_ok ? "COMMIT" : "ROLLBACK", nullptr, nullptr, nullptr);
-        sqlite3_exec(user_db.get(), rebalance_ok ? "COMMIT" : "ROLLBACK", nullptr, nullptr, nullptr);
-        if (!rebalance_ok) return false;
+        if (!rebalance_ok)
+        {
+            rollback_main();
+            rollback_user();
+            return false;
+        }
         new_weight = target == 0
             ? base + kRebalanceGap
             : base - static_cast<std::int64_t>(target) * kRebalanceGap + kRebalanceGap / 2;
     }
     new_weight = clamp_managed_weight(new_weight);
     const bool ok = update_ranked_weight(main_db.get(), journal_upsert.get(), kind, entry_key, value, new_weight);
-    if (ok)
+    if (!ok)
     {
-        if (ranking_changed) *ranking_changed = true;
-        auto reset = prepare(user_db.get(), "DELETE FROM candidate_selection_state WHERE context_key=?1 AND entry_key=?2 AND value=?3");
-        if (reset) { bind_text(reset.get(),1,context_key); bind_text(reset.get(),2,entry_key); bind_text(reset.get(),3,value); sqlite3_step(reset.get()); }
+        rollback_main();
+        rollback_user();
+        return false;
     }
-    return ok;
+    auto reset = prepare(user_db.get(),
+        "DELETE FROM candidate_selection_state WHERE context_key=?1 AND entry_key=?2 AND value=?3");
+    const bool reset_ok = reset && bind_text(reset.get(), 1, context_key) && bind_text(reset.get(), 2, entry_key) &&
+        bind_text(reset.get(), 3, value) && sqlite3_step(reset.get()) == SQLITE_DONE;
+    reset.reset();
+    if (!reset_ok || !execute_sql(user_db.get(), "COMMIT"))
+    {
+        rollback_main();
+        rollback_user();
+        return false;
+    }
+    if (!execute_sql(main_db.get(), "COMMIT"))
+    {
+        rollback_main();
+        return false;
+    }
+    if (ranking_changed) *ranking_changed = true;
+    return true;
 }
 
 ReplayResult replay(const std::string &user_db_path, const std::string &main_db_path,
                     const std::string &english_db_path)
 {
     ReplayResult result;
-    if (!std::filesystem::exists(user_db_path)) return result;
+    if (!std::filesystem::exists(metasequoia::path_from_utf8(user_db_path.c_str()))) return result;
     auto journal = open_database(user_db_path, SQLITE_OPEN_READONLY);
     if (!journal)
     {
@@ -838,12 +900,19 @@ ReplayResult replay(const std::string &user_db_path, const std::string &main_db_
         return result;
     }
     auto main_db = open_database(main_db_path, SQLITE_OPEN_READWRITE);
-    auto english_db = open_database(english_db_path, SQLITE_OPEN_READWRITE);
-    if (!main_db || !english_db)
+    if (!main_db)
     {
         result.error = "cannot open target dictionary database";
         return result;
     }
+    auto attach_english = prepare(main_db.get(), "ATTACH DATABASE ?1 AS replay_english");
+    if (!attach_english || !bind_text(attach_english.get(), 1, english_db_path) ||
+        sqlite3_step(attach_english.get()) != SQLITE_DONE)
+    {
+        result.error = "cannot attach English dictionary database";
+        return result;
+    }
+    attach_english.reset();
     auto rows = prepare(journal.get(),
                         "SELECT dictionary,key,value,operation,weight,display"
                         " FROM user_dictionary_operations ORDER BY updated_at,rowid");
@@ -853,9 +922,13 @@ ReplayResult replay(const std::string &user_db_path, const std::string &main_db_
         return result;
     }
 
-    sqlite3_exec(main_db.get(), "BEGIN IMMEDIATE", nullptr, nullptr, nullptr);
-    sqlite3_exec(english_db.get(), "BEGIN IMMEDIATE", nullptr, nullptr, nullptr);
-    while (sqlite3_step(rows.get()) == SQLITE_ROW)
+    if (!execute_sql(main_db.get(), "BEGIN IMMEDIATE"))
+    {
+        result.error = "cannot start replay transaction";
+        return result;
+    }
+    int row_result = SQLITE_ROW;
+    while ((row_result = sqlite3_step(rows.get())) == SQLITE_ROW)
     {
         const std::string kind = reinterpret_cast<const char *>(sqlite3_column_text(rows.get(), 0));
         const std::string key = reinterpret_cast<const char *>(sqlite3_column_text(rows.get(), 1));
@@ -872,12 +945,32 @@ ReplayResult replay(const std::string &user_db_path, const std::string &main_db_
         if (kind == "pinyin") ok = apply_pinyin(main_db.get(), key, value, operation, weight);
         else if (kind == "wubi") ok = apply_simple(main_db.get(), "wubi86", "key", "value", key, value, operation, weight);
         else if (kind == "quick") ok = apply_simple(main_db.get(), "quick_parases", "key", "value", key, value, operation, weight);
-        else if (kind == "english") ok = apply_english(english_db.get(), key, value, operation, weight, display);
+        else if (kind == "english") ok = apply_english(main_db.get(), key, value, operation, weight, display);
         ok ? ++result.applied : ++result.failed;
     }
-    sqlite3_exec(main_db.get(), result.failed == 0 ? "COMMIT" : "ROLLBACK", nullptr, nullptr, nullptr);
-    sqlite3_exec(english_db.get(), result.failed == 0 ? "COMMIT" : "ROLLBACK", nullptr, nullptr, nullptr);
-    if (result.failed != 0) result.error = "one or more operations failed; changes were rolled back";
+    rows.reset();
+    if (row_result != SQLITE_DONE)
+    {
+        result.error = execute_sql(main_db.get(), "ROLLBACK")
+            ? "cannot read the complete user dictionary journal; changes were rolled back"
+            : "cannot read the complete user dictionary journal and rollback also failed";
+        return result;
+    }
+    if (result.failed == 0)
+    {
+        if (!execute_sql(main_db.get(), "COMMIT"))
+        {
+            result.error = execute_sql(main_db.get(), "ROLLBACK")
+                ? "cannot commit replay transaction; changes were rolled back"
+                : "cannot commit or roll back replay transaction";
+        }
+    }
+    else
+    {
+        result.error = execute_sql(main_db.get(), "ROLLBACK")
+            ? "one or more operations failed; changes were rolled back"
+            : "one or more operations failed and rollback also failed";
+    }
     return result;
 }
 } // namespace user_dictionary
