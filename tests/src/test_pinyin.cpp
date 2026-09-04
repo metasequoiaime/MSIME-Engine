@@ -433,6 +433,18 @@ void test_shuangpin_dictionary_create_pin_delete_three_syllables()
            fmt::format("Expected '{}' to be absent after delete.", test_word));
 }
 
+void test_quanpin_four_syllable_alternative_segmentation()
+{
+    QuanpinDictionary dictionary;
+
+    fmt::println("==== Quanpin Four Syllable Alternative Segmentation ====");
+    // jianmingeyao is cut as jian'min'ge'yao, so the entry only shows up through
+    // the alternative segmentation jian'ming'e'yao.
+    const auto result = dictionary.query("jianmingeyao");
+    const auto *found = find_candidate(result, "简明扼要");
+    expect(found != nullptr, "Expected '简明扼要' among the candidates for 'jianmingeyao'.");
+}
+
 void test_quanpin_query_timings()
 {
     QuanpinDictionary dictionary;
@@ -477,6 +489,7 @@ int main(int argc, char *argv[])
         test_shuangpin_dictionary_create_pin_delete();
         test_shuangpin_dictionary_create_pin_delete_three_syllables();
         test_shuangpin_query_manual_apostrophe();
+        test_quanpin_four_syllable_alternative_segmentation();
         test_quanpin_query_timings();
         fmt::println("All tests passed.");
         return 0;
