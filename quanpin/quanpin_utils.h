@@ -34,5 +34,6 @@ size_t detect_active_helpcode_length(const std::string &raw_input, const std::st
 std::string strip_active_helpcodes(const std::string &raw_input, const std::string &raw_input_with_cases);
 std::string strip_active_helpcodes_with_cases(const std::string &raw_input, const std::string &raw_input_with_cases);
 std::vector<Segments> sparse_pinyin_fallback_segments(const Segments &segments);
+Segments autocorrect_cut(const std::string &pinyin);
 
 } // namespace quanpin

@@ -4,7 +4,7 @@
 
 namespace
 {
-bool is_wubi_vk(UINT vk)
+bool is_wubi_vk(ImeKeyCode vk)
 {
     return vk >= 'A' && vk <= 'Y';
 }
@@ -36,9 +36,9 @@ void WubiScheme::reset()
     key_strokes_.clear();
 }
 
-void WubiScheme::handle_key(UINT vk, UINT modifiers_down, WCHAR wch)
+void WubiScheme::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch)
 {
-    if (vk == VK_BACK)
+    if (vk == ImeKey::Backspace)
     {
         if (!raw_input_.empty())
         {
@@ -51,7 +51,7 @@ void WubiScheme::handle_key(UINT vk, UINT modifiers_down, WCHAR wch)
         return;
     }
 
-    if (vk == VK_ESCAPE || vk == VK_RETURN)
+    if (vk == ImeKey::Escape || vk == ImeKey::Return)
     {
         reset();
         return;

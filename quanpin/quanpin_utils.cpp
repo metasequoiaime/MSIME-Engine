@@ -1,7 +1,12 @@
 #include "quanpin_utils.h"
 
+#include "autocorrect_table.h"
 #include "../common/helpcode_utils.h"
 #include <algorithm>
+#include <deque>
+#include <limits>
+#include <string_view>
+#include <unordered_map>
 
 namespace quanpin
 {
@@ -404,13 +409,138 @@ std::vector<Segments> sparse_pinyin_fallback_segments(const Segments &segments)
         fallbacks.reserve(rule.replacements.size());
         for (const auto &replacement : rule.replacements)
         {
-            fallbacks.push_back(
-                replacement.append_suffix ? append_rest(replacement.replacement, segments) : replacement.replacement);
+            fallbacks.push_back(replacement.append_suffix ? append_rest(replacement.replacement, segments)
+                                                          : replacement.replacement);
         }
         return fallbacks;
     }
 
     return {};
+}
+
+namespace
+{
+constexpr size_t kMaxAutocorrectEdges = 3;
+constexpr size_t kMaxAutocorrectInputLength = 64;
+
+const std::unordered_map<std::string_view, std::string_view> &autocorrect_index()
+{
+    // Keys point at string literals in kEntries (static storage), so views stay valid forever.
+    static const std::unordered_map<std::string_view, std::string_view> kIndex = [] {
+        std::unordered_map<std::string_view, std::string_view> index;
+        index.reserve(autocorrect::kEntryCount * 2);
+        for (const auto &entry : autocorrect::kEntries)
+        {
+            index.emplace(entry.wrong, entry.correct);
+        }
+        return index;
+    }();
+    return kIndex;
+}
+
+struct AutocorrectEdge
+{
+    size_t end = 0;
+    std::string_view syllable;
+    bool corrected = false;
+};
+} // namespace
+
+Segments autocorrect_cut(const std::string &pinyin)
+{
+    // Contract: the caller has already failed the correction cut (the input is
+    // not a legal pinyin combination), so a valid result here always contains
+    // at least one corrected edge. Manual delimiters express user intent and
+    // are never rewritten.
+    if (pinyin.empty() || pinyin.size() > kMaxAutocorrectInputLength || pinyin.find('\'') != std::string::npos)
+    {
+        return {};
+    }
+
+    const auto &valid_pinyin = intact_pinyin_set();
+    const auto &index = autocorrect_index();
+    const size_t length = pinyin.size();
+
+    const auto kInfinite = std::numeric_limits<size_t>::max();
+    std::vector<size_t> dist(length + 1, kInfinite);
+    // Predecessor of each reachable position: the edge used to arrive.
+    std::vector<AutocorrectEdge> pred(length + 1);
+
+    // 0-1 BFS over the autocorrect-aware syllable graph: normal syllables are
+    // zero-cost edges, corrected ones cost one. The first full path popped with
+    // the minimal corrected-edge count is the least-intrusive correction.
+    std::deque<size_t> queue;
+    dist[0] = 0;
+    queue.push_back(0);
+
+    while (!queue.empty())
+    {
+        const size_t start = queue.front();
+        queue.pop_front();
+
+        const size_t current_cost = dist[start];
+        const size_t remaining = length - start;
+        const size_t max_len = std::min<size_t>(remaining, 6);
+        for (size_t len = max_len; len >= 1; --len)
+        {
+            const std::string_view piece(pinyin.data() + start, len);
+            AutocorrectEdge edge;
+            if (valid_pinyin.find(std::string(piece)) != valid_pinyin.end())
+            {
+                edge = AutocorrectEdge{start + len, piece, false};
+            }
+            else if (const auto found = index.find(piece); found != index.end())
+            {
+                edge = AutocorrectEdge{start + len, found->second, true};
+            }
+            else
+            {
+                continue;
+            }
+
+            const size_t next_cost = current_cost + (edge.corrected ? 1 : 0);
+            if (next_cost >= dist[edge.end] || next_cost > kMaxAutocorrectEdges)
+            {
+                continue;
+            }
+            dist[edge.end] = next_cost;
+            pred[edge.end] = edge;
+            if (edge.corrected)
+            {
+                queue.push_back(edge.end);
+            }
+            else
+            {
+                queue.push_front(edge.end);
+            }
+        }
+    }
+
+    if (dist[length] == kInfinite)
+    {
+        return {};
+    }
+    if (dist[length] == 0)
+    {
+        // The input is fully legal after all; nothing to correct. The caller
+        // already owns the plain segmentation in this case.
+        return {};
+    }
+
+    // Rebuild the chain of predecessor edges from the end back to the start.
+    // Every edge consumes exactly syllable.size() input chars (transpositions
+    // and neighbor substitutions preserve length), so the previous position is
+    // derivable without storing it.
+    Segments result;
+    size_t pos = length;
+    while (pos != 0)
+    {
+        const auto &edge = pred[pos];
+        result.push_back(std::string(edge.syllable));
+        pos -= edge.syllable.size();
+    }
+    std::reverse(result.begin(), result.end());
+    return result;
 }
 
 } // namespace quanpin

@@ -1,15 +1,15 @@
 #pragma once
 
+#include "key_event.h"
 #include "scheme_type.h"
-#include <Windows.h>
 #include <string>
 #include <vector>
 
 struct KeyStroke
 {
-    UINT vk = 0;
-    UINT modifiers_down = 0;
-    WCHAR wch = 0;
+    ImeKeyCode vk = 0;
+    ImeModifierMask modifiers_down = 0;
+    ImeCharacter wch = 0;
 };
 
 struct QueryRequest
@@ -23,6 +23,7 @@ struct QueryRequest
     std::string segmentation;
     bool enable_shuangpin_helpcode = false;
     bool enable_quanpin_helpcode = false;
+    bool enable_quanpin_autocorrect = true;
     std::vector<KeyStroke> key_strokes;
     bool valid = false;
 };

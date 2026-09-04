@@ -1,10 +1,10 @@
 #pragma once
 
 #include "../common/cache.h"
+#include "../core/key_event.h"
 #include "../core/word_item.h"
 #include "../quanpin/quanpin_query.h"
 #include "shuangpin_profile.h"
-#include <windows.h>
 #include <shared_mutex>
 #include <array>
 #include <vector>
@@ -43,7 +43,7 @@ class ShuangpinDictionary
     bool expand_initial_candidates(const std::string &code, std::vector<WordItem> &candidates,
                                    const std::string &series_cache_key = {});
     std::optional<WordItem> find_candidate(const std::string &key, const std::string &value);
-    int handleVkCode(UINT vk, UINT modifiers_down, WCHAR wch = 0);
+    int handleVkCode(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch = 0);
     std::vector<WordItem> generate_for_creating_word(const std::string code);
     int create_word(std::string pinyin, std::string word);
     int create_word_from_quanpin(std::string pinyin, std::string word);
@@ -121,7 +121,7 @@ class ShuangpinDictionary
     // Localtion of starting position
     int _help_mode_raw_pos = 0;           // Start from pos, e.g. 妮: ninv: 2
     std::string _pinyin_helpcodes = "";   // Help codes
-    std::vector<UINT> _kb_input_sequence; // Keyboard input sequence
+    std::vector<ImeKeyCode> _kb_input_sequence; // Keyboard input sequence
     std::string _pinyin_sequence = "";    // Pinyin extracted from from keyboard sequence
     std::string _pinyin_sequence_with_cases =
         ""; // Pinyin extracted from from keyboard sequence, but with letters' original cases

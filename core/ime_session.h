@@ -13,10 +13,11 @@ class ImeSession
     explicit ImeSession(SchemeType scheme_type = SchemeType::Shuangpin,
                         const ShuangpinProfile &shuangpin_profile = GetXiaoheShuangpinProfile());
 
-    void handle_key(UINT vk, UINT modifiers_down = 0, WCHAR wch = 0);
+    void handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down = 0, ImeCharacter wch = 0);
     void switch_scheme(SchemeType scheme_type);
     void set_shuangpin_helpcode_enabled(bool enabled);
     void set_quanpin_helpcode_enabled(bool enabled);
+    void set_quanpin_autocorrect_enabled(bool enabled);
     void replace_shuangpin_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases);
     void replace_quanpin_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases);
     void replace_wubi_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases);
@@ -47,4 +48,5 @@ class ImeSession
     CompositionState state_;
     bool enable_shuangpin_helpcode_ = false;
     bool enable_quanpin_helpcode_ = false;
+    bool enable_quanpin_autocorrect_ = true;
 };

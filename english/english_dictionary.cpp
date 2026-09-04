@@ -1,6 +1,9 @@
 #include "english_dictionary.h"
 
 #include <algorithm>
+#include <cctype>
+#include <filesystem>
+#include <fstream>
 #include <limits>
 #include <spdlog/spdlog.h>
 #include <utility>
@@ -14,9 +17,13 @@ bool IsLowerAsciiWord(const std::string &value)
 }
 } // namespace
 
-EnglishDictionary::EnglishDictionary(std::string db_path) : db_path_(std::move(db_path))
+EnglishDictionary::EnglishDictionary(std::string db_path, bool initialize_schema) : db_path_(std::move(db_path))
 {
-    (void)ensure_schema(db_path_);
+    if (initialize_schema)
+    {
+        (void)ensure_schema(db_path_);
+    }
+    load_custom_translations();
 }
 
 EnglishDictionary::~EnglishDictionary()
@@ -41,6 +48,7 @@ std::vector<WordItem> EnglishDictionary::query_prefix(const std::string &prefix,
         sqlite3_bind_text(query_statement_, 2, upper_bound.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
         sqlite3_bind_int(query_statement_, 3, sqlite_limit) != SQLITE_OK)
     {
+        sqlite3_reset(query_statement_);
         return {};
     }
 
@@ -58,6 +66,7 @@ std::vector<WordItem> EnglishDictionary::query_prefix(const std::string &prefix,
                                 CandidateSource::EnglishDictionary);
     }
 
+    sqlite3_reset(query_statement_);
     if (result != SQLITE_DONE)
     {
         (void)0;
@@ -93,11 +102,17 @@ std::string QueryGloss(sqlite3_stmt *statement, const std::string &key)
 
 std::string EnglishDictionary::query_chinese_gloss(const std::string &english)
 {
+    const auto custom = custom_en_zh_.find(english);
+    if (custom != custom_en_zh_.end())
+        return custom->second;
     return english.empty() || !ensure_gloss_statements() ? std::string{} : QueryGloss(en_zh_statement_, english);
 }
 
 std::string EnglishDictionary::query_english_gloss(const std::string &chinese)
 {
+    const auto custom = custom_zh_en_.find(chinese);
+    if (custom != custom_zh_en_.end())
+        return custom->second;
     return chinese.empty() || !ensure_gloss_statements() ? std::string{} : QueryGloss(zh_en_statement_, chinese);
 }
 
@@ -129,10 +144,71 @@ bool EnglishDictionary::upsert_gloss(const std::string &db_path, bool chinese_to
     return ok;
 }
 
+void EnglishDictionary::load_custom_translations()
+{
+    custom_en_zh_.clear();
+    custom_zh_en_.clear();
+    if (db_path_.empty())
+        return;
+
+    const auto sidecar = std::filesystem::path(db_path_).parent_path() / "custom_translations.txt";
+    std::ifstream input(sidecar, std::ios::binary);
+    if (!input)
+        return;
+
+    std::string text((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+    if (text.size() >= 3 && static_cast<unsigned char>(text[0]) == 0xEF &&
+        static_cast<unsigned char>(text[1]) == 0xBB && static_cast<unsigned char>(text[2]) == 0xBF)
+    {
+        text.erase(0, 3);
+    }
+
+    size_t begin = 0;
+    while (begin < text.size())
+    {
+        size_t end = text.find_first_of("\r\n", begin);
+        if (end == std::string::npos)
+            end = text.size();
+        std::string line = text.substr(begin, end - begin);
+        if (end < text.size() && text[end] == '\r' && end + 1 < text.size() && text[end + 1] == '\n')
+            begin = end + 2;
+        else
+            begin = end == text.size() ? text.size() : end + 1;
+
+        while (!line.empty() && std::isspace(static_cast<unsigned char>(line.front())))
+            line.erase(line.begin());
+        while (!line.empty() && std::isspace(static_cast<unsigned char>(line.back())))
+            line.pop_back();
+        if (line.empty() || line.front() == '#')
+            continue;
+
+        const auto tab = line.find('\t');
+        if (tab == std::string::npos || tab == 0 || tab + 1 >= line.size())
+            continue;
+        std::string source = line.substr(0, tab);
+        std::string gloss = line.substr(tab + 1);
+        while (!source.empty() && std::isspace(static_cast<unsigned char>(source.back())))
+            source.pop_back();
+        while (!gloss.empty() && std::isspace(static_cast<unsigned char>(gloss.front())))
+            gloss.erase(gloss.begin());
+        while (!gloss.empty() && std::isspace(static_cast<unsigned char>(gloss.back())))
+            gloss.pop_back();
+        if (source.empty() || gloss.empty())
+            continue;
+
+        const bool chinese_source =
+            std::any_of(source.begin(), source.end(), [](unsigned char ch) { return ch >= 0x80; });
+        if (chinese_source)
+            custom_zh_en_[std::move(source)] = std::move(gloss);
+        else
+            custom_en_zh_[std::move(source)] = std::move(gloss);
+    }
+}
+
 bool EnglishDictionary::ensure_schema(const std::string &db_path)
 {
     sqlite3 *database = nullptr;
-    if (sqlite3_open_v2(db_path.c_str(), &database, SQLITE_OPEN_READWRITE, nullptr) != SQLITE_OK)
+    if (sqlite3_open_v2(db_path.c_str(), &database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr) != SQLITE_OK)
     {
         if (database != nullptr)
             sqlite3_close(database);
