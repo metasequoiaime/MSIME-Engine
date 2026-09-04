@@ -31,6 +31,8 @@ class QuanpinDictionary
     int update_weight_by_pinyin_and_word(std::string pinyin, std::string word);
     int delete_by_pinyin_and_word(std::string pinyin, std::string word);
     int insert_word_to_series_cache(const std::string &pinyin, const std::string &word, CandidateSource source);
+    int insert_word_to_series_cache(const std::string &raw_input, const std::string &segmentation,
+                                    bool enable_autocorrect, const std::string &word, CandidateSource source);
 
     std::string search_sentence_from_ime_engine(const std::string &user_pinyin);
 
@@ -86,6 +88,8 @@ class QuanpinDictionary
     std::string build_sql_for_deleting_word(std::string pinyin, const std::string &word);
     bool do_validate(const std::string &key, const std::string &jp, const std::string &value);
     void reset_cache_if_database_changed();
+    int insert_word_to_series_cache_key(const std::string &cache_key, const std::string &pinyin,
+                                        const std::string &word, CandidateSource source);
 
   private:
     CircularBuffer<std::string, std::vector<WordItem>> cache_;

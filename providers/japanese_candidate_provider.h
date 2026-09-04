@@ -1,10 +1,12 @@
 #pragma once
 
 #include "candidate_provider.h"
+#include "../common/cache.h"
 #include "../japanese/japanese_sentence_decoder.h"
 #include <sqlite3.h>
 #include <memory>
 #include <string>
+#include <vector>
 
 class JapaneseCandidateProvider : public ICandidateProvider
 {
@@ -33,4 +35,5 @@ class JapaneseCandidateProvider : public ICandidateProvider
     sqlite3 *db_ = nullptr;
     sqlite3_stmt *query_statement_ = nullptr;
     std::shared_ptr<const japanese::JapaneseSentenceDecoder> sentence_decoder_;
+    CircularBuffer<std::string, std::vector<WordItem>> dynamic_candidates_{128};
 };
