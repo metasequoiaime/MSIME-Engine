@@ -1,9 +1,9 @@
 #include "romaji_converter.h"
 
-#include <boost/locale/encoding_utf.hpp>
 #include <algorithm>
 #include <cctype>
 #include <unordered_map>
+#include <utf8/cpp17.h>
 #include <vector>
 
 namespace
@@ -124,7 +124,7 @@ RomajiConversion ConvertRomaji(std::string_view input)
 
 std::string HiraganaToKatakana(std::string_view hiragana)
 {
-    std::u32string codepoints = boost::locale::conv::utf_to_utf<char32_t>(hiragana.data(), hiragana.data() + hiragana.size());
+    std::u32string codepoints = utf8::utf8to32(hiragana);
     for (char32_t &codepoint : codepoints)
     {
         if (codepoint >= U'ぁ' && codepoint <= U'ゖ')
@@ -132,14 +132,13 @@ std::string HiraganaToKatakana(std::string_view hiragana)
             codepoint += 0x60;
         }
     }
-    return boost::locale::conv::utf_to_utf<char>(codepoints);
+    return utf8::utf32to8(codepoints);
 }
 
 bool IsSingleKanaConversion(const RomajiConversion &conversion)
 {
     if (!conversion.complete || conversion.hiragana.empty()) return false;
-    const auto codepoints = boost::locale::conv::utf_to_utf<char32_t>(
-        conversion.hiragana.data(), conversion.hiragana.data() + conversion.hiragana.size());
+    const auto codepoints = utf8::utf8to32(conversion.hiragana);
     return codepoints.size() == 1 && codepoints.front() >= U'ぁ' && codepoints.front() <= U'ゖ';
 }
 
@@ -168,13 +167,13 @@ const std::vector<std::pair<std::string, std::string>> &KanaToRomajiTable()
 
 std::string HiraganaToRomaji(std::string_view kana)
 {
-    std::u32string codepoints = boost::locale::conv::utf_to_utf<char32_t>(kana.data(), kana.data() + kana.size());
+    std::u32string codepoints = utf8::utf8to32(kana);
     for (char32_t &codepoint : codepoints)
     {
         if (codepoint >= U'ァ' && codepoint <= U'ヶ')
             codepoint -= 0x60;
     }
-    const std::string hiragana = boost::locale::conv::utf_to_utf<char>(codepoints);
+    const std::string hiragana = utf8::utf32to8(codepoints);
     std::string romaji;
     const auto &table = KanaToRomajiTable();
     size_t index = 0;

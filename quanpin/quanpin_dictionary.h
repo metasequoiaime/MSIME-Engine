@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common/cache.h"
+#include "../core/key_event.h"
 #include "../core/word_item.h"
 #include "quanpin_query.h"
 #include <sqlite3.h>
@@ -8,7 +9,6 @@
 #include <unordered_map>
 #include <vector>
 #include <optional>
-#include <windows.h>
 
 class QuanpinDictionary
 {
@@ -23,7 +23,7 @@ class QuanpinDictionary
                                 bool enable_autocorrect = false);
     bool expand_initial_candidates(const std::string &code, std::vector<WordItem> &candidates);
     std::optional<WordItem> find_candidate(const std::string &key, const std::string &value);
-    int handleVkCode(UINT vk, UINT modifiers_down, WCHAR wch = 0);
+    int handleVkCode(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch = 0);
 
     int create_word(std::string pinyin, std::string word);
     int create_word_from_canonical_pinyin(std::string pinyin, std::string word);

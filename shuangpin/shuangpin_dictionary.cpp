@@ -16,10 +16,9 @@
 #include <cstdlib>
 #include "../googlepinyinime-rev/src/include/pinyinime.h"
 #include <climits>
-#include <boost/locale/encoding_utf.hpp>
 #include <boost/algorithm/string.hpp>
 #include <fmt/xchar.h>
-#include <Windows.h>
+#include <utf8/cpp17.h>
 
 using namespace std;
 
@@ -52,10 +51,8 @@ ShuangpinDictionary::ShuangpinDictionary(const ShuangpinProfile &profile)
     // 最多可以输出 64 个汉字，拼音最多可以接受 128 个字符
     ime_pinyin::im_set_max_lens(128, 64);
     bool _res = ime_pinyin::im_open_decoder( //
-        (fmt::format("{}\\{}\\dict_pinyin.dat", ShuangpinUtil::get_local_appdata_path(), ShuangpinUtil::app_name))
-            .c_str(), //
-        (fmt::format("{}\\{}\\user_dict.dat", ShuangpinUtil::get_local_appdata_path(), ShuangpinUtil::app_name))
-            .c_str() //
+        metasequoia::path_to_utf8(shuangpin::get_data_file_path("dict_pinyin.dat")).c_str(), //
+        metasequoia::path_to_utf8(shuangpin::get_data_file_path("user_dict.dat")).c_str() //
     );
     if (!_res)
     {
@@ -376,7 +373,7 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generate_with_helpcod
     return result_list;
 }
 
-std::string VkCodeToChar(UINT vk)
+std::string VkCodeToChar(ImeKeyCode vk)
 {
     if (vk >= 'A' && vk <= 'Z')
     {
@@ -388,18 +385,18 @@ std::string VkCodeToChar(UINT vk)
     }
     switch (vk)
     {
-    case VK_SPACE:
+    case ImeKey::Space:
         return " ";
-    case VK_TAB:
+    case ImeKey::Tab:
         return "\t";
-    case VK_RETURN:
+    case ImeKey::Return:
         return "\n";
     default:
         return "";
     }
 }
 
-std::string VkSequenceToString(const UINT *vk_codes, size_t count)
+std::string VkSequenceToString(const ImeKeyCode *vk_codes, size_t count)
 {
     std::string result;
     for (size_t i = 0; i < count; ++i)
@@ -476,7 +473,7 @@ bool ShuangpinDictionary::expand_initial_candidates(const std::string &code, std
  * @param vk
  * @return int
  */
-int ShuangpinDictionary::handleVkCode(UINT vk, UINT modifiers_down, WCHAR wch)
+int ShuangpinDictionary::handleVkCode(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch)
 {
     if (vk != 0)
     { /* 0 是造词过程中的 dummy code */
@@ -487,11 +484,11 @@ int ShuangpinDictionary::handleVkCode(UINT vk, UINT modifiers_down, WCHAR wch)
             _pinyin_sequence += lowerAlpha;
 
             // Prefer the real typed character from TSF side so CapsLock/Shift combinations are preserved.
-            if (wch >= L'A' && wch <= L'Z')
+            if (wch >= u'A' && wch <= u'Z')
             {
                 _pinyin_sequence_with_cases += static_cast<char>(wch);
             }
-            else if (wch >= L'a' && wch <= L'z')
+            else if (wch >= u'a' && wch <= u'z')
             {
                 _pinyin_sequence_with_cases += static_cast<char>(wch);
             }
@@ -505,25 +502,27 @@ int ShuangpinDictionary::handleVkCode(UINT vk, UINT modifiers_down, WCHAR wch)
                 _pinyin_sequence_with_cases += lowerAlpha;
             }
         }
-        else if (profile_.name == "microsoft" && vk == VK_OEM_1 && wch == L';' && _pinyin_sequence.size() % 2 == 1)
+        else if (profile_.name == "microsoft" && vk == ImeKey::Semicolon && wch == u';' &&
+                 _pinyin_sequence.size() % 2 == 1)
         {
             _pinyin_sequence += ';';
             _pinyin_sequence_with_cases += ';';
         }
-        else if (vk == VK_SPACE || (vk >= '0' && vk <= '9') || vk == VK_RETURN || vk == VK_SHIFT || vk == VK_ESCAPE)
+        else if (vk == ImeKey::Space || (vk >= '0' && vk <= '9') || vk == ImeKey::Return || vk == ImeKey::Shift ||
+                 vk == ImeKey::Escape)
         {
-            if (vk == VK_RETURN || vk == VK_SHIFT || vk == VK_ESCAPE)
+            if (vk == ImeKey::Return || vk == ImeKey::Shift || vk == ImeKey::Escape)
             { /* 空格键和数字键不要清理状态，因为可能会触发造词 */
                 // Clear state
                 reset_state();
             }
             return 0;
         }
-        else if (vk == VK_TAB)
+        else if (vk == ImeKey::Tab)
         {
             return 0;
         }
-        else if (vk == VK_BACK)
+        else if (vk == ImeKey::Backspace)
         {
             if (_pinyin_sequence.size() > 0)
             {
@@ -1051,7 +1050,7 @@ bool ShuangpinDictionary::do_validate(string key, string jp, string value) const
 string from_utf16(const ime_pinyin::char16 *buf, size_t len)
 {
     u16string utf16Str(reinterpret_cast<const char16_t *>(buf), len);
-    return boost::locale::conv::utf_to_utf<char>(utf16Str);
+    return utf8::utf16to8(utf16Str);
 }
 
 string ShuangpinDictionary::search_sentence_from_ime_engine(const string &user_pinyin)

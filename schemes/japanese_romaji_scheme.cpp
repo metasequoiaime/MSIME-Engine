@@ -5,7 +5,7 @@
 
 namespace
 {
-bool IsRomajiKey(UINT vk)
+bool IsRomajiKey(ImeKeyCode vk)
 {
     return vk >= 'A' && vk <= 'Z';
 }
@@ -17,20 +17,20 @@ void JapaneseRomajiScheme::reset()
     key_strokes_.clear();
 }
 
-void JapaneseRomajiScheme::handle_key(UINT vk, UINT modifiers_down, WCHAR wch)
+void JapaneseRomajiScheme::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch)
 {
-    if (vk == VK_BACK)
+    if (vk == ImeKey::Backspace)
     {
         if (!raw_input_.empty()) raw_input_.pop_back();
         if (!key_strokes_.empty()) key_strokes_.pop_back();
         return;
     }
-    if (vk == VK_ESCAPE || vk == VK_RETURN)
+    if (vk == ImeKey::Escape || vk == ImeKey::Return)
     {
         reset();
         return;
     }
-    if (vk == VK_OEM_7 && wch == L'\'')
+    if (vk == ImeKey::Apostrophe && wch == u'\'')
     {
         raw_input_.push_back('\'');
         key_strokes_.push_back(KeyStroke{vk, modifiers_down, wch});
@@ -39,7 +39,7 @@ void JapaneseRomajiScheme::handle_key(UINT vk, UINT modifiers_down, WCHAR wch)
     if (!IsRomajiKey(vk)) return;
 
     key_strokes_.push_back(KeyStroke{vk, modifiers_down, wch});
-    if ((wch >= L'a' && wch <= L'z') || (wch >= L'A' && wch <= L'Z'))
+    if ((wch >= u'a' && wch <= u'z') || (wch >= u'A' && wch <= u'Z'))
         raw_input_.push_back(static_cast<char>(wch));
     else
         raw_input_.push_back(static_cast<char>(vk + ('a' - 'A')));

@@ -7,11 +7,11 @@
 #include "../googlepinyinime-rev/src/include/pinyinime.h"
 #include "../shuangpin/shuangpin_utils.h"
 #include <algorithm>
-#include <boost/locale/encoding_utf.hpp>
 #include <climits>
 #include <cstring>
 #include <fmt/format.h>
 #include <unordered_set>
+#include <utf8/cpp17.h>
 
 namespace
 {
@@ -21,7 +21,7 @@ constexpr size_t kMaxSyllablesForMultipleSegmentations = 3;
 constexpr int kAlternativeSegmentationCandidateLimit = 128;
 constexpr size_t kBestAlternativeSegmentationMaxIndex = 1;
 
-bool is_alpha_vk(UINT vk)
+bool is_alpha_vk(ImeKeyCode vk)
 {
     return vk >= 'A' && vk <= 'Z';
 }
@@ -29,7 +29,7 @@ bool is_alpha_vk(UINT vk)
 std::string from_utf16(const ime_pinyin::char16 *buf, size_t len)
 {
     std::u16string utf16(reinterpret_cast<const char16_t *>(buf), len);
-    return boost::locale::conv::utf_to_utf<char>(utf16);
+    return utf8::utf16to8(utf16);
 }
 
 std::string remove_delimiters(const std::string &segmented)
@@ -64,9 +64,8 @@ QuanpinDictionary::QuanpinDictionary(std::string db_path)
 {
     ime_pinyin::im_set_max_lens(128, 64);
     decoder_ready_ = ime_pinyin::im_open_decoder(
-        (fmt::format("{}\\{}\\dict_pinyin.dat", shuangpin::get_local_appdata_path(), shuangpin::get_app_name()))
-            .c_str(),
-        (fmt::format("{}\\{}\\user_dict.dat", shuangpin::get_local_appdata_path(), shuangpin::get_app_name())).c_str());
+        metasequoia::path_to_utf8(shuangpin::get_data_file_path("dict_pinyin.dat")).c_str(),
+        metasequoia::path_to_utf8(shuangpin::get_data_file_path("user_dict.dat")).c_str());
     if (!decoder_ready_)
     {
         (void)0;
@@ -309,33 +308,33 @@ quanpin::Segments QuanpinDictionary::get_or_compute_segments(const std::string &
     return segments;
 }
 
-int QuanpinDictionary::handleVkCode(UINT vk, UINT modifiers_down, WCHAR wch)
+int QuanpinDictionary::handleVkCode(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch)
 {
     (void)modifiers_down;
 
-    if (vk == VK_BACK)
+    if (vk == ImeKey::Backspace)
     {
         if (!pinyin_sequence_.empty())
         {
             pinyin_sequence_.pop_back();
         }
     }
-    else if (vk == VK_ESCAPE || vk == VK_RETURN || vk == VK_SPACE)
+    else if (vk == ImeKey::Escape || vk == ImeKey::Return || vk == ImeKey::Space)
     {
         reset_state();
         return OK;
     }
-    else if (vk == VK_OEM_7)
+    else if (vk == ImeKey::Apostrophe)
     {
         pinyin_sequence_.push_back('\'');
     }
     else if (is_alpha_vk(vk))
     {
-        if (wch >= L'A' && wch <= L'Z')
+        if (wch >= u'A' && wch <= u'Z')
         {
             pinyin_sequence_.push_back(static_cast<char>(std::tolower(static_cast<unsigned char>(wch))));
         }
-        else if (wch >= L'a' && wch <= L'z')
+        else if (wch >= u'a' && wch <= u'z')
         {
             pinyin_sequence_.push_back(static_cast<char>(wch));
         }
