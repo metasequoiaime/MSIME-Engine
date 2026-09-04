@@ -7,20 +7,15 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <cctype>
+#include <cstdint>
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <spdlog/spdlog.h>
 
 namespace
 {
-std::string get_local_appdata_path()
-{
-    return ShuangpinUtil::get_local_appdata_path();
-}
-
-const std::string kAppName = "metasequoiaime";
-const std::string kPathSeparator = "\\";
 const std::string kHelpcodeDirectoryName = "helpcodes";
 const std::string kLantianHelpcodeFileName = "helpcode.txt";
 const std::string kZiranmaHelpcodeFileName = "zrm_helpcode_big_unique.txt";
@@ -39,11 +34,19 @@ enum class HelpcodeSchemaIndex
 
 std::atomic<HelpcodeSchemaIndex> g_helpcode_schema{HelpcodeSchemaIndex::Lantian};
 
+bool is_han_code_point(std::uint32_t code_point)
+{
+    return code_point == 0x3007 || (code_point >= 0x3400 && code_point <= 0x4DBF) ||
+           (code_point >= 0x4E00 && code_point <= 0x9FFF) ||
+           (code_point >= 0xF900 && code_point <= 0xFAFF) ||
+           (code_point >= 0x20000 && code_point <= 0x2FA1F) ||
+           (code_point >= 0x30000 && code_point <= 0x323AF);
+}
+
 std::unordered_map<std::string, std::string> initialize_helpcode_keymap(const std::string &file_name)
 {
     std::unordered_map<std::string, std::string> result;
-    std::ifstream helpcode_path(get_local_appdata_path() + kPathSeparator + kAppName + kPathSeparator +
-                                kHelpcodeDirectoryName + kPathSeparator + file_name);
+    std::ifstream helpcode_path(shuangpin::get_data_file_path(std::filesystem::path(kHelpcodeDirectoryName) / file_name));
     if (!helpcode_path.is_open())
     {
         (void)0;
@@ -123,16 +126,17 @@ bool select_helpcode_schema(const std::string &schema)
 std::string get_first_han_char(const std::string &words)
 {
     auto it = words.begin();
-    auto end = words.end();
-
-    if (it == end)
+    const auto end = words.end();
+    while (it != end)
     {
-        return "";
+        const auto start = it;
+        const auto code_point = utf8::next(it, end);
+        if (is_han_code_point(code_point))
+        {
+            return std::string(start, it);
+        }
     }
-
-    auto next = it;
-    utf8::next(next, end);
-    return std::string(it, next);
+    return "";
 }
 
 namespace
@@ -163,17 +167,18 @@ std::string::size_type get_first_char_size(const std::string &words)
 std::string get_last_han_char(const std::string &words)
 {
     auto it = words.begin();
-    auto end = words.end();
-
-    if (it == end)
+    const auto end = words.end();
+    std::string result;
+    while (it != end)
     {
-        return "";
+        const auto start = it;
+        const auto code_point = utf8::next(it, end);
+        if (is_han_code_point(code_point))
+        {
+            result.assign(start, it);
+        }
     }
-
-    auto rit = words.end();
-    auto prev = rit;
-    utf8::prior(prev, it);
-    return std::string(prev, rit);
+    return result;
 }
 
 std::string::size_type count_han_chars(const std::string &words)

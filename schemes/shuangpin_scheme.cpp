@@ -4,14 +4,15 @@
 
 namespace
 {
-bool is_alpha_vk(UINT vk)
+bool is_alpha_vk(ImeKeyCode vk)
 {
     return vk >= 'A' && vk <= 'Z';
 }
 
-bool is_microsoft_ing_key(UINT vk, WCHAR wch, const std::string &raw_input, const ShuangpinProfile &profile)
+bool is_microsoft_ing_key(ImeKeyCode vk, ImeCharacter wch, const std::string &raw_input,
+                          const ShuangpinProfile &profile)
 {
-    if (profile.name != "microsoft" || vk != VK_OEM_1 || wch != L';')
+    if (profile.name != "microsoft" || vk != ImeKey::Semicolon || wch != u';')
     {
         return false;
     }
@@ -37,9 +38,9 @@ void ShuangpinScheme::set_raw_input(const std::string &raw_input, const std::str
     key_strokes_.clear();
 }
 
-void ShuangpinScheme::handle_key(UINT vk, UINT modifiers_down, WCHAR wch)
+void ShuangpinScheme::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch)
 {
-    if (vk == VK_BACK)
+    if (vk == ImeKey::Backspace)
     {
         if (!raw_input_.empty())
         {
@@ -52,13 +53,13 @@ void ShuangpinScheme::handle_key(UINT vk, UINT modifiers_down, WCHAR wch)
         return;
     }
 
-    if (vk == VK_ESCAPE || vk == VK_RETURN)
+    if (vk == ImeKey::Escape || vk == ImeKey::Return)
     {
         reset();
         return;
     }
 
-    if (vk == VK_OEM_7)
+    if (vk == ImeKey::Apostrophe)
     {
         if (raw_input_.empty() || raw_input_.back() != '\'')
         {

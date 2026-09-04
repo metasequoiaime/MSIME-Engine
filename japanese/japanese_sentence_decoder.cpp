@@ -67,8 +67,7 @@ JapaneseSentenceDecoder::JapaneseSentenceDecoder(std::string model_path)
 {
     if (model_path.empty())
     {
-        model_path = shuangpin::get_local_appdata_path() + "\\" + shuangpin::get_app_name() +
-                     "\\dict_japanese.dat";
+        model_path = metasequoia::path_to_utf8(shuangpin::get_data_file_path("dict_japanese.dat"));
     }
     ready_ = Load(model_path);
 }
