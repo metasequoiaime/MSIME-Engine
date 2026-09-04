@@ -718,15 +718,22 @@ bool adjust_candidate_ranking(const std::string &main_db_path, const std::string
         }
     }
 
+    // Single-letter and jianpin contexts show several entry keys in one list
+    // (context "y" mixes 一/yi with 有/you). Rank against the list the user
+    // actually sees; ranking against only the rows sharing entry_key makes the
+    // selection permanently rank 0 and no weight is ever written. Writes still
+    // go to entry_key rows only, so a rebalance can never land on another key's
+    // row the way it did in #36.
     std::vector<WordItem> database_candidates;
+    std::vector<bool> owns_entry_key;
     for (const auto &item : ordered_candidates)
     {
         if (item.source != CandidateSource::Database && item.source != CandidateSource::UserDatabase)
             continue;
         const std::string item_key =
             kind == DictionaryKind::Wubi ? item.pinyin : candidate_dictionary_key(item, context_key);
-        if (item_key != entry_key) continue;
         database_candidates.push_back(item);
+        owns_entry_key.push_back(item_key == entry_key);
     }
     const auto selected = std::find_if(database_candidates.begin(), database_candidates.end(), [&](const WordItem &item) {
         return item.word == value;
@@ -840,6 +847,7 @@ bool adjust_candidate_ranking(const std::string &main_db_path, const std::string
         bool rebalance_ok = true;
         for (size_t i = rebalance_begin; i < rebalance_end && rebalance_ok; ++i)
         {
+            if (!owns_entry_key[i]) continue;
             const std::int64_t weight = clamp_managed_weight(
                 base - static_cast<std::int64_t>(i) * kRebalanceGap);
             rebalance_ok = update_ranked_weight(main_db.get(), journal_upsert.get(), kind, entry_key,
