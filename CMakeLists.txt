@@ -30,6 +30,7 @@ set(METASEQUOIA_IME_ENGINE_SOURCES
     common/helpcode_utils.cpp
     common/string_utils.cpp
     core/ime_session.cpp
+    core/input_session.cpp
     english/english_dictionary.cpp
     japanese/japanese_matrix_search.cpp
     japanese/japanese_sentence_decoder.cpp
@@ -115,4 +116,8 @@ if(BUILD_TESTING)
     add_executable(test_engine_smoke tests/src/test_engine_smoke.cpp)
     target_link_libraries(test_engine_smoke PRIVATE MetasequoiaIme::Engine)
     add_test(NAME engine_smoke COMMAND test_engine_smoke)
+
+    add_executable(test_input_session tests/src/test_input_session.cpp)
+    target_link_libraries(test_input_session PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME input_session COMMAND test_input_session)
 endif()
