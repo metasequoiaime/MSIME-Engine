@@ -49,6 +49,7 @@ set(METASEQUOIA_IME_ENGINE_SOURCES
     quanpin/quanpin_dictionary.cpp
     quanpin/quanpin_query.cpp
     quanpin/quanpin_utils.cpp
+    quanpin/word_lattice.cpp
     schemes/japanese_romaji_scheme.cpp
     schemes/quanpin_scheme.cpp
     schemes/shuangpin_scheme.cpp
