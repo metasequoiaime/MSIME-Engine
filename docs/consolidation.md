@@ -34,4 +34,4 @@ VoiceInput 也以保留完整历史的 subtree 导入 `voice/`。公共目标只
 
 迁移验证：默认 Engine 13 项 CTest、词库 Python/自定义包/notice 校验、完整 desktop/mobile 及同仓查询回放通过；相同输入的出货 payload SHA-256 对比保存在 `consolidation-payloads.json`。
 
-首个合仓词库 Release 为 [`dict-2026.09.06`](https://github.com/metasequoiaime/MSIME-Engine/releases/tag/dict-2026.09.06)，来源提交 `d0dc0c2b594b5540b5de99ad12085c786410626e`。下载的全部资产与成功的 Engine 词库 CI 产物逐字节相同；英文释义包含上述 CustomDict 更新，不能据此宣称相对旧 Dict 产品所有字节不变。
+首个合仓词库 Release 为 [`dict-v1.0.0`](https://github.com/metasequoiaime/MSIME-Engine/releases/tag/dict-v1.0.0)，来源提交 `d0dc0c2b594b5540b5de99ad12085c786410626e`。下载的全部资产与成功的 Engine 词库 CI 产物逐字节相同；英文释义包含上述 CustomDict 更新，不能据此宣称相对旧 Dict 产品所有字节不变。
