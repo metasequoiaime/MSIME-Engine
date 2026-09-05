@@ -131,7 +131,11 @@ class InputSession
     // Maps the visible 1-9 candidate keys and Chinese punctuation independently of platform UI.
     KeyResult handle_candidate_key(char character);
     KeyResult handle_punctuation(char character);
+    // Commit the selected prefix and retain any unconsumed pinyin. Hosts insert
+    // KeyResult::commit and then render the remaining preedit from this session.
     KeyResult select_candidate(std::size_t index);
+    // Flush all remaining input for punctuation, scheme changes and host passthrough.
+    KeyResult finish_composition(std::size_t first_index = 0);
     KeyResult select_candidate(const std::string &candidate);
     KeyResult select_candidate_edge(std::size_t index, CandidateEdge edge);
     void set_shuangpin_helpcode_enabled(bool enabled);
@@ -257,6 +261,7 @@ class InputSession
     void reset_composition();
     std::optional<std::string> learn_candidate(std::size_t index);
 
+    CreatingWordProgress immediate_phrase_progress_;
     bool shuangpin_preedit_uses_raw_ = true;
     std::unique_ptr<QuanpinEngine> canonical_phrase_engine_;
     std::string pending_pinyin_sequence_;
