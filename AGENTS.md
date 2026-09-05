@@ -7,10 +7,13 @@
 ## 构建与测试
 
 ```bash
+git submodule update --init --recursive   # googlepinyinime-rev 与 utfcpp；新建的 git worktree 不会自动带上它们
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ctest --test-dir build --output-on-failure --timeout 20
 ```
+
+根 `CMakeLists.txt` 会编译 `googlepinyinime-rev/src/share/` 下的源码并把 `utfcpp/source` 加为 include 目录，两个目录都是 submodule。CI 的三个 job 都用 `submodules: recursive` 检出，所以这一步在本地容易被漏掉：目录为空时配置阶段就会失败。
 
 CI 在 `ubuntu-24.04`、`macos-15`、`windows-2025` 三个平台跑这套，共 11 个 ctest 目标。依赖 CMake 3.25+、Boost、fmt、spdlog、SQLite3，各平台的安装命令见 `.github/workflows/ci.yml`。
 
