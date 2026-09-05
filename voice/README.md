@@ -24,10 +24,10 @@ cmake --build build-voice --parallel
 ctest --test-dir build-voice --output-on-failure
 ```
 
-Windows uses the manifest in `voice/vcpkg.json`:
+Windows uses the manifest in `voice/vcpkg.json`. Select the same MSVC runtime as the dependency triplet; the static triplet below requires `/MT` (and `/MTd` for Debug). When embedding Voice in a root/host build, set this at the host level so all linked C++ targets agree:
 
 ```powershell
-cmake -S voice -B build-voice -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static
+cmake -S voice -B build-voice -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded$<$<CONFIG:Debug>:Debug>'
 cmake --build build-voice --config Release --parallel
 ctest --test-dir build-voice -C Release --output-on-failure
 ```

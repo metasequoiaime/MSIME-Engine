@@ -35,7 +35,7 @@ jobs:
       - name: Configure Windows with standalone host
         if: runner.os == 'Windows'
         shell: pwsh
-        run: cmake -S voice -B build-voice -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DVCPKG_MANIFEST_FEATURES=windows-app -DMSIME_VOICE_WINDOWS_APP=ON
+        run: cmake -S voice -B build-voice -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded$<$<CONFIG:Debug>:Debug>' -DVCPKG_MANIFEST_FEATURES=windows-app -DMSIME_VOICE_WINDOWS_APP=ON
       - name: Build public libraries and enabled hosts
         run: cmake --build build-voice --config Release --parallel 4
       - name: Test synthetic audio and loopback HTTP
