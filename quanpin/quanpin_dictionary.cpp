@@ -168,17 +168,31 @@ std::vector<WordItem> QuanpinDictionary::query(const std::string &raw_input, con
     }
 
     std::vector<quanpin::Segments> alternative_segmentations;
+    std::unordered_set<std::string> seen_segmentations = {pinyin_segmentation_};
+    const auto append_alternative = [&](const quanpin::Segments &candidate) {
+        const std::string key = quanpin::join_segments(candidate);
+        if (!key.empty() && seen_segmentations.insert(key).second &&
+            alternative_segmentations.size() < kSyllableGraphPathLimit)
+        {
+            alternative_segmentations.push_back(candidate);
+        }
+    };
+
+    const auto correction_paths = quanpin::cut_pinyin_by_mode(raw_input, "correction");
+    for (const auto &candidate : correction_paths)
+    {
+        append_alternative(candidate);
+    }
+
     if (raw_input.find('\'') == std::string::npos && segments.size() <= kMaxSyllablesForMultipleSegmentations &&
         quanpin::has_only_complete_pinyin_segments(segments))
     {
-        alternative_segmentations = quanpin::enumerate_complete_segmentations(quanpin::build_syllable_graph(raw_input),
-                                                                              kSyllableGraphPathLimit);
-        alternative_segmentations.erase(
-            std::remove_if(alternative_segmentations.begin(), alternative_segmentations.end(),
-                           [&](const quanpin::Segments &candidate) {
-                               return quanpin::join_segments(candidate) == pinyin_segmentation_;
-                           }),
-            alternative_segmentations.end());
+        const auto complete_paths = quanpin::enumerate_complete_segmentations(quanpin::build_syllable_graph(raw_input),
+                                                                               kSyllableGraphPathLimit);
+        for (const auto &candidate : complete_paths)
+        {
+            append_alternative(candidate);
+        }
     }
 
     std::vector<WordItem> result;
