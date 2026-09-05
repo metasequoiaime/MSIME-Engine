@@ -1,6 +1,6 @@
 [submodule "googlepinyinime-rev"]
 	path = googlepinyinime-rev
-	url = https://github.com/metasequoiaime/googlepinyinime-rev.git
+	url = https://github.com/metasequoiaime/Google-PinyinIME-Rev.git
 [submodule "utfcpp"]
 	path = utfcpp
 	url = https://github.com/nemtrif/utfcpp.git
