@@ -282,11 +282,8 @@ KeyResult InputSession::handle_punctuation(char character)
         return {};
     }
 
-    KeyResult result{true, std::nullopt, std::nullopt};
-    if (has_composition())
-    {
-        result = commit(0);
-    }
+    KeyResult result = finish_composition();
+    result.handled = true;
     std::string text = result.commit.value_or("");
     text += punctuation;
     result.commit = std::move(text);
@@ -367,6 +364,28 @@ KeyResult InputSession::select_candidate(std::size_t index)
         return {};
     }
     return commit(index);
+}
+
+KeyResult InputSession::finish_composition(std::size_t first_index)
+{
+    KeyResult result;
+    std::string text;
+    while (has_composition())
+    {
+        auto part = commit(first_index);
+        first_index = 0;
+        result.handled = true;
+        text += part.commit.value_or("");
+        if (part.diagnostic)
+        {
+            result.diagnostic = std::move(part.diagnostic);
+        }
+    }
+    if (result.handled)
+    {
+        result.commit = std::move(text);
+    }
+    return result;
 }
 
 KeyResult InputSession::select_candidate(const std::string &candidate)
@@ -700,9 +719,11 @@ bool InputSession::candidate_learning_enabled() const
 KeyResult InputSession::commit(std::size_t index)
 {
     std::optional<std::string> text;
+    std::optional<WordItem> selected;
     if (index < candidates().size())
     {
-        text = candidates()[index].word;
+        selected = candidates()[index];
+        text = selected->word;
     }
     else if (!((local_input_mode_ == LocalInputMode::TemporaryEnglish ||
                 local_input_mode_ == LocalInputMode::TemporaryJapanese) &&
@@ -711,6 +732,25 @@ KeyResult InputSession::commit(std::size_t index)
         text = preedit();
     }
     std::optional<std::string> diagnostic = learn_candidate(index);
+    if (selected && local_input_mode_ == LocalInputMode::None && !dedicated_english_mode_ &&
+        (scheme() == SchemeType::Quanpin || scheme() == SchemeType::Shuangpin) &&
+        (selected->source == CandidateSource::Database || selected->source == CandidateSource::UserDatabase))
+    {
+        const auto transition =
+            advance_composition_after_selection(selected->pinyin, selected->word, selected->canonical_pinyin);
+        auto progress = update_creating_word_progress(immediate_phrase_progress_.pinyin,
+                                                      immediate_phrase_progress_.word, selected->word, transition);
+        if (transition.continues_composition)
+        {
+            immediate_phrase_progress_ = std::move(progress);
+            return {true, std::move(text), std::move(diagnostic)};
+        }
+        if (!immediate_phrase_progress_.word.empty() && progress.can_store && candidate_learning_enabled_ &&
+            store_user_phrase_from_canonical_pinyin(progress.pinyin, progress.word) != 0)
+        {
+            diagnostic = "Unable to persist the composed phrase.";
+        }
+    }
     reset_composition();
     return {true, std::move(text), std::move(diagnostic)};
 }
@@ -1009,6 +1049,7 @@ EnglishDictionary &InputSession::english_dictionary()
 
 void InputSession::reset_composition()
 {
+    immediate_phrase_progress_ = {};
     clear_pending_sequence();
     ++online_generation_;
     const std::optional<SchemeType> original_scheme = temporary_original_scheme_;

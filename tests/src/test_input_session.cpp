@@ -212,6 +212,36 @@ int run_test()
         database.execute("CREATE TABLE tbl_1_y(key TEXT, jp TEXT, value TEXT, weight INTEGER)");
         database.execute("INSERT INTO tbl_1_y VALUES('yu', 'y', '与', 100)");
 
+        database.execute("INSERT INTO tbl_1_x VALUES('xi', 'x', '西', 100)");
+        database.execute("CREATE TABLE tbl_2_t(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
+        database.execute("INSERT INTO tbl_2_t VALUES('te''le','tl','特乐',100)");
+        database.execute("CREATE TABLE tbl_3_x(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
+        {
+            metasequoia::InputSession portable(SchemeType::Quanpin, true, false);
+            type(portable, "xi'te'le");
+            const auto first = portable.select_candidate(candidate_index(portable, "西"));
+            require(first.commit == "西" && portable.has_composition() && portable.preedit() == "te'le",
+                    "Portable selection discarded the unconsumed pinyin suffix.");
+            const auto last = portable.select_candidate(candidate_index(portable, "特乐"));
+            require(last.commit == "特乐" && !portable.has_composition(),
+                    "Portable continuation duplicated the committed prefix or retained completed input.");
+            require(database.query_integer("SELECT COUNT(*) FROM tbl_3_x WHERE key='xi''te''le' AND value='西特乐'") ==
+                        1,
+                    "Portable composition did not learn the canonical phrase across selections.");
+            type(portable, "xi'te'le");
+            (void)portable.select_candidate(candidate_index(portable, "西"));
+            require(portable.handle_command(metasequoia::Command::Cancel).handled && !portable.has_composition(),
+                    "Cancel did not clear an incomplete portable phrase.");
+        }
+        {
+            metasequoia::InputSession unlearned(SchemeType::Quanpin, true, false, true, false);
+            type(unlearned, "xi'te'le");
+            (void)unlearned.select_candidate(candidate_index(unlearned, "西"));
+            const auto punctuation = unlearned.handle_punctuation(',');
+            require(punctuation.commit == "特乐，" && !unlearned.has_composition(),
+                    "Punctuation failed to finish the remaining portable composition atomically.");
+        }
+
         // A seven-syllable key and eight/nine-syllable keys cross the shipping
         // table boundary. Creation, normal query and upgrade replay must agree.
         database.execute("CREATE TABLE tbl_7_n(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
