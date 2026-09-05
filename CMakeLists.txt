@@ -31,6 +31,7 @@ set(METASEQUOIA_IME_ENGINE_SOURCES
     common/string_utils.cpp
     core/ime_session.cpp
     core/input_session.cpp
+    core/input_session_composition.cpp
     english/english_dictionary.cpp
     japanese/japanese_matrix_search.cpp
     japanese/japanese_sentence_decoder.cpp

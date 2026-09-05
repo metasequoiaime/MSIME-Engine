@@ -97,12 +97,12 @@
     "direction": "client"
   },
   {
-    "name": "invalid candidate 10",
+    "name": "candidate 10 by mouse",
     "message": {
       "type": "candidate",
       "data": 10
     },
-    "valid": false,
+    "valid": true,
     "surface": "candidate",
     "direction": "client"
   },
@@ -327,6 +327,16 @@
     "message": [],
     "valid": false,
     "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "candidate 11 rejected",
+    "message": {
+      "type": "candidate",
+      "data": 11
+    },
+    "valid": false,
+    "surface": "candidate",
     "direction": "client"
   }
 ]

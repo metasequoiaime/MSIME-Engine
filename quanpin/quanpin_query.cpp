@@ -1,3 +1,4 @@
+#include "../contracts/dictionary/format.h"
 #include "quanpin_query.h"
 
 #include "quanpin_utils.h"
@@ -235,11 +236,7 @@ std::string build_table_name_impl(const Segments &segments)
     {
         return "";
     }
-    if (segments.size() >= 8)
-    {
-        return "tbl_others_" + std::string(1, segments.front().front());
-    }
-    return "tbl_" + std::to_string(segments.size()) + "_" + std::string(1, segments.front().front());
+    return metasequoia::dictionary_format::quanpin_table(segments.size(), segments.front().front());
 }
 
 std::string segments_to_jianpin_impl(const Segments &segments)

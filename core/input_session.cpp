@@ -47,67 +47,6 @@ std::string online_identity(const QueryRequest &request)
     return std::to_string(static_cast<int>(request.scheme)) + ":" + input;
 }
 
-std::size_t raw_length_for_effective_prefix(const std::string &raw_input, std::size_t effective_length)
-{
-    std::size_t raw_length = 0;
-    std::size_t effective_count = 0;
-    while (raw_length < raw_input.size() && effective_count < effective_length)
-    {
-        if (raw_input[raw_length] != '\'')
-        {
-            ++effective_count;
-        }
-        ++raw_length;
-    }
-    return raw_length;
-}
-
-struct ShuangpinOnlineBase
-{
-    std::string cache_key;
-    bool helpcode_active = false;
-};
-
-ShuangpinOnlineBase shuangpin_online_base(const QueryRequest &request, const ShuangpinProfile &profile)
-{
-    ShuangpinOnlineBase result{request.raw_input, false};
-    if (!request.enable_shuangpin_helpcode)
-    {
-        return result;
-    }
-
-    const std::string effective = shuangpin::remove_manual_delimiters(request.raw_input);
-    const std::string &with_cases =
-        request.raw_input_with_cases.empty() ? request.raw_input : request.raw_input_with_cases;
-    const std::string effective_with_cases = shuangpin::remove_manual_delimiters(with_cases);
-    std::size_t helpcode_length =
-        shuangpin::detect_active_double_helpcode_length(request.raw_input, with_cases, profile);
-    if (helpcode_length == 0 && effective.size() > 1 && effective.size() % 2 == 1 &&
-        !effective_with_cases.empty())
-    {
-        const std::size_t base_effective_length = effective.size() - 1;
-        const std::size_t base_raw_length =
-            raw_length_for_effective_prefix(request.raw_input, base_effective_length);
-        const bool explicitly_separated =
-            base_raw_length < request.raw_input.size() && request.raw_input[base_raw_length] == '\'';
-        if (!explicitly_separated &&
-            shuangpin::is_complete_input(request.raw_input.substr(0, base_raw_length), profile))
-        {
-            helpcode_length = 1;
-        }
-    }
-    if (helpcode_length == 0 || effective.size() < helpcode_length)
-    {
-        return result;
-    }
-
-    const std::size_t base_raw_length =
-        raw_length_for_effective_prefix(request.raw_input, effective.size() - helpcode_length);
-    result.cache_key = request.raw_input.substr(0, base_raw_length);
-    result.helpcode_active = true;
-    return result;
-}
-
 bool same_online_query(const OnlineQuery &left, const OnlineQuery &right)
 {
     return left.scheme == right.scheme && left.generation == right.generation && left.identity == right.identity &&
@@ -595,41 +534,15 @@ std::optional<OnlineQuery> InputSession::online_query() const
     query.generation = online_generation_;
     query.identity = online_identity(request);
 
+    const auto state = get_cloud_query_state();
+    if (!state.should_query)
+        return std::nullopt;
+    query.query_text = state.query_text;
+    query.cache_key = state.cache_key;
     if (request.scheme == SchemeType::JapaneseRomaji)
     {
-        query.query_text = request.raw_input;
-        query.cache_key = request.raw_input;
-        query.cloud_eligible = !query.query_text.empty();
-        return query.cloud_eligible ? std::optional<OnlineQuery>(std::move(query)) : std::nullopt;
-    }
-    if (request.scheme == SchemeType::Wubi)
-    {
-        return std::nullopt;
-    }
-    if (request.scheme == SchemeType::Shuangpin)
-    {
-        const ShuangpinOnlineBase base = shuangpin_online_base(request, shuangpin_profile_);
-        const std::string effective_with_cases = shuangpin::remove_manual_delimiters(
-            request.raw_input_with_cases.empty() ? request.raw_input : request.raw_input_with_cases);
-        const char last = effective_with_cases.empty() ? '\0' : effective_with_cases.back();
-        const bool ends_with_input_key = (last >= 'a' && last <= 'z') || last == ';';
-        if (base.helpcode_active || !ends_with_input_key ||
-            !shuangpin::is_complete_input(request.raw_input, shuangpin_profile_))
-        {
-            return std::nullopt;
-        }
-        query.cache_key = base.cache_key;
-        query.query_text = shuangpin::normalize_input_with_delimiters(query.cache_key, shuangpin_profile_);
-    }
-    else
-    {
-        if (request.enable_quanpin_helpcode &&
-            quanpin::detect_active_helpcode_length(request.raw_input, request.raw_input_with_cases) > 0)
-        {
-            return std::nullopt;
-        }
-        query.cache_key = quanpin::strip_active_helpcodes(request.raw_input, request.raw_input_with_cases);
-        query.query_text = request.normalized_input;
+        query.cloud_eligible = true;
+        return query;
     }
 
     if (query.query_text.empty())
@@ -1096,6 +1009,7 @@ EnglishDictionary &InputSession::english_dictionary()
 
 void InputSession::reset_composition()
 {
+    clear_pending_sequence();
     ++online_generation_;
     const std::optional<SchemeType> original_scheme = temporary_original_scheme_;
     local_input_mode_ = LocalInputMode::None;
@@ -1194,4 +1108,10 @@ std::optional<std::string> InputSession::learn_candidate(std::size_t index)
     }
     return std::nullopt;
 }
+void InputSession::set_quanpin_autocorrect_enabled(bool enabled)
+{
+    quanpin_autocorrect_enabled_ = enabled;
+    engine_.set_quanpin_autocorrect_enabled(enabled);
+}
+
 } // namespace metasequoia
