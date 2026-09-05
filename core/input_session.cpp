@@ -308,14 +308,36 @@ KeyResult InputSession::handle_punctuation(char character)
     case ']':
         punctuation = "】";
         break;
+    // Book title marks nest: the outer pair is 《》 and anything inside it uses 〈〉. The counter is
+    // what decides which, so an unmatched '>' has to leave it at zero rather than drive it negative.
     case '<':
-        punctuation = "《";
+        punctuation = book_title_nesting_++ == 0 ? "《" : "〈";
         break;
     case '>':
-        punctuation = "》";
+        if (book_title_nesting_ > 0)
+        {
+            --book_title_nesting_;
+            punctuation = book_title_nesting_ == 0 ? "》" : "〉";
+        }
+        else
+        {
+            punctuation = "》";
+        }
         break;
     case '\\':
         punctuation = "、";
+        break;
+    case '`':
+        punctuation = "·";
+        break;
+    case '$':
+        punctuation = "￥";
+        break;
+    case '^':
+        punctuation = "……";
+        break;
+    case '_':
+        punctuation = "——";
         break;
     default:
         return {};
