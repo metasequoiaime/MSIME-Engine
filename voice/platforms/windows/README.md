@@ -2,15 +2,25 @@
 
 English | [简体中文](../../README.zh-CN.md)
 
-This is a voice input module for [MSIME-Windows](https://github.com/metasequoiaime/MSIME-Windows). However, it can be used as a standalone voice input tool for any application without other MetasequoiaIME components.
+This standalone Windows host is maintained in MSIME-Engine's `voice/platforms/windows/` and links the public voice targets. The Windows input method's own host is maintained in [MSIME-Windows/server](https://github.com/metasequoiaime/MSIME-Windows/tree/main/server).
 
-## How to run
+## Build and run
 
-Download the release exe from [releases](https://github.com/metasequoiaime/MetasequoiaVoiceInput/releases). That repository is archived and read-only; its source lives under `voice/` here now, and its published releases remain downloadable.
+Run from the **MSIME-Engine repository root** with Visual Studio's C++ tools, CMake and vcpkg installed. Set `VCPKG_ROOT` to your vcpkg checkout first:
 
-Then, copy all the contents of this project's `assets` folder to `$env:LOCALAPPDATA\MetasequoiaVoiceInput\`. And replace your siliconflow token in `config.toml`.
+```powershell
+git submodule update --init voice/third_party/miniaudio
+cmake -S voice -B build-voice -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded$<$<CONFIG:Debug>:Debug>' -DVCPKG_MANIFEST_FEATURES=windows-app -DMSIME_VOICE_WINDOWS_APP=ON
+cmake --build build-voice --config Release --parallel
+New-Item -ItemType Directory -Force "$env:LOCALAPPDATA/MetasequoiaVoiceInput"
+Copy-Item voice/assets/* "$env:LOCALAPPDATA/MetasequoiaVoiceInput" -Recurse -Force
+```
 
-Then, run `MetasequoiaVoiceInput.exe`.
+Edit the copied `config.toml` with your own SiliconFlow token, then launch `build-voice/platforms/windows/Release/MetasequoiaVoiceInput.exe`. The `assets` directory is at `voice/assets/`, not beside this README. CI compiles this host without launching it or recording audio.
+
+The obsolete `voice/scripts/prepare_env.py` and its build templates have been removed because they overwrote the shared CMake project. Use the commands above. [Archived standalone releases](https://github.com/metasequoiaime/MetasequoiaVoiceInput/releases) remain available as historical binaries; they are not the publishing location for new Engine builds.
+
+This imported host uses cloud recognition. Local Whisper is an optional public-library target used by other hosts; selecting an old `local_whisper` configuration value does not enable it in this standalone app.
 
 ## Usage
 
@@ -23,12 +33,6 @@ Then, run `MetasequoiaVoiceInput.exe`.
 
 Edit `$env:LOCALAPPDATA\MetasequoiaVoiceInput\config.toml` (create if not exists) to configure the application.
 
-e.g. in my system, the path is:
-
-```
-C:\Users\sonnycalcr\AppData\Local\MetasequoiaVoiceInput\config.toml
-```
-
 Below is a template:
 
 ```toml
@@ -39,7 +43,7 @@ endpoint = "https://api.siliconflow.cn/v1/audio/transcriptions"
 # 服务提供商（如：azure、openai、deepgram 等）
 provider = "siliconflow"
 # API 访问令牌
-token = "<YOUR_OWN_TOKE>"
+token = "<YOUR_OWN_TOKEN>"
 
 # 文本润色配置
 [polish_api]
@@ -48,7 +52,7 @@ endpoint = "https://api.siliconflow.cn/v1/chat/completions"
 # 服务提供商（如：azure、openai、deepgram 等）
 provider = "siliconflow"
 # API 访问令牌
-token = "<YOUR_OWN_TOKE>"
+token = "<YOUR_OWN_TOKEN>"
 
 # 基础设置
 [settings]
@@ -58,7 +62,7 @@ language = "zh-cn"
 notification_sound = true
 # 上屏前是否要先进行文本润色
 polish_text = false
-# 可以选择的值有：local_whisper, cloud_siliconflow
+# This standalone host uses cloud recognition.
 stt_provider = "cloud_siliconflow"
 ```
 

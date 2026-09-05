@@ -1,127 +1,13 @@
-# 公共语音模块
+# 水杉公共语音模块
 
-本仓现已合入 MSIME-Engine，跨平台构建、公共 API 与 Apple 接入方式见 [公共模块说明](README.md)。原 Windows 独立程序说明见 [Windows host](platforms/windows/README.md)。
+VoiceInput 已并入 MSIME-Engine。公共 API、构建选项与平台接入见 [公共模块说明](README.md)。公共处理、录音与本地 Whisper 分别由 `MetasequoiaIme::Voice`、`MetasequoiaIme::VoiceCapture`、`MetasequoiaIme::VoiceWhisper` 提供，平台按需链接。
 
-# Metasequoia Voice Input（水杉记言）
+- Windows 输入法的语音宿主位于 [MSIME-Windows/server](https://github.com/metasequoiaime/MSIME-Windows/tree/main/server)。
+- macOS 输入法已有实际接入，使用方法见 [macOS 语音指南](https://github.com/metasequoiaime/MSIME-Docs/blob/main/guides/macos-voice.md)。iOS 键盘尚无语音入口。
+- 原独立 Windows 工具保留在 `platforms/windows/`；当前构建命令、配置和快捷键见 [独立工具说明](platforms/windows/README.md)。它使用云识别，公共库的可选 Whisper 能力不会因旧配置中的 `local_whisper` 值自动启用。
 
-[English](README.md) | 简体中文
+所有构建命令从 **MSIME-Engine 仓库根目录**执行。独立工具资源在 `voice/assets/`，用户配置仍位于 `%LOCALAPPDATA%\MetasequoiaVoiceInput\config.toml`。保留这个路径可继续使用已有配置。
 
-水杉记言是一款语音输入模块，最初为 [MSIME-Windows](https://github.com/metasequoiaime/MSIME-Windows) 设计，但也可以**独立运行**，作为通用语音输入工具用于任何应用程序，而无需安装其他输入法组件。
+旧环境生成器会覆盖公共 CMake 工程，现已移除；不再运行旧 `prepare_env.py` 或旧 build preset。历史脚本和提交仍保存在 Git 历史中。[旧仓库 Releases](https://github.com/metasequoiaime/MetasequoiaVoiceInput/releases) 保留已发布版本。
 
----
-
-## 运行方法
-
-1. 从 GitHub 的 Releases 页面下载最新版本。该仓库已归档为只读，源码现在在本仓的 `voice/`，已发布的版本仍可下载：
-
-[https://github.com/metasequoiaime/MetasequoiaVoiceInput/releases](https://github.com/metasequoiaime/MetasequoiaVoiceInput/releases)
-
-2. 将本项目 `assets` 文件夹中的**所有内容**复制到：
-
-```
-$env:LOCALAPPDATA\MetasequoiaVoiceInput\
-```
-
-3. 打开 `config.toml` 文件，填入你自己的 SiliconFlow API Token。
-
-4. 运行：
-
-```
-MetasequoiaVoiceInput.exe
-```
-
----
-
-## 使用方法
-
-### 快捷键
-
-- **RAlt 按下开始录音，松开停止录音并将识别结果发送到当前活动应用**
-- **RAlt + Space：锁定录音（无需持续按住）**
-- **Ctrl + F9：切换录音状态**
-
-支持在任意输入场景下快速语音转文字。
-
----
-
-## 配置说明
-
-编辑：
-
-```
-$env:LOCALAPPDATA\MetasequoiaVoiceInput\config.toml
-```
-
-e.g. 在我的系统上，路径为：
-
-```
-C:\Users\sonnycalcr\AppData\Local\MetasequoiaVoiceInput\config.toml
-```
-
-（如果不存在请手动创建）
-
-下面是一个完整配置示例：
-
-```toml
-# 自动语音识别（ASR）配置
-[asr_api]
-# API 基础地址
-endpoint = "https://api.siliconflow.cn/v1/audio/transcriptions"
-# 服务提供商（如：azure、openai、deepgram 等）
-provider = "siliconflow"
-# API 访问令牌
-token = "<YOUR_OWN_TOKE>"
-
-# 文本润色配置
-[polish_api]
-# API 基础地址
-endpoint = "https://api.siliconflow.cn/v1/chat/completions"
-# 服务提供商（如：azure、openai、deepgram 等）
-provider = "siliconflow"
-# API 访问令牌
-token = "<YOUR_OWN_TOKE>"
-
-# 基础设置
-[settings]
-# 偏好语言
-language = "zh-cn"
-# 触发时是否播放提示音
-notification_sound = true
-# 上屏前是否进行文本润色
-polish_text = false
-# 可选值：local_whisper, cloud_siliconflow
-stt_provider = "cloud_siliconflow"
-```
-
----
-
-## 图形界面设置
-
-除了手动修改 `config.toml`，你也可以通过设置窗口修改配置：
-
-![](https://i.imgur.com/Q3Jct2Z.png)
-
-![](https://i.imgur.com/9j2IV9X.png)
-
-![](https://i.imgur.com/1F47neV.png)
-
----
-
-## 特性
-
-- 支持本地 Whisper 模型
-- 支持 SiliconFlow 云端识别
-- 支持文本润色（LLM 优化表达）
-- 支持锁定录音模式
-- 支持提示音反馈
-- 可独立运行，无需输入法环境
-
-## 注意事项
-
-- UI 目前只适配了暗色模式
-
----
-
-## 许可证
-
-本项目采用 **GPL-3.0 License** 开源协议。
+原项目 GPL-3.0 许可证与第三方声明继续保留，合仓不改变它们的授权。

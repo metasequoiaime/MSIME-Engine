@@ -76,7 +76,7 @@ A product host must declare `NSMicrophoneUsageDescription` and request audio acc
 
 ## Imported Windows host and migration
 
-The original standalone UI and hotkeys remain under `platforms/windows/`. Build it with `MSIME_VOICE_WINDOWS_APP=ON` and `VCPKG_MANIFEST_FEATURES=windows-app`. It links the shared targets. See [the imported usage guide](platforms/windows/README.md) for the asset/config layout. Historical developer scripts are retained as references and are not the supported build entry point.
+The original standalone UI and hotkeys remain under `platforms/windows/`. Build it with `MSIME_VOICE_WINDOWS_APP=ON` and `VCPKG_MANIFEST_FEATURES=windows-app`. It links the shared targets. See [the imported usage guide](platforms/windows/README.md) for the asset/config layout. Use the CMake commands in that guide from the Engine root. Obsolete developer scripts and templates were removed: their environment generator overwrote this public CMake project with the old standalone project. Their original versions remain in Git history.
 
 The Windows product host is maintained in [MSIME-Windows/server](https://github.com/metasequoiaime/MSIME-Windows/tree/main/server), and platform consumers pin merged Engine commits. Common capture, WAV and provider codecs belong here; Windows keeps its evolved provider transport, native interaction and streaming behavior. The old standalone VoiceInput and Server repositories are archived; their existing releases remain available.
 
