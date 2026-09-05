@@ -3,3 +3,8 @@ build-*/
 log.*
 .vs/
 /.clangd
+
+/ReferenceProjects
+**/__pycache__/
+*.pyc
+.venv/

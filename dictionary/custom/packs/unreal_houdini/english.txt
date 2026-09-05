@@ -1,0 +1,115 @@
+unreal	Unreal	10
+unrealengine	Unreal Engine	10
+unrealeditor	Unreal Editor	10
+ue	UE	10
+ue	UE5	10
+blueprint	Blueprint	10
+blueprints	Blueprints	10
+blueprintfunctionlibrary	Blueprint Function Library	10
+blueprintinterface	Blueprint Interface	10
+animationblueprint	Animation Blueprint	10
+levelblueprint	Level Blueprint	10
+behaviortree	Behavior Tree	10
+blackboard	Blackboard	10
+playercontroller	Player Controller	10
+aicontroller	AI Controller	10
+gameinstance	Game Instance	10
+gamemode	Game Mode	10
+gamestate	Game State	10
+worldpartition	World Partition	10
+datalayer	Data Layer	10
+levelinstance	Level Instance	10
+streamingsource	Streaming Source	10
+hlod	HLOD	10
+staticmesh	Static Mesh	10
+skeletalmesh	Skeletal Mesh	10
+instancedstaticmesh	Instanced Static Mesh	10
+ism	ISM	10
+hierarchicalinstancedstaticmesh	Hierarchical Instanced Static Mesh	10
+hism	HISM	10
+geometrycollection	Geometry Collection	10
+materialinstance	Material Instance	10
+materialfunction	Material Function	10
+materialparametercollection	Material Parameter Collection	10
+mpc	MPC	10
+runtimevirtualtexture	Runtime Virtual Texture	10
+rvt	RVT	10
+virtualshadowmaps	Virtual Shadow Maps	10
+vsm	VSM	10
+meshdistancefield	Mesh Distance Field	10
+globaldistancefield	Global Distance Field	10
+shadercomplexity	Shader Complexity	10
+texturestreaming	Texture Streaming	10
+virtualtexture	Virtual Texture	10
+globalillumination	Global Illumination	10
+surfacecache	Surface Cache	10
+reflectioncapture	Reflection Capture	10
+volumetricfog	Volumetric Fog	10
+volumetriccloud	Volumetric Cloud	10
+exponentialheightfog	Exponential Height Fog	10
+postprocessvolume	Post Process Volume	10
+nanite	Nanite	10
+lumen	Lumen	10
+niagara	Niagara	10
+metasounds	MetaSounds	10
+sequencer	Sequencer	10
+controlrig	Control Rig	10
+motionmatching	Motion Matching	10
+movierenderqueue	Movie Render Queue	10
+mrq	MRQ	10
+proceduralcontentgeneration	Procedural Content Generation	10
+pcg	PCG	10
+houdini	Houdini	10
+sidefx	SideFX	10
+houdiniengine	Houdini Engine	10
+houdinidigitalasset	Houdini Digital Asset	10
+hda	HDA	10
+sop	SOP	10
+dop	DOP	10
+lop	LOP	10
+top	TOP	10
+rop	ROP	10
+chop	CHOP	10
+cop	COP	10
+vop	VOP	10
+obj	OBJ	10
+vex	VEX	10
+hscript	HScript	10
+solaris	Solaris	10
+karma	Karma	10
+karmaxpu	Karma XPU	10
+mantra	Mantra	10
+materialx	MaterialX	10
+openusd	OpenUSD	10
+usd	USD	10
+openvdb	OpenVDB	10
+vdb	VDB	10
+pdg	PDG	10
+kinefx	KineFX	10
+vellum	Vellum	10
+pyro	Pyro	10
+flip	FLIP	10
+copernicus	Copernicus	10
+apex	APEX	10
+sidefxlabs	SideFX Labs	10
+geometryspreadsheet	Geometry Spreadsheet	10
+attributewrangle	Attribute Wrangle	10
+volumewrangle	Volume Wrangle	10
+pointwrangle	Point Wrangle	10
+packedprimitive	Packed Primitive	10
+heightfield	HeightField	10
+heightfielderode	HeightField Erode	10
+materiallibrary	Material Library	10
+componentbuilder	Component Builder	10
+scenegraphdetails	Scene Graph Details	10
+houdiniengineforunreal	Houdini Engine for Unreal	10
+sessionsync	Session Sync	10
+nodesync	Node Sync	10
+landscapespline	Landscape Spline	10
+curveinput	Curve Input	10
+worldinput	World Input	10
+geometrymarshalling	Geometry Marshalling	10
+outputattributes	Output Attributes	10
+landscapeeditlayer	Landscape Edit Layer	10
+landscapescatter	Landscape Scatter	10
+skeletalmeshoutput	Skeletal Mesh Output	10

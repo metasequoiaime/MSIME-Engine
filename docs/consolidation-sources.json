@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "destination": "metasequoiaime/MSIME-Engine",
+  "history": "git subtree add without squash; original commit IDs remain ancestors",
+  "sources": [
+    {
+      "repository": "metasequoiaime/MSIME-Engine",
+      "commit": "7cfdb41e7b42803f8b13ef734e3fbb2ce366eb6f",
+      "prefix": "."
+    },
+    {
+      "repository": "metasequoiaime/MSIME-Dict",
+      "commit": "73e92edcab2cb2e7d8296948a9e0f1e21903d206",
+      "prefix": "dictionary"
+    },
+    {
+      "repository": "metasequoiaime/MetasequoiaImeCustomDict",
+      "commit": "bcf83a65105f068e94be921b75ce40507eb12bb2",
+      "prefix": "dictionary/custom"
+    },
+    {
+      "repository": "metasequoiaime/MetasequoiaImeHelpCode",
+      "commit": "37069955b24c1497f04badbd4c8207fdb9cdd535",
+      "prefix": "helpcode"
+    },
+    {
+      "repository": "metasequoiaime/MetasequoiaVoiceInput",
+      "commit": "413f734e1d4694748d3cf88b8df95f37528e8a97",
+      "prefix": "voice"
+    }
+  ],
+  "previous_dict_pins": {
+    "custom": "691ef1809e29459a9e4393145b3bb9a67dbbf369",
+    "engine": "6bd22549d6e275e401052c55cca6c57fe8408819"
+  }
+}

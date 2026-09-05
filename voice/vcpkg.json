@@ -1,0 +1,16 @@
+{
+  "dependencies": [
+    "curl",
+    "nlohmann-json"
+  ],
+  "features": {
+    "windows-app": {
+      "description": "Standalone Windows host dependencies",
+      "dependencies": [
+        "fmt",
+        "tomlplusplus",
+        "webview2"
+      ]
+    }
+  }
+}

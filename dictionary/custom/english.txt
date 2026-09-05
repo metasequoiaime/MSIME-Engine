@@ -1,0 +1,7 @@
+figma	figma	1
+figma	Figma	1
+asr	ASR	1
+webview	webview	1
+webview	Webview	1
+webview	webview2	1
+webview	Webview2	1

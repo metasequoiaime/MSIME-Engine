@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(MVI)Settings</title>
+  <link rel="icon" href="./imgs/app.png">
+  <style>
+    :root {
+      --accent-color: #8e8cd8;
+      --bg-color: #202020;
+      --sidebar-hover: rgba(255, 255, 255, 0.08);
+      --item-active: rgba(255, 255, 255, 0.06);
+      --text-color: #f3f3f3;
+      --subtext-color: #c7c7c7;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --card-bg: rgba(38, 38, 38, 0.6);
+      --input-bg: rgba(45, 45, 45, 0.8);
+      --danger: #c95f5f;
+      --ok: #4caf81;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Noto Sans SC", "Segoe UI Variable", "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      color: var(--text-color);
+      background: var(--bg-color);
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 220px;
+      padding: 16px 10px;
+      overflow-y: auto;
+      position: relative;
+      /* scrollbar-width: thin; */
+      scrollbar-color: rgba(170, 170, 170, 0.35) transparent;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 10px 16px;
+      margin-bottom: 6px;
+    }
+
+    .sidebar-header .logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .sidebar-header .name {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .nav-item {
+      margin: 4px 6px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: #e8e8e8;
+      cursor: default;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      user-select: none;
+    }
+
+    .nav-item:hover {
+      background: var(--sidebar-hover);
+    }
+
+    .nav-item.active {
+      background: var(--item-active);
+    }
+
+    .nav-indicator {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 18px;
+      border-radius: 4px;
+      background: var(--accent-color);
+      pointer-events: none;
+      opacity: 0;
+      z-index: 2;
+    }
+
+    .nav-indicator.ready {
+      transition: transform 0.24s ease, opacity 0.18s ease;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      /* scrollbar-width: thin; */
+      scrollbar-color: rgba(170, 170, 170, 0.35) transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sidebar::-webkit-scrollbar,
+    .content::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    .sidebar::-webkit-scrollbar-track,
+    .content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb,
+    .content::-webkit-scrollbar-thumb {
+      background: rgba(170, 170, 170, 0.35);
+      border-radius: 3px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover,
+    .content::-webkit-scrollbar-thumb:hover {
+      background: rgba(205, 205, 205, 0.45);
+    }
+
+    .content-page {
+      display: none;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .content-page.active {
+      display: block;
+    }
+
+    .page-title {
+      margin: 0 0 14px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .section {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      color: #d2d2d2;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .about-text {
+      margin: 0;
+      color: #dfdfdf;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .about-meta {
+      margin: 10px 0 0;
+      color: var(--subtext-color);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .about-link-row {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .about-link-label {
+      color: var(--subtext-color);
+      font-size: 13px;
+    }
+
+    .about-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.04);
+      color: #e8e4ff;
+      font-size: 13px;
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.18s ease;
+    }
+
+    .about-link:hover {
+      background: rgba(142, 140, 216, 0.2);
+      border-color: rgba(142, 140, 216, 0.55);
+      transform: translateY(-1px);
+    }
+
+    .about-link:focus-visible {
+      outline: 2px solid rgba(142, 140, 216, 0.55);
+      outline-offset: 2px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field label {
+      font-size: 13px;
+      color: var(--subtext-color);
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: #f3f3f3;
+      padding: 9px 10px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--accent-color);
+    }
+
+    input[type="password"] {
+      letter-spacing: 2px;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .dropdown {
+      position: relative;
+      width: 100%;
+    }
+
+    .dropdown-toggle {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: #f3f3f3;
+      padding: 9px 10px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .dropdown-toggle:hover {
+      background: rgba(50, 50, 50, 0.9);
+    }
+
+    .dropdown.open .dropdown-toggle {
+      border-color: var(--accent-color);
+    }
+
+    .arrow {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .arrow svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      transition: transform 0.4s ease;
+      transform-origin: center;
+    }
+
+    .dropdown.open .arrow svg {
+      transform: rotate(180deg);
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      width: 100%;
+      background: #282828;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 2px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+      z-index: 20;
+    }
+
+    .dropdown.open .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-item {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: #eee;
+      border-radius: 8px;
+      padding: 7px 8px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .switch-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .switch-row:last-child {
+      border-bottom: 0;
+    }
+
+    .switch-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .switch-label strong {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .switch-label span {
+      font-size: 12px;
+      color: var(--subtext-color);
+    }
+
+    .switch-input {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 38px;
+      height: 20px;
+      border-radius: 999px;
+      background: #555;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      border: 1px solid transparent;
+      flex-shrink: 0;
+    }
+
+    .switch-input::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 1px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      transform: translateY(-50%);
+      transition: transform 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .switch-input:checked {
+      background: var(--accent-color);
+    }
+
+    .switch-input:checked::after {
+      transform: translate(18px, -50%);
+    }
+
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .actions.hidden {
+      display: none;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 14px;
+      cursor: default;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: #3c2d47;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #3a3a3a;
+      color: #f3f3f3;
+    }
+
+    .status {
+      font-size: 13px;
+      color: var(--subtext-color);
+      min-height: 18px;
+    }
+
+    .status.ok {
+      color: var(--ok);
+    }
+
+    .status.err {
+      color: var(--danger);
+    }
+
+    @media (max-width: 760px) {
+      body {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: 0;
+        border-bottom: 1px solid var(--border-color);
+        padding: 10px;
+      }
+
+      .content {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img class="logo" src="imgs/app.png" alt="App Logo" />
+      <div class="name">水杉记言</div>
+    </div>
+
+    <div class="nav-item active" data-target="api-page">🔌 API 配置</div>
+    <div class="nav-item" data-target="basic-page">🧩 基础设置</div>
+    <div class="nav-item" data-target="about-page">ℹ️ 关于</div>
+  </aside>
+
+  <main class="content">
+    <section id="api-page" class="content-page active">
+      <h1 class="page-title">API 配置</h1>
+
+      <div class="section">
+        <h2 class="section-title">ASR 接口（[asr_api]）</h2>
+        <div class="field">
+          <label for="asr-provider">provider</label>
+          <input id="asr-provider" type="text" value="siliconflow" />
+        </div>
+        <div class="field">
+          <label for="asr-token">token</label>
+          <input id="asr-token" type="password" value="sk-zrjxykdgontqnocayzmqezuumvktsxldoftdacgoljshyhgw" />
+        </div>
+        <div class="field">
+          <label for="asr-endpoint">endpoint</label>
+          <input id="asr-endpoint" type="text" value="https://api.siliconflow.cn/v1/audio/transcriptions" />
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">润色接口（[polish_api]）</h2>
+        <div class="field">
+          <label for="polish-provider">provider</label>
+          <input id="polish-provider" type="text" value="siliconflow" />
+        </div>
+        <div class="field">
+          <label for="polish-token">token</label>
+          <input id="polish-token" type="password" value="sk-zrjxykdgontqnocayzmqezuumvktsxldoftdacgoljshyhgw" />
+        </div>
+        <div class="field">
+          <label for="polish-endpoint">endpoint</label>
+          <input id="polish-endpoint" type="text" value="https://api.siliconflow.cn/v1/chat/completions" />
+        </div>
+      </div>
+    </section>
+
+    <section id="basic-page" class="content-page">
+      <h1 class="page-title">基础设置</h1>
+
+      <div class="section">
+        <h2 class="section-title">[settings]</h2>
+
+        <div class="field">
+          <label for="language-btn">language</label>
+          <div class="dropdown" id="language-dropdown">
+            <button id="language-btn" class="dropdown-toggle" type="button">
+              <span class="dropdown-value">zh-cn</span>
+              <span class="arrow" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5.5 7.5L10 12L14.5 7.5" stroke="#cfcfcf" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </span>
+            </button>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" type="button" data-value="zh-cn">zh-cn</button>
+              <button class="dropdown-item" type="button" data-value="en-us">en-us</button>
+            </div>
+            <input id="language" type="hidden" value="zh-cn" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="stt-provider-btn">stt_provider</label>
+          <div class="dropdown" id="stt-provider-dropdown">
+            <button id="stt-provider-btn" class="dropdown-toggle" type="button">
+              <span class="dropdown-value">cloud_siliconflow</span>
+              <span class="arrow" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5.5 7.5L10 12L14.5 7.5" stroke="#cfcfcf" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </span>
+            </button>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" type="button" data-value="local_whisper">local_whisper</button>
+              <button class="dropdown-item" type="button" data-value="cloud_siliconflow">cloud_siliconflow</button>
+            </div>
+            <input id="stt-provider" type="hidden" value="cloud_siliconflow" />
+          </div>
+        </div>
+
+        <div class="switch-row">
+          <div class="switch-label">
+            <strong>上屏前先进行文本润色</strong>
+            <span>polish_text</span>
+          </div>
+          <input id="polish-text" class="switch-input" type="checkbox" />
+        </div>
+
+        <div class="switch-row">
+          <div class="switch-label">
+            <strong>触发时播放提示音</strong>
+            <span>notification_sound</span>
+          </div>
+          <input id="notification-sound" class="switch-input" type="checkbox" checked />
+        </div>
+      </div>
+    </section>
+
+    <section id="about-page" class="content-page">
+      <h1 class="page-title">关于</h1>
+
+      <div class="section">
+        <h2 class="section-title">项目简介</h2>
+        <p class="about-text">
+          <span>水杉记言</span>(Metasequoia Voice
+          Input)是一个面向中文输入场景的开源语音输入工具，源代码在 GitHub 上可查看。本项目通过语音识别(ASR)将语音实时转换为文本，并可选接入文本润色能力，帮助你以更自然、更高效的方式完成输入。
+        </p>
+        <br>
+        <p class="about-text">
+          当前设置窗口用于管理 ASR API、润色 API 和基础行为配置。您可以在“API 配置”和“基础设置”中修改参数，并通过“保存设置”提交到宿主程序。
+        </p>
+        <br>
+        <div class="about-link-row">
+          <span class="about-link-label">GitHub:</span>
+          <a class="about-link" href="https://github.com/fanlumaster/MetasequoiaVoiceInput" target="_blank"
+            rel="noopener noreferrer">MetasequoiaVoiceInput ↗</a>
+        </div>
+        <div class="about-link-row">
+          <span class="about-link-label">作者的更多作品，Windows 文字输入法：</span>
+          <a class="about-link" href="https://github.com/fanlumaster/MetasequoiaImeTsf" target="_blank"
+            rel="noopener noreferrer">水杉输入法 ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button id="save-btn" class="btn-primary" type="button">保存设置</button>
+      <button id="reset-btn" class="btn-secondary" type="button">恢复默认</button>
+      <span id="status" class="status"></span>
+    </div>
+  </main>
+
+  <script>
+    const defaultConfig = {
+      asr_api: {
+        provider: "siliconflow",
+        token: "sk-zrjxykdgontqnocayzmqezuumvktsxldoftdacgoljshyhgw",
+        endpoint: "https://api.siliconflow.cn/v1/audio/transcriptions"
+      },
+      polish_api: {
+        provider: "siliconflow",
+        token: "sk-zrjxykdgontqnocayzmqezuumvktsxldoftdacgoljshyhgw",
+        endpoint: "https://api.siliconflow.cn/v1/chat/completions"
+      },
+      settings: {
+        language: "zh-cn",
+        polish_text: false,
+        notification_sound: true,
+        stt_provider: "cloud_siliconflow"
+      }
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function setStatus(text, type) {
+      const el = $("status");
+      el.textContent = text;
+      el.classList.remove("ok", "err");
+      if (type) {
+        el.classList.add(type);
+      }
+    }
+
+    function mergeConfigWithDefaults(config) {
+      const safe = config && typeof config === "object" ? config : {};
+      const asr = safe.asr_api && typeof safe.asr_api === "object" ? safe.asr_api : {};
+      const polish = safe.polish_api && typeof safe.polish_api === "object" ? safe.polish_api : {};
+      const settings = safe.settings && typeof safe.settings === "object" ? safe.settings : {};
+
+      return {
+        asr_api: {
+          provider: typeof asr.provider === "string" ? asr.provider : defaultConfig.asr_api.provider,
+          token: typeof asr.token === "string" ? asr.token : defaultConfig.asr_api.token,
+          endpoint: typeof asr.endpoint === "string" ? asr.endpoint : defaultConfig.asr_api.endpoint
+        },
+        polish_api: {
+          provider: typeof polish.provider === "string" ? polish.provider : defaultConfig.polish_api.provider,
+          token: typeof polish.token === "string" ? polish.token : defaultConfig.polish_api.token,
+          endpoint: typeof polish.endpoint === "string" ? polish.endpoint : defaultConfig.polish_api.endpoint
+        },
+        settings: {
+          language: typeof settings.language === "string" ? settings.language : defaultConfig.settings.language,
+          polish_text: typeof settings.polish_text === "boolean" ? settings.polish_text : defaultConfig.settings.polish_text,
+          notification_sound: typeof settings.notification_sound === "boolean" ? settings.notification_sound : defaultConfig.settings.notification_sound,
+          stt_provider: typeof settings.stt_provider === "string" ? settings.stt_provider : defaultConfig.settings.stt_provider
+        }
+      };
+    }
+
+    function readConfigFromForm() {
+      return {
+        asr_api: {
+          provider: $("asr-provider").value.trim(),
+          token: $("asr-token").value.trim(),
+          endpoint: $("asr-endpoint").value.trim()
+        },
+        polish_api: {
+          provider: $("polish-provider").value.trim(),
+          token: $("polish-token").value.trim(),
+          endpoint: $("polish-endpoint").value.trim()
+        },
+        settings: {
+          language: $("language").value,
+          polish_text: $("polish-text").checked,
+          notification_sound: $("notification-sound").checked,
+          stt_provider: $("stt-provider").value
+        }
+      };
+    }
+
+    function applyConfigToForm(config) {
+      $("asr-provider").value = config.asr_api.provider;
+      $("asr-token").value = config.asr_api.token;
+      $("asr-endpoint").value = config.asr_api.endpoint;
+
+      $("polish-provider").value = config.polish_api.provider;
+      $("polish-token").value = config.polish_api.token;
+      $("polish-endpoint").value = config.polish_api.endpoint;
+
+      $("language").value = config.settings.language;
+      $("polish-text").checked = config.settings.polish_text;
+      $("notification-sound").checked = config.settings.notification_sound;
+      $("stt-provider").value = config.settings.stt_provider;
+      syncDropdownText("language-dropdown");
+      syncDropdownText("stt-provider-dropdown");
+    }
+
+    function closeAllDropdowns() {
+      document.querySelectorAll(".dropdown.open").forEach((el) => {
+        el.classList.remove("open");
+      });
+    }
+
+    function syncDropdownText(dropdownId) {
+      const dropdown = document.getElementById(dropdownId);
+      if (!dropdown) {
+        return;
+      }
+      const hiddenInput = dropdown.querySelector("input[type='hidden']");
+      const valueEl = dropdown.querySelector(".dropdown-value");
+      const activeItem = dropdown.querySelector(`.dropdown-item[data-value="${hiddenInput.value}"]`);
+      valueEl.textContent = activeItem ? activeItem.textContent : hiddenInput.value;
+    }
+
+    function initDropdown(dropdownId) {
+      const dropdown = document.getElementById(dropdownId);
+      if (!dropdown) {
+        return;
+      }
+      const toggle = dropdown.querySelector(".dropdown-toggle");
+      const hiddenInput = dropdown.querySelector("input[type='hidden']");
+
+      toggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const willOpen = !dropdown.classList.contains("open");
+        closeAllDropdowns();
+        if (willOpen) {
+          dropdown.classList.add("open");
+        }
+      });
+
+      dropdown.querySelectorAll(".dropdown-item").forEach((item) => {
+        item.addEventListener("click", () => {
+          hiddenInput.value = item.dataset.value;
+          syncDropdownText(dropdownId);
+          dropdown.classList.remove("open");
+        });
+      });
+
+      syncDropdownText(dropdownId);
+    }
+
+    function ensureNavIndicator() {
+      const sidebar = document.querySelector(".sidebar");
+      if (!sidebar) {
+        return null;
+      }
+      let indicator = sidebar.querySelector(".nav-indicator");
+      if (!indicator) {
+        indicator = document.createElement("div");
+        indicator.className = "nav-indicator";
+        sidebar.appendChild(indicator);
+      }
+      return indicator;
+    }
+
+    function moveNavIndicatorToItem(item) {
+      const sidebar = document.querySelector(".sidebar");
+      const indicator = ensureNavIndicator();
+      if (!sidebar || !indicator || !item) {
+        return;
+      }
+
+      const barLeft = item.offsetLeft - 2;
+      const barTop = item.offsetTop + (item.offsetHeight - 18) / 2;
+      if (!indicator.classList.contains("ready")) {
+        indicator.classList.add("ready");
+        indicator.style.transition = "none";
+        indicator.style.transform = `translate(${barLeft}px, ${barTop}px)`;
+        indicator.style.opacity = "1";
+        requestAnimationFrame(() => {
+          indicator.style.transition = "";
+        });
+        return;
+      }
+      indicator.style.transform = `translate(${barLeft}px, ${barTop}px)`;
+      indicator.style.opacity = "1";
+    }
+
+    function updateActionsVisibility(targetId) {
+      const actions = document.querySelector(".actions");
+      if (!actions) {
+        return;
+      }
+      const shouldHide = targetId === "about-page";
+      actions.classList.toggle("hidden", shouldHide);
+    }
+
+    document.querySelectorAll(".nav-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        document.querySelector(".nav-item.active")?.classList.remove("active");
+        item.classList.add("active");
+
+        document.querySelector(".content-page.active")?.classList.remove("active");
+        const targetId = item.dataset.target;
+        document.getElementById(targetId)?.classList.add("active");
+        updateActionsVisibility(targetId);
+        moveNavIndicatorToItem(item);
+      });
+    });
+
+    $("save-btn").addEventListener("click", () => {
+      const config = readConfigFromForm();
+      try {
+        if (window.chrome?.webview) {
+          window.chrome.webview.postMessage({ action: "save_settings", config });
+        } else {
+          setStatus("当前不在宿主环境，无法写入配置文件", "err");
+          return;
+        }
+      } catch (err) {
+        setStatus("保存失败: " + String(err), "err");
+      }
+    });
+
+    $("reset-btn").addEventListener("click", () => {
+      applyConfigToForm(defaultConfig);
+      setStatus("已恢复默认值", "ok");
+    });
+
+    document.addEventListener("click", () => {
+      closeAllDropdowns();
+    });
+
+    window.__applyHostConfig = (config) => {
+      const normalized = mergeConfigWithDefaults(config);
+      applyConfigToForm(normalized);
+      setStatus("已加载本地配置", "ok");
+    };
+
+    window.__onHostSaveResult = (result) => {
+      if (!result || typeof result !== "object") {
+        setStatus("保存结果无效", "err");
+        return;
+      }
+      const message = typeof result.message === "string" ? result.message : (result.success ? "设置已保存" : "保存失败");
+      setStatus(message, result.success ? "ok" : "err");
+    };
+
+    initDropdown("language-dropdown");
+    initDropdown("stt-provider-dropdown");
+    applyConfigToForm(defaultConfig);
+    updateActionsVisibility("api-page");
+    moveNavIndicatorToItem(document.querySelector(".nav-item.active"));
+
+    if (window.chrome?.webview) {
+      window.chrome.webview.postMessage({ action: "load_settings" });
+    }
+
+    window.addEventListener("resize", () => {
+      moveNavIndicatorToItem(document.querySelector(".nav-item.active"));
+    });
+  </script>
+</body>
+
+</html>

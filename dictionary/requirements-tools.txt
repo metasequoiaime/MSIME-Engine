@@ -1,0 +1,8 @@
+# Extras for the one-off helpers under makecikudb/, not needed to build the shipping dictionaries.
+#
+# readmdict   makecikudb/englishdb/extract_oaldpe_headwords.py, regenerates en/oaldpe_words.txt
+#             from the OALDPE MDX
+# pywin32     makecikudb/xiaoheshuangpindb/makedb/separated_jp_version/scripts/insert_custom_data.py,
+#             Windows only, belongs to an older shuangpin variant that is not part of the build
+readmdict==0.1.1
+pywin32; sys_platform == "win32"
