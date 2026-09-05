@@ -1,0 +1,9 @@
+{
+  "dependencies": [
+    "fmt",
+    "curl",
+    "nlohmann-json",
+    "tomlplusplus",
+    "webview2"
+  ]
+}

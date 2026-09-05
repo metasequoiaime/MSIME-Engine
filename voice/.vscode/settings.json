@@ -1,0 +1,6 @@
+{
+  "files.exclude": {
+    "third_party/whisper.cpp/bindings": true,
+    "third_party/whisper.cpp/examples": true
+  }
+}
