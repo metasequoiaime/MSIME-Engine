@@ -1,6 +1,6 @@
 # 公共仓库合并
 
-合并 Engine、Dict、CustomDict、HelpCode 的公共职责。Windows、Linux、Apple 平台工程及 Web、Docs 等仓库保持独立。
+合并 Engine、Dict、CustomDict、HelpCode、VoiceInput 的公共职责。Windows、Linux、Apple 平台工程及 Web、Docs 等仓库保持独立。
 
 ## 历史与路径
 
@@ -22,14 +22,16 @@ CustomDict 导入当前 main，而非 Dict 原先固定的 `691ef18`：包含更
 2. 平台删除各自 Dict/CustomDict/HelpCode 的重复 checkout，辅助码路径改为 Engine 的 `helpcode/helpcodes/`，构建器改为 Engine 根 `build_profile.py`。
 3. 既有 `MSIME-Dict/dict-2026.09.05` 及其 digest 锁继续有效。本迁移不删除、重发或重定向旧 release。
 4. 后续在 MSIME-Engine 显式发布新 `dict-*` 产品时，平台同时评审产物 repository/tag/digest 锁变更。仅合仓不会自动改变用户安装包。
-5. 所有平台迁完后再单独处理旧仓归档与入口说明；本变更不归档仓库。
+5. 旧 Dict、CustomDict、HelpCode、VoiceInput 已归档，README 指向本仓对应目录；旧 Windows 组件也已归档，源码在 MSIME-Windows 内按组件分目录维护。历史 Release 和标签保留。
 
 导入数据的来源和许可按 [NOTICE.md](../NOTICE.md) 保留；仓库边界改变不代表统一重新授权。
 
 ## VoiceInput 公共化
 
-VoiceInput 也以保留完整历史的 subtree 导入 `voice/`。公共目标只包含 PCM/WAV、RMS VAD、云识别/文本整理、可选 miniaudio 录音和 Whisper；Windows UI 单独移到 `voice/platforms/windows/` 并链接公共目标。macOS 示例直接调用同一实现。
+VoiceInput 也以保留完整历史的 subtree 导入 `voice/`。公共目标只包含 PCM/WAV、RMS VAD、云识别/文本整理、可选 miniaudio 录音和 Whisper；Windows UI 单独移到 `voice/platforms/windows/` 并链接公共目标。macOS 示例和 Apple 输入法的菜单、设置与快捷键直接调用同一实现。
 
-平台接入必须在生产者合入后固定合入提交。当前 Server 的 Doubao/WebSocket 等新增能力没有回退到旧 VoiceInput，也未在本变更中迁移。Apple 的产品 UI 和 iOS 主 App/键盘通信属于消费端接入，本变更提供可编译运行的 macOS 示例及公共库。
+平台接入必须在生产者合入后固定合入提交。Windows Server 保留 Doubao/WebSocket 等传输和平台行为；公共 `provider_protocol.h` 统一 multipart、JSON 与结果解析，平台可沿用自己的 HTTP 策略。Apple 产品已提供 macOS 语音设置、Keychain、录音与上屏接入，iOS 键盘仍不提供语音入口。
 
 迁移验证：默认 Engine 13 项 CTest、词库 Python/自定义包/notice 校验、完整 desktop/mobile 及同仓查询回放通过；相同输入的出货 payload SHA-256 对比保存在 `consolidation-payloads.json`。
+
+首个合仓词库 Release 为 [`dict-2026.09.06`](https://github.com/metasequoiaime/MSIME-Engine/releases/tag/dict-2026.09.06)，来源提交 `d0dc0c2b594b5540b5de99ad12085c786410626e`。下载的全部资产与成功的 Engine 词库 CI 产物逐字节相同；英文释义包含上述 CustomDict 更新，不能据此宣称相对旧 Dict 产品所有字节不变。

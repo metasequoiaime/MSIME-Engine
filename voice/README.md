@@ -51,7 +51,7 @@ std::string text = recognizer.recognize(pcm); // worker queue, mono 16 kHz float
 // Host dispatches text to its UI/input-method thread and commits it.
 ```
 
-`CloudSttWorker` supports multipart `file` + `model` with JSON `text`, `transcription` or `result.text` responses. This is a protocol adapter, not a claim that every provider supports that protocol. Endpoints/models are host configuration; the token-only constructor retains the old SiliconFlow defaults for the imported Windows host. WebSocket/Doubao and Server-specific providers have not been migrated by this change.
+`CloudSttWorker` supports multipart `file` + `model` with JSON `text`, `transcription` or `result.text` responses. This is a protocol adapter, not a claim that every provider supports that protocol. Endpoints/models are host configuration; the token-only constructor retains the old SiliconFlow defaults for the imported Windows host. Windows-specific WebSocket/Doubao transport remains in MSIME-Windows/server; the public codecs support hosts that retain their own transport.
 
 `provider_protocol.h` exposes the same multipart and JSON codecs to hosts with an existing HTTP transport. `make_transcription_request` takes an encoded WAV (up to 20 MiB), preserves binary bytes and accepts an optional language field; omit language for services that reject it. `make_polish_request` sends the supplied user message verbatim, so hosts retain their prompt/delimiter policy. Response parsers reject malformed, missing, empty or oversized text responses with `VoiceError`. Hosts retain endpoint validation, credentials, timeouts, cancellation, status checks and stricter upload/response limits. The PCM recognizer still enforces the 60-second contract below.
 
@@ -70,7 +70,7 @@ cmake --build build-voice --parallel
 build-voice/examples/macos/MSIMEVoiceExample.app/Contents/MacOS/MSIMEVoiceExample
 ```
 
-The example reads `MSIME_ASR_ENDPOINT`, `MSIME_ASR_MODEL` and `MSIME_ASR_TOKEN`. It requests microphone permission only when Start is pressed, captures with `VoiceCapture`, calls the shared recognizer on a worker queue, displays the result on the main thread, and cancels work when the window closes. CI builds it without launching it or accessing a microphone. This validates Apple linkage; it does not automatically add a voice button to the MSIME-Apple input method.
+The example reads `MSIME_ASR_ENDPOINT`, `MSIME_ASR_MODEL` and `MSIME_ASR_TOKEN`. It requests microphone permission only when Start is pressed, captures with `VoiceCapture`, calls the shared recognizer on a worker queue, displays the result on the main thread, and cancels work when the window closes. CI builds it without launching it or accessing a microphone. The actual MSIME-Apple input method also integrates the public library, with Keychain-backed settings and a menu/Control+Option+V entry; see the [macOS voice guide](https://github.com/metasequoiaime/MSIME-Docs/blob/main/guides/macos-voice.md). The example remains a standalone host.
 
 A product host must declare `NSMicrophoneUsageDescription` and request audio access, as shown in [Apple's capture authorization documentation](https://developer.apple.com/documentation/bundleresources/requesting-authorization-for-media-capture-on-macos). Hardened/sandboxed products also configure their audio-input entitlements. iOS may reuse the processing API through its containing app, but a custom keyboard extension cannot directly record audio; see [Apple's custom keyboard restrictions](https://developer.apple.com/library/archive/documentation/General/Conceptual/ExtensibilityPG/CustomKeyboard.html). This change verifies macOS; it does not implement an iOS host/extension handoff.
 
@@ -78,6 +78,6 @@ A product host must declare `NSMicrophoneUsageDescription` and request audio acc
 
 The original standalone UI and hotkeys remain under `platforms/windows/`. Build it with `MSIME_VOICE_WINDOWS_APP=ON` and `VCPKG_MANIFEST_FEATURES=windows-app`. It links the shared targets. See [the imported usage guide](platforms/windows/README.md) for the asset/config layout. Historical developer scripts are retained as references and are not the supported build entry point.
 
-MSIME-Server still has its own evolved voice service; this change does not replace or downgrade it. After this producer change merges, platform consumer changes can pin the merged Engine commit and move their adapters to the public API. Existing standalone releases remain available in the old repository.
+The Windows product host is maintained in [MSIME-Windows/server](https://github.com/metasequoiaime/MSIME-Windows/tree/main/server), and platform consumers pin merged Engine commits. Common capture, WAV and provider codecs belong here; Windows keeps its evolved provider transport, native interaction and streaming behavior. The old standalone VoiceInput and Server repositories are archived; their existing releases remain available.
 
 Original VoiceInput history and GPL-3.0 `LICENSE` are preserved; third-party libraries retain their own licenses. Import source: `413f734e1d4694748d3cf88b8df95f37528e8a97` in `metasequoiaime/MetasequoiaVoiceInput`.
