@@ -33,6 +33,202 @@ std::vector<std::string> split(const std::string &text, char delimiter)
     }
 }
 
+constexpr size_t kCorrectionPathLimit = 32;
+
+using CorrectionAliases = std::unordered_map<std::string, std::vector<std::string>>;
+
+const CorrectionAliases &pinyin_correction_aliases()
+{
+    static const CorrectionAliases kAliases = [] {
+        CorrectionAliases aliases;
+        const auto add_alias = [&](const std::string &typed, const std::string &canonical) {
+            auto &canonical_syllables = aliases[typed];
+            if (std::find(canonical_syllables.begin(), canonical_syllables.end(), canonical) ==
+                canonical_syllables.end())
+            {
+                canonical_syllables.push_back(canonical);
+            }
+        };
+        const auto add_suffix_aliases = [&](const std::string &canonical_suffix, const std::string &typed_suffix) {
+            for (const auto &syllable : intact_pinyin_list())
+            {
+                if (syllable.size() < canonical_suffix.size() ||
+                    syllable.compare(syllable.size() - canonical_suffix.size(), canonical_suffix.size(),
+                                     canonical_suffix) != 0)
+                {
+                    continue;
+                }
+
+                const std::string prefix = syllable.substr(0, syllable.size() - canonical_suffix.size());
+                add_alias(prefix + typed_suffix, syllable);
+            }
+        };
+
+        add_suffix_aliases("iang", "aing");
+        add_suffix_aliases("uang", "aung");
+        add_suffix_aliases("ian", "ain");
+        add_suffix_aliases("uan", "aun");
+        add_suffix_aliases("iao", "aio");
+        add_suffix_aliases("ing", "ihng");
+        add_suffix_aliases("ang", "agn");
+        add_suffix_aliases("eng", "egn");
+        add_alias("egn", "eng");
+        add_alias("jv", "ju");
+
+        // Prefer a transposed h (ahng -> hang), while retaining the extra-h
+        // interpretation as an alternative (ahng -> ang).
+        add_suffix_aliases("hang", "ahng");
+        add_suffix_aliases("ang", "ahng");
+
+        // Prefer a transposed h (cehng -> cheng), while retaining the extra-h
+        // interpretation as an alternative (cehng -> ceng).
+        add_suffix_aliases("heng", "ehng");
+        add_suffix_aliases("eng", "ehng");
+        return aliases;
+    }();
+    return kAliases;
+}
+
+std::vector<Segments> cut_one_piece_with_corrections(const std::string &pinyin)
+{
+    struct RankedPath
+    {
+        Segments segments;
+        std::vector<size_t> typed_lengths;
+        std::vector<size_t> correction_ranks;
+    };
+
+    const auto &valid_pinyin = intact_pinyin_set();
+    const auto &aliases = pinyin_correction_aliases();
+    std::unordered_map<size_t, std::vector<RankedPath>> memo;
+
+    const auto solve = [&](auto &&self, size_t index) -> std::vector<RankedPath> {
+        if (index == pinyin.size())
+        {
+            return {RankedPath{}};
+        }
+        if (const auto found = memo.find(index); found != memo.end())
+        {
+            return found->second;
+        }
+
+        std::vector<RankedPath> paths;
+        for (size_t end = pinyin.size(); end > index; --end)
+        {
+            const std::string typed = pinyin.substr(index, end - index);
+            std::vector<std::string> canonical_syllables;
+            if (const auto alias = aliases.find(typed); alias != aliases.end())
+            {
+                canonical_syllables = alias->second;
+            }
+            else if (valid_pinyin.find(typed) != valid_pinyin.end())
+            {
+                canonical_syllables.push_back(typed);
+            }
+            else
+            {
+                continue;
+            }
+
+            const auto suffix_paths = self(self, end);
+            for (size_t canonical_index = 0; canonical_index < canonical_syllables.size(); ++canonical_index)
+            {
+                for (const auto &suffix : suffix_paths)
+                {
+                    RankedPath candidate;
+                    candidate.segments.reserve(1 + suffix.segments.size());
+                    candidate.segments.push_back(canonical_syllables[canonical_index]);
+                    candidate.segments.insert(candidate.segments.end(), suffix.segments.begin(), suffix.segments.end());
+                    candidate.typed_lengths.reserve(1 + suffix.typed_lengths.size());
+                    candidate.typed_lengths.push_back(end - index);
+                    candidate.typed_lengths.insert(candidate.typed_lengths.end(), suffix.typed_lengths.begin(),
+                                                   suffix.typed_lengths.end());
+                    candidate.correction_ranks.reserve(1 + suffix.correction_ranks.size());
+                    candidate.correction_ranks.push_back(canonical_index);
+                    candidate.correction_ranks.insert(candidate.correction_ranks.end(), suffix.correction_ranks.begin(),
+                                                      suffix.correction_ranks.end());
+                    paths.push_back(std::move(candidate));
+                }
+            }
+        }
+
+        std::stable_sort(paths.begin(), paths.end(), [](const RankedPath &lhs, const RankedPath &rhs) {
+            if (lhs.segments.size() != rhs.segments.size())
+            {
+                return lhs.segments.size() < rhs.segments.size();
+            }
+            if (lhs.typed_lengths != rhs.typed_lengths)
+            {
+                return std::lexicographical_compare(lhs.typed_lengths.begin(), lhs.typed_lengths.end(),
+                                                    rhs.typed_lengths.begin(), rhs.typed_lengths.end());
+            }
+            return std::lexicographical_compare(lhs.correction_ranks.begin(), lhs.correction_ranks.end(),
+                                                rhs.correction_ranks.begin(), rhs.correction_ranks.end());
+        });
+        paths.erase(std::unique(paths.begin(), paths.end(), [](const RankedPath &lhs, const RankedPath &rhs) {
+                        return lhs.segments == rhs.segments;
+                    }),
+                    paths.end());
+        if (!paths.empty())
+        {
+            const size_t minimum_segments = paths.front().segments.size();
+            paths.erase(std::find_if(paths.begin(), paths.end(), [&](const RankedPath &path) {
+                            return path.segments.size() != minimum_segments;
+                        }),
+                        paths.end());
+        }
+        if (paths.size() > kCorrectionPathLimit)
+        {
+            paths.resize(kCorrectionPathLimit);
+        }
+        memo.emplace(index, paths);
+        return paths;
+    };
+
+    const auto ranked_paths = solve(solve, 0);
+    std::vector<Segments> paths;
+    paths.reserve(ranked_paths.size());
+    for (const auto &path : ranked_paths)
+    {
+        paths.push_back(path.segments);
+    }
+    return paths;
+}
+
+std::vector<Segments> cut_pinyin_with_corrections(const std::string &pinyin)
+{
+    std::vector<Segments> merged_paths = {Segments{}};
+    for (const auto &part : split(pinyin, '\''))
+    {
+        const auto part_paths = cut_one_piece_with_corrections(part);
+        if (part_paths.empty())
+        {
+            return {};
+        }
+
+        std::vector<Segments> combined;
+        for (const auto &merged : merged_paths)
+        {
+            for (const auto &part_path : part_paths)
+            {
+                Segments candidate = merged;
+                candidate.insert(candidate.end(), part_path.begin(), part_path.end());
+                combined.push_back(std::move(candidate));
+                if (combined.size() == kCorrectionPathLimit)
+                {
+                    break;
+                }
+            }
+            if (combined.size() == kCorrectionPathLimit)
+            {
+                break;
+            }
+        }
+        merged_paths = std::move(combined);
+    }
+    return merged_paths;
+}
+
 std::string build_table_name_impl(const Segments &segments)
 {
     if (segments.empty() || segments.front().empty())
@@ -793,10 +989,10 @@ std::vector<Segments> cut_pinyin_by_mode(const std::string &pinyin, const std::s
         return {};
     }
 
-    const auto intact = cut_pinyin_greedy(pinyin, true);
-    if (!intact.empty())
+    const auto corrected_paths = cut_pinyin_with_corrections(pinyin);
+    if (!corrected_paths.empty())
     {
-        return {intact};
+        return corrected_paths;
     }
 
     const auto greedy = cut_pinyin_greedy(pinyin, false);
