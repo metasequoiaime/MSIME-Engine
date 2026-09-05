@@ -6,6 +6,7 @@
 #include "word_item.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -92,6 +93,21 @@ struct MixedExpressiveOptions
     bool kaomoji_candidates = false;
 };
 
+// Immutable description of the current composition for asynchronous providers. Frontends copy
+// this value into a request and return it unchanged with the result; InputSession revalidates it
+// against the live composition before changing candidates.
+struct OnlineQuery
+{
+    SchemeType scheme = SchemeType::Quanpin;
+    std::uint64_t generation = 0;
+    std::string identity;
+    std::string query_text;
+    std::string cache_key;
+    std::vector<std::string> pinyin_segments;
+    bool cloud_eligible = false;
+    bool ai_eligible = false;
+};
+
 // Platform-neutral composition session shared by the native frontends. It owns an ImeSession and
 // applies the key-handling and commit policy that each frontend would otherwise reimplement, so a
 // frontend only has to translate platform key events into these calls.
@@ -133,6 +149,8 @@ class InputSession
     bool dedicated_english_mode() const;
     LocalInputMode local_input_mode() const;
     void set_local_date_time_provider(std::function<local_modes::LocalDateTime()> provider);
+    std::optional<OnlineQuery> online_query() const;
+    bool apply_online_candidate(const OnlineQuery &query, std::string candidate, CandidateSource source);
 
     SchemeType scheme_type() const;
     bool quanpin_autocorrect_enabled() const;
@@ -184,5 +202,6 @@ class InputSession
     std::string local_preedit_;
     std::vector<WordItem> local_candidates_;
     std::function<local_modes::LocalDateTime()> local_date_time_provider_;
+    std::uint64_t online_generation_ = 0;
 };
 } // namespace metasequoia

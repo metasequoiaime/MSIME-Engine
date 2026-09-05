@@ -7,6 +7,9 @@
 #include "../local_modes/kaomoji_query.h"
 #include "../local_modes/quick_phrase_query.h"
 #include "../local_modes/unicode_query.h"
+#include "../quanpin/quanpin_query.h"
+#include "../quanpin/quanpin_utils.h"
+#include "../shuangpin/shuangpin_query.h"
 #include "../user_dictionary/user_dictionary_journal.h"
 #include "data_path.h"
 
@@ -36,6 +39,81 @@ const char *frequency_mode_name(FrequencyAdjustmentMode mode)
         return "promote";
     }
     return nullptr;
+}
+
+std::string online_identity(const QueryRequest &request)
+{
+    const std::string &input = request.raw_input_with_cases.empty() ? request.raw_input : request.raw_input_with_cases;
+    return std::to_string(static_cast<int>(request.scheme)) + ":" + input;
+}
+
+std::size_t raw_length_for_effective_prefix(const std::string &raw_input, std::size_t effective_length)
+{
+    std::size_t raw_length = 0;
+    std::size_t effective_count = 0;
+    while (raw_length < raw_input.size() && effective_count < effective_length)
+    {
+        if (raw_input[raw_length] != '\'')
+        {
+            ++effective_count;
+        }
+        ++raw_length;
+    }
+    return raw_length;
+}
+
+struct ShuangpinOnlineBase
+{
+    std::string cache_key;
+    bool helpcode_active = false;
+};
+
+ShuangpinOnlineBase shuangpin_online_base(const QueryRequest &request, const ShuangpinProfile &profile)
+{
+    ShuangpinOnlineBase result{request.raw_input, false};
+    if (!request.enable_shuangpin_helpcode)
+    {
+        return result;
+    }
+
+    const std::string effective = shuangpin::remove_manual_delimiters(request.raw_input);
+    const std::string &with_cases =
+        request.raw_input_with_cases.empty() ? request.raw_input : request.raw_input_with_cases;
+    const std::string effective_with_cases = shuangpin::remove_manual_delimiters(with_cases);
+    std::size_t helpcode_length =
+        shuangpin::detect_active_double_helpcode_length(request.raw_input, with_cases, profile);
+    if (helpcode_length == 0 && effective.size() > 1 && effective.size() % 2 == 1 &&
+        !effective_with_cases.empty())
+    {
+        const std::size_t base_effective_length = effective.size() - 1;
+        const std::size_t base_raw_length =
+            raw_length_for_effective_prefix(request.raw_input, base_effective_length);
+        const bool explicitly_separated =
+            base_raw_length < request.raw_input.size() && request.raw_input[base_raw_length] == '\'';
+        if (!explicitly_separated &&
+            shuangpin::is_complete_input(request.raw_input.substr(0, base_raw_length), profile))
+        {
+            helpcode_length = 1;
+        }
+    }
+    if (helpcode_length == 0 || effective.size() < helpcode_length)
+    {
+        return result;
+    }
+
+    const std::size_t base_raw_length =
+        raw_length_for_effective_prefix(request.raw_input, effective.size() - helpcode_length);
+    result.cache_key = request.raw_input.substr(0, base_raw_length);
+    result.helpcode_active = true;
+    return result;
+}
+
+bool same_online_query(const OnlineQuery &left, const OnlineQuery &right)
+{
+    return left.scheme == right.scheme && left.generation == right.generation && left.identity == right.identity &&
+           left.query_text == right.query_text && left.cache_key == right.cache_key &&
+           left.pinyin_segments == right.pinyin_segments && left.cloud_eligible == right.cloud_eligible &&
+           left.ai_eligible == right.ai_eligible;
 }
 } // namespace
 
@@ -165,7 +243,12 @@ KeyResult InputSession::handle_character(char character, bool shift_only)
         character == '\'' ? ImeKey::Apostrophe : static_cast<ImeKeyCode>(std::toupper(unsigned_character));
     engine_.handle_key(key_code, 0, static_cast<ImeCharacter>(unsigned_character));
     update_mixed_candidates();
-    return {preedit() != previous_preedit, std::nullopt, std::nullopt};
+    const bool handled = preedit() != previous_preedit;
+    if (handled)
+    {
+        ++online_generation_;
+    }
+    return {handled, std::nullopt, std::nullopt};
 }
 
 KeyResult InputSession::handle_candidate_key(char character)
@@ -287,6 +370,7 @@ KeyResult InputSession::handle_command(Command command)
         }
         engine_.handle_key(ImeKey::Backspace);
         update_mixed_candidates();
+        ++online_generation_;
         return {true, std::nullopt, std::nullopt};
     case Command::CommitCandidate:
         return commit(0);
@@ -356,14 +440,24 @@ KeyResult InputSession::select_candidate_edge(std::size_t index, CandidateEdge e
 
 void InputSession::set_shuangpin_helpcode_enabled(bool enabled)
 {
+    if (shuangpin_helpcode_enabled_ == enabled)
+    {
+        return;
+    }
     shuangpin_helpcode_enabled_ = enabled;
     engine_.set_shuangpin_helpcode_enabled(enabled);
+    ++online_generation_;
 }
 
 void InputSession::set_quanpin_helpcode_enabled(bool enabled)
 {
+    if (quanpin_helpcode_enabled_ == enabled)
+    {
+        return;
+    }
     quanpin_helpcode_enabled_ = enabled;
     engine_.set_quanpin_helpcode_enabled(enabled);
+    ++online_generation_;
 }
 
 bool InputSession::is_supported_helpcode_schema(const std::string &schema)
@@ -464,6 +558,96 @@ LocalInputMode InputSession::local_input_mode() const
 void InputSession::set_local_date_time_provider(std::function<local_modes::LocalDateTime()> provider)
 {
     local_date_time_provider_ = std::move(provider);
+}
+
+std::optional<OnlineQuery> InputSession::online_query() const
+{
+    if (dedicated_english_mode_ || local_input_mode_ != LocalInputMode::None || !has_composition())
+    {
+        return std::nullopt;
+    }
+
+    const QueryRequest &request = engine_.get_request();
+    OnlineQuery query;
+    query.scheme = request.scheme;
+    query.generation = online_generation_;
+    query.identity = online_identity(request);
+
+    if (request.scheme == SchemeType::JapaneseRomaji)
+    {
+        query.query_text = request.raw_input;
+        query.cache_key = request.raw_input;
+        query.cloud_eligible = !query.query_text.empty();
+        return query.cloud_eligible ? std::optional<OnlineQuery>(std::move(query)) : std::nullopt;
+    }
+    if (request.scheme == SchemeType::Wubi)
+    {
+        return std::nullopt;
+    }
+    if (request.scheme == SchemeType::Shuangpin)
+    {
+        const ShuangpinOnlineBase base = shuangpin_online_base(request, shuangpin_profile_);
+        const std::string effective_with_cases = shuangpin::remove_manual_delimiters(
+            request.raw_input_with_cases.empty() ? request.raw_input : request.raw_input_with_cases);
+        const char last = effective_with_cases.empty() ? '\0' : effective_with_cases.back();
+        const bool ends_with_input_key = (last >= 'a' && last <= 'z') || last == ';';
+        if (base.helpcode_active || !ends_with_input_key ||
+            !shuangpin::is_complete_input(request.raw_input, shuangpin_profile_))
+        {
+            return std::nullopt;
+        }
+        query.cache_key = base.cache_key;
+        query.query_text = shuangpin::normalize_input_with_delimiters(query.cache_key, shuangpin_profile_);
+    }
+    else
+    {
+        if (request.enable_quanpin_helpcode &&
+            quanpin::detect_active_helpcode_length(request.raw_input, request.raw_input_with_cases) > 0)
+        {
+            return std::nullopt;
+        }
+        query.cache_key = quanpin::strip_active_helpcodes(request.raw_input, request.raw_input_with_cases);
+        query.query_text = request.normalized_input;
+    }
+
+    if (query.query_text.empty())
+    {
+        return std::nullopt;
+    }
+    query.pinyin_segments = quanpin::split_segments(
+        request.normalized_segmentation.empty() ? query.query_text : request.normalized_segmentation);
+    query.cloud_eligible = true;
+    query.ai_eligible = !query.pinyin_segments.empty() &&
+                        std::all_of(query.pinyin_segments.begin(), query.pinyin_segments.end(),
+                                    [](const std::string &segment) {
+                                        return quanpin::is_complete_pinyin_input(segment);
+                                    });
+    return query;
+}
+
+bool InputSession::apply_online_candidate(const OnlineQuery &query, std::string candidate, CandidateSource source)
+{
+    if (candidate.empty() || (source != CandidateSource::CloudSuggestion && source != CandidateSource::AiSuggestion))
+    {
+        return false;
+    }
+    const auto current = online_query();
+    if (!current.has_value() || !same_online_query(*current, query) ||
+        (source == CandidateSource::CloudSuggestion && !current->cloud_eligible) ||
+        (source == CandidateSource::AiSuggestion && !current->ai_eligible) ||
+        std::any_of(candidates().begin(), candidates().end(),
+                    [&](const WordItem &item) { return item.word == candidate; }))
+    {
+        return false;
+    }
+    if (engine_.apply_dynamic_candidate(candidate, source) != 0)
+    {
+        return false;
+    }
+    update_mixed_candidates();
+    return std::any_of(candidates().begin(), candidates().end(), [&](const WordItem &item) {
+        return item.word == candidate && item.source == source;
+    });
 }
 
 void InputSession::switch_scheme(SchemeType scheme_type)
@@ -824,6 +1008,18 @@ void InputSession::update_mixed_candidates()
     }
 
     std::size_t priority_slot = std::min<std::size_t>(1, mixed_candidates_.size());
+    const auto has_source = [&](CandidateSource source) {
+        return std::any_of(mixed_candidates_.begin(), mixed_candidates_.end(),
+                           [source](const WordItem &candidate) { return candidate.source == source; });
+    };
+    if (has_source(CandidateSource::CloudSuggestion))
+    {
+        priority_slot = std::min<std::size_t>(2, mixed_candidates_.size());
+    }
+    if (has_source(CandidateSource::AiSuggestion))
+    {
+        priority_slot = std::min<std::size_t>(3, mixed_candidates_.size());
+    }
     const auto insert_leading = [&](std::vector<WordItem> &source) {
         if (source.empty())
         {
@@ -878,6 +1074,7 @@ EnglishDictionary &InputSession::english_dictionary()
 
 void InputSession::reset_composition()
 {
+    ++online_generation_;
     const std::optional<SchemeType> original_scheme = temporary_original_scheme_;
     local_input_mode_ = LocalInputMode::None;
     temporary_original_scheme_.reset();

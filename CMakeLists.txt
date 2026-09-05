@@ -104,7 +104,14 @@ if(WIN32)
 endif()
 
 if(MSVC)
-    target_compile_definitions(MetasequoiaImeEngine PUBLIC NOMINMAX UNICODE _UNICODE WIN32_LEAN_AND_MEAN)
+    # NOMINMAX and the UNICODE pair stay PUBLIC: they change what the Windows headers declare and
+    # what the TCHAR-flavoured entry points resolve to, so a consumer that disagrees with the engine
+    # would be compiling against a different API surface. WIN32_LEAN_AND_MEAN is only an
+    # include-time trim of Windows.h, and forcing it on consumers breaks any of them that go on to
+    # include a header needing the fuller surface - WebView2.h, for one, relies on the `interface`
+    # macro that combaseapi.h provides.
+    target_compile_definitions(MetasequoiaImeEngine PUBLIC NOMINMAX UNICODE _UNICODE)
+    target_compile_definitions(MetasequoiaImeEngine PRIVATE WIN32_LEAN_AND_MEAN)
     target_compile_options(MetasequoiaImeEngine PRIVATE /W4 /permissive- /utf-8 /Zc:__cplusplus)
 else()
     target_compile_options(MetasequoiaImeEngine PRIVATE -Wall -Wextra -Wpedantic)
@@ -152,4 +159,8 @@ if(BUILD_TESTING)
     add_executable(test_local_modes tests/src/test_local_modes.cpp)
     target_link_libraries(test_local_modes PRIVATE MetasequoiaIme::Engine)
     add_test(NAME local_modes COMMAND test_local_modes)
+
+    add_executable(test_online_input_session tests/src/test_online_input_session.cpp)
+    target_link_libraries(test_online_input_session PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME online_input_session COMMAND test_online_input_session)
 endif()
