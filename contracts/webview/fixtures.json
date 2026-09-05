@@ -1,0 +1,332 @@
+[
+  {
+    "name": "legacy settings",
+    "message": {
+      "type": "configRequest"
+    },
+    "valid": true,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "versioned settings",
+    "message": {
+      "type": "configRequest",
+      "protocolVersion": 1
+    },
+    "valid": true,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "unknown version",
+    "message": {
+      "type": "configRequest",
+      "protocolVersion": 2
+    },
+    "valid": false,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "string version",
+    "message": {
+      "type": "configRequest",
+      "protocolVersion": "1"
+    },
+    "valid": false,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "unknown message",
+    "message": {
+      "type": "snapLayout"
+    },
+    "valid": false,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "extra envelope field",
+    "message": {
+      "type": "configRequest",
+      "surprise": true
+    },
+    "valid": false,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "wrong surface",
+    "message": {
+      "type": "configRequest"
+    },
+    "valid": false,
+    "surface": "candidate",
+    "direction": "client"
+  },
+  {
+    "name": "candidate 1",
+    "message": {
+      "type": "candidate",
+      "data": 1
+    },
+    "valid": true,
+    "surface": "candidate",
+    "direction": "client"
+  },
+  {
+    "name": "candidate 9",
+    "message": {
+      "type": "candidate",
+      "data": 9
+    },
+    "valid": true,
+    "surface": "candidate",
+    "direction": "client"
+  },
+  {
+    "name": "invalid candidate 0",
+    "message": {
+      "type": "candidate",
+      "data": 0
+    },
+    "valid": false,
+    "surface": "candidate",
+    "direction": "client"
+  },
+  {
+    "name": "invalid candidate 10",
+    "message": {
+      "type": "candidate",
+      "data": 10
+    },
+    "valid": false,
+    "surface": "candidate",
+    "direction": "client"
+  },
+  {
+    "name": "invalid candidate 1.2",
+    "message": {
+      "type": "candidate",
+      "data": 1.2
+    },
+    "valid": false,
+    "surface": "candidate",
+    "direction": "client"
+  },
+  {
+    "name": "invalid candidate 1",
+    "message": {
+      "type": "candidate",
+      "data": "1"
+    },
+    "valid": false,
+    "surface": "candidate",
+    "direction": "client"
+  },
+  {
+    "name": "invalid candidate None",
+    "message": {
+      "type": "candidate",
+      "data": null
+    },
+    "valid": false,
+    "surface": "candidate",
+    "direction": "client"
+  },
+  {
+    "name": "resize corner",
+    "message": {
+      "type": "resizeStart",
+      "data": "left-top"
+    },
+    "valid": true,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "unknown corner",
+    "message": {
+      "type": "resizeStart",
+      "data": "topLeft"
+    },
+    "valid": false,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "config scalar",
+    "message": {
+      "type": "configUpdate",
+      "data": {
+        "path": "input.mode",
+        "value": "cn"
+      }
+    },
+    "valid": true,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "config missing value",
+    "message": {
+      "type": "configUpdate",
+      "data": {
+        "path": "input.mode"
+      }
+    },
+    "valid": false,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "config wrong shape",
+    "message": {
+      "type": "configUpdate",
+      "data": []
+    },
+    "valid": false,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "dictionary import",
+    "message": {
+      "type": "dictionaryRequest",
+      "data": {
+        "requestId": "dict-1",
+        "dictionary": "quanpin",
+        "action": "import",
+        "content": "ni'hao\t你好\t10"
+      }
+    },
+    "valid": true,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "dictionary request unknown action",
+    "message": {
+      "type": "dictionaryRequest",
+      "data": {
+        "requestId": "1",
+        "dictionary": "quanpin",
+        "action": "eval"
+      }
+    },
+    "valid": false,
+    "surface": "settings",
+    "direction": "client"
+  },
+  {
+    "name": "negative context size",
+    "message": {
+      "type": "contextMenuResize",
+      "data": {
+        "width": -1,
+        "height": 100
+      }
+    },
+    "valid": false,
+    "surface": "candidate",
+    "direction": "client"
+  },
+  {
+    "name": "context overflow",
+    "message": {
+      "type": "contextMenuResize",
+      "data": {
+        "width": 65536,
+        "height": 100
+      }
+    },
+    "valid": false,
+    "surface": "candidate",
+    "direction": "client"
+  },
+  {
+    "name": "truncation diagnostics",
+    "message": {
+      "type": "contentTruncated",
+      "data": {
+        "surface": "cand",
+        "width": 100,
+        "height": 40,
+        "viewportWidth": 80
+      }
+    },
+    "valid": true,
+    "surface": "candidate",
+    "direction": "client"
+  },
+  {
+    "name": "window state",
+    "message": {
+      "type": "windowState",
+      "protocolVersion": 1,
+      "data": {
+        "isMaximized": true
+      }
+    },
+    "valid": true,
+    "surface": "settings",
+    "direction": "server"
+  },
+  {
+    "name": "wrong window state",
+    "message": {
+      "type": "windowState",
+      "data": {
+        "isMaximized": "true"
+      }
+    },
+    "valid": false,
+    "surface": "settings",
+    "direction": "server"
+  },
+  {
+    "name": "dictionary response",
+    "message": {
+      "type": "dictionaryResponse",
+      "requestId": "dict-1",
+      "ok": true,
+      "message": "成功",
+      "rows": [
+        {
+          "word": "你好",
+          "code": "ni'hao",
+          "weight": 10
+        }
+      ]
+    },
+    "valid": true,
+    "surface": "settings",
+    "direction": "server"
+  },
+  {
+    "name": "malformed dictionary row",
+    "message": {
+      "type": "dictionaryResponse",
+      "requestId": "dict-1",
+      "ok": true,
+      "message": "成功",
+      "rows": [
+        {
+          "weight": 10
+        }
+      ]
+    },
+    "valid": false,
+    "surface": "settings",
+    "direction": "server"
+  },
+  {
+    "name": "malformed root",
+    "message": [],
+    "valid": false,
+    "surface": "settings",
+    "direction": "client"
+  }
+]
