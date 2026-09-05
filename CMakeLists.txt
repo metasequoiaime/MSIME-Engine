@@ -118,6 +118,13 @@ else()
 endif()
 
 if(BUILD_TESTING)
+    add_executable(test_segmentation_contract tests/src/test_segmentation_contract.cpp)
+    target_link_libraries(test_segmentation_contract PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME segmentation_contract COMMAND test_segmentation_contract)
+
+    add_executable(test_windows_ipc_contract contracts/tests/windows_ipc_contract.cpp)
+    add_test(NAME windows_ipc_contract COMMAND test_windows_ipc_contract)
+
     add_executable(test_platform_api tests/src/test_platform_api.cpp)
     target_link_libraries(test_platform_api PRIVATE MetasequoiaIme::Engine)
     add_test(NAME platform_api COMMAND test_platform_api)
