@@ -57,7 +57,7 @@ std::string text = recognizer.recognize(pcm); // worker queue, mono 16 kHz float
 
 Each request has a timeout and optional shared atomic cancellation flag. Set that flag to abort an in-flight request; a cancelled flag stays cancelled until the host supplies a new one. Recognition errors throw `VoiceError`. `TextPolisher` returns the original text on failure, timeout, cancellation or an empty result. It never logs tokens, audio or response bodies. Redirects are rejected, HTTP status is checked and responses are capped at 1 MiB.
 
-Input PCM must be finite mono 16 kHz float samples, at most 60 seconds per request. WAV encoding clips samples to [-1,1]. Hosts serialize capture start/stop/destruction, keep callback work short, and never stop or destroy capture from its callback. `stop()` is idempotent and waits for callbacks. A callback exception is contained and reported by `callback_failed()`. VAD callers drain `take_audio()` when appropriate; oversized unconsumed blocks throw rather than growing without limit.
+Input PCM must be finite mono 16 kHz float samples, at most 60 seconds per request. WAV encoding clips samples to [-1,1]. `WavWriter::create_wav` accepts an explicit sample limit for hosts with a different bounded upload duration, such as Windows clips with provider padding; omitting it retains the 60-second limit. RIFF size overflow is always rejected. Hosts serialize capture start/stop/destruction, keep callback work short, and never stop or destroy capture from its callback. `stop()` is idempotent and waits for callbacks. A callback exception is contained and reported by `callback_failed()`. VAD callers drain `take_audio()` when appropriate; oversized unconsumed blocks throw rather than growing without limit.
 
 ## Apple
 

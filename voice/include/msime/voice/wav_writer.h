@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstring>
 #include <cmath>
+#include <limits>
 #include "stt_service.h"
 
 namespace metasequoia::voice {
@@ -10,10 +11,14 @@ namespace metasequoia::voice {
 class WavWriter
 {
   public:
-    static std::vector<uint8_t> create_wav(const std::vector<float> &pcm_data, int sample_rate = 16000)
+    // The PCM recognizer uses the default 60-second budget. Hosts encoding longer
+    // bounded uploads can specify their own limit without copying this encoder.
+    static std::vector<uint8_t> create_wav(const std::vector<float> &pcm_data, int sample_rate = 16000,
+                                         std::size_t sample_limit = maximum_samples)
     {
-        if (sample_rate != metasequoia::voice::sample_rate || pcm_data.size() > maximum_samples)
-            throw VoiceError("Expected at most 60 seconds of mono 16 kHz audio");
+        if (sample_rate != metasequoia::voice::sample_rate || pcm_data.size() > sample_limit ||
+            pcm_data.size() > ((std::numeric_limits<uint32_t>::max)() - 36u) / 2u)
+            throw VoiceError("Expected mono 16 kHz audio within the selected WAV sample limit");
         std::vector<uint8_t> wav_data;
 
         // Convert float PCM to 16-bit integers

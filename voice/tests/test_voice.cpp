@@ -46,6 +46,10 @@ int main(int argc, char** argv) {
             fails([] { WavWriter::create_wav({std::numeric_limits<float>::quiet_NaN()}); });
             fails([] { WavWriter::create_wav({0}, 48000); });
             fails([] { WavWriter::create_wav(std::vector<float>(maximum_samples + 1)); });
+            const std::vector<float> longer_clip(maximum_samples + sample_rate / 2, 0.125f);
+            require(WavWriter::create_wav(longer_clip, sample_rate, longer_clip.size()).size() ==
+                        longer_clip.size() * 2 + 44, "Host upload budget preserves padding and longer clips");
+            fails([] { WavWriter::create_wav({0, 0}, sample_rate, 1); });
             VadSegmenter vad;
             require(!vad.process(nullptr, 0), "Empty VAD block");
             std::vector<float> silence(3200), speech(1600, 0.1f), tail(8000);
