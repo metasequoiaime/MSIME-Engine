@@ -178,10 +178,18 @@ std::vector<WordItem> QuanpinDictionary::query(const std::string &raw_input, con
         }
     };
 
-    const auto correction_paths = quanpin::cut_pinyin_by_mode(raw_input, "correction");
-    for (const auto &candidate : correction_paths)
+    // Correction-mode segmentation is part of autocorrection and must follow the
+    // same switch. query() defaults enable_autocorrect to false, so running this
+    // unconditionally changed the default behaviour for every caller: a misspelled
+    // input such as "sahng" started offering the corrected candidate even with
+    // autocorrection explicitly turned off.
+    if (enable_autocorrect)
     {
-        append_alternative(candidate);
+        const auto correction_paths = quanpin::cut_pinyin_by_mode(raw_input, "correction");
+        for (const auto &candidate : correction_paths)
+        {
+            append_alternative(candidate);
+        }
     }
 
     if (raw_input.find('\'') == std::string::npos && segments.size() <= kMaxSyllablesForMultipleSegmentations &&
