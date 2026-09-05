@@ -186,6 +186,8 @@ class InputSession
     bool candidate_learning_enabled_ = true;
     bool next_double_quote_is_opening_ = true;
     bool next_single_quote_is_opening_ = true;
+    // Depth of open book title marks, so '<' can pick 《 or 〈 and '>' the matching close.
+    int book_title_nesting_ = 0;
     const ShuangpinProfile &shuangpin_profile_;
     FrequencyAdjustmentOptions frequency_adjustment_;
     bool frequency_adjustment_configured_ = false;
