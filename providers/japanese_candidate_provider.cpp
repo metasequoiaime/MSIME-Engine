@@ -149,6 +149,20 @@ std::vector<WordItem> JapaneseCandidateProvider::query(const QueryRequest &reque
         AppendUnique(candidates, seen, request.raw_input_with_cases,
                      japanese::HiraganaToKatakana(conversion.hiragana), 999999, CandidateSource::Generated);
     }
+
+    const auto dynamic = dynamic_candidates_.get(request.raw_input);
+    if (dynamic.has_value())
+    {
+        std::size_t insertion = std::min<std::size_t>(kana_first ? 2 : 1, candidates.size());
+        for (const auto &item : *dynamic)
+        {
+            if (seen.insert(item.word).second)
+            {
+                candidates.insert(candidates.begin() + static_cast<std::ptrdiff_t>(insertion), item);
+                ++insertion;
+            }
+        }
+    }
     return candidates;
 }
 
@@ -177,6 +191,7 @@ std::optional<WordItem> JapaneseCandidateProvider::find_candidate(
 void JapaneseCandidateProvider::reset_cache()
 {
     close_database();
+    dynamic_candidates_.clear();
     // The sentence model is immutable and shared process-wide. Keep it warm when
     // SQLite/user-dictionary caches are reset.
 }
@@ -184,10 +199,30 @@ void JapaneseCandidateProvider::reset_cache()
 int JapaneseCandidateProvider::create_word(SchemeType, std::string, std::string) { return kNoMutation; }
 int JapaneseCandidateProvider::update_weight_by_pinyin_and_word(SchemeType, std::string, std::string) { return kNoMutation; }
 int JapaneseCandidateProvider::delete_by_pinyin_and_word(SchemeType, std::string, std::string) { return kNoMutation; }
-int JapaneseCandidateProvider::cache_dynamic_candidate(SchemeType, const std::string &, const std::string &,
-                                                       CandidateSource) { return kNoMutation; }
-int JapaneseCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequest &, const std::string &,
-                                                                   CandidateSource) { return kNoMutation; }
+int JapaneseCandidateProvider::cache_dynamic_candidate(SchemeType scheme, const std::string &code,
+                                                       const std::string &word, CandidateSource source)
+{
+    if (scheme != SchemeType::JapaneseRomaji || code.empty() || word.empty() ||
+        source != CandidateSource::CloudSuggestion)
+    {
+        return -1;
+    }
+    auto items = dynamic_candidates_.get(code).value_or(std::vector<WordItem>{});
+    items.erase(std::remove_if(items.begin(), items.end(), [source](const WordItem &item) {
+                    return item.source == source;
+                }),
+                items.end());
+    items.emplace_back(code, word, 1, source, code);
+    dynamic_candidates_.insert(code, items);
+    return kNoMutation;
+}
+
+int JapaneseCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequest &request,
+                                                                   const std::string &word,
+                                                                   CandidateSource source)
+{
+    return cache_dynamic_candidate(request.scheme, request.raw_input, word, source);
+}
 
 bool JapaneseCandidateProvider::ensure_query_statement()
 {
