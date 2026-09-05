@@ -369,21 +369,23 @@ KeyResult InputSession::select_candidate(std::size_t index)
 KeyResult InputSession::finish_composition(std::size_t first_index)
 {
     KeyResult result;
-    std::string text;
     while (has_composition())
     {
         auto part = commit(first_index);
         first_index = 0;
         result.handled = true;
-        text += part.commit.value_or("");
+        if (part.commit)
+        {
+            if (!result.commit)
+            {
+                result.commit = std::string{};
+            }
+            *result.commit += *part.commit;
+        }
         if (part.diagnostic)
         {
             result.diagnostic = std::move(part.diagnostic);
         }
-    }
-    if (result.handled)
-    {
-        result.commit = std::move(text);
     }
     return result;
 }
