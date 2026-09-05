@@ -17,7 +17,7 @@ namespace
 {
 constexpr size_t kSparsePinyinFallbackThreshold = 8;
 constexpr size_t kSyllableGraphPathLimit = 32;
-constexpr size_t kMaxSyllablesForMultipleSegmentations = 3;
+constexpr size_t kMaxSyllablesForMultipleSegmentations = 4;
 constexpr int kAlternativeSegmentationCandidateLimit = 128;
 constexpr size_t kBestAlternativeSegmentationMaxIndex = 1;
 
