@@ -4,6 +4,7 @@
 #include "../local_modes/date_time_query.h"
 #include "../english/english_dictionary.h"
 #include "word_item.h"
+#include "../quanpin/engine.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -168,7 +169,85 @@ class InputSession
     const std::string &normalized_segmentation() const;
     const std::vector<WordItem> &candidates() const;
 
+    // Advanced composition operations for hosts with their own asynchronous text insertion.
+    // They share the same engine/configuration as the portable character/command API.
+    struct SelectionTransition
+    {
+        bool continues_composition = false;
+        std::string full_pure_pinyin;
+        std::string current_segmentation;
+        std::string current_segmentation_with_cases;
+        std::string selected_canonical_pinyin;
+    };
+
+    struct CloudQueryState
+    {
+        bool should_query = false;
+        std::string query_text;
+        std::string cache_key;
+        std::string committed_pinyin;
+    };
+
+    struct CreatingWordProgress
+    {
+        std::string pinyin;
+        std::string word;
+        std::string preedit;
+        bool completed = false;
+        bool can_store = false;
+    };
+
+    void handle_engine_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch);
+    void recompute_candidates();
+    SchemeType current_scheme_type() const;
+
+    void reset_state();
+    void reset_cache();
+
+    const std::vector<WordItem> &get_candidates() const;
+    bool expand_initial_candidates();
+    std::optional<WordItem> find_candidate(const std::string &key, const std::string &value);
+
+    const std::string &get_pinyin_sequence() const;
+    const std::string &get_pinyin_sequence_with_cases() const;
+    const std::string &get_pure_pinyin_sequence() const;
+    const std::string &get_pinyin_segmentation() const;
+    std::string get_pinyin_segmentation_with_cases() const;
+    std::string get_quanpin() const;
+    bool is_all_complete_pure_pinyin() const;
+    bool has_active_helpcode() const;
+
+    void set_pinyin_sequence(const std::string &pinyin_sequence);
+    void set_pinyin_sequence_with_cases(const std::string &pinyin_sequence);
+
+    int store_user_phrase(std::string pinyin, std::string word);
+    int store_user_phrase_from_canonical_pinyin(std::string pinyin, std::string word);
+    int pin_candidate(std::string pinyin, std::string word);
+    int remove_candidate(std::string pinyin, std::string word);
+    int cache_dynamic_candidate(const std::string &pinyin, const std::string &word, CandidateSource source);
+    SelectionTransition advance_composition_after_selection(const std::string &selected_pinyin,
+                                                            const std::string &selected_word,
+                                                            const std::string &selected_canonical_pinyin);
+    CloudQueryState get_cloud_query_state() const;
+    CreatingWordProgress update_creating_word_progress(const std::string &current_pinyin,
+                                                       const std::string &current_word,
+                                                       const std::string &selected_word,
+                                                       const SelectionTransition &selection_transition) const;
+
+    void set_quanpin_autocorrect_enabled(bool enabled);
+    void set_shuangpin_preedit_uses_raw(bool enabled)
+    {
+        shuangpin_preedit_uses_raw_ = enabled;
+    }
+
   private:
+    const QueryRequest &request() const;
+    bool is_shuangpin() const;
+    bool is_wubi() const;
+    bool is_japanese() const;
+    void clear_pending_sequence();
+    void apply_pending_sequence();
+
     KeyResult commit(std::size_t index);
     KeyResult handle_local_character(char character);
     std::optional<std::string> update_local_candidates();
@@ -177,6 +256,13 @@ class InputSession
     EnglishDictionary &english_dictionary();
     void reset_composition();
     std::optional<std::string> learn_candidate(std::size_t index);
+
+    bool shuangpin_preedit_uses_raw_ = true;
+    std::unique_ptr<QuanpinEngine> canonical_phrase_engine_;
+    std::string pending_pinyin_sequence_;
+    std::string pending_pinyin_sequence_with_cases_;
+    bool has_pending_pinyin_sequence_ = false;
+    bool has_pending_pinyin_sequence_with_cases_ = false;
 
     ImeSession engine_;
     bool quanpin_autocorrect_enabled_ = true;

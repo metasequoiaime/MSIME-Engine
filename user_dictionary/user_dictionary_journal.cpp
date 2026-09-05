@@ -1,3 +1,4 @@
+#include "../contracts/dictionary/format.h"
 #include "user_dictionary_journal.h"
 
 #include <sqlite3.h>
@@ -161,10 +162,7 @@ std::string pinyin_table(const std::string &key)
 {
     const auto segments = pinyin_segments(key);
     if (segments.empty()) return {};
-    // Must match quanpin::build_table_name / dict build: 8+ syllables -> tbl_others_*.
-    if (segments.size() >= 8)
-        return "tbl_others_" + std::string(1, segments.front().front());
-    return "tbl_" + std::to_string(segments.size()) + "_" + std::string(1, segments.front().front());
+    return metasequoia::dictionary_format::quanpin_table(segments.size(), segments.front().front());
 }
 
 constexpr std::int64_t kManagedWeightCeiling = 100000000LL;

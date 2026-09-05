@@ -2,6 +2,8 @@
 #include "../../core/data_path.h"
 #include "../../user_dictionary/user_dictionary_journal.h"
 #include "test_directory_cleanup.h"
+#include "../../contracts/dictionary/format.h"
+#include "../../quanpin/quanpin_query.h"
 
 #include <sqlite3.h>
 
@@ -209,6 +211,89 @@ int run_test()
         database.execute("INSERT INTO tbl_1_x VALUES('xu', 'x', '需', 100)");
         database.execute("CREATE TABLE tbl_1_y(key TEXT, jp TEXT, value TEXT, weight INTEGER)");
         database.execute("INSERT INTO tbl_1_y VALUES('yu', 'y', '与', 100)");
+
+        // A seven-syllable key and eight/nine-syllable keys cross the shipping
+        // table boundary. Creation, normal query and upgrade replay must agree.
+        database.execute("CREATE TABLE tbl_7_n(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
+        database.execute("CREATE TABLE tbl_others_n(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
+        const auto replay_path = data_directory / "replay.db";
+        const auto journal_path = metasequoia::path_to_utf8(data_directory / "format-journal.db");
+        Database replay_database(replay_path);
+        replay_database.execute("CREATE TABLE tbl_7_n(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
+        replay_database.execute("CREATE TABLE tbl_others_n(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
+        for (const int count : {7, 8, 9})
+        {
+            std::string key, word;
+            for (int i = 0; i < count; ++i)
+            {
+                if (i)
+                    key += "'";
+                key += "ni";
+                word += "你";
+            }
+            const std::string expected_table = count == 7 ? "tbl_7_n" : "tbl_others_n";
+            require(quanpin::build_table_name(std::vector<std::string>(count, "ni")) == expected_table,
+                    "Runtime lookup selected the wrong long-phrase table.");
+            metasequoia::InputSession writer(SchemeType::Quanpin);
+            require(writer.store_user_phrase_from_canonical_pinyin(key, word) == 0,
+                    "Canonical phrase creation could not write the public format.");
+            type(writer, key);
+            (void)candidate_index(writer, word);
+            require(user_dictionary::record_user_insert(journal_path, user_dictionary::DictionaryKind::Pinyin, key,
+                                                        word, 10000),
+                    "The long-phrase journal operation failed.");
+        }
+        const auto replay = user_dictionary::replay(journal_path, metasequoia::path_to_utf8(replay_path),
+                                                    metasequoia::path_to_utf8(data_directory / "replay-english.db"));
+        require(replay.failed == 0 && replay.applied == 3 &&
+                    replay_database.query_integer("SELECT COUNT(*) FROM tbl_7_n") == 1 &&
+                    replay_database.query_integer("SELECT COUNT(*) FROM tbl_others_n") == 2,
+                "Upgrade replay disagreed with the public long-phrase table format.");
+
+        // Hosts that insert text asynchronously use the same composition owner as
+        // portable character/command clients. Exercise their sequence boundary here.
+        for (const bool raw_dispatch : {false, true})
+        {
+            metasequoia::InputSession session(SchemeType::Quanpin);
+            const std::string input = "xi'te'le";
+            if (raw_dispatch)
+            {
+                session.set_pinyin_sequence(input);
+                session.set_pinyin_sequence_with_cases(input);
+                session.recompute_candidates();
+            }
+            else
+            {
+                type(session, input);
+            }
+            const auto query_before_selection = session.online_query();
+            const auto first = session.advance_composition_after_selection("xi", "西", "xi");
+            require(first.continues_composition && session.get_pinyin_sequence() == "te'le",
+                    "Partial selection lost the remaining manually delimited input.");
+            const auto progress = session.update_creating_word_progress("", "", "西", first);
+            require(!progress.completed && progress.pinyin == "xi" && progress.preedit == "西te'le",
+                    "Partial selection produced the wrong phrase progress.");
+            require(query_before_selection && !session.apply_online_candidate(*query_before_selection, "旧",
+                                                                              CandidateSource::CloudSuggestion),
+                    "Partial selection accepted a result for the previous composition.");
+            const auto modern_query = session.online_query();
+            const auto host_query = session.get_cloud_query_state();
+            require(modern_query && modern_query->query_text == host_query.query_text &&
+                        modern_query->cache_key == host_query.cache_key,
+                    "Portable and asynchronous hosts produced different online queries.");
+            const auto last = session.advance_composition_after_selection("te'le", "特乐", "te'le");
+            const auto complete = session.update_creating_word_progress(progress.pinyin, progress.word, "特乐", last);
+            require(complete.completed && complete.can_store && complete.pinyin == "xi'te'le" &&
+                        complete.word == "西特乐",
+                    "The completed phrase did not retain canonical pinyin across selections.");
+            const auto invalid = session.update_creating_word_progress("", "西", "特乐", last);
+            require(invalid.completed && !invalid.can_store && invalid.pinyin.empty(),
+                    "A phrase with an earlier unknown canonical reading became storeable.");
+            session.set_pinyin_sequence("pending");
+            session.reset_state();
+            session.recompute_candidates();
+            require(!session.has_composition(), "Reset left a pending host composition alive.");
+        }
 
         metasequoia::InputSession default_session;
         require(default_session.scheme_type() == SchemeType::Quanpin,

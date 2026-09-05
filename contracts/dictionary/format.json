@@ -1,0 +1,9 @@
+{
+  "formatVersion": 1,
+  "quanpin": {
+    "maximumNumberedSyllables": 7,
+    "initials": "abcdefghjklmnopqrstwxyz",
+    "prefix": "tbl_",
+    "overflowBucket": "others"
+  }
+}

@@ -1,6 +1,6 @@
 # AGENTS.md — MSIME-Engine
 
-产品级约定、跨仓契约与共享数据规则以 [MSIME-Windows 的 AGENTS.md](https://github.com/metasequoiaime/MSIME-Windows/blob/main/AGENTS.md) 为准，那一份统领整个水杉输入法项目。本文件只记录本仓自己的边界和几个容易踩空的地方。
+组织级约定和跨仓边界以 [组织 AGENTS.md](https://github.com/metasequoiaime/.github/blob/main/AGENTS.md) 为准。本文件补充本仓的实现、数据和验证规则。
 
 本仓是纯输入引擎：拼音切分、候选查询、用户词库、各输入方案。不含界面代码，被 Windows（经 Server）、macOS/iOS、Linux 三个前端复用。
 
@@ -15,7 +15,7 @@ ctest --test-dir build --output-on-failure --timeout 20
 
 根 `CMakeLists.txt` 会编译 `googlepinyinime-rev/src/share/` 下的源码并把 `utfcpp/source` 加为 include 目录，两个目录都是 submodule。CI 的三个 job 都用 `submodules: recursive` 检出，所以这一步在本地容易被漏掉：目录为空时配置阶段就会失败。
 
-CI 在 `ubuntu-24.04`、`macos-15`、`windows-2025` 三个平台跑这套，共 11 个 ctest 目标。依赖 CMake 3.25+、Boost、fmt、spdlog、SQLite3，各平台的安装命令见 `.github/workflows/ci.yml`。
+CI 在 `ubuntu-24.04`、`macos-15`、`windows-2025` 三个平台跑这套，共 13 个 ctest 目标。依赖 CMake 3.25+、Boost、fmt、spdlog、SQLite3，各平台的安装命令见 `.github/workflows/ci.yml`。
 
 **改了引擎就要跑 ctest。** 本仓是三个平台共用的，只在一个平台上想当然很容易漏。
 
@@ -31,14 +31,14 @@ CI 在 `ubuntu-24.04`、`macos-15`、`windows-2025` 三个平台跑这套，共 
 
 ## 全拼分表命名（跨仓硬约定）
 
-`msime.db` 按音节数加首音节首字母分表。**权威实现是 `quanpin/quanpin_query.cpp` 的 `build_table_name`**，其余三处必须与它一致：MSIME-Dict 的建库脚本、设置页加词、`user_dictionary/user_dictionary_journal.cpp` 的用户词库回放。
+`msime.db` 按音节数加首音节首字母分表。**权威定义是 `contracts/dictionary/format.json`**，C++ 生成头和 Python API 分别供查询/回放与 Dict 建库使用；设置页通过公共 `quanpin::build_table_name` 写入。修改后运行生成检查及七/八/九音节创建、查询、回放回归。
 
 | 音节数 | 表名 | 示例 |
 |---|---|---|
 | 1–7 | `tbl_{N}_{首字母}` | `ni'hao` → `tbl_2_n` |
 | ≥ 8 | `tbl_others_{首字母}` | `shui'shan'shu'ru'fa'hai'ke'yi` → `tbl_others_s` |
 
-首字母取第一个音节的第一个小写拉丁字母。**禁止对 ≥8 音节拼出 `tbl_8_*`**：建库脚本不会创建这些表，写入和回放都会失败，安装升级时的回放失败会导致整批回滚并中止安装。改规则必须同步改四处并补回放测试。
+首字母取第一个音节的第一个小写拉丁字母。**禁止对 ≥8 音节拼出 `tbl_8_*`**：建库脚本不会创建这些表，写入和回放都会失败，安装升级时的回放失败会导致整批回滚并中止安装。改规则必须更新共享格式契约，禁止在消费端重新拼接表名。
 
 ## 用户词库权重
 
