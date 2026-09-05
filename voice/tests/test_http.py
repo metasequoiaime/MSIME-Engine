@@ -3,6 +3,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import subprocess
 import sys
+from socketserver import TCPServer
 import threading
 import time
 
@@ -41,13 +42,24 @@ class Handler(BaseHTTPRequestHandler):
             errors.append(repr(error))
             self.send_error(500)
 
-server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+class LoopbackServer(ThreadingHTTPServer):
+    def server_bind(self):
+        # HTTPServer.server_bind calls getfqdn(), which may wait on external DNS.
+        # This fixture is loopback-only and has no need for reverse DNS.
+        TCPServer.server_bind(self)
+        self.server_name = 'localhost'
+        self.server_port = self.server_address[1]
+
+print('Starting loopback HTTP fixture', flush=True)
+server = LoopbackServer(('127.0.0.1', 0), Handler)
 thread = threading.Thread(target=server.serve_forever, daemon=True)
 thread.start()
 try:
+    print('Running HTTP consumer', flush=True)
     result = subprocess.run([sys.argv[1], f'http://127.0.0.1:{server.server_port}'], timeout=20)
     assert not errors, errors
     raise SystemExit(result.returncode)
 finally:
+    print('Stopping loopback HTTP fixture', flush=True)
     server.shutdown()
     server.server_close()

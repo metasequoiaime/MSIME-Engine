@@ -39,6 +39,7 @@ int main(int argc, char** argv) {
         const std::string base = argv[1];
         auto options = [&](const std::string& path) { return RequestOptions{base + path, "fixture-model", "fixture-token", 3000, {}}; };
         const std::vector<float> pcm(160, 0.125f);
+        std::cerr << "HTTP: transcription and error cases\n";
         CloudSttWorker asr(options("/asr"));
         require(asr.recognize(pcm) == "水杉 voice", "ASR UTF-8");
         require(asr.recognize({}).empty(), "Empty audio needs no network");
@@ -46,6 +47,7 @@ int main(int argc, char** argv) {
             CloudSttWorker invalid(options(path));
             fails([&] { invalid.recognize(pcm); });
         }
+        std::cerr << "HTTP: timeout and cancellation\n";
         auto timeout = options("/slow"); timeout.timeout_ms = 50;
         CloudSttWorker slow(timeout); fails([&] { slow.recognize(pcm); });
         auto cancelled = options("/asr"); cancelled.cancelled = std::make_shared<std::atomic_bool>(true);
@@ -54,6 +56,7 @@ int main(int argc, char** argv) {
         CloudSttWorker cancelling(during);
         auto pending = std::async(std::launch::async, [&] { fails([&] { cancelling.recognize(pcm); }); });
         std::this_thread::sleep_for(std::chrono::milliseconds(50)); during.cancelled->store(true); pending.get();
+        std::cerr << "HTTP: polish and fallback\n";
         TextPolisher polish(options("/polish"), "Clean transcription only");
         require(polish.polish("嗯 水杉") == "水杉", "Polished text");
         for (const auto* path : {"/denied", "/invalid", "/missing"}) {
@@ -63,6 +66,7 @@ int main(int argc, char** argv) {
         TextPolisher fallback(timeout, "prompt");
         require(fallback.polish("原始文本") == "原始文本", "Preserve original on timeout");
         // An independently destroyed provider must not tear down another provider's CURL runtime.
+        std::cerr << "HTTP: concurrent provider lifetimes\n";
         std::vector<std::future<void>> workers;
         for (int i = 0; i < 4; ++i) workers.push_back(std::async(std::launch::async, [&] {
             for (int n = 0; n < 5; ++n) {
