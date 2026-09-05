@@ -13,7 +13,7 @@
 
 迁移来源、历史与下游接入顺序见 [合仓说明](docs/consolidation.md)。
 
-General IME engine shared by the Metasequoia IME frontends: [MSIME-Windows](https://github.com/metasequoiaime/MSIME-Windows) (through [MSIME-Server](https://github.com/metasequoiaime/MSIME-Server)), [MSIME-Apple](https://github.com/metasequoiaime/MSIME-Apple) and [MSIME-Linux](https://github.com/metasequoiaime/MSIME-Linux).
+General IME engine shared by the Metasequoia IME frontends: [MSIME-Windows](https://github.com/metasequoiaime/MSIME-Windows) (through [its server/ component](https://github.com/metasequoiaime/MSIME-Windows/tree/main/server)), [MSIME-Apple](https://github.com/metasequoiaime/MSIME-Apple) and [MSIME-Linux](https://github.com/metasequoiaime/MSIME-Linux).
 
 ## 构建与测试
 
@@ -85,7 +85,7 @@ python build_profile.py --profile mobile --source dictionary/out/desktop/msime.d
 python build_profile.py --profile mobile --verify
 ```
 
-产物默认在 `dictionary/out/{desktop,mobile}/`，可用 `--output` 指定绝对路径。数据许可证逐项见 [NOTICE.md](NOTICE.md)。已有 MSIME-Dict release 和消费者锁文件继续有效；新发布的来源切换需与平台锁文件一起显式评审。
+产物默认在 `dictionary/out/{desktop,mobile}/`，可用 `--output` 指定绝对路径。数据许可证逐项见 [NOTICE.md](NOTICE.md)。新词库由本仓 `dict-*` Release 发布，平台锁定来源提交及产物摘要；旧 MSIME-Dict Release 和对应历史锁继续保留。
 
 ## 跨仓约定
 
