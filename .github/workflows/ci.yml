@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out source
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
       - name: Install dependencies
@@ -30,7 +30,7 @@ jobs:
     runs-on: macos-15
     steps:
       - name: Check out source
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
       - name: Remove unused runner taps
@@ -49,7 +49,7 @@ jobs:
     runs-on: windows-2025
     steps:
       - name: Check out source
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
       - name: Install dependencies
@@ -64,3 +64,14 @@ jobs:
       - name: Test
         shell: pwsh
         run: ctest --test-dir build -C Release --output-on-failure --timeout 20
+
+  webview-contract:
+    name: Shared WebView bindings
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - run: python3 contracts/webview/generate.py --check
+      - run: node contracts/webview/test.js
+      - run: sudo apt-get update && sudo apt-get install --no-install-recommends -y cmake libboost-json-dev
+      - run: cmake -S contracts/webview -B build-webview && cmake --build build-webview
+      - run: ctest --test-dir build-webview --output-on-failure

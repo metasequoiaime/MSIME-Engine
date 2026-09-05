@@ -164,6 +164,16 @@ int ImeSession::cache_dynamic_candidate_for_current_request(const std::string &w
     return provider_registry_.cache_dynamic_candidate_for_request(state_.request, word, source);
 }
 
+int ImeSession::apply_dynamic_candidate(const std::string &word, CandidateSource source)
+{
+    const int result = cache_dynamic_candidate_for_current_request(word, source);
+    if (result == 0)
+    {
+        refresh_candidates();
+    }
+    return result;
+}
+
 SchemeType ImeSession::current_scheme_type() const
 {
     return scheme_->type();

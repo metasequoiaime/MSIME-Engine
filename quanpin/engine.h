@@ -24,6 +24,8 @@ class QuanpinEngine
     int delete_by_pinyin_and_word(std::string pinyin, std::string word);
     int insert_word_to_series_cache(const std::string &pinyin, const std::string &word,
                                     CandidateSource source);
+    int insert_word_to_series_cache(const QueryRequest &request, const std::string &word,
+                                    CandidateSource source);
     std::string search_sentence_from_ime_engine(const std::string &user_pinyin);
     void reset_state();
     void reset_cache();
