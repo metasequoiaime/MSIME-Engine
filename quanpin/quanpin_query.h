@@ -1,5 +1,7 @@
 #pragma once
 
+#include "word_lattice.h"
+
 #include <sqlite3.h>
 
 #include <string>
@@ -82,5 +84,8 @@ std::vector<KeyedQueryItem> query_segments_keyed_flat(
 std::vector<KeyedQueryItem> query_exact_segmentations_keyed_flat(
     const std::vector<Segments> &segmentations, sqlite3 *db,
     std::unordered_map<std::string, sqlite3_stmt *> &statement_cache, int limit = 128);
+
+WordLatticeLookup make_lattice_db_lookup(sqlite3 *db, std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
+                                         QuerySource source, int span_limit);
 
 } // namespace quanpin
