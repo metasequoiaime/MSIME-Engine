@@ -9,10 +9,12 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <fmt/core.h>
 #include "fmt/base.h"
 #include "core/ime_session.h"
 #include "quanpin/quanpin_dictionary.h"
+#include "quanpin/word_lattice.h"
 #include "quanpin/quanpin_query.h"
 #include "sqlite3.h"
 #include "shuangpin/shuangpin_dictionary.h"
@@ -523,6 +525,119 @@ void test_quanpin_query_timings()
     run_quanpin_query_case(dictionary, "keneng");
 }
 
+quanpin::WordLatticeLookup make_table_lattice_lookup(
+    const std::unordered_map<std::string, std::vector<quanpin::LatticeLexeme>> &table)
+{
+    return [&table](const quanpin::Segments &span) {
+        const auto it = table.find(quanpin::join_segments(span));
+        return it == table.end() ? std::vector<quanpin::LatticeLexeme>{} : it->second;
+    };
+}
+
+void test_word_lattice()
+{
+    using quanpin::LatticeLexeme;
+
+    fmt::println("==== Word Lattice ====");
+
+    {
+        std::unordered_map<std::string, std::vector<LatticeLexeme>> table;
+        table["nie"] = {{"nie", "捏", 8000}, {"nie", "聂", 4000}, {"nie", "镊", 3000}};
+        table["zi"] = {{"zi", "子", 9000}};
+        table["nie'zi"] = {{"nie'zi", "镊子", 18000}, {"nie'zi", "孽子", 2000}};
+        const auto paths = quanpin::decode_word_lattice({"nie", "zi"}, make_table_lattice_lookup(table));
+        expect(!paths.empty() && paths.front().sentence == "镊子",
+               fmt::format("Expected 镊子 for nie zi, got '{}'", paths.empty() ? "" : paths.front().sentence));
+    }
+
+    {
+        std::unordered_map<std::string, std::vector<LatticeLexeme>> table;
+        table["gao"] = {{"gao", "高", 12000}, {"gao", "搞", 11000}};
+        table["tan"] = {{"tan", "谈", 9000}, {"tan", "碳", 4000}, {"tan", "摊", 3500}};
+        table["gang"] = {{"gang", "刚", 9000}, {"gang", "钢", 5000}, {"gang", "岗", 4000}};
+        table["nie"] = {{"nie", "捏", 8000}, {"nie", "镊", 3000}};
+        table["zi"] = {{"zi", "子", 9000}};
+        table["gao'tan"] = {{"gao'tan", "高谈", 20000}};
+        table["tan'gang"] = {{"tan'gang", "碳钢", 16000}};
+        table["nie'zi"] = {{"nie'zi", "镊子", 18000}};
+        const auto paths = quanpin::decode_word_lattice({"gao", "tan", "gang", "nie", "zi"},
+                                                       make_table_lattice_lookup(table));
+        expect(!paths.empty() && paths.front().sentence == "高碳钢镊子",
+               fmt::format("Expected 高碳钢镊子, got '{}'", paths.empty() ? "" : paths.front().sentence));
+    }
+
+    {
+        std::unordered_map<std::string, std::vector<LatticeLexeme>> table;
+        table["gao"] = {{"gao", "高", 12000}};
+        table["tan"] = {{"tan", "碳", 4000}};
+        table["gang"] = {{"gang", "钢", 5000}};
+        table["tan'gang"] = {{"tan'gang", "碳钢", 16000}};
+        std::vector<WordItem> candidates;
+        candidates.emplace_back("gktjgh", "高碳钢", 50000, CandidateSource::Database, "gao'tan'gang");
+        quanpin::merge_lattice_candidates(candidates, {"gao", "tan", "gang"}, make_table_lattice_lookup(table),
+                                          "gktjgh");
+        expect(candidates.front().word == "高碳钢" && candidates.front().source == CandidateSource::Database,
+               fmt::format("Expected Database 高碳钢 first, got '{}'", candidates.front().word));
+    }
+
+    {
+        std::unordered_map<std::string, std::vector<LatticeLexeme>> table;
+        table["gao"] = {{"gao", "高", 12000}};
+        table["tan"] = {{"tan", "碳", 4000}, {"tan", "谈", 9000}};
+        table["gang"] = {{"gang", "钢", 5000}, {"gang", "刚", 9000}};
+        table["nie"] = {{"nie", "镊", 3000}};
+        table["zi"] = {{"zi", "子", 9000}};
+        table["tan'gang"] = {{"tan'gang", "碳钢", 16000}};
+        table["nie'zi"] = {{"nie'zi", "镊子", 18000}};
+        std::vector<WordItem> candidates;
+        candidates.emplace_back("gktjghnxzi", "高谈刚捏子", 1, CandidateSource::Fallback);
+        quanpin::merge_lattice_candidates(candidates, {"gao", "tan", "gang", "nie", "zi"},
+                                          make_table_lattice_lookup(table), "gktjghnxzi");
+        expect(candidates.front().word == "高碳钢镊子",
+               fmt::format("Expected lattice 高碳钢镊子 ahead of Fallback, got '{}'", candidates.front().word));
+        expect(find_candidate(candidates, "高谈刚捏子") != nullptr, "Expected Fallback 高谈刚捏子 to remain.");
+    }
+
+    {
+        std::unordered_map<std::string, std::vector<LatticeLexeme>> table;
+        table["xing"] = {{"xing", "性", 8000}};
+        table["neng"] = {{"neng", "能", 8000}};
+        table["hen"] = {{"hen", "很", 20000}, {"hen", "狠", 3000}};
+        table["la"] = {{"la", "拉", 5000}};
+        table["ji"] = {{"ji", "圾", 4000}};
+        table["xing'neng"] = {{"xing'neng", "性能", 15000}};
+        table["la'ji"] = {{"la'ji", "垃圾", 14000}};
+        const auto paths = quanpin::decode_word_lattice({"xing", "neng", "hen", "la", "ji"},
+                                                       make_table_lattice_lookup(table));
+        expect(!paths.empty() && paths.front().sentence.find("很垃圾") != std::string::npos &&
+                   paths.front().sentence.find("狠垃圾") == std::string::npos,
+               fmt::format("Expected 很垃圾 over 狠垃圾, got '{}'", paths.empty() ? "" : paths.front().sentence));
+    }
+
+    {
+        std::unordered_map<std::string, std::vector<LatticeLexeme>> table;
+        table["nie"] = {{"nie", "捏", 8000}};
+        table["zi"] = {{"zi", "子", 9000}};
+        table["nie'zi"] = {{"nie'zi", "镊子", 18000}};
+        std::vector<WordItem> candidates;
+        candidates.emplace_back("nxzi", "镊子", 18000, CandidateSource::Database, "nie'zi");
+        quanpin::merge_lattice_candidates(candidates, {"nie", "zi"}, make_table_lattice_lookup(table), "nxzi");
+        expect(candidates.size() == 1 && candidates.front().source == CandidateSource::Database,
+               "Two-syllable merge is a no-op; exact SQLite already covers the key.");
+    }
+
+    {
+        std::unordered_map<std::string, std::vector<LatticeLexeme>> table;
+        table["g"] = {{"g", "个", 100}};
+        table["k"] = {{"k", "可", 100}};
+        table["t"] = {{"t", "他", 100}};
+        table["g'k't"] = {{"g'k't", "个可他", 50}};
+        std::vector<WordItem> candidates;
+        quanpin::merge_lattice_candidates(candidates, {"g", "k", "t"}, make_table_lattice_lookup(table), "gkt");
+        expect(candidates.empty(), "Abbreviated quanpin segments must not produce lattice candidates.");
+    }
+}
+
 void test_quanpin_order_corrections()
 {
     const std::vector<std::pair<std::string, std::string>> cases = {
@@ -564,6 +679,7 @@ int main(int argc, char *argv[])
 {
     try
     {
+        test_word_lattice();
         test_shuangpin_session();
         test_shuangpin_session02();
         test_quanpin_session();
