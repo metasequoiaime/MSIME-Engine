@@ -13,7 +13,7 @@ on:
         type: boolean
         default: false
       tag:
-        description: Release tag to publish under, for example dict-2026.09.05
+        description: Release tag to publish under, for example dict-v1.0.0
         required: false
         type: string
 
@@ -129,8 +129,9 @@ jobs:
         env:
           TAG_NAME: ${{ inputs.tag }}
         run: |
-          if [[ ! "$TAG_NAME" =~ ^dict-[0-9]{4}\.[0-9]{2}\.[0-9]{2}(\.[0-9]+)?$ ]]; then
-            echo "Tag must look like dict-YYYY.MM.DD or dict-YYYY.MM.DD.N, got '$TAG_NAME'." >&2
+          # Semantic versions, not calendar ones. A dated tag carries no compatibility information: it cannot say whether a rebuild changed the schema that consumers pin against, and the frontends already learned that a date-shaped version is unusable once dpkg and rpm start ordering it against a semver history.
+          if [[ ! "$TAG_NAME" =~ ^dict-v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tag must look like dict-vMAJOR.MINOR.PATCH, got '$TAG_NAME'." >&2
             exit 1
           fi
 
