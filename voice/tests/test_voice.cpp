@@ -2,6 +2,7 @@
 #include <msime/voice/text_polisher.h>
 #include <msime/voice/vad.h>
 #include <msime/voice/wav_writer.h>
+#include <msime/voice/provider_protocol.h>
 #include <cmath>
 #include <future>
 #include <iostream>
@@ -17,6 +18,28 @@ template<class F> void fails(F action) {
 int main(int argc, char** argv) {
     try {
         if (argc == 1) {
+            const std::string binary = std::string("RIFF\0binary", 11) + "----MetasequoiaVoice0";
+            const auto upload = make_transcription_request(binary, "fixture-model", "zh");
+            const auto boundary = upload.content_type.substr(upload.content_type.find("boundary=") + 9);
+            require(binary.find(boundary) == std::string::npos, "Multipart boundary collides with audio");
+            require(upload.body.find(binary) != std::string::npos, "Binary audio must retain NUL bytes");
+            require(upload.body.find("name=\"language\"\r\n\r\nzh") != std::string::npos, "Explicit recognition language");
+            require(make_transcription_request(binary, "model").body.find("name=\"language\"") == std::string::npos,
+                    "Omit language for providers that reject it");
+            fails([] { make_transcription_request({}, "model"); });
+            fails([] { make_transcription_request("audio", {}); });
+            fails([] { make_transcription_request(std::string(maximum_encoded_audio_bytes + 1, 'x'), "model"); });
+            for (const auto* response : {R"({"text":"水杉"})", R"({"transcription":"水杉"})", R"({"result":{"text":"水杉"}})"})
+                require(parse_transcription(response) == "水杉", "Platform transcription response variants");
+            for (const auto* response : {"invalid", "[]", R"({"text":42})", R"({"text":"","result":null})"})
+                fails([&] { parse_transcription(response); });
+            fails([] { parse_transcription(std::string(1024 * 1024 + 1, 'x')); });
+            require(parse_polished_text(R"({"choices":[{"message":{"content":"水杉"}}]})") == "水杉", "Polish response");
+            for (const auto* response : {"{}", R"({"choices":[]})", R"({"choices":[{"message":{"content":null}}]})", R"({"choices":[{"message":{"content":""}}]})"})
+                fails([&] { parse_polished_text(response); });
+            const auto polish_body = make_polish_request("model", "prompt", "quoted \"line\"\ntext");
+            require(polish_body.find("quoted \\\"line\\\"\\ntext") != std::string::npos, "Polish JSON escaping");
+
             const auto wav = WavWriter::create_wav({0, 1, -1, 2});
             require(wav.size() == 52 && wav[0] == 'R' && wav[24] == 0x80 && wav[25] == 0x3e, "WAV header");
             require(wav[46] == 0xff && wav[47] == 0x7f && wav[48] == 1 && wav[49] == 0x80, "little-endian PCM");

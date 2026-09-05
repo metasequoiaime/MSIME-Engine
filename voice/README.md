@@ -51,7 +51,9 @@ std::string text = recognizer.recognize(pcm); // worker queue, mono 16 kHz float
 // Host dispatches text to its UI/input-method thread and commits it.
 ```
 
-`CloudSttWorker` supports the multipart `file` + `model` protocol with a JSON `text` response. This is a protocol adapter, not a claim that every provider supports that protocol. Endpoints/models are host configuration; the token-only constructor retains the old SiliconFlow defaults for the imported Windows host. WebSocket/Doubao and Server-specific providers have not been migrated by this change.
+`CloudSttWorker` supports multipart `file` + `model` with JSON `text`, `transcription` or `result.text` responses. This is a protocol adapter, not a claim that every provider supports that protocol. Endpoints/models are host configuration; the token-only constructor retains the old SiliconFlow defaults for the imported Windows host. WebSocket/Doubao and Server-specific providers have not been migrated by this change.
+
+`provider_protocol.h` exposes the same multipart and JSON codecs to hosts with an existing HTTP transport. `make_transcription_request` takes an encoded WAV (up to 20 MiB), preserves binary bytes and accepts an optional language field; omit language for services that reject it. `make_polish_request` sends the supplied user message verbatim, so hosts retain their prompt/delimiter policy. Response parsers reject malformed, missing, empty or oversized text responses with `VoiceError`. Hosts retain endpoint validation, credentials, timeouts, cancellation, status checks and stricter upload/response limits. The PCM recognizer still enforces the 60-second contract below.
 
 Each request has a timeout and optional shared atomic cancellation flag. Set that flag to abort an in-flight request; a cancelled flag stays cancelled until the host supplies a new one. Recognition errors throw `VoiceError`. `TextPolisher` returns the original text on failure, timeout, cancellation or an empty result. It never logs tokens, audio or response bodies. Redirects are rejected, HTTP status is checked and responses are capped at 1 MiB.
 
