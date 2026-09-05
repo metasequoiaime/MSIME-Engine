@@ -1,0 +1,238 @@
+# 自定义候选窗翻译，优先于 ECDICT 大词库。
+# 格式：源词<TAB>译文
+# 源词含汉字则为中译英，否则为英译中。同一源词后写覆盖先写。
+华科	HUST
+华科大	Huazhong University of Science and Technology
+华中科大	Huazhong University of Science and Technology
+华中科技大学	Huazhong University of Science and Technology
+
+# Unreal Engine：中文候选到官方英文术语
+虚幻编辑器	Unreal Editor
+内容浏览器	Content Browser
+蓝图可视化脚本	Blueprint Visual Scripting
+蓝图函数库	Blueprint Function Library
+蓝图接口	Blueprint Interface
+动画蓝图	Animation Blueprint
+关卡蓝图	Level Blueprint
+行为树	Behavior Tree
+黑板组件	Blackboard Component
+玩家控制器	Player Controller
+AI控制器	AI Controller
+游戏实例	Game Instance
+世界分区	World Partition
+数据层	Data Layer
+关卡实例	Level Instance
+流送源	Streaming Source
+层级细节	Hierarchical Level of Detail (HLOD)
+静态网格体	Static Mesh
+骨骼网格体	Skeletal Mesh
+实例化静态网格体	Instanced Static Mesh
+分层实例化静态网格体	Hierarchical Instanced Static Mesh
+几何体集合	Geometry Collection
+材质实例	Material Instance
+材质函数	Material Function
+材质参数集合	Material Parameter Collection
+材质表达式	Material Expression
+运行时虚拟纹理	Runtime Virtual Texture
+虚拟阴影贴图	Virtual Shadow Maps
+网格体距离场	Mesh Distance Field
+全局距离场	Global Distance Field
+着色器复杂度	Shader Complexity
+纹理流送	Texture Streaming
+虚拟纹理	Virtual Texture
+全局光照	Global Illumination
+表面缓存	Surface Cache
+反射捕获	Reflection Capture
+体积雾	Volumetric Fog
+体积云	Volumetric Cloud
+指数高度雾	Exponential Height Fog
+后期处理体积	Post Process Volume
+动画蒙太奇	Animation Montage
+动画通知	Animation Notify
+动画状态机	Animation State Machine
+根运动	Root Motion
+运动匹配	Motion Matching
+变形目标	Morph Target
+程序化内容生成	Procedural Content Generation (PCG)
+电影渲染队列	Movie Render Queue
+关卡序列	Level Sequence
+
+# Houdini：中文候选到官方英文术语或描述性译名
+胡迪尼引擎	Houdini Engine
+胡迪尼数字资产	Houdini Digital Asset (HDA)
+程序化建模	Procedural Modeling
+程序化工作流	Procedural Workflow
+节点网络	Node Network
+几何体电子表格	Geometry Spreadsheet
+点属性	Point Attribute
+顶点属性	Vertex Attribute
+图元属性	Primitive Attribute
+细节属性	Detail Attribute
+字典属性	Dictionary Attribute
+内在属性	Intrinsic Attribute
+属性提升	Attribute Promote
+属性传递	Attribute Transfer
+属性插值	Attribute Interpolate
+属性随机化	Attribute Randomize
+打包图元	Packed Primitive
+高度场	HeightField
+高度场侵蚀	HeightField Erode
+稀疏体积	Sparse Volume
+速度场	Velocity Field
+碰撞几何体	Collision Geometry
+代理几何体	Proxy Geometry
+数字资产	Digital Asset
+任务图	Task Graph
+工作项	Work Item
+几何体网络	Geometry Network
+动力学网络	Dynamics Network
+渲染网络	Render Network
+通道网络	Channel Network
+合成网络	Compositing Network
+任务网络	Task Network
+灯光网络	Lighting Operator Network
+表面操作器	Surface Operator (SOP)
+动力学操作器	Dynamics Operator (DOP)
+渲染操作器	Render Operator (ROP)
+通道操作器	Channel Operator (CHOP)
+合成操作器	Compositing Operator (COP)
+任务操作器	Task Operator (TOP)
+灯光操作器	Lighting Operator (LOP)
+布料约束	Cloth Constraint
+软体约束	Soft Body Constraint
+刚体模拟	Rigid Body Simulation
+流体模拟	Fluid Simulation
+烟火模拟	Pyro Simulation
+粒子流体	FLIP Fluid
+场景图	Scene Graph
+场景图细节	Scene Graph Details
+材质库	Material Library
+组件构建器	Component Builder
+材质绑定	Material Binding
+渲染委托	Render Delegate
+图元变量	Primvar
+非破坏性编辑	Non-destructive Editing
+程序化生成	Procedural Generation
+
+# Houdini Engine for Unreal
+会话同步	Session Sync
+节点同步	Node Sync
+地形样条	Landscape Spline
+曲线输入	Curve Input
+世界输入	World Input
+几何数据转换	Geometry Marshalling
+烘焙输出	Baked Output
+输出属性	Output Attributes
+实例化输出	Instanced Output
+地形编辑层	Landscape Edit Layer
+地形散布	Landscape Scatter
+程序化世界生成	Procedural World Generation
+虚幻样条组件	Unreal Spline Component
+几何体集合输出	Geometry Collection Output
+骨骼网格体输出	Skeletal Mesh Output
+捕获姿势	Capture Pose
+静止几何体	Rest Geometry
+
+# Unreal Engine：英文候选到中文释义
+Unreal Engine	虚幻引擎
+Unreal Editor	虚幻编辑器
+Blueprint Function Library	蓝图函数库
+Blueprint Interface	蓝图接口
+Animation Blueprint	动画蓝图
+Level Blueprint	关卡蓝图
+Behavior Tree	行为树
+Player Controller	玩家控制器
+AI Controller	AI控制器
+Game Instance	游戏实例
+Game Mode	游戏模式
+Game State	游戏状态
+World Partition	世界分区
+Data Layer	数据层
+Level Instance	关卡实例
+Streaming Source	流送源
+Static Mesh	静态网格体
+Skeletal Mesh	骨骼网格体
+Instanced Static Mesh	实例化静态网格体
+Hierarchical Instanced Static Mesh	分层实例化静态网格体
+Geometry Collection	几何体集合
+Material Instance	材质实例
+Material Function	材质函数
+Material Parameter Collection	材质参数集合
+Runtime Virtual Texture	运行时虚拟纹理
+Virtual Shadow Maps	虚拟阴影贴图
+Mesh Distance Field	网格体距离场
+Global Distance Field	全局距离场
+Shader Complexity	着色器复杂度
+Texture Streaming	纹理流送
+Virtual Texture	虚拟纹理
+Global Illumination	全局光照
+Surface Cache	表面缓存
+Reflection Capture	反射捕获
+Volumetric Fog	体积雾
+Volumetric Cloud	体积云
+Exponential Height Fog	指数高度雾
+Post Process Volume	后期处理体积
+Nanite	Nanite虚拟几何体
+Niagara	Niagara视觉特效系统
+MetaSounds	MetaSounds音频系统
+Control Rig	Control Rig绑定系统
+Motion Matching	运动匹配
+Movie Render Queue	电影渲染队列
+Procedural Content Generation	程序化内容生成
+
+# Houdini：英文候选到中文释义
+SideFX	Houdini开发商
+Houdini Engine	Houdini引擎
+Houdini Digital Asset	Houdini数字资产
+HScript	Houdini脚本语言
+Karma XPU	Karma CPU和GPU渲染器
+MaterialX	跨渲染器材质描述标准
+OpenUSD	通用场景描述
+OpenVDB	稀疏体积数据结构
+KineFX	Houdini角色与运动学工具集
+Copernicus	Houdini图像处理框架
+SideFX Labs	SideFX实验性工具集
+Geometry Spreadsheet	几何体电子表格
+Attribute Wrangle	属性处理节点
+Volume Wrangle	体积属性处理节点
+Point Wrangle	点属性处理节点
+Packed Primitive	打包图元
+HeightField	高度场
+HeightField Erode	高度场侵蚀
+Material Library	材质库
+Component Builder	组件构建器
+Scene Graph Details	场景图细节
+
+# Houdini Engine for Unreal：英文候选到中文释义
+Houdini Engine for Unreal	Houdini虚幻引擎插件
+Session Sync	会话同步
+Node Sync	节点同步
+Landscape Spline	地形样条
+Curve Input	曲线输入
+World Input	世界输入
+Geometry Marshalling	几何数据转换
+Output Attributes	输出属性
+Landscape Edit Layer	地形编辑层
+Landscape Scatter	地形散布
+Skeletal Mesh Output	骨骼网格体输出
+# 常用寒暄与礼貌用语。ECDICT 反查按英文词质量分排序，核心词（hello、thank you）
+# 常常排不过借词和俚语（ciao、hiya、howzit），导致候选窗给出的释义偏门。
+# 这一组是 MSIME-Windows#75 报告的错译及同类高频词。
+你好	hello
+您好	hello
+有没有	is there; do you have
+刚才	a moment ago; just now
+谢谢	thank you
+多谢	thanks a lot
+再见	goodbye
+早上好	good morning
+中午好	good afternoon
+晚上好	good evening
+晚安	good night
+对不起	sorry
+不好意思	excuse me; sorry
+没关系	it doesn't matter; never mind
+不客气	you're welcome
+欢迎	welcome
+请问	excuse me; may I ask
+再见了	goodbye
