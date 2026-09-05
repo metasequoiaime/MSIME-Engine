@@ -17,6 +17,8 @@
 #include "shuangpin/shuangpin_dictionary.h"
 #include "shuangpin/shuangpin_query.h"
 #include "shuangpin/shuangpin_utils.h"
+#include "core/data_path.h"
+#include "user_dictionary/user_dictionary_journal.h"
 
 using namespace std;
 
@@ -29,19 +31,19 @@ class ScopedLocalAppDataOverride
   public:
     explicit ScopedLocalAppDataOverride(const std::string &suffix)
     {
-        const char *current = std::getenv("LOCALAPPDATA");
-        original_ = current == nullptr ? "" : current;
-        if (original_.empty())
+        const fs::path source_dir = metasequoia::data_directory();
+        if (source_dir.empty())
         {
-            throw std::runtime_error("LOCALAPPDATA should be available for regression tests.");
+            throw std::runtime_error("A data directory should be available for regression tests.");
         }
+        const wchar_t *current = _wgetenv(kDataDirectoryVariable);
+        original_ = current == nullptr ? L"" : current;
 
         root_ = fs::temp_directory_path() / "msime-regression" / suffix;
         app_dir_ = root_ / "metasequoiaime";
         fs::remove_all(root_);
         fs::create_directories(app_dir_);
 
-        const fs::path source_dir = fs::path(original_) / "metasequoiaime";
         for (const auto &file_name : {"msime.db", "dict_pinyin.dat", "user_dict.dat"})
         {
             const fs::path source = source_dir / file_name;
@@ -53,16 +55,15 @@ class ScopedLocalAppDataOverride
             fs::copy_file(source, target, fs::copy_options::overwrite_existing);
         }
 
-        const int result = _putenv_s("LOCALAPPDATA", root_.string().c_str());
-        if (result != 0)
+        if (_wputenv_s(kDataDirectoryVariable, app_dir_.c_str()) != 0)
         {
-            throw std::runtime_error("Failed to override LOCALAPPDATA for regression test.");
+            throw std::runtime_error("Failed to override the data directory for regression test.");
         }
     }
 
     ~ScopedLocalAppDataOverride()
     {
-        (void)_putenv_s("LOCALAPPDATA", original_.c_str());
+        (void)_wputenv_s(kDataDirectoryVariable, original_.c_str());
         std::error_code ec;
         fs::remove_all(root_, ec);
     }
@@ -73,7 +74,9 @@ class ScopedLocalAppDataOverride
     }
 
   private:
-    std::string original_;
+    static constexpr const wchar_t *kDataDirectoryVariable = L"METASEQUOIA_IME_DATA_DIR";
+
+    std::wstring original_;
     fs::path root_;
     fs::path app_dir_;
 };
@@ -325,6 +328,13 @@ void test_shuangpin_dictionary_create_pin_delete()
     expect(ShuangpinUtil::get_local_appdata_path() == local_appdata.local_appdata(),
            fmt::format("Expected shuangpin appdata path '{}', got '{}'.", local_appdata.local_appdata(),
                        ShuangpinUtil::get_local_appdata_path()));
+    const std::string expected_user_db = local_appdata.local_appdata() + "\\metasequoiaime\\msime_user.db";
+    expect(user_dictionary::default_user_db_path() == expected_user_db,
+           fmt::format("Expected user db path '{}', got '{}'.", expected_user_db,
+                       user_dictionary::default_user_db_path()));
+    const char *process_appdata = std::getenv("LOCALAPPDATA");
+    expect(process_appdata != nullptr && std::string(process_appdata) != local_appdata.local_appdata(),
+           "Overriding the data root must not touch the process environment.");
 
     sqlite3 *probe_db = nullptr;
     const std::string probe_db_path =

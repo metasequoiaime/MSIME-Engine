@@ -19,9 +19,6 @@ string ShuangpinUtil::get_local_appdata_path()
     return metasequoia::path_to_utf8(metasequoia::data_directory().parent_path());
 }
 
-// LocalAppData path
-string ShuangpinUtil::local_appdata_path = ShuangpinUtil::get_local_appdata_path();
-
 namespace
 {
 std::string find_source_by_code(const std::unordered_map<std::string, std::string> &mapping, const std::string &code)

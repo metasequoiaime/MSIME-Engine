@@ -29,6 +29,7 @@ class ImeSession
     int delete_by_pinyin_and_word(std::string pinyin, std::string word);
     int cache_dynamic_candidate(const std::string &pinyin, const std::string &word, CandidateSource source);
     int cache_dynamic_candidate_for_current_request(const std::string &word, CandidateSource source);
+    int apply_dynamic_candidate(const std::string &word, CandidateSource source);
     std::optional<WordItem> find_candidate(const std::string &key, const std::string &value);
 
     SchemeType current_scheme_type() const;

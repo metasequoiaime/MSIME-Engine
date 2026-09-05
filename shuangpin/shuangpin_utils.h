@@ -16,7 +16,6 @@ class ShuangpinUtil
 {
   public:
     static std::string get_local_appdata_path();
-    static std::string local_appdata_path;
     static const std::string app_name;
 
     static std::string cvt_single_sp_to_pinyin(std::string sp_str,

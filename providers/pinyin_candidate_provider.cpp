@@ -97,9 +97,19 @@ int PinyinCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequ
                                                                  const std::string &word,
                                                                  CandidateSource source)
 {
-    if (request.scheme != SchemeType::Shuangpin || !request.enable_shuangpin_helpcode)
+    if (request.scheme == SchemeType::Quanpin)
     {
-        return 0;
+        return quanpin_engine_.insert_word_to_series_cache(request, word, source);
+    }
+
+    if (request.scheme != SchemeType::Shuangpin)
+    {
+        return -1;
+    }
+
+    if (!request.enable_shuangpin_helpcode)
+    {
+        return shuangpin_engine_.insert_word_to_series_cache(request.raw_input, word, source);
     }
 
     const std::string &raw_input_with_cases =
@@ -121,5 +131,5 @@ int PinyinCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequ
         }
     }
 
-    return 0;
+    return shuangpin_engine_.insert_word_to_series_cache(request.raw_input, word, source);
 }
