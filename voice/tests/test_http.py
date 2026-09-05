@@ -1,5 +1,7 @@
 """Real libcurl transport against loopback only; never uses microphone or credentials."""
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from email.parser import BytesParser
+from email.policy import default
 import json
 import subprocess
 import sys
@@ -19,6 +21,15 @@ class Handler(BaseHTTPRequestHandler):
                 assert self.headers['Content-Type'].startswith('multipart/form-data; boundary=')
                 assert b'name="file"' in body and b'RIFF' in body and b'WAVE' in body
                 assert b'name="model"' in body and b'fixture-model' in body
+                multipart = BytesParser(policy=default).parsebytes(
+                    ('Content-Type: ' + self.headers['Content-Type'] + '\r\nMIME-Version: 1.0\r\n\r\n').encode() + body)
+                parts = {part.get_param('name', header='content-disposition'): part for part in multipart.iter_parts()}
+                assert set(parts) == {'model', 'file'}
+                assert parts['model'].get_payload(decode=True) == b'fixture-model'
+                audio = parts['file'].get_payload(decode=True)
+                assert len(audio) == 364 and audio[:4] == b'RIFF' and audio[8:12] == b'WAVE'
+                assert parts['file'].get_filename() == 'audio.wav'
+
             if self.path == '/polish':
                 request = json.loads(body)
                 assert request['model'] == 'fixture-model'
