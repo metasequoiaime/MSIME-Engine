@@ -419,6 +419,19 @@ int run_test()
                 "Parentheses were not converted to Chinese punctuation.");
         require(session.handle_punctuation('[').commit == "【" && session.handle_punctuation(']').commit == "】",
                 "Square brackets were not converted to Chinese punctuation.");
+        require(session.handle_punctuation('`').commit == "·" && session.handle_punctuation('$').commit == "￥" &&
+                    session.handle_punctuation('^').commit == "……" && session.handle_punctuation('_').commit == "——",
+                "The keys whose Chinese form differs from ASCII were not converted.");
+
+        // The outer pair is 《》 and anything inside it uses 〈〉, so depth decides the mark.
+        require(session.handle_punctuation('<').commit == "《" && session.handle_punctuation('<').commit == "〈" &&
+                    session.handle_punctuation('>').commit == "〉" && session.handle_punctuation('>').commit == "》",
+                "Book title marks did not nest.");
+        // An unmatched '>' must not drive the depth below zero, or the next '<' would open with 〈.
+        require(session.handle_punctuation('>').commit == "》", "An unmatched closing book title mark was not 》.");
+        require(session.handle_punctuation('<').commit == "《",
+                "An unmatched closing book title mark left the nesting depth negative.");
+        require(session.handle_punctuation('>').commit == "》", "Book title nesting did not return to depth zero.");
         require(session.handle_punctuation('<').commit == "《" && session.handle_punctuation('>').commit == "》",
                 "Book-title brackets were not converted to Chinese punctuation.");
         require(session.handle_punctuation('\\').commit == "、", "The enumeration comma was not converted.");
