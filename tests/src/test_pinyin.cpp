@@ -455,6 +455,45 @@ void test_quanpin_four_syllable_alternative_segmentation()
     expect(found != nullptr, "Expected '简明扼要' among the candidates for 'jianmingeyao'.");
 }
 
+void test_quanpin_single_letter_jianpin_ranking()
+{
+    ScopedLocalAppDataOverride local_appdata("single-letter-jianpin-ranking");
+    QuanpinDictionary dictionary;
+
+    fmt::println("==== Quanpin Single Letter Jianpin Ranking ====");
+    // A single-letter context mixes entry keys: 一 comes from yi, 有 from you.
+    const auto before = dictionary.query("y");
+    const WordItem *selected = find_candidate(before, "有");
+    const WordItem *rival = find_candidate(before, "一");
+    expect(selected != nullptr, "Expected '有' among the candidates for 'y'.");
+    if (rival == nullptr || rival->weight <= selected->weight)
+    {
+        fmt::println("Skipped: '一' does not outweigh '有' in this dictionary.");
+        return;
+    }
+
+    // The server keys a selection by its canonical pinyin, so entry_key is 'you'
+    // while context_key stays 'y'.
+    const std::string entry_key =
+        selected->canonical_pinyin.empty() ? selected->pinyin : selected->canonical_pinyin;
+    bool ranking_changed = false;
+    expect(user_dictionary::adjust_candidate_ranking(
+               local_appdata.local_appdata() + "\\metasequoiaime\\msime.db",
+               user_dictionary::default_user_db_path(), "y", before, entry_key, "有", "promote", 1, 1, true,
+               &ranking_changed),
+           "Expected the single-letter ranking adjustment to succeed.");
+    expect(ranking_changed, "Expected the single-letter ranking adjustment to write a weight.");
+
+    QuanpinDictionary reloaded;
+    const auto after = reloaded.query("y");
+    const WordItem *promoted = find_candidate(after, "有");
+    const WordItem *demoted = find_candidate(after, "一");
+    expect(promoted != nullptr, "Expected '有' to survive the ranking adjustment.");
+    expect(demoted == nullptr || promoted->weight > demoted->weight,
+           fmt::format("Expected '有' to outweigh '一' under context 'y', got {} and {}.", promoted->weight,
+                       demoted == nullptr ? 0 : demoted->weight));
+}
+
 void test_quanpin_query_timings()
 {
     QuanpinDictionary dictionary;
@@ -500,6 +539,7 @@ int main(int argc, char *argv[])
         test_shuangpin_dictionary_create_pin_delete_three_syllables();
         test_shuangpin_query_manual_apostrophe();
         test_quanpin_four_syllable_alternative_segmentation();
+        test_quanpin_single_letter_jianpin_ranking();
         test_quanpin_query_timings();
         fmt::println("All tests passed.");
         return 0;
