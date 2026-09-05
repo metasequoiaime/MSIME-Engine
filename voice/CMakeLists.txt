@@ -1,87 +1,76 @@
-cmake_minimum_required(VERSION 3.25.0)
-project(MetasequoiaVoiceInput VERSION 1.0)
-
-# Set C++ standard
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-# Windows-specific settings
-if(MSVC)
-    add_definitions(
-        /D_UNICODE=1
-        /DUNICODE=1
-        /DNOMINMAX
-    )
+cmake_minimum_required(VERSION 3.25)
+project(MetasequoiaImeVoice LANGUAGES C CXX)
+if(APPLE)
+    enable_language(OBJC OBJCXX)
 endif()
-
-# Dependencies
-find_package(fmt CONFIG REQUIRED)
-find_package(CURL CONFIG REQUIRED)
+if(PROJECT_IS_TOP_LEVEL)
+    include(CTest)
+endif()
+option(MSIME_VOICE_CAPTURE "Build the cross-platform miniaudio capture adapter" ON)
+option(MSIME_VOICE_WHISPER "Build the optional local whisper.cpp provider" OFF)
+option(MSIME_VOICE_WINDOWS_APP "Build the imported standalone Windows host" OFF)
+option(MSIME_VOICE_APPLE_EXAMPLE "Build the macOS host example" OFF)
+find_package(CURL REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
-find_package(tomlplusplus CONFIG REQUIRED)
-
-# miniaudio
-include_directories(third_party/miniaudio)
-
-# Source files (Explicit list to avoid GLOB issues)
-set(SOURCE_FILES
-    "src/audio_capture.cpp"
-    "src/audio_capture.h"
-    "src/cloud_stt_worker.cpp"
-    "src/cloud_stt_worker.h"
-    "src/cue_player.cpp"
-    "src/cue_player.h"
-    "src/main.cpp"
-    "src/resource/resource.h"
-    "src/resource/app.rc"
-    "src/mvi_config.cpp"
-    "src/mvi_config.h"
-    "src/mvi_utils.cpp"
-    "src/mvi_utils.h"
-    "src/send_input.cpp"
-    "src/send_input.h"
-    "src/stt_service.h"
-    "src/text_polisher.cpp"
-    "src/text_polisher.h"
-    "src/vad.cpp"
-    "src/vad.h"
-    "src/wave_overlay.cpp"
-    "src/wave_overlay.h"
-    "src/wav_writer.h"
-    "src/window_webview2.cpp"
-    "src/window_webview2.h"
-)
-
-set(MY_EXECUTABLE_NAME "MetasequoiaVoiceInput")
-add_executable(${MY_EXECUTABLE_NAME} ${SOURCE_FILES})
-
-# Build as a GUI app so no console window is shown at runtime.
+find_package(Threads REQUIRED)
+add_library(MetasequoiaImeVoice STATIC src/vad.cpp src/cloud_stt_worker.cpp src/text_polisher.cpp src/http_client.cpp)
+add_library(MetasequoiaIme::Voice ALIAS MetasequoiaImeVoice)
+target_compile_features(MetasequoiaImeVoice PUBLIC cxx_std_17)
+target_include_directories(MetasequoiaImeVoice PUBLIC include include/msime/voice)
+target_link_libraries(MetasequoiaImeVoice PRIVATE CURL::libcurl nlohmann_json::nlohmann_json PUBLIC Threads::Threads)
 if(MSVC)
-    target_link_options(${MY_EXECUTABLE_NAME}
-        PRIVATE
-        /SUBSYSTEM:WINDOWS
-        /ENTRY:mainCRTStartup
-    )
+    target_compile_options(MetasequoiaImeVoice PRIVATE /W4 /utf-8)
+else()
+    target_compile_options(MetasequoiaImeVoice PRIVATE -Wall -Wextra -Wpedantic)
 endif()
-
-# Link libraries
-target_link_libraries(${MY_EXECUTABLE_NAME}
-    PRIVATE
-    fmt::fmt
-    CURL::libcurl
-    nlohmann_json::nlohmann_json
-    tomlplusplus::tomlplusplus
-    d2d1
-    User32
-    dwmapi
-)
-
-# Target include directories
-target_include_directories(${MY_EXECUTABLE_NAME}
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/miniaudio
-    ${CMAKE_SOURCE_DIR}/build/vcpkg_installed/x64-windows/include
-)
+if(MSIME_VOICE_CAPTURE)
+    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/miniaudio/miniaudio.h")
+        message(FATAL_ERROR "Initialize voice/third_party/miniaudio from the Engine repository root")
+    endif()
+    add_library(MetasequoiaImeVoiceCapture STATIC src/audio_capture.cpp)
+    add_library(MetasequoiaIme::VoiceCapture ALIAS MetasequoiaImeVoiceCapture)
+    target_compile_features(MetasequoiaImeVoiceCapture PUBLIC cxx_std_17)
+    target_include_directories(MetasequoiaImeVoiceCapture PUBLIC include include/msime/voice PRIVATE third_party/miniaudio)
+    target_link_libraries(MetasequoiaImeVoiceCapture PUBLIC Threads::Threads PRIVATE ${CMAKE_DL_LIBS})
+    if(APPLE)
+        target_link_libraries(MetasequoiaImeVoiceCapture PRIVATE "-framework CoreFoundation" "-framework CoreAudio" "-framework AudioToolbox")
+    elseif(WIN32)
+        target_link_libraries(MetasequoiaImeVoiceCapture PRIVATE ole32)
+    else()
+        target_link_libraries(MetasequoiaImeVoiceCapture PRIVATE m)
+    endif()
+endif()
+if(MSIME_VOICE_WHISPER)
+    set(WHISPER_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(WHISPER_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(WHISPER_BUILD_SERVER OFF CACHE BOOL "" FORCE)
+    add_subdirectory(third_party/whisper.cpp EXCLUDE_FROM_ALL)
+    add_library(MetasequoiaImeVoiceWhisper STATIC src/whisper_worker.cpp)
+    add_library(MetasequoiaIme::VoiceWhisper ALIAS MetasequoiaImeVoiceWhisper)
+    target_compile_features(MetasequoiaImeVoiceWhisper PUBLIC cxx_std_17)
+    target_include_directories(MetasequoiaImeVoiceWhisper PUBLIC include include/msime/voice)
+    target_link_libraries(MetasequoiaImeVoiceWhisper PRIVATE whisper PUBLIC Threads::Threads)
+endif()
+if(BUILD_TESTING)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter)
+    add_executable(test_voice tests/test_voice.cpp)
+    target_link_libraries(test_voice PRIVATE MetasequoiaIme::Voice)
+    add_test(NAME voice_audio_contract COMMAND test_voice)
+    add_test(NAME voice_http_contract COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_http.py $<TARGET_FILE:test_voice>)
+    if(MSIME_VOICE_CAPTURE)
+        add_executable(test_voice_capture tests/test_capture.cpp)
+        target_link_libraries(test_voice_capture PRIVATE MetasequoiaIme::VoiceCapture)
+        add_test(NAME voice_capture_lifetime COMMAND test_voice_capture)
+    endif()
+    if(MSIME_VOICE_WHISPER)
+        add_executable(test_voice_whisper tests/test_whisper.cpp)
+        target_link_libraries(test_voice_whisper PRIVATE MetasequoiaIme::VoiceWhisper)
+        add_test(NAME voice_whisper_invalid_model COMMAND test_voice_whisper)
+    endif()
+endif()
+if(MSIME_VOICE_WINDOWS_APP)
+    add_subdirectory(platforms/windows)
+endif()
+if(MSIME_VOICE_APPLE_EXAMPLE)
+    add_subdirectory(examples/macos)
+endif()

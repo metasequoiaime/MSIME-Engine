@@ -172,3 +172,8 @@ if(BUILD_TESTING)
     target_link_libraries(test_online_input_session PRIVATE MetasequoiaIme::Engine)
     add_test(NAME online_input_session COMMAND test_online_input_session)
 endif()
+
+option(METASEQUOIA_IME_BUILD_VOICE "Build shared voice input capabilities" OFF)
+if(METASEQUOIA_IME_BUILD_VOICE)
+    add_subdirectory(voice)
+endif()

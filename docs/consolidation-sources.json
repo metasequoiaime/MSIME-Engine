@@ -22,6 +22,11 @@
       "repository": "metasequoiaime/MetasequoiaImeHelpCode",
       "commit": "37069955b24c1497f04badbd4c8207fdb9cdd535",
       "prefix": "helpcode"
+    },
+    {
+      "repository": "metasequoiaime/MetasequoiaVoiceInput",
+      "commit": "413f734e1d4694748d3cf88b8df95f37528e8a97",
+      "prefix": "voice"
     }
   ],
   "previous_dict_pins": {

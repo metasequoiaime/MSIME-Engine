@@ -25,3 +25,11 @@ CustomDict 导入当前 main，而非 Dict 原先固定的 `691ef18`：包含更
 5. 所有平台迁完后再单独处理旧仓归档与入口说明；本变更不归档仓库。
 
 导入数据的来源和许可按 [NOTICE.md](../NOTICE.md) 保留；仓库边界改变不代表统一重新授权。
+
+## VoiceInput 公共化
+
+VoiceInput 也以保留完整历史的 subtree 导入 `voice/`。公共目标只包含 PCM/WAV、RMS VAD、云识别/文本整理、可选 miniaudio 录音和 Whisper；Windows UI 单独移到 `voice/platforms/windows/` 并链接公共目标。macOS 示例直接调用同一实现。
+
+平台接入必须在生产者合入后固定合入提交。当前 Server 的 Doubao/WebSocket 等新增能力没有回退到旧 VoiceInput，也未在本变更中迁移。Apple 的产品 UI 和 iOS 主 App/键盘通信属于消费端接入，本变更提供可编译运行的 macOS 示例及公共库。
+
+迁移验证：默认 Engine 13 项 CTest、词库 Python/自定义包/notice 校验、完整 desktop/mobile 及同仓查询回放通过；相同输入的出货 payload SHA-256 对比保存在 `consolidation-payloads.json`。

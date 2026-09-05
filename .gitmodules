@@ -4,3 +4,11 @@
 [submodule "utfcpp"]
 	path = utfcpp
 	url = https://github.com/nemtrif/utfcpp.git
+
+[submodule "voice/third_party/miniaudio"]
+	path = voice/third_party/miniaudio
+	url = https://github.com/mackron/miniaudio
+
+[submodule "voice/third_party/whisper.cpp"]
+	path = voice/third_party/whisper.cpp
+	url = https://github.com/ggml-org/whisper.cpp

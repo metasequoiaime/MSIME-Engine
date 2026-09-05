@@ -1,3 +1,7 @@
+# 公共语音模块
+
+本仓现已合入 MSIME-Engine，跨平台构建、公共 API 与 Apple 接入方式见 [公共模块说明](README.md)。原 Windows 独立程序说明见 [Windows host](platforms/windows/README.md)。
+
 # Metasequoia Voice Input（水杉记言）
 
 [English](README.md) | 简体中文

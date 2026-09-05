@@ -2,7 +2,7 @@
 
 组织级约定和跨仓边界以 [组织 AGENTS.md](https://github.com/metasequoiaime/.github/blob/main/AGENTS.md) 为准。本文件补充本仓的实现、数据和验证规则。
 
-本仓拥有跨平台输入引擎及公共数据：`dictionary/` 负责建库，`dictionary/custom/` 负责人工词条和专业包，`helpcode/` 负责辅助码。平台 UI、权限和上屏适配仍由平台仓维护。修改数据时同时遵循 `dictionary/AGENTS.md`。
+本仓拥有跨平台输入引擎及公共数据：`dictionary/` 负责建库，`dictionary/custom/` 负责人工词条和专业包，`helpcode/` 负责辅助码。`voice/` 负责可选公共语音模块，规则见 `voice/AGENTS.md`；导入的 Windows 独立程序位于 `voice/platforms/windows/`，不进入公共库目标。平台 UI、权限和上屏适配仍由平台仓维护。修改数据时同时遵循 `dictionary/AGENTS.md`。
 
 ## 构建与测试
 

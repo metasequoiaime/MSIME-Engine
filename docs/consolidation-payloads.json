@@ -1,0 +1,34 @@
+{
+  "desktop": {
+    "msime.db": {
+      "sha256": "9d68d430323486b1f72d7f5131b7450dfa0648d778a407a6f943b752fbc4d7d2",
+      "matches_baseline": true
+    },
+    "english.db": {
+      "sha256": "8f2fef7154fd51278583e7b81d865df0b87db69aba3854aeb4f1cd32120e73db",
+      "matches_baseline": true
+    },
+    "others.db": {
+      "sha256": "7cd69890242ea659f0840a5162229ea13764eaeb1dc035de54fec750f4fff45c",
+      "matches_baseline": true
+    },
+    "dict_japanese.dat": {
+      "sha256": "8baafcfc3881d0280cdda8bda7cf3968d8f8fbc94243fea94847cff2b6e2cd66",
+      "matches_baseline": true
+    },
+    "mozc_dictionary_oss_README.txt": {
+      "sha256": "6b1de66bc6fa30e0b45dc45b8c8f6c57bd78aff923c261a3efffac8eb86f7bac",
+      "matches_baseline": true
+    }
+  },
+  "mobile": {
+    "msime.db": {
+      "sha256": "64156f5e3c0594341a420a88422a1835877e8da9bf3e4677b319bb721ccb3a57",
+      "matches_baseline": true
+    },
+    "msime.db.sha256": {
+      "sha256": "05688fdcfecac3ecea0a34bf1c47a432c7a9a168c0566c55d0505f1f01c68239",
+      "matches_baseline": true
+    }
+  }
+}

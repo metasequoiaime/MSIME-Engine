@@ -2,12 +2,18 @@
 #include <vector>
 #include <cstdint>
 #include <cstring>
+#include <cmath>
+#include "stt_service.h"
+
+namespace metasequoia::voice {
 
 class WavWriter
 {
   public:
     static std::vector<uint8_t> create_wav(const std::vector<float> &pcm_data, int sample_rate = 16000)
     {
+        if (sample_rate != metasequoia::voice::sample_rate || pcm_data.size() > maximum_samples)
+            throw VoiceError("Expected at most 60 seconds of mono 16 kHz audio");
         std::vector<uint8_t> wav_data;
 
         // Convert float PCM to 16-bit integers
@@ -15,6 +21,7 @@ class WavWriter
         pcm16.reserve(pcm_data.size());
         for (float s : pcm_data)
         {
+            if (!std::isfinite(s)) throw VoiceError("Audio contains a non-finite sample");
             // Clip
             if (s > 1.0f)
                 s = 1.0f;
@@ -46,8 +53,7 @@ class WavWriter
         write_u32(wav_data, data_size);
 
         // Append PCM data
-        const uint8_t *pcm_bytes = reinterpret_cast<const uint8_t *>(pcm16.data());
-        wav_data.insert(wav_data.end(), pcm_bytes, pcm_bytes + data_size);
+        for (int16_t sample : pcm16) write_u16(wav_data, static_cast<uint16_t>(sample));
 
         return wav_data;
     }
@@ -70,3 +76,5 @@ class WavWriter
         buf.push_back((val >> 8) & 0xFF);
     }
 };
+
+} // namespace metasequoia::voice

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>CFBundleExecutable</key><string>MSIMEVoiceExample</string>
+<key>CFBundleIdentifier</key><string>org.metasequoiaime.voice-example</string>
+<key>CFBundleName</key><string>MSIME Voice Example</string>
+<key>CFBundlePackageType</key><string>APPL</string>
+<key>NSMicrophoneUsageDescription</key><string>Record speech when you press Start, and transcribe it using your configured service.</string>
+<key>NSHighResolutionCapable</key><true/>
+</dict></plist>

@@ -1,6 +1,6 @@
 # Metasequoia IME Engine（水杉输入法引擎）
 
-水杉输入法的公共仓库：输入引擎、词库构建、自定义词库和辅助码。引擎现有头文件路径与 `MetasequoiaIme::Engine` 目标保持兼容，各平台前端继续独立维护。
+水杉输入法的公共仓库：输入引擎、词库构建、自定义词库、辅助码和公共语音模块。引擎现有头文件路径与 `MetasequoiaIme::Engine` 目标保持兼容，各平台前端继续独立维护。
 
 | 目录 | 职责 |
 |---|---|
@@ -9,6 +9,7 @@
 | `dictionary/` | 原 MSIME-Dict 的源数据和构建脚本 |
 | `dictionary/custom/` | 原 CustomDict 的词条、翻译覆盖和可选专业包 |
 | `helpcode/` | 原 HelpCode 的数据和生成脚本 |
+| `voice/` | 公共语音录音、识别、文本处理；独立可选构建 |
 
 迁移来源、历史与下游接入顺序见 [合仓说明](docs/consolidation.md)。
 
@@ -89,3 +90,7 @@ python build_profile.py --profile mobile --verify
 ## 跨仓约定
 
 组织边界以 [组织 AGENTS.md](https://github.com/metasequoiaime/.github/blob/main/AGENTS.md) 为准。词库命名权威定义为 `contracts/dictionary/format.json`，同仓 Python 建库与 C++ 查询共同使用，禁止在消费端复制规则。
+
+## 公共语音
+
+[VoiceInput](voice/README.md) 提供 `MetasequoiaIme::Voice`、`VoiceCapture` 和可选 `VoiceWhisper`。Windows 与 Apple 可直接链接相同实现。根构建通过 `METASEQUOIA_IME_BUILD_VOICE=ON` 开启，也可独立构建 `voice/`。平台权限、快捷键、界面和上屏由宿主负责；macOS 示例见 `voice/examples/macos/`。

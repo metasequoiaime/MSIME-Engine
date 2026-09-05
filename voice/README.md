@@ -1,79 +1,81 @@
-# Metasequoia Voice Input(水杉记言)
+# Shared VoiceInput（水杉公共语音模块）
 
-English | [简体中文](README.zh-CN.md)
+VoiceInput is now part of MSIME-Engine. Windows, macOS and Linux hosts can link the same C++17 library without linking the keyboard engine or copying recognition code. Apple callers use Objective-C++; a complete macOS host is in `examples/macos/`.
 
-This is a voice input module for [MSIME-Windows](https://github.com/metasequoiaime/MSIME-Windows). However, it can be used as a standalone voice input tool for any application without other MetasequoiaIME components.
+| Target | Responsibility | Dependencies |
+|---|---|---|
+| `MetasequoiaIme::Voice` | Mono PCM/WAV, RMS voice segmentation, configurable HTTP transcription and optional text cleanup | libcurl, nlohmann-json |
+| `MetasequoiaIme::VoiceCapture` | Per-instance microphone capture, converted to mono 16 kHz float PCM | pinned miniaudio |
+| `MetasequoiaIme::VoiceWhisper` | Optional local recognition | pinned whisper.cpp; model supplied by host |
 
-## How to run
+UI, microphone permissions, hotkeys, token storage and committing text belong to platform hosts. The library returns UTF-8 text and does not simulate keys. Root Engine builds have `METASEQUOIA_IME_BUILD_VOICE=OFF` by default. For a root vcpkg build with voice enabled, add `VCPKG_MANIFEST_FEATURES=voice`. Voice can also be built independently, so a host that only needs speech does not acquire Boost, SQLite or dictionary dependencies.
 
-Download release exe file from [releases](https://github.com/metasequoiaime/MetasequoiaVoiceInput/releases).
+## Build
 
-Then, copy all the contents of this project's `assets` folder to `$env:LOCALAPPDATA\MetasequoiaVoiceInput\`. And replace your siliconflow token in `config.toml`.
+From the Engine root:
 
-Then, run `MetasequoiaVoiceInput.exe`.
-
-## Usage
-
-- **Hotkeys**:
-  - RAlt pressed to start recording, release to stop recording and send text to active application
-  - RAlt + Space: Lock recording
-  - Ctrl + F9: Toggle recording
-
-## Configuration
-
-Edit `$env:LOCALAPPDATA\MetasequoiaVoiceInput\config.toml` (create if not exists) to configure the application.
-
-e.g. in my system, the path is:
-
-```
-C:\Users\sonnycalcr\AppData\Local\MetasequoiaVoiceInput\config.toml
+```sh
+git submodule update --init voice/third_party/miniaudio
+# macOS
+brew install nlohmann-json
+# Ubuntu: sudo apt-get install cmake libcurl4-openssl-dev nlohmann-json3-dev
+cmake -S voice -B build-voice -DCMAKE_BUILD_TYPE=Release
+cmake --build build-voice --parallel
+ctest --test-dir build-voice --output-on-failure
 ```
 
-Below is a template:
+Windows uses the manifest in `voice/vcpkg.json`:
 
-```toml
-# 自动语音识别（ASR）配置
-[asr_api]
-# API 基础地址
-endpoint = "https://api.siliconflow.cn/v1/audio/transcriptions"
-# 服务提供商（如：azure、openai、deepgram 等）
-provider = "siliconflow"
-# API 访问令牌
-token = "<YOUR_OWN_TOKE>"
-
-# 文本润色配置
-[polish_api]
-# API 基础地址
-endpoint = "https://api.siliconflow.cn/v1/chat/completions"
-# 服务提供商（如：azure、openai、deepgram 等）
-provider = "siliconflow"
-# API 访问令牌
-token = "<YOUR_OWN_TOKE>"
-
-# 基础设置
-[settings]
-# 偏好语言
-language = "zh-cn"
-# 触发时是否播放提示音
-notification_sound = true
-# 上屏前是否要先进行文本润色
-polish_text = false
-# 可以选择的值有：local_whisper, cloud_siliconflow
-stt_provider = "cloud_siliconflow"
+```powershell
+cmake -S voice -B build-voice -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static
+cmake --build build-voice --config Release --parallel
+ctest --test-dir build-voice -C Release --output-on-failure
 ```
 
-You can also change these config in settings window:
+Set `MSIME_VOICE_CAPTURE=OFF` if the host already supplies PCM. For local Whisper, initialize `voice/third_party/whisper.cpp` and set `MSIME_VOICE_WHISPER=ON`. Models are not downloaded by the library. Imported Silero/ONNX code was not built by the old application either; it remains historical Windows-host code, outside the supported public targets. The supported VAD here is RMS-based.
 
-![](https://i.imgur.com/Q3Jct2Z.png)
+## Call from a host
 
-![](https://i.imgur.com/9j2IV9X.png)
+```cmake
+# After adding Engine with METASEQUOIA_IME_BUILD_VOICE=ON, or independently:
+add_subdirectory(path/to/MSIME-Engine/voice voice)
+target_link_libraries(MyHost PRIVATE MetasequoiaIme::Voice MetasequoiaIme::VoiceCapture)
+```
 
-![](https://i.imgur.com/1F47neV.png)
+```cpp
+#include <msime/voice/cloud_stt_worker.h>
+using namespace metasequoia::voice;
+RequestOptions options{endpoint, model, token, 10000, cancellationFlag};
+CloudSttWorker recognizer(options);
+std::string text = recognizer.recognize(pcm); // worker queue, mono 16 kHz floats
+// Host dispatches text to its UI/input-method thread and commits it.
+```
 
-## Notice
+`CloudSttWorker` supports the multipart `file` + `model` protocol with a JSON `text` response. This is a protocol adapter, not a claim that every provider supports that protocol. Endpoints/models are host configuration; the token-only constructor retains the old SiliconFlow defaults for the imported Windows host. WebSocket/Doubao and Server-specific providers have not been migrated by this change.
 
-- Only implemented dark-mode UI now
+Each request has a timeout and optional shared atomic cancellation flag. Set that flag to abort an in-flight request; a cancelled flag stays cancelled until the host supplies a new one. Recognition errors throw `VoiceError`. `TextPolisher` returns the original text on failure, timeout, cancellation or an empty result. It never logs tokens, audio or response bodies. Redirects are rejected, HTTP status is checked and responses are capped at 1 MiB.
 
-## License
+Input PCM must be finite mono 16 kHz float samples, at most 60 seconds per request. WAV encoding clips samples to [-1,1]. Hosts serialize capture start/stop/destruction, keep callback work short, and never stop or destroy capture from its callback. `stop()` is idempotent and waits for callbacks. A callback exception is contained and reported by `callback_failed()`. VAD callers drain `take_audio()` when appropriate; oversized unconsumed blocks throw rather than growing without limit.
 
-GPL-3.0.
+## Apple
+
+Build a standalone macOS example that links the public targets directly:
+
+```sh
+cmake -S voice -B build-voice -DMSIME_VOICE_APPLE_EXAMPLE=ON
+cmake --build build-voice --parallel
+# Provide endpoint, model and token through your local environment, then launch:
+build-voice/examples/macos/MSIMEVoiceExample.app/Contents/MacOS/MSIMEVoiceExample
+```
+
+The example reads `MSIME_ASR_ENDPOINT`, `MSIME_ASR_MODEL` and `MSIME_ASR_TOKEN`. It requests microphone permission only when Start is pressed, captures with `VoiceCapture`, calls the shared recognizer on a worker queue, displays the result on the main thread, and cancels work when the window closes. CI builds it without launching it or accessing a microphone. This validates Apple linkage; it does not automatically add a voice button to the MSIME-Apple input method.
+
+A product host must declare `NSMicrophoneUsageDescription` and request audio access, as shown in [Apple's capture authorization documentation](https://developer.apple.com/documentation/bundleresources/requesting-authorization-for-media-capture-on-macos). Hardened/sandboxed products also configure their audio-input entitlements. iOS may reuse the processing API through its containing app, but a custom keyboard extension cannot directly record audio; see [Apple's custom keyboard restrictions](https://developer.apple.com/library/archive/documentation/General/Conceptual/ExtensibilityPG/CustomKeyboard.html). This change verifies macOS; it does not implement an iOS host/extension handoff.
+
+## Imported Windows host and migration
+
+The original standalone UI and hotkeys remain under `platforms/windows/`. Build it with `MSIME_VOICE_WINDOWS_APP=ON` and `VCPKG_MANIFEST_FEATURES=windows-app`. It links the shared targets. See [the imported usage guide](platforms/windows/README.md) for the asset/config layout. Historical developer scripts are retained as references and are not the supported build entry point.
+
+MSIME-Server still has its own evolved voice service; this change does not replace or downgrade it. After this producer change merges, platform consumer changes can pin the merged Engine commit and move their adapters to the public API. Existing standalone releases remain available in the old repository.
+
+Original VoiceInput history and GPL-3.0 `LICENSE` are preserved; third-party libraries retain their own licenses. Import source: `413f734e1d4694748d3cf88b8df95f37528e8a97` in `metasequoiaime/MetasequoiaVoiceInput`.

@@ -26,6 +26,8 @@
 #include <fmt/xchar.h>
 #include <windows.h>
 
+using namespace metasequoia::voice;
+
 std::string g_cloud_token;
 std::string g_language = "zh-cn";
 bool g_polish_text = false;
@@ -273,25 +275,32 @@ int main()
                     stt_queue.pop_front();
                 }
 
-                // 只有这里才允许慢操作
-                auto start = std::chrono::steady_clock::now();
-                std::string text = stt->recognize(samples);
-                auto end = std::chrono::steady_clock::now();
-                std::cout << "[STT] Time: " << std::chrono::duration<double>(end - start).count() << "s\n";
-                if (!text.empty())
+                try
                 {
-                    printf("[STT] Recognized: %s\n", text.c_str());
-                    std::string final_text = text;
-                    if (text_polisher != nullptr)
+                    // 只有这里才允许慢操作
+                    auto start = std::chrono::steady_clock::now();
+                    std::string text = stt->recognize(samples);
+                    auto end = std::chrono::steady_clock::now();
+                    std::cout << "[STT] Time: " << std::chrono::duration<double>(end - start).count() << "s\n";
+                    if (!text.empty())
                     {
-                        auto polish_start = std::chrono::steady_clock::now();
-                        final_text = text_polisher->polish(text);
-                        auto polish_end = std::chrono::steady_clock::now();
-                        std::cout << "[POLISH] Time: " << std::chrono::duration<double>(polish_end - polish_start).count() << "s\n";
-                        printf("[POLISH] Output: %s\n", final_text.c_str());
+                        printf("[STT] Recognized: %s\n", text.c_str());
+                        std::string final_text = text;
+                        if (text_polisher != nullptr)
+                        {
+                            auto polish_start = std::chrono::steady_clock::now();
+                            final_text = text_polisher->polish(text);
+                            auto polish_end = std::chrono::steady_clock::now();
+                            std::cout << "[POLISH] Time: " << std::chrono::duration<double>(polish_end - polish_start).count() << "s\n";
+                            printf("[POLISH] Output: %s\n", final_text.c_str());
+                        }
+                        fflush(stdout);
+                        send_text(mvi_utils::utf8_to_wstring(final_text));
                     }
-                    fflush(stdout);
-                    send_text(mvi_utils::utf8_to_wstring(final_text));
+                }
+                catch (const std::exception &error)
+                {
+                    printf("[STT ERROR] %s\n", error.what());
                 }
             }
         });

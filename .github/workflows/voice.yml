@@ -1,0 +1,41 @@
+name: Shared VoiceInput
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  voice:
+    name: Voice / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Initialize capture dependency
+        run: git submodule update --init voice/third_party/miniaudio
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y cmake libcurl4-openssl-dev nlohmann-json3-dev
+      - name: Install Apple dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install nlohmann-json
+          git submodule update --init voice/third_party/whisper.cpp
+      - name: Configure Linux
+        if: runner.os == 'Linux'
+        run: cmake -S voice -B build-voice -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+      - name: Configure Apple with local recognition and host example
+        if: runner.os == 'macOS'
+        run: cmake -S voice -B build-voice -DCMAKE_BUILD_TYPE=Release -DMSIME_VOICE_WHISPER=ON -DMSIME_VOICE_APPLE_EXAMPLE=ON -DGGML_NATIVE=OFF
+      - name: Configure Windows with standalone host
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: cmake -S voice -B build-voice -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DVCPKG_MANIFEST_FEATURES=windows-app -DMSIME_VOICE_WINDOWS_APP=ON
+      - name: Build public libraries and enabled hosts
+        run: cmake --build build-voice --config Release --parallel 4
+      - name: Test synthetic audio and loopback HTTP
+        run: ctest --test-dir build-voice -C Release --output-on-failure --timeout 25
