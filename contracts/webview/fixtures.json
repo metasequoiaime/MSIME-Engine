@@ -338,5 +338,73 @@
     "valid": false,
     "surface": "candidate",
     "direction": "client"
+  },
+  {
+    "name": "paged query",
+    "message": {
+      "type": "dictionaryRequest",
+      "data": {
+        "requestId": "dict-page",
+        "dictionary": "english",
+        "action": "query",
+        "word": "a",
+        "offset": 200,
+        "limit": 200
+      }
+    },
+    "direction": "client",
+    "surface": "settings",
+    "valid": true
+  },
+  {
+    "name": "negative offset",
+    "message": {
+      "type": "dictionaryRequest",
+      "data": {
+        "requestId": "dict-page",
+        "dictionary": "english",
+        "action": "query",
+        "word": "a",
+        "offset": -1,
+        "limit": 200
+      }
+    },
+    "direction": "client",
+    "surface": "settings",
+    "valid": false
+  },
+  {
+    "name": "unbounded page",
+    "message": {
+      "type": "dictionaryRequest",
+      "data": {
+        "requestId": "dict-page",
+        "dictionary": "english",
+        "action": "query",
+        "word": "a",
+        "offset": 200,
+        "limit": 201
+      }
+    },
+    "direction": "client",
+    "surface": "settings",
+    "valid": false
+  },
+  {
+    "name": "empty page",
+    "message": {
+      "type": "dictionaryRequest",
+      "data": {
+        "requestId": "dict-page",
+        "dictionary": "english",
+        "action": "query",
+        "word": "a",
+        "offset": 200,
+        "limit": 0
+      }
+    },
+    "direction": "client",
+    "surface": "settings",
+    "valid": false
   }
 ]
