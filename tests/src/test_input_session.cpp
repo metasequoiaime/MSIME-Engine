@@ -201,6 +201,14 @@ int run_test()
         database.execute("INSERT INTO tbl_2_n VALUES('ni''hao', 'nh', '𠀀方案𠮷', 90)");
         database.execute("INSERT INTO tbl_2_n VALUES('ni''hao', 'nh', 'C语言 2', 80)");
         database.execute("INSERT INTO tbl_2_n VALUES('ni''hao', 'nh', 'GitHub', 70)");
+        database.execute("CREATE TABLE tbl_1_j(key TEXT, jp TEXT, value TEXT, weight INTEGER)");
+        database.execute("INSERT INTO tbl_1_j VALUES('ju', 'j', '居', 100)");
+        database.execute("CREATE TABLE tbl_1_q(key TEXT, jp TEXT, value TEXT, weight INTEGER)");
+        database.execute("INSERT INTO tbl_1_q VALUES('qu', 'q', '去', 100)");
+        database.execute("CREATE TABLE tbl_1_x(key TEXT, jp TEXT, value TEXT, weight INTEGER)");
+        database.execute("INSERT INTO tbl_1_x VALUES('xu', 'x', '需', 100)");
+        database.execute("CREATE TABLE tbl_1_y(key TEXT, jp TEXT, value TEXT, weight INTEGER)");
+        database.execute("INSERT INTO tbl_1_y VALUES('yu', 'y', '与', 100)");
 
         metasequoia::InputSession default_session;
         require(default_session.scheme_type() == SchemeType::Quanpin,
@@ -209,6 +217,21 @@ int run_test()
         require(default_session.helpcode_enabled(), "Helpcode should be enabled by default.");
         require(default_session.chinese_punctuation_enabled(), "Chinese punctuation should be enabled by default.");
         require(default_session.candidate_learning_enabled(), "Candidate learning should be enabled by default.");
+
+        struct UmlautAliasCase
+        {
+            const char *pinyin;
+            const char *candidate;
+        };
+        const std::array<UmlautAliasCase, 4> umlaut_alias_cases = {
+            {{"jv", "居"}, {"qv", "去"}, {"xv", "需"}, {"yv", "与"}}};
+        for (const auto &test_case : umlaut_alias_cases)
+        {
+            metasequoia::InputSession alias_session;
+            type(alias_session, test_case.pinyin);
+            require(candidate_index(alias_session, test_case.candidate) == 0,
+                    "A v-form umlaut syllable did not query its canonical dictionary key.");
+        }
 
         metasequoia::InputSession no_autocorrect_session(SchemeType::Quanpin, false);
         require(!no_autocorrect_session.quanpin_autocorrect_enabled(),
