@@ -1,0 +1,16 @@
+{
+  "references": {
+    "ECDICT": {
+      "repository": "https://github.com/skywind3000/ECDICT.git",
+      "commit": "bc015ed2e24a7abef49fc6dbbb7fe32c1dadaf8b"
+    },
+    "rime-jp_sela": {
+      "repository": "https://github.com/Selaube/rime-jp_sela.git",
+      "commit": "898e09cb5e0bd3e02216165e52fef67f5a597590"
+    }
+  },
+  "mozc": {
+    "repository": "https://github.com/google/mozc.git",
+    "commit": "9fbd649bea4c5e99cd8ad5e487213b26a953a376"
+  }
+}

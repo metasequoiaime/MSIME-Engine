@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.25)
+project(DictionaryConsumerContract LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+add_subdirectory(../../vendor/MetasequoiaImeEngine engine EXCLUDE_FROM_ALL)
+add_executable(dictionary_consumer main.cpp)
+target_link_libraries(dictionary_consumer PRIVATE MetasequoiaIme::Engine)

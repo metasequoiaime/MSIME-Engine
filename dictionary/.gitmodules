@@ -1,0 +1,6 @@
+[submodule "MetasequoiaImeCustomDict"]
+	path = MetasequoiaImeCustomDict
+	url = https://github.com/metasequoiaime/MSIME-CustomDict.git
+[submodule "vendor/MetasequoiaImeEngine"]
+	path = vendor/MetasequoiaImeEngine
+	url = https://github.com/metasequoiaime/MSIME-Engine.git

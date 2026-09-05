@@ -1,0 +1,1915 @@
+# emoji<TAB>category<TAB>sort_order
+😀	Smileys and emotion	0
+😃	Smileys and emotion	1
+😄	Smileys and emotion	2
+😁	Smileys and emotion	3
+😆	Smileys and emotion	4
+😅	Smileys and emotion	5
+🤣	Smileys and emotion	6
+😂	Smileys and emotion	7
+🙂	Smileys and emotion	8
+🙃	Smileys and emotion	9
+🫠	Smileys and emotion	10
+😉	Smileys and emotion	11
+😊	Smileys and emotion	12
+😇	Smileys and emotion	13
+🥰	Smileys and emotion	14
+😍	Smileys and emotion	15
+🤩	Smileys and emotion	16
+😘	Smileys and emotion	17
+😗	Smileys and emotion	18
+☺️	Smileys and emotion	19
+😚	Smileys and emotion	20
+😙	Smileys and emotion	21
+🥲	Smileys and emotion	22
+😋	Smileys and emotion	23
+😛	Smileys and emotion	24
+😜	Smileys and emotion	25
+🤪	Smileys and emotion	26
+😝	Smileys and emotion	27
+🤑	Smileys and emotion	28
+🤗	Smileys and emotion	29
+🤭	Smileys and emotion	30
+🫢	Smileys and emotion	31
+🫣	Smileys and emotion	32
+🤫	Smileys and emotion	33
+🤔	Smileys and emotion	34
+🫡	Smileys and emotion	35
+🤐	Smileys and emotion	36
+🤨	Smileys and emotion	37
+😐	Smileys and emotion	38
+😑	Smileys and emotion	39
+😶	Smileys and emotion	40
+🫥	Smileys and emotion	41
+😶‍🌫️	Smileys and emotion	42
+😏	Smileys and emotion	43
+😒	Smileys and emotion	44
+🙄	Smileys and emotion	45
+😬	Smileys and emotion	46
+😮‍💨	Smileys and emotion	47
+🤥	Smileys and emotion	48
+🫨	Smileys and emotion	49
+🙂‍↔️	Smileys and emotion	50
+🙂‍↕️	Smileys and emotion	51
+😌	Smileys and emotion	52
+😔	Smileys and emotion	53
+😪	Smileys and emotion	54
+🤤	Smileys and emotion	55
+😴	Smileys and emotion	56
+🫩	Smileys and emotion	57
+😷	Smileys and emotion	58
+🤒	Smileys and emotion	59
+🤕	Smileys and emotion	60
+🤢	Smileys and emotion	61
+🤮	Smileys and emotion	62
+🤧	Smileys and emotion	63
+🥵	Smileys and emotion	64
+🥶	Smileys and emotion	65
+🥴	Smileys and emotion	66
+😵	Smileys and emotion	67
+😵‍💫	Smileys and emotion	68
+🤯	Smileys and emotion	69
+🤠	Smileys and emotion	70
+🥳	Smileys and emotion	71
+🥸	Smileys and emotion	72
+😎	Smileys and emotion	73
+🤓	Smileys and emotion	74
+🧐	Smileys and emotion	75
+😕	Smileys and emotion	76
+🫤	Smileys and emotion	77
+😟	Smileys and emotion	78
+🙁	Smileys and emotion	79
+☹️	Smileys and emotion	80
+😮	Smileys and emotion	81
+😯	Smileys and emotion	82
+😲	Smileys and emotion	83
+😳	Smileys and emotion	84
+🫪	Smileys and emotion	85
+🥺	Smileys and emotion	86
+🥹	Smileys and emotion	87
+😦	Smileys and emotion	88
+😧	Smileys and emotion	89
+😨	Smileys and emotion	90
+😰	Smileys and emotion	91
+😥	Smileys and emotion	92
+😢	Smileys and emotion	93
+😭	Smileys and emotion	94
+😱	Smileys and emotion	95
+😖	Smileys and emotion	96
+😣	Smileys and emotion	97
+😞	Smileys and emotion	98
+😓	Smileys and emotion	99
+😩	Smileys and emotion	100
+😫	Smileys and emotion	101
+🥱	Smileys and emotion	102
+😤	Smileys and emotion	103
+😡	Smileys and emotion	104
+😠	Smileys and emotion	105
+🤬	Smileys and emotion	106
+😈	Smileys and emotion	107
+👿	Smileys and emotion	108
+💀	Smileys and emotion	109
+☠️	Smileys and emotion	110
+💩	Smileys and emotion	111
+🤡	Smileys and emotion	112
+👹	Smileys and emotion	113
+👺	Smileys and emotion	114
+👻	Smileys and emotion	115
+👽	Smileys and emotion	116
+👾	Smileys and emotion	117
+🤖	Smileys and emotion	118
+😺	Smileys and emotion	119
+😸	Smileys and emotion	120
+😹	Smileys and emotion	121
+😻	Smileys and emotion	122
+😼	Smileys and emotion	123
+😽	Smileys and emotion	124
+🙀	Smileys and emotion	125
+😿	Smileys and emotion	126
+😾	Smileys and emotion	127
+🙈	Smileys and emotion	128
+🙉	Smileys and emotion	129
+🙊	Smileys and emotion	130
+💌	Smileys and emotion	131
+💘	Smileys and emotion	132
+💝	Smileys and emotion	133
+💖	Smileys and emotion	134
+💗	Smileys and emotion	135
+💓	Smileys and emotion	136
+💞	Smileys and emotion	137
+💕	Smileys and emotion	138
+💟	Smileys and emotion	139
+❣️	Smileys and emotion	140
+💔	Smileys and emotion	141
+❤️‍🔥	Smileys and emotion	142
+❤️‍🩹	Smileys and emotion	143
+❤️	Smileys and emotion	144
+🩷	Smileys and emotion	145
+🧡	Smileys and emotion	146
+💛	Smileys and emotion	147
+💚	Smileys and emotion	148
+💙	Smileys and emotion	149
+🩵	Smileys and emotion	150
+💜	Smileys and emotion	151
+🤎	Smileys and emotion	152
+🖤	Smileys and emotion	153
+🩶	Smileys and emotion	154
+🤍	Smileys and emotion	155
+💋	Smileys and emotion	156
+💯	Smileys and emotion	157
+💢	Smileys and emotion	158
+🫯	Smileys and emotion	159
+💥	Smileys and emotion	160
+💫	Smileys and emotion	161
+💦	Smileys and emotion	162
+💨	Smileys and emotion	163
+🕳️	Smileys and emotion	164
+💬	Smileys and emotion	165
+👁️‍🗨️	Smileys and emotion	166
+🗨️	Smileys and emotion	167
+🗯️	Smileys and emotion	168
+💭	Smileys and emotion	169
+💤	Smileys and emotion	170
+👋	People and body	171
+🤚	People and body	172
+🖐️	People and body	173
+✋	People and body	174
+🖖	People and body	175
+🫱	People and body	176
+🫲	People and body	177
+🫳	People and body	178
+🫴	People and body	179
+🫷	People and body	180
+🫸	People and body	181
+👌	People and body	182
+🤌	People and body	183
+🤏	People and body	184
+✌️	People and body	185
+🤞	People and body	186
+🫰	People and body	187
+🤟	People and body	188
+🤘	People and body	189
+🤙	People and body	190
+👈	People and body	191
+👉	People and body	192
+👆	People and body	193
+🖕	People and body	194
+👇	People and body	195
+☝️	People and body	196
+🫵	People and body	197
+👍	People and body	198
+👎	People and body	199
+✊	People and body	200
+👊	People and body	201
+🤛	People and body	202
+🤜	People and body	203
+👏	People and body	204
+🙌	People and body	205
+🫶	People and body	206
+👐	People and body	207
+🤲	People and body	208
+🤝	People and body	209
+🙏	People and body	210
+✍️	People and body	211
+💅	People and body	212
+🤳	People and body	213
+💪	People and body	214
+🦾	People and body	215
+🦿	People and body	216
+🦵	People and body	217
+🦶	People and body	218
+👂	People and body	219
+🦻	People and body	220
+👃	People and body	221
+🧠	People and body	222
+🫀	People and body	223
+🫁	People and body	224
+🦷	People and body	225
+🦴	People and body	226
+👀	People and body	227
+👁️	People and body	228
+👅	People and body	229
+👄	People and body	230
+🫦	People and body	231
+👶	People and body	232
+🧒	People and body	233
+👦	People and body	234
+👧	People and body	235
+🧑	People and body	236
+👱	People and body	237
+👨	People and body	238
+🧔	People and body	239
+🧔‍♂️	People and body	240
+🧔‍♀️	People and body	241
+👨‍🦰	People and body	242
+👨‍🦱	People and body	243
+👨‍🦳	People and body	244
+👨‍🦲	People and body	245
+👩	People and body	246
+👩‍🦰	People and body	247
+🧑‍🦰	People and body	248
+👩‍🦱	People and body	249
+🧑‍🦱	People and body	250
+👩‍🦳	People and body	251
+🧑‍🦳	People and body	252
+👩‍🦲	People and body	253
+🧑‍🦲	People and body	254
+👱‍♀️	People and body	255
+👱‍♂️	People and body	256
+🧓	People and body	257
+👴	People and body	258
+👵	People and body	259
+🙍	People and body	260
+🙍‍♂️	People and body	261
+🙍‍♀️	People and body	262
+🙎	People and body	263
+🙎‍♂️	People and body	264
+🙎‍♀️	People and body	265
+🙅	People and body	266
+🙅‍♂️	People and body	267
+🙅‍♀️	People and body	268
+🙆	People and body	269
+🙆‍♂️	People and body	270
+🙆‍♀️	People and body	271
+💁	People and body	272
+💁‍♂️	People and body	273
+💁‍♀️	People and body	274
+🙋	People and body	275
+🙋‍♂️	People and body	276
+🙋‍♀️	People and body	277
+🧏	People and body	278
+🧏‍♂️	People and body	279
+🧏‍♀️	People and body	280
+🙇	People and body	281
+🙇‍♂️	People and body	282
+🙇‍♀️	People and body	283
+🤦	People and body	284
+🤦‍♂️	People and body	285
+🤦‍♀️	People and body	286
+🤷	People and body	287
+🤷‍♂️	People and body	288
+🤷‍♀️	People and body	289
+🧑‍⚕️	People and body	290
+👨‍⚕️	People and body	291
+👩‍⚕️	People and body	292
+🧑‍🎓	People and body	293
+👨‍🎓	People and body	294
+👩‍🎓	People and body	295
+🧑‍🏫	People and body	296
+👨‍🏫	People and body	297
+👩‍🏫	People and body	298
+🧑‍⚖️	People and body	299
+👨‍⚖️	People and body	300
+👩‍⚖️	People and body	301
+🧑‍🌾	People and body	302
+👨‍🌾	People and body	303
+👩‍🌾	People and body	304
+🧑‍🍳	People and body	305
+👨‍🍳	People and body	306
+👩‍🍳	People and body	307
+🧑‍🔧	People and body	308
+👨‍🔧	People and body	309
+👩‍🔧	People and body	310
+🧑‍🏭	People and body	311
+👨‍🏭	People and body	312
+👩‍🏭	People and body	313
+🧑‍💼	People and body	314
+👨‍💼	People and body	315
+👩‍💼	People and body	316
+🧑‍🔬	People and body	317
+👨‍🔬	People and body	318
+👩‍🔬	People and body	319
+🧑‍💻	People and body	320
+👨‍💻	People and body	321
+👩‍💻	People and body	322
+🧑‍🎤	People and body	323
+👨‍🎤	People and body	324
+👩‍🎤	People and body	325
+🧑‍🎨	People and body	326
+👨‍🎨	People and body	327
+👩‍🎨	People and body	328
+🧑‍✈️	People and body	329
+👨‍✈️	People and body	330
+👩‍✈️	People and body	331
+🧑‍🚀	People and body	332
+👨‍🚀	People and body	333
+👩‍🚀	People and body	334
+🧑‍🚒	People and body	335
+👨‍🚒	People and body	336
+👩‍🚒	People and body	337
+👮	People and body	338
+👮‍♂️	People and body	339
+👮‍♀️	People and body	340
+🕵️	People and body	341
+🕵️‍♂️	People and body	342
+🕵️‍♀️	People and body	343
+💂	People and body	344
+💂‍♂️	People and body	345
+💂‍♀️	People and body	346
+🥷	People and body	347
+👷	People and body	348
+👷‍♂️	People and body	349
+👷‍♀️	People and body	350
+🫅	People and body	351
+🤴	People and body	352
+👸	People and body	353
+👳	People and body	354
+👳‍♂️	People and body	355
+👳‍♀️	People and body	356
+👲	People and body	357
+🧕	People and body	358
+🤵	People and body	359
+🤵‍♂️	People and body	360
+🤵‍♀️	People and body	361
+👰	People and body	362
+👰‍♂️	People and body	363
+👰‍♀️	People and body	364
+🤰	People and body	365
+🫃	People and body	366
+🫄	People and body	367
+🤱	People and body	368
+👩‍🍼	People and body	369
+👨‍🍼	People and body	370
+🧑‍🍼	People and body	371
+👼	People and body	372
+🎅	People and body	373
+🤶	People and body	374
+🧑‍🎄	People and body	375
+🦸	People and body	376
+🦸‍♂️	People and body	377
+🦸‍♀️	People and body	378
+🦹	People and body	379
+🦹‍♂️	People and body	380
+🦹‍♀️	People and body	381
+🧙	People and body	382
+🧙‍♂️	People and body	383
+🧙‍♀️	People and body	384
+🧚	People and body	385
+🧚‍♂️	People and body	386
+🧚‍♀️	People and body	387
+🧛	People and body	388
+🧛‍♂️	People and body	389
+🧛‍♀️	People and body	390
+🧜	People and body	391
+🧜‍♂️	People and body	392
+🧜‍♀️	People and body	393
+🧝	People and body	394
+🧝‍♂️	People and body	395
+🧝‍♀️	People and body	396
+🧞	People and body	397
+🧞‍♂️	People and body	398
+🧞‍♀️	People and body	399
+🧟	People and body	400
+🧟‍♂️	People and body	401
+🧟‍♀️	People and body	402
+🧌	People and body	403
+🫈	People and body	404
+💆	People and body	405
+💆‍♂️	People and body	406
+💆‍♀️	People and body	407
+💇	People and body	408
+💇‍♂️	People and body	409
+💇‍♀️	People and body	410
+🚶	People and body	411
+🚶‍♂️	People and body	412
+🚶‍♀️	People and body	413
+🚶‍➡️	People and body	414
+🚶‍♀️‍➡️	People and body	415
+🚶‍♂️‍➡️	People and body	416
+🧍	People and body	417
+🧍‍♂️	People and body	418
+🧍‍♀️	People and body	419
+🧎	People and body	420
+🧎‍♂️	People and body	421
+🧎‍♀️	People and body	422
+🧎‍➡️	People and body	423
+🧎‍♀️‍➡️	People and body	424
+🧎‍♂️‍➡️	People and body	425
+🧑‍🦯	People and body	426
+🧑‍🦯‍➡️	People and body	427
+👨‍🦯	People and body	428
+👨‍🦯‍➡️	People and body	429
+👩‍🦯	People and body	430
+👩‍🦯‍➡️	People and body	431
+🧑‍🦼	People and body	432
+🧑‍🦼‍➡️	People and body	433
+👨‍🦼	People and body	434
+👨‍🦼‍➡️	People and body	435
+👩‍🦼	People and body	436
+👩‍🦼‍➡️	People and body	437
+🧑‍🦽	People and body	438
+🧑‍🦽‍➡️	People and body	439
+👨‍🦽	People and body	440
+👨‍🦽‍➡️	People and body	441
+👩‍🦽	People and body	442
+👩‍🦽‍➡️	People and body	443
+🏃	People and body	444
+🏃‍♂️	People and body	445
+🏃‍♀️	People and body	446
+🏃‍➡️	People and body	447
+🏃‍♀️‍➡️	People and body	448
+🏃‍♂️‍➡️	People and body	449
+🧑‍🩰	People and body	450
+💃	People and body	451
+🕺	People and body	452
+🕴️	People and body	453
+👯	People and body	454
+👯‍♂️	People and body	455
+👯‍♀️	People and body	456
+🧖	People and body	457
+🧖‍♂️	People and body	458
+🧖‍♀️	People and body	459
+🧗	People and body	460
+🧗‍♂️	People and body	461
+🧗‍♀️	People and body	462
+🤺	People and body	463
+🏇	People and body	464
+⛷️	People and body	465
+🏂	People and body	466
+🏌️	People and body	467
+🏌️‍♂️	People and body	468
+🏌️‍♀️	People and body	469
+🏄	People and body	470
+🏄‍♂️	People and body	471
+🏄‍♀️	People and body	472
+🚣	People and body	473
+🚣‍♂️	People and body	474
+🚣‍♀️	People and body	475
+🏊	People and body	476
+🏊‍♂️	People and body	477
+🏊‍♀️	People and body	478
+⛹️	People and body	479
+⛹️‍♂️	People and body	480
+⛹️‍♀️	People and body	481
+🏋️	People and body	482
+🏋️‍♂️	People and body	483
+🏋️‍♀️	People and body	484
+🚴	People and body	485
+🚴‍♂️	People and body	486
+🚴‍♀️	People and body	487
+🚵	People and body	488
+🚵‍♂️	People and body	489
+🚵‍♀️	People and body	490
+🤸	People and body	491
+🤸‍♂️	People and body	492
+🤸‍♀️	People and body	493
+🤼	People and body	494
+🤼‍♂️	People and body	495
+🤼‍♀️	People and body	496
+🤽	People and body	497
+🤽‍♂️	People and body	498
+🤽‍♀️	People and body	499
+🤾	People and body	500
+🤾‍♂️	People and body	501
+🤾‍♀️	People and body	502
+🤹	People and body	503
+🤹‍♂️	People and body	504
+🤹‍♀️	People and body	505
+🧘	People and body	506
+🧘‍♂️	People and body	507
+🧘‍♀️	People and body	508
+🛀	People and body	509
+🛌	People and body	510
+🧑‍🤝‍🧑	People and body	511
+👭	People and body	512
+👫	People and body	513
+👬	People and body	514
+💏	People and body	515
+👩‍❤️‍💋‍👨	People and body	516
+👨‍❤️‍💋‍👨	People and body	517
+👩‍❤️‍💋‍👩	People and body	518
+💑	People and body	519
+👩‍❤️‍👨	People and body	520
+👨‍❤️‍👨	People and body	521
+👩‍❤️‍👩	People and body	522
+👨‍👩‍👦	People and body	523
+👨‍👩‍👧	People and body	524
+👨‍👩‍👧‍👦	People and body	525
+👨‍👩‍👦‍👦	People and body	526
+👨‍👩‍👧‍👧	People and body	527
+👨‍👨‍👦	People and body	528
+👨‍👨‍👧	People and body	529
+👨‍👨‍👧‍👦	People and body	530
+👨‍👨‍👦‍👦	People and body	531
+👨‍👨‍👧‍👧	People and body	532
+👩‍👩‍👦	People and body	533
+👩‍👩‍👧	People and body	534
+👩‍👩‍👧‍👦	People and body	535
+👩‍👩‍👦‍👦	People and body	536
+👩‍👩‍👧‍👧	People and body	537
+👨‍👦	People and body	538
+👨‍👦‍👦	People and body	539
+👨‍👧	People and body	540
+👨‍👧‍👦	People and body	541
+👨‍👧‍👧	People and body	542
+👩‍👦	People and body	543
+👩‍👦‍👦	People and body	544
+👩‍👧	People and body	545
+👩‍👧‍👦	People and body	546
+👩‍👧‍👧	People and body	547
+🗣️	People and body	548
+👤	People and body	549
+👥	People and body	550
+🫂	People and body	551
+👪	People and body	552
+🧑‍🧑‍🧒	People and body	553
+🧑‍🧑‍🧒‍🧒	People and body	554
+🧑‍🧒	People and body	555
+🧑‍🧒‍🧒	People and body	556
+👣	People and body	557
+🫆	People and body	558
+🐵	Animals and nature	559
+🐒	Animals and nature	560
+🦍	Animals and nature	561
+🦧	Animals and nature	562
+🐶	Animals and nature	563
+🐕	Animals and nature	564
+🦮	Animals and nature	565
+🐕‍🦺	Animals and nature	566
+🐩	Animals and nature	567
+🐺	Animals and nature	568
+🦊	Animals and nature	569
+🦝	Animals and nature	570
+🐱	Animals and nature	571
+🐈	Animals and nature	572
+🐈‍⬛	Animals and nature	573
+🦁	Animals and nature	574
+🐯	Animals and nature	575
+🐅	Animals and nature	576
+🐆	Animals and nature	577
+🐴	Animals and nature	578
+🫎	Animals and nature	579
+🫏	Animals and nature	580
+🐎	Animals and nature	581
+🦄	Animals and nature	582
+🦓	Animals and nature	583
+🦌	Animals and nature	584
+🦬	Animals and nature	585
+🐮	Animals and nature	586
+🐂	Animals and nature	587
+🐃	Animals and nature	588
+🐄	Animals and nature	589
+🐷	Animals and nature	590
+🐖	Animals and nature	591
+🐗	Animals and nature	592
+🐽	Animals and nature	593
+🐏	Animals and nature	594
+🐑	Animals and nature	595
+🐐	Animals and nature	596
+🐪	Animals and nature	597
+🐫	Animals and nature	598
+🦙	Animals and nature	599
+🦒	Animals and nature	600
+🐘	Animals and nature	601
+🦣	Animals and nature	602
+🦏	Animals and nature	603
+🦛	Animals and nature	604
+🐭	Animals and nature	605
+🐁	Animals and nature	606
+🐀	Animals and nature	607
+🐹	Animals and nature	608
+🐰	Animals and nature	609
+🐇	Animals and nature	610
+🐿️	Animals and nature	611
+🦫	Animals and nature	612
+🦔	Animals and nature	613
+🦇	Animals and nature	614
+🐻	Animals and nature	615
+🐻‍❄️	Animals and nature	616
+🐨	Animals and nature	617
+🐼	Animals and nature	618
+🦥	Animals and nature	619
+🦦	Animals and nature	620
+🦨	Animals and nature	621
+🦘	Animals and nature	622
+🦡	Animals and nature	623
+🐾	Animals and nature	624
+🦃	Animals and nature	625
+🐔	Animals and nature	626
+🐓	Animals and nature	627
+🐣	Animals and nature	628
+🐤	Animals and nature	629
+🐥	Animals and nature	630
+🐦	Animals and nature	631
+🐧	Animals and nature	632
+🕊️	Animals and nature	633
+🦅	Animals and nature	634
+🦆	Animals and nature	635
+🦢	Animals and nature	636
+🦉	Animals and nature	637
+🦤	Animals and nature	638
+🪶	Animals and nature	639
+🦩	Animals and nature	640
+🦚	Animals and nature	641
+🦜	Animals and nature	642
+🪽	Animals and nature	643
+🐦‍⬛	Animals and nature	644
+🪿	Animals and nature	645
+🐦‍🔥	Animals and nature	646
+🐸	Animals and nature	647
+🐊	Animals and nature	648
+🐢	Animals and nature	649
+🦎	Animals and nature	650
+🐍	Animals and nature	651
+🐲	Animals and nature	652
+🐉	Animals and nature	653
+🦕	Animals and nature	654
+🦖	Animals and nature	655
+🐳	Animals and nature	656
+🐋	Animals and nature	657
+🐬	Animals and nature	658
+🫍	Animals and nature	659
+🦭	Animals and nature	660
+🐟	Animals and nature	661
+🐠	Animals and nature	662
+🐡	Animals and nature	663
+🦈	Animals and nature	664
+🐙	Animals and nature	665
+🐚	Animals and nature	666
+🪸	Animals and nature	667
+🪼	Animals and nature	668
+🦀	Animals and nature	669
+🦞	Animals and nature	670
+🦐	Animals and nature	671
+🦑	Animals and nature	672
+🦪	Animals and nature	673
+🐌	Animals and nature	674
+🦋	Animals and nature	675
+🐛	Animals and nature	676
+🐜	Animals and nature	677
+🐝	Animals and nature	678
+🪲	Animals and nature	679
+🐞	Animals and nature	680
+🦗	Animals and nature	681
+🪳	Animals and nature	682
+🕷️	Animals and nature	683
+🕸️	Animals and nature	684
+🦂	Animals and nature	685
+🦟	Animals and nature	686
+🪰	Animals and nature	687
+🪱	Animals and nature	688
+🦠	Animals and nature	689
+💐	Animals and nature	690
+🌸	Animals and nature	691
+💮	Animals and nature	692
+🪷	Animals and nature	693
+🏵️	Animals and nature	694
+🌹	Animals and nature	695
+🥀	Animals and nature	696
+🌺	Animals and nature	697
+🌻	Animals and nature	698
+🌼	Animals and nature	699
+🌷	Animals and nature	700
+🪻	Animals and nature	701
+🌱	Animals and nature	702
+🪴	Animals and nature	703
+🌲	Animals and nature	704
+🌳	Animals and nature	705
+🌴	Animals and nature	706
+🌵	Animals and nature	707
+🌾	Animals and nature	708
+🌿	Animals and nature	709
+☘️	Animals and nature	710
+🍀	Animals and nature	711
+🍁	Animals and nature	712
+🍂	Animals and nature	713
+🍃	Animals and nature	714
+🪹	Animals and nature	715
+🪺	Animals and nature	716
+🍄	Animals and nature	717
+🪾	Animals and nature	718
+🍇	Food and drink	719
+🍈	Food and drink	720
+🍉	Food and drink	721
+🍊	Food and drink	722
+🍋	Food and drink	723
+🍋‍🟩	Food and drink	724
+🍌	Food and drink	725
+🍍	Food and drink	726
+🥭	Food and drink	727
+🍎	Food and drink	728
+🍏	Food and drink	729
+🍐	Food and drink	730
+🍑	Food and drink	731
+🍒	Food and drink	732
+🍓	Food and drink	733
+🫐	Food and drink	734
+🥝	Food and drink	735
+🍅	Food and drink	736
+🫒	Food and drink	737
+🥥	Food and drink	738
+🥑	Food and drink	739
+🍆	Food and drink	740
+🥔	Food and drink	741
+🥕	Food and drink	742
+🌽	Food and drink	743
+🌶️	Food and drink	744
+🫑	Food and drink	745
+🥒	Food and drink	746
+🥬	Food and drink	747
+🥦	Food and drink	748
+🧄	Food and drink	749
+🧅	Food and drink	750
+🥜	Food and drink	751
+🫘	Food and drink	752
+🌰	Food and drink	753
+🫚	Food and drink	754
+🫛	Food and drink	755
+🍄‍🟫	Food and drink	756
+🫜	Food and drink	757
+🍞	Food and drink	758
+🥐	Food and drink	759
+🥖	Food and drink	760
+🫓	Food and drink	761
+🥨	Food and drink	762
+🥯	Food and drink	763
+🥞	Food and drink	764
+🧇	Food and drink	765
+🧀	Food and drink	766
+🍖	Food and drink	767
+🍗	Food and drink	768
+🥩	Food and drink	769
+🥓	Food and drink	770
+🍔	Food and drink	771
+🍟	Food and drink	772
+🍕	Food and drink	773
+🌭	Food and drink	774
+🥪	Food and drink	775
+🌮	Food and drink	776
+🌯	Food and drink	777
+🫔	Food and drink	778
+🥙	Food and drink	779
+🧆	Food and drink	780
+🥚	Food and drink	781
+🍳	Food and drink	782
+🥘	Food and drink	783
+🍲	Food and drink	784
+🫕	Food and drink	785
+🥣	Food and drink	786
+🥗	Food and drink	787
+🍿	Food and drink	788
+🧈	Food and drink	789
+🧂	Food and drink	790
+🥫	Food and drink	791
+🍱	Food and drink	792
+🍘	Food and drink	793
+🍙	Food and drink	794
+🍚	Food and drink	795
+🍛	Food and drink	796
+🍜	Food and drink	797
+🍝	Food and drink	798
+🍠	Food and drink	799
+🍢	Food and drink	800
+🍣	Food and drink	801
+🍤	Food and drink	802
+🍥	Food and drink	803
+🥮	Food and drink	804
+🍡	Food and drink	805
+🥟	Food and drink	806
+🥠	Food and drink	807
+🥡	Food and drink	808
+🍦	Food and drink	809
+🍧	Food and drink	810
+🍨	Food and drink	811
+🍩	Food and drink	812
+🍪	Food and drink	813
+🎂	Food and drink	814
+🍰	Food and drink	815
+🧁	Food and drink	816
+🥧	Food and drink	817
+🍫	Food and drink	818
+🍬	Food and drink	819
+🍭	Food and drink	820
+🍮	Food and drink	821
+🍯	Food and drink	822
+🍼	Food and drink	823
+🥛	Food and drink	824
+☕	Food and drink	825
+🫖	Food and drink	826
+🍵	Food and drink	827
+🍶	Food and drink	828
+🍾	Food and drink	829
+🍷	Food and drink	830
+🍸	Food and drink	831
+🍹	Food and drink	832
+🍺	Food and drink	833
+🍻	Food and drink	834
+🥂	Food and drink	835
+🥃	Food and drink	836
+🫗	Food and drink	837
+🥤	Food and drink	838
+🧋	Food and drink	839
+🧃	Food and drink	840
+🧉	Food and drink	841
+🧊	Food and drink	842
+🥢	Food and drink	843
+🍽️	Food and drink	844
+🍴	Food and drink	845
+🥄	Food and drink	846
+🔪	Food and drink	847
+🫙	Food and drink	848
+🏺	Food and drink	849
+🌍	Travel and places	850
+🌎	Travel and places	851
+🌏	Travel and places	852
+🌐	Travel and places	853
+🗺️	Travel and places	854
+🗾	Travel and places	855
+🧭	Travel and places	856
+🏔️	Travel and places	857
+⛰️	Travel and places	858
+🛘	Travel and places	859
+🌋	Travel and places	860
+🗻	Travel and places	861
+🏕️	Travel and places	862
+🏖️	Travel and places	863
+🏜️	Travel and places	864
+🏝️	Travel and places	865
+🏞️	Travel and places	866
+🏟️	Travel and places	867
+🏛️	Travel and places	868
+🏗️	Travel and places	869
+🧱	Travel and places	870
+🪨	Travel and places	871
+🪵	Travel and places	872
+🛖	Travel and places	873
+🏘️	Travel and places	874
+🏚️	Travel and places	875
+🏠	Travel and places	876
+🏡	Travel and places	877
+🏢	Travel and places	878
+🏣	Travel and places	879
+🏤	Travel and places	880
+🏥	Travel and places	881
+🏦	Travel and places	882
+🏨	Travel and places	883
+🏩	Travel and places	884
+🏪	Travel and places	885
+🏫	Travel and places	886
+🏬	Travel and places	887
+🏭	Travel and places	888
+🏯	Travel and places	889
+🏰	Travel and places	890
+💒	Travel and places	891
+🗼	Travel and places	892
+🗽	Travel and places	893
+⛪	Travel and places	894
+🕌	Travel and places	895
+🛕	Travel and places	896
+🕍	Travel and places	897
+⛩️	Travel and places	898
+🕋	Travel and places	899
+⛲	Travel and places	900
+⛺	Travel and places	901
+🌁	Travel and places	902
+🌃	Travel and places	903
+🏙️	Travel and places	904
+🌄	Travel and places	905
+🌅	Travel and places	906
+🌆	Travel and places	907
+🌇	Travel and places	908
+🌉	Travel and places	909
+♨️	Travel and places	910
+🎠	Travel and places	911
+🛝	Travel and places	912
+🎡	Travel and places	913
+🎢	Travel and places	914
+💈	Travel and places	915
+🎪	Travel and places	916
+🚂	Travel and places	917
+🚃	Travel and places	918
+🚄	Travel and places	919
+🚅	Travel and places	920
+🚆	Travel and places	921
+🚇	Travel and places	922
+🚈	Travel and places	923
+🚉	Travel and places	924
+🚊	Travel and places	925
+🚝	Travel and places	926
+🚞	Travel and places	927
+🚋	Travel and places	928
+🚌	Travel and places	929
+🚍	Travel and places	930
+🚎	Travel and places	931
+🚐	Travel and places	932
+🚑	Travel and places	933
+🚒	Travel and places	934
+🚓	Travel and places	935
+🚔	Travel and places	936
+🚕	Travel and places	937
+🚖	Travel and places	938
+🚗	Travel and places	939
+🚘	Travel and places	940
+🚙	Travel and places	941
+🛻	Travel and places	942
+🚚	Travel and places	943
+🚛	Travel and places	944
+🚜	Travel and places	945
+🏎️	Travel and places	946
+🏍️	Travel and places	947
+🛵	Travel and places	948
+🦽	Travel and places	949
+🦼	Travel and places	950
+🛺	Travel and places	951
+🚲	Travel and places	952
+🛴	Travel and places	953
+🛹	Travel and places	954
+🛼	Travel and places	955
+🚏	Travel and places	956
+🛣️	Travel and places	957
+🛤️	Travel and places	958
+🛢️	Travel and places	959
+⛽	Travel and places	960
+🛞	Travel and places	961
+🚨	Travel and places	962
+🚥	Travel and places	963
+🚦	Travel and places	964
+🛑	Travel and places	965
+🚧	Travel and places	966
+⚓	Travel and places	967
+🛟	Travel and places	968
+⛵	Travel and places	969
+🛶	Travel and places	970
+🚤	Travel and places	971
+🛳️	Travel and places	972
+⛴️	Travel and places	973
+🛥️	Travel and places	974
+🚢	Travel and places	975
+✈️	Travel and places	976
+🛩️	Travel and places	977
+🛫	Travel and places	978
+🛬	Travel and places	979
+🪂	Travel and places	980
+💺	Travel and places	981
+🚁	Travel and places	982
+🚟	Travel and places	983
+🚠	Travel and places	984
+🚡	Travel and places	985
+🛰️	Travel and places	986
+🚀	Travel and places	987
+🛸	Travel and places	988
+🛎️	Travel and places	989
+🧳	Travel and places	990
+⌛	Travel and places	991
+⏳	Travel and places	992
+⌚	Travel and places	993
+⏰	Travel and places	994
+⏱️	Travel and places	995
+⏲️	Travel and places	996
+🕰️	Travel and places	997
+🕛	Travel and places	998
+🕧	Travel and places	999
+🕐	Travel and places	1000
+🕜	Travel and places	1001
+🕑	Travel and places	1002
+🕝	Travel and places	1003
+🕒	Travel and places	1004
+🕞	Travel and places	1005
+🕓	Travel and places	1006
+🕟	Travel and places	1007
+🕔	Travel and places	1008
+🕠	Travel and places	1009
+🕕	Travel and places	1010
+🕡	Travel and places	1011
+🕖	Travel and places	1012
+🕢	Travel and places	1013
+🕗	Travel and places	1014
+🕣	Travel and places	1015
+🕘	Travel and places	1016
+🕤	Travel and places	1017
+🕙	Travel and places	1018
+🕥	Travel and places	1019
+🕚	Travel and places	1020
+🕦	Travel and places	1021
+🌑	Travel and places	1022
+🌒	Travel and places	1023
+🌓	Travel and places	1024
+🌔	Travel and places	1025
+🌕	Travel and places	1026
+🌖	Travel and places	1027
+🌗	Travel and places	1028
+🌘	Travel and places	1029
+🌙	Travel and places	1030
+🌚	Travel and places	1031
+🌛	Travel and places	1032
+🌜	Travel and places	1033
+🌡️	Travel and places	1034
+☀️	Travel and places	1035
+🌝	Travel and places	1036
+🌞	Travel and places	1037
+🪐	Travel and places	1038
+⭐	Travel and places	1039
+🌟	Travel and places	1040
+🌠	Travel and places	1041
+🌌	Travel and places	1042
+☁️	Travel and places	1043
+⛅	Travel and places	1044
+⛈️	Travel and places	1045
+🌤️	Travel and places	1046
+🌥️	Travel and places	1047
+🌦️	Travel and places	1048
+🌧️	Travel and places	1049
+🌨️	Travel and places	1050
+🌩️	Travel and places	1051
+🌪️	Travel and places	1052
+🌫️	Travel and places	1053
+🌬️	Travel and places	1054
+🌀	Travel and places	1055
+🌈	Travel and places	1056
+🌂	Travel and places	1057
+☂️	Travel and places	1058
+☔	Travel and places	1059
+⛱️	Travel and places	1060
+⚡	Travel and places	1061
+❄️	Travel and places	1062
+☃️	Travel and places	1063
+⛄	Travel and places	1064
+☄️	Travel and places	1065
+🔥	Travel and places	1066
+💧	Travel and places	1067
+🌊	Travel and places	1068
+🎃	Activities	1069
+🎄	Activities	1070
+🎆	Activities	1071
+🎇	Activities	1072
+🧨	Activities	1073
+✨	Activities	1074
+🎈	Activities	1075
+🎉	Activities	1076
+🎊	Activities	1077
+🎋	Activities	1078
+🎍	Activities	1079
+🎎	Activities	1080
+🎏	Activities	1081
+🎐	Activities	1082
+🎑	Activities	1083
+🧧	Activities	1084
+🎀	Activities	1085
+🎁	Activities	1086
+🎗️	Activities	1087
+🎟️	Activities	1088
+🎫	Activities	1089
+🎖️	Activities	1090
+🏆	Activities	1091
+🏅	Activities	1092
+🥇	Activities	1093
+🥈	Activities	1094
+🥉	Activities	1095
+⚽	Activities	1096
+⚾	Activities	1097
+🥎	Activities	1098
+🏀	Activities	1099
+🏐	Activities	1100
+🏈	Activities	1101
+🏉	Activities	1102
+🎾	Activities	1103
+🥏	Activities	1104
+🎳	Activities	1105
+🏏	Activities	1106
+🏑	Activities	1107
+🏒	Activities	1108
+🥍	Activities	1109
+🏓	Activities	1110
+🏸	Activities	1111
+🥊	Activities	1112
+🥋	Activities	1113
+🥅	Activities	1114
+⛳	Activities	1115
+⛸️	Activities	1116
+🎣	Activities	1117
+🤿	Activities	1118
+🎽	Activities	1119
+🎿	Activities	1120
+🛷	Activities	1121
+🥌	Activities	1122
+🎯	Activities	1123
+🪀	Activities	1124
+🪁	Activities	1125
+🔫	Activities	1126
+🎱	Activities	1127
+🔮	Activities	1128
+🪄	Activities	1129
+🎮	Activities	1130
+🕹️	Activities	1131
+🎰	Activities	1132
+🎲	Activities	1133
+🧩	Activities	1134
+🧸	Activities	1135
+🪅	Activities	1136
+🪩	Activities	1137
+🪆	Activities	1138
+♠️	Activities	1139
+♥️	Activities	1140
+♦️	Activities	1141
+♣️	Activities	1142
+♟️	Activities	1143
+🃏	Activities	1144
+🀄	Activities	1145
+🎴	Activities	1146
+🎭	Activities	1147
+🖼️	Activities	1148
+🎨	Activities	1149
+🧵	Activities	1150
+🪡	Activities	1151
+🧶	Activities	1152
+🪢	Activities	1153
+👓	Objects	1154
+🕶️	Objects	1155
+🥽	Objects	1156
+🥼	Objects	1157
+🦺	Objects	1158
+👔	Objects	1159
+👕	Objects	1160
+👖	Objects	1161
+🧣	Objects	1162
+🧤	Objects	1163
+🧥	Objects	1164
+🧦	Objects	1165
+👗	Objects	1166
+👘	Objects	1167
+🥻	Objects	1168
+🩱	Objects	1169
+🩲	Objects	1170
+🩳	Objects	1171
+👙	Objects	1172
+👚	Objects	1173
+🪭	Objects	1174
+👛	Objects	1175
+👜	Objects	1176
+👝	Objects	1177
+🛍️	Objects	1178
+🎒	Objects	1179
+🩴	Objects	1180
+👞	Objects	1181
+👟	Objects	1182
+🥾	Objects	1183
+🥿	Objects	1184
+👠	Objects	1185
+👡	Objects	1186
+🩰	Objects	1187
+👢	Objects	1188
+🪮	Objects	1189
+👑	Objects	1190
+👒	Objects	1191
+🎩	Objects	1192
+🎓	Objects	1193
+🧢	Objects	1194
+🪖	Objects	1195
+⛑️	Objects	1196
+📿	Objects	1197
+💄	Objects	1198
+💍	Objects	1199
+💎	Objects	1200
+🔇	Objects	1201
+🔈	Objects	1202
+🔉	Objects	1203
+🔊	Objects	1204
+📢	Objects	1205
+📣	Objects	1206
+📯	Objects	1207
+🔔	Objects	1208
+🔕	Objects	1209
+🎼	Objects	1210
+🎵	Objects	1211
+🎶	Objects	1212
+🎙️	Objects	1213
+🎚️	Objects	1214
+🎛️	Objects	1215
+🎤	Objects	1216
+🎧	Objects	1217
+📻	Objects	1218
+🎷	Objects	1219
+🎺	Objects	1220
+🪊	Objects	1221
+🪗	Objects	1222
+🎸	Objects	1223
+🎹	Objects	1224
+🎻	Objects	1225
+🪕	Objects	1226
+🥁	Objects	1227
+🪘	Objects	1228
+🪇	Objects	1229
+🪈	Objects	1230
+🪉	Objects	1231
+📱	Objects	1232
+📲	Objects	1233
+☎️	Objects	1234
+📞	Objects	1235
+📟	Objects	1236
+📠	Objects	1237
+🔋	Objects	1238
+🪫	Objects	1239
+🔌	Objects	1240
+💻	Objects	1241
+🖥️	Objects	1242
+🖨️	Objects	1243
+⌨️	Objects	1244
+🖱️	Objects	1245
+🖲️	Objects	1246
+💽	Objects	1247
+💾	Objects	1248
+💿	Objects	1249
+📀	Objects	1250
+🧮	Objects	1251
+🎥	Objects	1252
+🎞️	Objects	1253
+📽️	Objects	1254
+🎬	Objects	1255
+📺	Objects	1256
+📷	Objects	1257
+📸	Objects	1258
+📹	Objects	1259
+📼	Objects	1260
+🔍	Objects	1261
+🔎	Objects	1262
+🕯️	Objects	1263
+💡	Objects	1264
+🔦	Objects	1265
+🏮	Objects	1266
+🪔	Objects	1267
+📔	Objects	1268
+📕	Objects	1269
+📖	Objects	1270
+📗	Objects	1271
+📘	Objects	1272
+📙	Objects	1273
+📚	Objects	1274
+📓	Objects	1275
+📒	Objects	1276
+📃	Objects	1277
+📜	Objects	1278
+📄	Objects	1279
+📰	Objects	1280
+🗞️	Objects	1281
+📑	Objects	1282
+🔖	Objects	1283
+🏷️	Objects	1284
+🪙	Objects	1285
+💰	Objects	1286
+🪎	Objects	1287
+💴	Objects	1288
+💵	Objects	1289
+💶	Objects	1290
+💷	Objects	1291
+💸	Objects	1292
+💳	Objects	1293
+🧾	Objects	1294
+💹	Objects	1295
+✉️	Objects	1296
+📧	Objects	1297
+📨	Objects	1298
+📩	Objects	1299
+📤	Objects	1300
+📥	Objects	1301
+📦	Objects	1302
+📫	Objects	1303
+📪	Objects	1304
+📬	Objects	1305
+📭	Objects	1306
+📮	Objects	1307
+🗳️	Objects	1308
+✏️	Objects	1309
+✒️	Objects	1310
+🖋️	Objects	1311
+🖊️	Objects	1312
+🖌️	Objects	1313
+🖍️	Objects	1314
+📝	Objects	1315
+💼	Objects	1316
+📁	Objects	1317
+📂	Objects	1318
+🗂️	Objects	1319
+📅	Objects	1320
+📆	Objects	1321
+🗒️	Objects	1322
+🗓️	Objects	1323
+📇	Objects	1324
+📈	Objects	1325
+📉	Objects	1326
+📊	Objects	1327
+📋	Objects	1328
+📌	Objects	1329
+📍	Objects	1330
+📎	Objects	1331
+🖇️	Objects	1332
+📏	Objects	1333
+📐	Objects	1334
+✂️	Objects	1335
+🗃️	Objects	1336
+🗄️	Objects	1337
+🗑️	Objects	1338
+🔒	Objects	1339
+🔓	Objects	1340
+🔏	Objects	1341
+🔐	Objects	1342
+🔑	Objects	1343
+🗝️	Objects	1344
+🔨	Objects	1345
+🪓	Objects	1346
+⛏️	Objects	1347
+⚒️	Objects	1348
+🛠️	Objects	1349
+🗡️	Objects	1350
+⚔️	Objects	1351
+💣	Objects	1352
+🪃	Objects	1353
+🏹	Objects	1354
+🛡️	Objects	1355
+🪚	Objects	1356
+🔧	Objects	1357
+🪛	Objects	1358
+🔩	Objects	1359
+⚙️	Objects	1360
+🗜️	Objects	1361
+⚖️	Objects	1362
+🦯	Objects	1363
+🔗	Objects	1364
+⛓️‍💥	Objects	1365
+⛓️	Objects	1366
+🪝	Objects	1367
+🧰	Objects	1368
+🧲	Objects	1369
+🪜	Objects	1370
+🪏	Objects	1371
+⚗️	Objects	1372
+🧪	Objects	1373
+🧫	Objects	1374
+🧬	Objects	1375
+🔬	Objects	1376
+🔭	Objects	1377
+📡	Objects	1378
+💉	Objects	1379
+🩸	Objects	1380
+💊	Objects	1381
+🩹	Objects	1382
+🩼	Objects	1383
+🩺	Objects	1384
+🩻	Objects	1385
+🚪	Objects	1386
+🛗	Objects	1387
+🪞	Objects	1388
+🪟	Objects	1389
+🛏️	Objects	1390
+🛋️	Objects	1391
+🪑	Objects	1392
+🚽	Objects	1393
+🪠	Objects	1394
+🚿	Objects	1395
+🛁	Objects	1396
+🪤	Objects	1397
+🪒	Objects	1398
+🧴	Objects	1399
+🧷	Objects	1400
+🧹	Objects	1401
+🧺	Objects	1402
+🧻	Objects	1403
+🪣	Objects	1404
+🧼	Objects	1405
+🫧	Objects	1406
+🪥	Objects	1407
+🧽	Objects	1408
+🧯	Objects	1409
+🛒	Objects	1410
+🚬	Objects	1411
+⚰️	Objects	1412
+🪦	Objects	1413
+⚱️	Objects	1414
+🧿	Objects	1415
+🪬	Objects	1416
+🗿	Objects	1417
+🪧	Objects	1418
+🪪	Objects	1419
+🏧	Symbols	1420
+🚮	Symbols	1421
+🚰	Symbols	1422
+♿	Symbols	1423
+🚹	Symbols	1424
+🚺	Symbols	1425
+🚻	Symbols	1426
+🚼	Symbols	1427
+🚾	Symbols	1428
+🛂	Symbols	1429
+🛃	Symbols	1430
+🛄	Symbols	1431
+🛅	Symbols	1432
+⚠️	Symbols	1433
+🚸	Symbols	1434
+⛔	Symbols	1435
+🚫	Symbols	1436
+🚳	Symbols	1437
+🚭	Symbols	1438
+🚯	Symbols	1439
+🚱	Symbols	1440
+🚷	Symbols	1441
+📵	Symbols	1442
+🔞	Symbols	1443
+☢️	Symbols	1444
+☣️	Symbols	1445
+⬆️	Symbols	1446
+↗️	Symbols	1447
+➡️	Symbols	1448
+↘️	Symbols	1449
+⬇️	Symbols	1450
+↙️	Symbols	1451
+⬅️	Symbols	1452
+↖️	Symbols	1453
+↕️	Symbols	1454
+↔️	Symbols	1455
+↩️	Symbols	1456
+↪️	Symbols	1457
+⤴️	Symbols	1458
+⤵️	Symbols	1459
+🔃	Symbols	1460
+🔄	Symbols	1461
+🔙	Symbols	1462
+🔚	Symbols	1463
+🔛	Symbols	1464
+🔜	Symbols	1465
+🔝	Symbols	1466
+🛐	Symbols	1467
+⚛️	Symbols	1468
+🕉️	Symbols	1469
+✡️	Symbols	1470
+☸️	Symbols	1471
+☯️	Symbols	1472
+✝️	Symbols	1473
+☦️	Symbols	1474
+☪️	Symbols	1475
+☮️	Symbols	1476
+🕎	Symbols	1477
+🔯	Symbols	1478
+🪯	Symbols	1479
+♈	Symbols	1480
+♉	Symbols	1481
+♊	Symbols	1482
+♋	Symbols	1483
+♌	Symbols	1484
+♍	Symbols	1485
+♎	Symbols	1486
+♏	Symbols	1487
+♐	Symbols	1488
+♑	Symbols	1489
+♒	Symbols	1490
+♓	Symbols	1491
+⛎	Symbols	1492
+🔀	Symbols	1493
+🔁	Symbols	1494
+🔂	Symbols	1495
+▶️	Symbols	1496
+⏩	Symbols	1497
+⏭️	Symbols	1498
+⏯️	Symbols	1499
+◀️	Symbols	1500
+⏪	Symbols	1501
+⏮️	Symbols	1502
+🔼	Symbols	1503
+⏫	Symbols	1504
+🔽	Symbols	1505
+⏬	Symbols	1506
+⏸️	Symbols	1507
+⏹️	Symbols	1508
+⏺️	Symbols	1509
+⏏️	Symbols	1510
+🎦	Symbols	1511
+🔅	Symbols	1512
+🔆	Symbols	1513
+📶	Symbols	1514
+🛜	Symbols	1515
+📳	Symbols	1516
+📴	Symbols	1517
+♀️	Symbols	1518
+♂️	Symbols	1519
+⚧️	Symbols	1520
+✖️	Symbols	1521
+➕	Symbols	1522
+➖	Symbols	1523
+➗	Symbols	1524
+🟰	Symbols	1525
+♾️	Symbols	1526
+‼️	Symbols	1527
+⁉️	Symbols	1528
+❓	Symbols	1529
+❔	Symbols	1530
+❕	Symbols	1531
+❗	Symbols	1532
+〰️	Symbols	1533
+💱	Symbols	1534
+💲	Symbols	1535
+⚕️	Symbols	1536
+♻️	Symbols	1537
+⚜️	Symbols	1538
+🔱	Symbols	1539
+📛	Symbols	1540
+🔰	Symbols	1541
+⭕	Symbols	1542
+✅	Symbols	1543
+☑️	Symbols	1544
+✔️	Symbols	1545
+❌	Symbols	1546
+❎	Symbols	1547
+➰	Symbols	1548
+➿	Symbols	1549
+〽️	Symbols	1550
+✳️	Symbols	1551
+✴️	Symbols	1552
+❇️	Symbols	1553
+©️	Symbols	1554
+®️	Symbols	1555
+™️	Symbols	1556
+🫟	Symbols	1557
+#️⃣	Symbols	1558
+*️⃣	Symbols	1559
+0️⃣	Symbols	1560
+1️⃣	Symbols	1561
+2️⃣	Symbols	1562
+3️⃣	Symbols	1563
+4️⃣	Symbols	1564
+5️⃣	Symbols	1565
+6️⃣	Symbols	1566
+7️⃣	Symbols	1567
+8️⃣	Symbols	1568
+9️⃣	Symbols	1569
+🔟	Symbols	1570
+🔠	Symbols	1571
+🔡	Symbols	1572
+🔢	Symbols	1573
+🔣	Symbols	1574
+🔤	Symbols	1575
+🅰️	Symbols	1576
+🆎	Symbols	1577
+🅱️	Symbols	1578
+🆑	Symbols	1579
+🆒	Symbols	1580
+🆓	Symbols	1581
+ℹ️	Symbols	1582
+🆔	Symbols	1583
+Ⓜ️	Symbols	1584
+🆕	Symbols	1585
+🆖	Symbols	1586
+🅾️	Symbols	1587
+🆗	Symbols	1588
+🅿️	Symbols	1589
+🆘	Symbols	1590
+🆙	Symbols	1591
+🆚	Symbols	1592
+🈁	Symbols	1593
+🈂️	Symbols	1594
+🈷️	Symbols	1595
+🈶	Symbols	1596
+🈯	Symbols	1597
+🉐	Symbols	1598
+🈹	Symbols	1599
+🈚	Symbols	1600
+🈲	Symbols	1601
+🉑	Symbols	1602
+🈸	Symbols	1603
+🈴	Symbols	1604
+🈳	Symbols	1605
+㊗️	Symbols	1606
+㊙️	Symbols	1607
+🈺	Symbols	1608
+🈵	Symbols	1609
+🔴	Symbols	1610
+🟠	Symbols	1611
+🟡	Symbols	1612
+🟢	Symbols	1613
+🔵	Symbols	1614
+🟣	Symbols	1615
+🟤	Symbols	1616
+⚫	Symbols	1617
+⚪	Symbols	1618
+🟥	Symbols	1619
+🟧	Symbols	1620
+🟨	Symbols	1621
+🟩	Symbols	1622
+🟦	Symbols	1623
+🟪	Symbols	1624
+🟫	Symbols	1625
+⬛	Symbols	1626
+⬜	Symbols	1627
+◼️	Symbols	1628
+◻️	Symbols	1629
+◾	Symbols	1630
+◽	Symbols	1631
+▪️	Symbols	1632
+▫️	Symbols	1633
+🔶	Symbols	1634
+🔷	Symbols	1635
+🔸	Symbols	1636
+🔹	Symbols	1637
+🔺	Symbols	1638
+🔻	Symbols	1639
+💠	Symbols	1640
+🔘	Symbols	1641
+🔳	Symbols	1642
+🔲	Symbols	1643
+🏁	Flags	1644
+🚩	Flags	1645
+🎌	Flags	1646
+🏴	Flags	1647
+🏳️	Flags	1648
+🏳️‍🌈	Flags	1649
+🏳️‍⚧️	Flags	1650
+🏴‍☠️	Flags	1651
+🇦🇨	Flags	1652
+🇦🇩	Flags	1653
+🇦🇪	Flags	1654
+🇦🇫	Flags	1655
+🇦🇬	Flags	1656
+🇦🇮	Flags	1657
+🇦🇱	Flags	1658
+🇦🇲	Flags	1659
+🇦🇴	Flags	1660
+🇦🇶	Flags	1661
+🇦🇷	Flags	1662
+🇦🇸	Flags	1663
+🇦🇹	Flags	1664
+🇦🇺	Flags	1665
+🇦🇼	Flags	1666
+🇦🇽	Flags	1667
+🇦🇿	Flags	1668
+🇧🇦	Flags	1669
+🇧🇧	Flags	1670
+🇧🇩	Flags	1671
+🇧🇪	Flags	1672
+🇧🇫	Flags	1673
+🇧🇬	Flags	1674
+🇧🇭	Flags	1675
+🇧🇮	Flags	1676
+🇧🇯	Flags	1677
+🇧🇱	Flags	1678
+🇧🇲	Flags	1679
+🇧🇳	Flags	1680
+🇧🇴	Flags	1681
+🇧🇶	Flags	1682
+🇧🇷	Flags	1683
+🇧🇸	Flags	1684
+🇧🇹	Flags	1685
+🇧🇻	Flags	1686
+🇧🇼	Flags	1687
+🇧🇾	Flags	1688
+🇧🇿	Flags	1689
+🇨🇦	Flags	1690
+🇨🇨	Flags	1691
+🇨🇩	Flags	1692
+🇨🇫	Flags	1693
+🇨🇬	Flags	1694
+🇨🇭	Flags	1695
+🇨🇮	Flags	1696
+🇨🇰	Flags	1697
+🇨🇱	Flags	1698
+🇨🇲	Flags	1699
+🇨🇳	Flags	1700
+🇨🇴	Flags	1701
+🇨🇵	Flags	1702
+🇨🇶	Flags	1703
+🇨🇷	Flags	1704
+🇨🇺	Flags	1705
+🇨🇻	Flags	1706
+🇨🇼	Flags	1707
+🇨🇽	Flags	1708
+🇨🇾	Flags	1709
+🇨🇿	Flags	1710
+🇩🇪	Flags	1711
+🇩🇬	Flags	1712
+🇩🇯	Flags	1713
+🇩🇰	Flags	1714
+🇩🇲	Flags	1715
+🇩🇴	Flags	1716
+🇩🇿	Flags	1717
+🇪🇦	Flags	1718
+🇪🇨	Flags	1719
+🇪🇪	Flags	1720
+🇪🇬	Flags	1721
+🇪🇭	Flags	1722
+🇪🇷	Flags	1723
+🇪🇸	Flags	1724
+🇪🇹	Flags	1725
+🇪🇺	Flags	1726
+🇫🇮	Flags	1727
+🇫🇯	Flags	1728
+🇫🇰	Flags	1729
+🇫🇲	Flags	1730
+🇫🇴	Flags	1731
+🇫🇷	Flags	1732
+🇬🇦	Flags	1733
+🇬🇧	Flags	1734
+🇬🇩	Flags	1735
+🇬🇪	Flags	1736
+🇬🇫	Flags	1737
+🇬🇬	Flags	1738
+🇬🇭	Flags	1739
+🇬🇮	Flags	1740
+🇬🇱	Flags	1741
+🇬🇲	Flags	1742
+🇬🇳	Flags	1743
+🇬🇵	Flags	1744
+🇬🇶	Flags	1745
+🇬🇷	Flags	1746
+🇬🇸	Flags	1747
+🇬🇹	Flags	1748
+🇬🇺	Flags	1749
+🇬🇼	Flags	1750
+🇬🇾	Flags	1751
+🇭🇰	Flags	1752
+🇭🇲	Flags	1753
+🇭🇳	Flags	1754
+🇭🇷	Flags	1755
+🇭🇹	Flags	1756
+🇭🇺	Flags	1757
+🇮🇨	Flags	1758
+🇮🇩	Flags	1759
+🇮🇪	Flags	1760
+🇮🇱	Flags	1761
+🇮🇲	Flags	1762
+🇮🇳	Flags	1763
+🇮🇴	Flags	1764
+🇮🇶	Flags	1765
+🇮🇷	Flags	1766
+🇮🇸	Flags	1767
+🇮🇹	Flags	1768
+🇯🇪	Flags	1769
+🇯🇲	Flags	1770
+🇯🇴	Flags	1771
+🇯🇵	Flags	1772
+🇰🇪	Flags	1773
+🇰🇬	Flags	1774
+🇰🇭	Flags	1775
+🇰🇮	Flags	1776
+🇰🇲	Flags	1777
+🇰🇳	Flags	1778
+🇰🇵	Flags	1779
+🇰🇷	Flags	1780
+🇰🇼	Flags	1781
+🇰🇾	Flags	1782
+🇰🇿	Flags	1783
+🇱🇦	Flags	1784
+🇱🇧	Flags	1785
+🇱🇨	Flags	1786
+🇱🇮	Flags	1787
+🇱🇰	Flags	1788
+🇱🇷	Flags	1789
+🇱🇸	Flags	1790
+🇱🇹	Flags	1791
+🇱🇺	Flags	1792
+🇱🇻	Flags	1793
+🇱🇾	Flags	1794
+🇲🇦	Flags	1795
+🇲🇨	Flags	1796
+🇲🇩	Flags	1797
+🇲🇪	Flags	1798
+🇲🇫	Flags	1799
+🇲🇬	Flags	1800
+🇲🇭	Flags	1801
+🇲🇰	Flags	1802
+🇲🇱	Flags	1803
+🇲🇲	Flags	1804
+🇲🇳	Flags	1805
+🇲🇴	Flags	1806
+🇲🇵	Flags	1807
+🇲🇶	Flags	1808
+🇲🇷	Flags	1809
+🇲🇸	Flags	1810
+🇲🇹	Flags	1811
+🇲🇺	Flags	1812
+🇲🇻	Flags	1813
+🇲🇼	Flags	1814
+🇲🇽	Flags	1815
+🇲🇾	Flags	1816
+🇲🇿	Flags	1817
+🇳🇦	Flags	1818
+🇳🇨	Flags	1819
+🇳🇪	Flags	1820
+🇳🇫	Flags	1821
+🇳🇬	Flags	1822
+🇳🇮	Flags	1823
+🇳🇱	Flags	1824
+🇳🇴	Flags	1825
+🇳🇵	Flags	1826
+🇳🇷	Flags	1827
+🇳🇺	Flags	1828
+🇳🇿	Flags	1829
+🇴🇲	Flags	1830
+🇵🇦	Flags	1831
+🇵🇪	Flags	1832
+🇵🇫	Flags	1833
+🇵🇬	Flags	1834
+🇵🇭	Flags	1835
+🇵🇰	Flags	1836
+🇵🇱	Flags	1837
+🇵🇲	Flags	1838
+🇵🇳	Flags	1839
+🇵🇷	Flags	1840
+🇵🇸	Flags	1841
+🇵🇹	Flags	1842
+🇵🇼	Flags	1843
+🇵🇾	Flags	1844
+🇶🇦	Flags	1845
+🇷🇪	Flags	1846
+🇷🇴	Flags	1847
+🇷🇸	Flags	1848
+🇷🇺	Flags	1849
+🇷🇼	Flags	1850
+🇸🇦	Flags	1851
+🇸🇧	Flags	1852
+🇸🇨	Flags	1853
+🇸🇩	Flags	1854
+🇸🇪	Flags	1855
+🇸🇬	Flags	1856
+🇸🇭	Flags	1857
+🇸🇮	Flags	1858
+🇸🇯	Flags	1859
+🇸🇰	Flags	1860
+🇸🇱	Flags	1861
+🇸🇲	Flags	1862
+🇸🇳	Flags	1863
+🇸🇴	Flags	1864
+🇸🇷	Flags	1865
+🇸🇸	Flags	1866
+🇸🇹	Flags	1867
+🇸🇻	Flags	1868
+🇸🇽	Flags	1869
+🇸🇾	Flags	1870
+🇸🇿	Flags	1871
+🇹🇦	Flags	1872
+🇹🇨	Flags	1873
+🇹🇩	Flags	1874
+🇹🇫	Flags	1875
+🇹🇬	Flags	1876
+🇹🇭	Flags	1877
+🇹🇯	Flags	1878
+🇹🇰	Flags	1879
+🇹🇱	Flags	1880
+🇹🇲	Flags	1881
+🇹🇳	Flags	1882
+🇹🇴	Flags	1883
+🇹🇷	Flags	1884
+🇹🇹	Flags	1885
+🇹🇻	Flags	1886
+🇹🇼	Flags	1887
+🇹🇿	Flags	1888
+🇺🇦	Flags	1889
+🇺🇬	Flags	1890
+🇺🇲	Flags	1891
+🇺🇳	Flags	1892
+🇺🇸	Flags	1893
+🇺🇾	Flags	1894
+🇺🇿	Flags	1895
+🇻🇦	Flags	1896
+🇻🇨	Flags	1897
+🇻🇪	Flags	1898
+🇻🇬	Flags	1899
+🇻🇮	Flags	1900
+🇻🇳	Flags	1901
+🇻🇺	Flags	1902
+🇼🇫	Flags	1903
+🇼🇸	Flags	1904
+🇽🇰	Flags	1905
+🇾🇪	Flags	1906
+🇾🇹	Flags	1907
+🇿🇦	Flags	1908
+🇿🇲	Flags	1909
+🇿🇼	Flags	1910
+🏴󠁧󠁢󠁥󠁮󠁧󠁿	Flags	1911
+🏴󠁧󠁢󠁳󠁣󠁴󠁿	Flags	1912
+🏴󠁧󠁢󠁷󠁬󠁳󠁿	Flags	1913

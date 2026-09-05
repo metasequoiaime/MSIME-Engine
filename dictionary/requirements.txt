@@ -1,0 +1,3 @@
+# Everything the shipping dictionary build needs. Pinned so a rebuild of the same commit produces
+# the same databases; the CI workflow installs exactly this file.
+pypinyin==0.55.0

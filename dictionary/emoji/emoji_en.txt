@@ -1,0 +1,11704 @@
+# English emoji keywords
+# Primary names: Unicode Emoji 17.0 emoji-test.txt (fully-qualified + components)
+# Extra keywords: Unicode CLDR English annotations, plus Unicode Emoji 1.0 names
+# 1.0 source: https://unicode.org/Public/emoji/1.0/emoji-data.txt
+# Format: keyword<TAB>emoji ; keyword+emoji pairs are unique
+# Skin-tone variants omitted; the five skin-tone modifiers themselves are kept
+grinning face	😀
+grinning face with big eyes	😃
+grinning face with smiling eyes	😄
+beaming face with smiling eyes	😁
+grinning squinting face	😆
+grinning face with sweat	😅
+rolling on the floor laughing	🤣
+face with tears of joy	😂
+slightly smiling face	🙂
+upside-down face	🙃
+melting face	🫠
+winking face	😉
+smiling face with smiling eyes	😊
+smiling face with halo	😇
+smiling face with hearts	🥰
+smiling face with heart-eyes	😍
+star-struck	🤩
+face blowing a kiss	😘
+kissing face	😗
+smiling face	☺️
+kissing face with closed eyes	😚
+kissing face with smiling eyes	😙
+smiling face with tear	🥲
+face savoring food	😋
+face with tongue	😛
+winking face with tongue	😜
+zany face	🤪
+squinting face with tongue	😝
+money-mouth face	🤑
+smiling face with open hands	🤗
+face with hand over mouth	🤭
+face with open eyes and hand over mouth	🫢
+face with peeking eye	🫣
+shushing face	🤫
+thinking face	🤔
+saluting face	🫡
+zipper-mouth face	🤐
+face with raised eyebrow	🤨
+neutral face	😐
+expressionless face	😑
+face without mouth	😶
+dotted line face	🫥
+face in clouds	😶‍🌫️
+smirking face	😏
+unamused face	😒
+face with rolling eyes	🙄
+grimacing face	😬
+face exhaling	😮‍💨
+lying face	🤥
+shaking face	🫨
+head shaking horizontally	🙂‍↔️
+head shaking vertically	🙂‍↕️
+relieved face	😌
+pensive face	😔
+sleepy face	😪
+drooling face	🤤
+sleeping face	😴
+face with bags under eyes	🫩
+face with medical mask	😷
+face with thermometer	🤒
+face with head-bandage	🤕
+nauseated face	🤢
+face vomiting	🤮
+sneezing face	🤧
+hot face	🥵
+cold face	🥶
+woozy face	🥴
+face with crossed-out eyes	😵
+face with spiral eyes	😵‍💫
+exploding head	🤯
+cowboy hat face	🤠
+partying face	🥳
+disguised face	🥸
+smiling face with sunglasses	😎
+nerd face	🤓
+face with monocle	🧐
+confused face	😕
+face with diagonal mouth	🫤
+worried face	😟
+slightly frowning face	🙁
+frowning face	☹️
+face with open mouth	😮
+hushed face	😯
+astonished face	😲
+flushed face	😳
+distorted face	🫪
+pleading face	🥺
+face holding back tears	🥹
+frowning face with open mouth	😦
+anguished face	😧
+fearful face	😨
+anxious face with sweat	😰
+sad but relieved face	😥
+crying face	😢
+loudly crying face	😭
+face screaming in fear	😱
+confounded face	😖
+persevering face	😣
+disappointed face	😞
+downcast face with sweat	😓
+weary face	😩
+tired face	😫
+yawning face	🥱
+face with steam from nose	😤
+enraged face	😡
+angry face	😠
+face with symbols on mouth	🤬
+smiling face with horns	😈
+angry face with horns	👿
+skull	💀
+skull and crossbones	☠️
+pile of poo	💩
+clown face	🤡
+ogre	👹
+goblin	👺
+ghost	👻
+alien	👽
+alien monster	👾
+robot	🤖
+grinning cat	😺
+grinning cat with smiling eyes	😸
+cat with tears of joy	😹
+smiling cat with heart-eyes	😻
+cat with wry smile	😼
+kissing cat	😽
+weary cat	🙀
+crying cat	😿
+pouting cat	😾
+see-no-evil monkey	🙈
+hear-no-evil monkey	🙉
+speak-no-evil monkey	🙊
+love letter	💌
+heart with arrow	💘
+heart with ribbon	💝
+sparkling heart	💖
+growing heart	💗
+beating heart	💓
+revolving hearts	💞
+two hearts	💕
+heart decoration	💟
+heart exclamation	❣️
+broken heart	💔
+heart on fire	❤️‍🔥
+mending heart	❤️‍🩹
+red heart	❤️
+pink heart	🩷
+orange heart	🧡
+yellow heart	💛
+green heart	💚
+blue heart	💙
+light blue heart	🩵
+purple heart	💜
+brown heart	🤎
+black heart	🖤
+grey heart	🩶
+white heart	🤍
+kiss mark	💋
+hundred points	💯
+anger symbol	💢
+fight cloud	🫯
+collision	💥
+dizzy	💫
+sweat droplets	💦
+dashing away	💨
+hole	🕳️
+speech balloon	💬
+eye in speech bubble	👁️‍🗨️
+left speech bubble	🗨️
+right anger bubble	🗯️
+thought balloon	💭
+zzz	💤
+waving hand	👋
+raised back of hand	🤚
+hand with fingers splayed	🖐️
+raised hand	✋
+vulcan salute	🖖
+rightwards hand	🫱
+leftwards hand	🫲
+palm down hand	🫳
+palm up hand	🫴
+leftwards pushing hand	🫷
+rightwards pushing hand	🫸
+ok hand	👌
+pinched fingers	🤌
+pinching hand	🤏
+victory hand	✌️
+crossed fingers	🤞
+hand with index finger and thumb crossed	🫰
+love-you gesture	🤟
+sign of the horns	🤘
+call me hand	🤙
+backhand index pointing left	👈
+backhand index pointing right	👉
+backhand index pointing up	👆
+middle finger	🖕
+backhand index pointing down	👇
+index pointing up	☝️
+index pointing at the viewer	🫵
+thumbs up	👍
+thumbs down	👎
+raised fist	✊
+oncoming fist	👊
+left-facing fist	🤛
+right-facing fist	🤜
+clapping hands	👏
+raising hands	🙌
+heart hands	🫶
+open hands	👐
+palms up together	🤲
+handshake	🤝
+folded hands	🙏
+writing hand	✍️
+nail polish	💅
+selfie	🤳
+flexed biceps	💪
+mechanical arm	🦾
+mechanical leg	🦿
+leg	🦵
+foot	🦶
+ear	👂
+ear with hearing aid	🦻
+nose	👃
+brain	🧠
+anatomical heart	🫀
+lungs	🫁
+tooth	🦷
+bone	🦴
+eyes	👀
+eye	👁️
+tongue	👅
+mouth	👄
+biting lip	🫦
+baby	👶
+child	🧒
+boy	👦
+girl	👧
+person: blond hair	👱
+man	👨
+person: beard	🧔
+man: beard	🧔‍♂️
+woman: beard	🧔‍♀️
+man: red hair	👨‍🦰
+man: curly hair	👨‍🦱
+man: white hair	👨‍🦳
+man: bald	👨‍🦲
+woman	👩
+woman: red hair	👩‍🦰
+person: red hair	🧑‍🦰
+woman: curly hair	👩‍🦱
+person: curly hair	🧑‍🦱
+woman: white hair	👩‍🦳
+person: white hair	🧑‍🦳
+woman: bald	👩‍🦲
+person: bald	🧑‍🦲
+woman: blond hair	👱‍♀️
+man: blond hair	👱‍♂️
+older person	🧓
+old man	👴
+old woman	👵
+person frowning	🙍
+man frowning	🙍‍♂️
+woman frowning	🙍‍♀️
+person pouting	🙎
+man pouting	🙎‍♂️
+woman pouting	🙎‍♀️
+person gesturing no	🙅
+man gesturing no	🙅‍♂️
+woman gesturing no	🙅‍♀️
+person gesturing ok	🙆
+man gesturing ok	🙆‍♂️
+woman gesturing ok	🙆‍♀️
+person tipping hand	💁
+man tipping hand	💁‍♂️
+woman tipping hand	💁‍♀️
+person raising hand	🙋
+man raising hand	🙋‍♂️
+woman raising hand	🙋‍♀️
+deaf person	🧏
+deaf man	🧏‍♂️
+deaf woman	🧏‍♀️
+person bowing	🙇
+man bowing	🙇‍♂️
+woman bowing	🙇‍♀️
+person facepalming	🤦
+man facepalming	🤦‍♂️
+woman facepalming	🤦‍♀️
+person shrugging	🤷
+man shrugging	🤷‍♂️
+woman shrugging	🤷‍♀️
+health worker	🧑‍⚕️
+man health worker	👨‍⚕️
+woman health worker	👩‍⚕️
+student	🧑‍🎓
+man student	👨‍🎓
+woman student	👩‍🎓
+teacher	🧑‍🏫
+man teacher	👨‍🏫
+woman teacher	👩‍🏫
+judge	🧑‍⚖️
+man judge	👨‍⚖️
+woman judge	👩‍⚖️
+farmer	🧑‍🌾
+man farmer	👨‍🌾
+woman farmer	👩‍🌾
+cook	🧑‍🍳
+man cook	👨‍🍳
+woman cook	👩‍🍳
+mechanic	🧑‍🔧
+man mechanic	👨‍🔧
+woman mechanic	👩‍🔧
+factory worker	🧑‍🏭
+man factory worker	👨‍🏭
+woman factory worker	👩‍🏭
+office worker	🧑‍💼
+man office worker	👨‍💼
+woman office worker	👩‍💼
+scientist	🧑‍🔬
+man scientist	👨‍🔬
+woman scientist	👩‍🔬
+technologist	🧑‍💻
+man technologist	👨‍💻
+woman technologist	👩‍💻
+singer	🧑‍🎤
+man singer	👨‍🎤
+woman singer	👩‍🎤
+artist	🧑‍🎨
+man artist	👨‍🎨
+woman artist	👩‍🎨
+pilot	🧑‍✈️
+man pilot	👨‍✈️
+woman pilot	👩‍✈️
+astronaut	🧑‍🚀
+man astronaut	👨‍🚀
+woman astronaut	👩‍🚀
+firefighter	🧑‍🚒
+man firefighter	👨‍🚒
+woman firefighter	👩‍🚒
+police officer	👮
+man police officer	👮‍♂️
+woman police officer	👮‍♀️
+detective	🕵️
+man detective	🕵️‍♂️
+woman detective	🕵️‍♀️
+guard	💂
+man guard	💂‍♂️
+woman guard	💂‍♀️
+ninja	🥷
+construction worker	👷
+man construction worker	👷‍♂️
+woman construction worker	👷‍♀️
+person with crown	🫅
+prince	🤴
+princess	👸
+person wearing turban	👳
+man wearing turban	👳‍♂️
+woman wearing turban	👳‍♀️
+person with skullcap	👲
+woman with headscarf	🧕
+person in tuxedo	🤵
+man in tuxedo	🤵‍♂️
+woman in tuxedo	🤵‍♀️
+person with veil	👰
+man with veil	👰‍♂️
+woman with veil	👰‍♀️
+pregnant woman	🤰
+pregnant man	🫃
+pregnant person	🫄
+breast-feeding	🤱
+woman feeding baby	👩‍🍼
+man feeding baby	👨‍🍼
+person feeding baby	🧑‍🍼
+baby angel	👼
+santa claus	🎅
+mrs. claus	🤶
+mx claus	🧑‍🎄
+superhero	🦸
+man superhero	🦸‍♂️
+woman superhero	🦸‍♀️
+supervillain	🦹
+man supervillain	🦹‍♂️
+woman supervillain	🦹‍♀️
+mage	🧙
+man mage	🧙‍♂️
+woman mage	🧙‍♀️
+fairy	🧚
+man fairy	🧚‍♂️
+woman fairy	🧚‍♀️
+vampire	🧛
+man vampire	🧛‍♂️
+woman vampire	🧛‍♀️
+merperson	🧜
+merman	🧜‍♂️
+mermaid	🧜‍♀️
+elf	🧝
+man elf	🧝‍♂️
+woman elf	🧝‍♀️
+genie	🧞
+man genie	🧞‍♂️
+woman genie	🧞‍♀️
+zombie	🧟
+man zombie	🧟‍♂️
+woman zombie	🧟‍♀️
+troll	🧌
+hairy creature	🫈
+person getting massage	💆
+man getting massage	💆‍♂️
+woman getting massage	💆‍♀️
+person getting haircut	💇
+man getting haircut	💇‍♂️
+woman getting haircut	💇‍♀️
+person walking	🚶
+man walking	🚶‍♂️
+woman walking	🚶‍♀️
+person walking facing right	🚶‍➡️
+woman walking facing right	🚶‍♀️‍➡️
+man walking facing right	🚶‍♂️‍➡️
+person standing	🧍
+man standing	🧍‍♂️
+woman standing	🧍‍♀️
+person kneeling	🧎
+man kneeling	🧎‍♂️
+woman kneeling	🧎‍♀️
+person kneeling facing right	🧎‍➡️
+woman kneeling facing right	🧎‍♀️‍➡️
+man kneeling facing right	🧎‍♂️‍➡️
+person with white cane	🧑‍🦯
+person with white cane facing right	🧑‍🦯‍➡️
+man with white cane	👨‍🦯
+man with white cane facing right	👨‍🦯‍➡️
+woman with white cane	👩‍🦯
+woman with white cane facing right	👩‍🦯‍➡️
+person in motorized wheelchair	🧑‍🦼
+person in motorized wheelchair facing right	🧑‍🦼‍➡️
+man in motorized wheelchair	👨‍🦼
+man in motorized wheelchair facing right	👨‍🦼‍➡️
+woman in motorized wheelchair	👩‍🦼
+woman in motorized wheelchair facing right	👩‍🦼‍➡️
+person in manual wheelchair	🧑‍🦽
+person in manual wheelchair facing right	🧑‍🦽‍➡️
+man in manual wheelchair	👨‍🦽
+man in manual wheelchair facing right	👨‍🦽‍➡️
+woman in manual wheelchair	👩‍🦽
+woman in manual wheelchair facing right	👩‍🦽‍➡️
+person running	🏃
+man running	🏃‍♂️
+woman running	🏃‍♀️
+person running facing right	🏃‍➡️
+woman running facing right	🏃‍♀️‍➡️
+man running facing right	🏃‍♂️‍➡️
+ballet dancer	🧑‍🩰
+woman dancing	💃
+man dancing	🕺
+person in suit levitating	🕴️
+people with bunny ears	👯
+men with bunny ears	👯‍♂️
+women with bunny ears	👯‍♀️
+person in steamy room	🧖
+man in steamy room	🧖‍♂️
+woman in steamy room	🧖‍♀️
+person climbing	🧗
+man climbing	🧗‍♂️
+woman climbing	🧗‍♀️
+person fencing	🤺
+horse racing	🏇
+skier	⛷️
+snowboarder	🏂
+person golfing	🏌️
+man golfing	🏌️‍♂️
+woman golfing	🏌️‍♀️
+person surfing	🏄
+man surfing	🏄‍♂️
+woman surfing	🏄‍♀️
+person rowing boat	🚣
+man rowing boat	🚣‍♂️
+woman rowing boat	🚣‍♀️
+person swimming	🏊
+man swimming	🏊‍♂️
+woman swimming	🏊‍♀️
+person bouncing ball	⛹️
+man bouncing ball	⛹️‍♂️
+woman bouncing ball	⛹️‍♀️
+person lifting weights	🏋️
+man lifting weights	🏋️‍♂️
+woman lifting weights	🏋️‍♀️
+person biking	🚴
+man biking	🚴‍♂️
+woman biking	🚴‍♀️
+person mountain biking	🚵
+man mountain biking	🚵‍♂️
+woman mountain biking	🚵‍♀️
+person cartwheeling	🤸
+man cartwheeling	🤸‍♂️
+woman cartwheeling	🤸‍♀️
+people wrestling	🤼
+men wrestling	🤼‍♂️
+women wrestling	🤼‍♀️
+person playing water polo	🤽
+man playing water polo	🤽‍♂️
+woman playing water polo	🤽‍♀️
+person playing handball	🤾
+man playing handball	🤾‍♂️
+woman playing handball	🤾‍♀️
+person juggling	🤹
+man juggling	🤹‍♂️
+woman juggling	🤹‍♀️
+person in lotus position	🧘
+man in lotus position	🧘‍♂️
+woman in lotus position	🧘‍♀️
+person taking bath	🛀
+person in bed	🛌
+people holding hands	🧑‍🤝‍🧑
+women holding hands	👭
+woman and man holding hands	👫
+men holding hands	👬
+kiss	💏
+kiss: woman, man	👩‍❤️‍💋‍👨
+kiss: man, man	👨‍❤️‍💋‍👨
+kiss: woman, woman	👩‍❤️‍💋‍👩
+couple with heart	💑
+couple with heart: woman, man	👩‍❤️‍👨
+couple with heart: man, man	👨‍❤️‍👨
+couple with heart: woman, woman	👩‍❤️‍👩
+family: man, woman, boy	👨‍👩‍👦
+family: man, woman, girl	👨‍👩‍👧
+family: man, woman, girl, boy	👨‍👩‍👧‍👦
+family: man, woman, boy, boy	👨‍👩‍👦‍👦
+family: man, woman, girl, girl	👨‍👩‍👧‍👧
+family: man, man, boy	👨‍👨‍👦
+family: man, man, girl	👨‍👨‍👧
+family: man, man, girl, boy	👨‍👨‍👧‍👦
+family: man, man, boy, boy	👨‍👨‍👦‍👦
+family: man, man, girl, girl	👨‍👨‍👧‍👧
+family: woman, woman, boy	👩‍👩‍👦
+family: woman, woman, girl	👩‍👩‍👧
+family: woman, woman, girl, boy	👩‍👩‍👧‍👦
+family: woman, woman, boy, boy	👩‍👩‍👦‍👦
+family: woman, woman, girl, girl	👩‍👩‍👧‍👧
+family: man, boy	👨‍👦
+family: man, boy, boy	👨‍👦‍👦
+family: man, girl	👨‍👧
+family: man, girl, boy	👨‍👧‍👦
+family: man, girl, girl	👨‍👧‍👧
+family: woman, boy	👩‍👦
+family: woman, boy, boy	👩‍👦‍👦
+family: woman, girl	👩‍👧
+family: woman, girl, boy	👩‍👧‍👦
+family: woman, girl, girl	👩‍👧‍👧
+speaking head	🗣️
+bust in silhouette	👤
+busts in silhouette	👥
+people hugging	🫂
+family	👪
+family: adult, adult, child	🧑‍🧑‍🧒
+family: adult, adult, child, child	🧑‍🧑‍🧒‍🧒
+family: adult, child	🧑‍🧒
+family: adult, child, child	🧑‍🧒‍🧒
+footprints	👣
+fingerprint	🫆
+light skin tone	🏻
+medium-light skin tone	🏼
+medium skin tone	🏽
+medium-dark skin tone	🏾
+dark skin tone	🏿
+red hair	🦰
+curly hair	🦱
+white hair	🦳
+bald	🦲
+monkey face	🐵
+monkey	🐒
+gorilla	🦍
+orangutan	🦧
+dog face	🐶
+dog	🐕
+guide dog	🦮
+service dog	🐕‍🦺
+poodle	🐩
+wolf	🐺
+fox	🦊
+raccoon	🦝
+cat face	🐱
+cat	🐈
+black cat	🐈‍⬛
+lion	🦁
+tiger face	🐯
+tiger	🐅
+leopard	🐆
+horse face	🐴
+moose	🫎
+donkey	🫏
+horse	🐎
+unicorn	🦄
+zebra	🦓
+deer	🦌
+bison	🦬
+cow face	🐮
+ox	🐂
+water buffalo	🐃
+cow	🐄
+pig face	🐷
+pig	🐖
+boar	🐗
+pig nose	🐽
+ram	🐏
+ewe	🐑
+goat	🐐
+camel	🐪
+two-hump camel	🐫
+llama	🦙
+giraffe	🦒
+elephant	🐘
+mammoth	🦣
+rhinoceros	🦏
+hippopotamus	🦛
+mouse face	🐭
+mouse	🐁
+rat	🐀
+hamster	🐹
+rabbit face	🐰
+rabbit	🐇
+chipmunk	🐿️
+beaver	🦫
+hedgehog	🦔
+bat	🦇
+bear	🐻
+polar bear	🐻‍❄️
+koala	🐨
+panda	🐼
+sloth	🦥
+otter	🦦
+skunk	🦨
+kangaroo	🦘
+badger	🦡
+paw prints	🐾
+turkey	🦃
+chicken	🐔
+rooster	🐓
+hatching chick	🐣
+baby chick	🐤
+front-facing baby chick	🐥
+bird	🐦
+penguin	🐧
+dove	🕊️
+eagle	🦅
+duck	🦆
+swan	🦢
+owl	🦉
+dodo	🦤
+feather	🪶
+flamingo	🦩
+peacock	🦚
+parrot	🦜
+wing	🪽
+black bird	🐦‍⬛
+goose	🪿
+phoenix	🐦‍🔥
+frog	🐸
+crocodile	🐊
+turtle	🐢
+lizard	🦎
+snake	🐍
+dragon face	🐲
+dragon	🐉
+sauropod	🦕
+t-rex	🦖
+spouting whale	🐳
+whale	🐋
+dolphin	🐬
+orca	🫍
+seal	🦭
+fish	🐟
+tropical fish	🐠
+blowfish	🐡
+shark	🦈
+octopus	🐙
+spiral shell	🐚
+coral	🪸
+jellyfish	🪼
+crab	🦀
+lobster	🦞
+shrimp	🦐
+squid	🦑
+oyster	🦪
+snail	🐌
+butterfly	🦋
+bug	🐛
+ant	🐜
+honeybee	🐝
+beetle	🪲
+lady beetle	🐞
+cricket	🦗
+cockroach	🪳
+spider	🕷️
+spider web	🕸️
+scorpion	🦂
+mosquito	🦟
+fly	🪰
+worm	🪱
+microbe	🦠
+bouquet	💐
+cherry blossom	🌸
+white flower	💮
+lotus	🪷
+rosette	🏵️
+rose	🌹
+wilted flower	🥀
+hibiscus	🌺
+sunflower	🌻
+blossom	🌼
+tulip	🌷
+hyacinth	🪻
+seedling	🌱
+potted plant	🪴
+evergreen tree	🌲
+deciduous tree	🌳
+palm tree	🌴
+cactus	🌵
+sheaf of rice	🌾
+herb	🌿
+shamrock	☘️
+four leaf clover	🍀
+maple leaf	🍁
+fallen leaf	🍂
+leaf fluttering in wind	🍃
+empty nest	🪹
+nest with eggs	🪺
+mushroom	🍄
+leafless tree	🪾
+grapes	🍇
+melon	🍈
+watermelon	🍉
+tangerine	🍊
+lemon	🍋
+lime	🍋‍🟩
+banana	🍌
+pineapple	🍍
+mango	🥭
+red apple	🍎
+green apple	🍏
+pear	🍐
+peach	🍑
+cherries	🍒
+strawberry	🍓
+blueberries	🫐
+kiwi fruit	🥝
+tomato	🍅
+olive	🫒
+coconut	🥥
+avocado	🥑
+eggplant	🍆
+potato	🥔
+carrot	🥕
+ear of corn	🌽
+hot pepper	🌶️
+bell pepper	🫑
+cucumber	🥒
+leafy green	🥬
+broccoli	🥦
+garlic	🧄
+onion	🧅
+peanuts	🥜
+beans	🫘
+chestnut	🌰
+ginger root	🫚
+pea pod	🫛
+brown mushroom	🍄‍🟫
+root vegetable	🫜
+bread	🍞
+croissant	🥐
+baguette bread	🥖
+flatbread	🫓
+pretzel	🥨
+bagel	🥯
+pancakes	🥞
+waffle	🧇
+cheese wedge	🧀
+meat on bone	🍖
+poultry leg	🍗
+cut of meat	🥩
+bacon	🥓
+hamburger	🍔
+french fries	🍟
+pizza	🍕
+hot dog	🌭
+sandwich	🥪
+taco	🌮
+burrito	🌯
+tamale	🫔
+stuffed flatbread	🥙
+falafel	🧆
+egg	🥚
+cooking	🍳
+shallow pan of food	🥘
+pot of food	🍲
+fondue	🫕
+bowl with spoon	🥣
+green salad	🥗
+popcorn	🍿
+butter	🧈
+salt	🧂
+canned food	🥫
+bento box	🍱
+rice cracker	🍘
+rice ball	🍙
+cooked rice	🍚
+curry rice	🍛
+steaming bowl	🍜
+spaghetti	🍝
+roasted sweet potato	🍠
+oden	🍢
+sushi	🍣
+fried shrimp	🍤
+fish cake with swirl	🍥
+moon cake	🥮
+dango	🍡
+dumpling	🥟
+fortune cookie	🥠
+takeout box	🥡
+soft ice cream	🍦
+shaved ice	🍧
+ice cream	🍨
+doughnut	🍩
+cookie	🍪
+birthday cake	🎂
+shortcake	🍰
+cupcake	🧁
+pie	🥧
+chocolate bar	🍫
+candy	🍬
+lollipop	🍭
+custard	🍮
+honey pot	🍯
+baby bottle	🍼
+glass of milk	🥛
+hot beverage	☕
+teapot	🫖
+teacup without handle	🍵
+sake	🍶
+bottle with popping cork	🍾
+wine glass	🍷
+cocktail glass	🍸
+tropical drink	🍹
+beer mug	🍺
+clinking beer mugs	🍻
+clinking glasses	🥂
+tumbler glass	🥃
+pouring liquid	🫗
+cup with straw	🥤
+bubble tea	🧋
+beverage box	🧃
+mate	🧉
+ice	🧊
+chopsticks	🥢
+fork and knife with plate	🍽️
+fork and knife	🍴
+spoon	🥄
+kitchen knife	🔪
+jar	🫙
+amphora	🏺
+globe showing europe-africa	🌍
+globe showing americas	🌎
+globe showing asia-australia	🌏
+globe with meridians	🌐
+world map	🗺️
+map of japan	🗾
+compass	🧭
+snow-capped mountain	🏔️
+mountain	⛰️
+landslide	🛘
+volcano	🌋
+mount fuji	🗻
+camping	🏕️
+beach with umbrella	🏖️
+desert	🏜️
+desert island	🏝️
+national park	🏞️
+stadium	🏟️
+classical building	🏛️
+building construction	🏗️
+brick	🧱
+rock	🪨
+wood	🪵
+hut	🛖
+houses	🏘️
+derelict house	🏚️
+house	🏠
+house with garden	🏡
+office building	🏢
+japanese post office	🏣
+post office	🏤
+hospital	🏥
+bank	🏦
+hotel	🏨
+love hotel	🏩
+convenience store	🏪
+school	🏫
+department store	🏬
+factory	🏭
+japanese castle	🏯
+castle	🏰
+wedding	💒
+tokyo tower	🗼
+statue of liberty	🗽
+church	⛪
+mosque	🕌
+hindu temple	🛕
+synagogue	🕍
+shinto shrine	⛩️
+kaaba	🕋
+fountain	⛲
+tent	⛺
+foggy	🌁
+night with stars	🌃
+cityscape	🏙️
+sunrise over mountains	🌄
+sunrise	🌅
+cityscape at dusk	🌆
+sunset	🌇
+bridge at night	🌉
+hot springs	♨️
+carousel horse	🎠
+playground slide	🛝
+ferris wheel	🎡
+roller coaster	🎢
+barber pole	💈
+circus tent	🎪
+locomotive	🚂
+railway car	🚃
+high-speed train	🚄
+bullet train	🚅
+train	🚆
+metro	🚇
+light rail	🚈
+station	🚉
+tram	🚊
+monorail	🚝
+mountain railway	🚞
+tram car	🚋
+bus	🚌
+oncoming bus	🚍
+trolleybus	🚎
+minibus	🚐
+ambulance	🚑
+fire engine	🚒
+police car	🚓
+oncoming police car	🚔
+taxi	🚕
+oncoming taxi	🚖
+automobile	🚗
+oncoming automobile	🚘
+sport utility vehicle	🚙
+pickup truck	🛻
+delivery truck	🚚
+articulated lorry	🚛
+tractor	🚜
+racing car	🏎️
+motorcycle	🏍️
+motor scooter	🛵
+manual wheelchair	🦽
+motorized wheelchair	🦼
+auto rickshaw	🛺
+bicycle	🚲
+kick scooter	🛴
+skateboard	🛹
+roller skate	🛼
+bus stop	🚏
+motorway	🛣️
+railway track	🛤️
+oil drum	🛢️
+fuel pump	⛽
+wheel	🛞
+police car light	🚨
+horizontal traffic light	🚥
+vertical traffic light	🚦
+stop sign	🛑
+construction	🚧
+anchor	⚓
+ring buoy	🛟
+sailboat	⛵
+canoe	🛶
+speedboat	🚤
+passenger ship	🛳️
+ferry	⛴️
+motor boat	🛥️
+ship	🚢
+airplane	✈️
+small airplane	🛩️
+airplane departure	🛫
+airplane arrival	🛬
+parachute	🪂
+seat	💺
+helicopter	🚁
+suspension railway	🚟
+mountain cableway	🚠
+aerial tramway	🚡
+satellite	🛰️
+rocket	🚀
+flying saucer	🛸
+bellhop bell	🛎️
+luggage	🧳
+hourglass done	⌛
+hourglass not done	⏳
+watch	⌚
+alarm clock	⏰
+stopwatch	⏱️
+timer clock	⏲️
+mantelpiece clock	🕰️
+twelve o'clock	🕛
+twelve-thirty	🕧
+one o'clock	🕐
+one-thirty	🕜
+two o'clock	🕑
+two-thirty	🕝
+three o'clock	🕒
+three-thirty	🕞
+four o'clock	🕓
+four-thirty	🕟
+five o'clock	🕔
+five-thirty	🕠
+six o'clock	🕕
+six-thirty	🕡
+seven o'clock	🕖
+seven-thirty	🕢
+eight o'clock	🕗
+eight-thirty	🕣
+nine o'clock	🕘
+nine-thirty	🕤
+ten o'clock	🕙
+ten-thirty	🕥
+eleven o'clock	🕚
+eleven-thirty	🕦
+new moon	🌑
+waxing crescent moon	🌒
+first quarter moon	🌓
+waxing gibbous moon	🌔
+full moon	🌕
+waning gibbous moon	🌖
+last quarter moon	🌗
+waning crescent moon	🌘
+crescent moon	🌙
+new moon face	🌚
+first quarter moon face	🌛
+last quarter moon face	🌜
+thermometer	🌡️
+sun	☀️
+full moon face	🌝
+sun with face	🌞
+ringed planet	🪐
+star	⭐
+glowing star	🌟
+shooting star	🌠
+milky way	🌌
+cloud	☁️
+sun behind cloud	⛅
+cloud with lightning and rain	⛈️
+sun behind small cloud	🌤️
+sun behind large cloud	🌥️
+sun behind rain cloud	🌦️
+cloud with rain	🌧️
+cloud with snow	🌨️
+cloud with lightning	🌩️
+tornado	🌪️
+fog	🌫️
+wind face	🌬️
+cyclone	🌀
+rainbow	🌈
+closed umbrella	🌂
+umbrella	☂️
+umbrella with rain drops	☔
+umbrella on ground	⛱️
+high voltage	⚡
+snowflake	❄️
+snowman	☃️
+snowman without snow	⛄
+comet	☄️
+fire	🔥
+droplet	💧
+water wave	🌊
+jack-o-lantern	🎃
+christmas tree	🎄
+fireworks	🎆
+sparkler	🎇
+firecracker	🧨
+sparkles	✨
+balloon	🎈
+party popper	🎉
+confetti ball	🎊
+tanabata tree	🎋
+pine decoration	🎍
+japanese dolls	🎎
+carp streamer	🎏
+wind chime	🎐
+moon viewing ceremony	🎑
+red envelope	🧧
+ribbon	🎀
+wrapped gift	🎁
+reminder ribbon	🎗️
+admission tickets	🎟️
+ticket	🎫
+military medal	🎖️
+trophy	🏆
+sports medal	🏅
+1st place medal	🥇
+2nd place medal	🥈
+3rd place medal	🥉
+soccer ball	⚽
+baseball	⚾
+softball	🥎
+basketball	🏀
+volleyball	🏐
+american football	🏈
+rugby football	🏉
+tennis	🎾
+flying disc	🥏
+bowling	🎳
+cricket game	🏏
+field hockey	🏑
+ice hockey	🏒
+lacrosse	🥍
+ping pong	🏓
+badminton	🏸
+boxing glove	🥊
+martial arts uniform	🥋
+goal net	🥅
+flag in hole	⛳
+ice skate	⛸️
+fishing pole	🎣
+diving mask	🤿
+running shirt	🎽
+skis	🎿
+sled	🛷
+curling stone	🥌
+bullseye	🎯
+yo-yo	🪀
+kite	🪁
+water pistol	🔫
+pool 8 ball	🎱
+crystal ball	🔮
+magic wand	🪄
+video game	🎮
+joystick	🕹️
+slot machine	🎰
+game die	🎲
+puzzle piece	🧩
+teddy bear	🧸
+piñata	🪅
+mirror ball	🪩
+nesting dolls	🪆
+spade suit	♠️
+heart suit	♥️
+diamond suit	♦️
+club suit	♣️
+chess pawn	♟️
+joker	🃏
+mahjong red dragon	🀄
+flower playing cards	🎴
+performing arts	🎭
+framed picture	🖼️
+artist palette	🎨
+thread	🧵
+sewing needle	🪡
+yarn	🧶
+knot	🪢
+glasses	👓
+sunglasses	🕶️
+goggles	🥽
+lab coat	🥼
+safety vest	🦺
+necktie	👔
+t-shirt	👕
+jeans	👖
+scarf	🧣
+gloves	🧤
+coat	🧥
+socks	🧦
+dress	👗
+kimono	👘
+sari	🥻
+one-piece swimsuit	🩱
+briefs	🩲
+shorts	🩳
+bikini	👙
+woman's clothes	👚
+folding hand fan	🪭
+purse	👛
+handbag	👜
+clutch bag	👝
+shopping bags	🛍️
+backpack	🎒
+thong sandal	🩴
+man's shoe	👞
+running shoe	👟
+hiking boot	🥾
+flat shoe	🥿
+high-heeled shoe	👠
+woman's sandal	👡
+ballet shoes	🩰
+woman's boot	👢
+hair pick	🪮
+crown	👑
+woman's hat	👒
+top hat	🎩
+graduation cap	🎓
+billed cap	🧢
+military helmet	🪖
+rescue worker's helmet	⛑️
+prayer beads	📿
+lipstick	💄
+ring	💍
+gem stone	💎
+muted speaker	🔇
+speaker low volume	🔈
+speaker medium volume	🔉
+speaker high volume	🔊
+loudspeaker	📢
+megaphone	📣
+postal horn	📯
+bell	🔔
+bell with slash	🔕
+musical score	🎼
+musical note	🎵
+musical notes	🎶
+studio microphone	🎙️
+level slider	🎚️
+control knobs	🎛️
+microphone	🎤
+headphone	🎧
+radio	📻
+saxophone	🎷
+trumpet	🎺
+trombone	🪊
+accordion	🪗
+guitar	🎸
+musical keyboard	🎹
+violin	🎻
+banjo	🪕
+drum	🥁
+long drum	🪘
+maracas	🪇
+flute	🪈
+harp	🪉
+mobile phone	📱
+mobile phone with arrow	📲
+telephone	☎️
+telephone receiver	📞
+pager	📟
+fax machine	📠
+battery	🔋
+low battery	🪫
+electric plug	🔌
+laptop	💻
+desktop computer	🖥️
+printer	🖨️
+keyboard	⌨️
+computer mouse	🖱️
+trackball	🖲️
+computer disk	💽
+floppy disk	💾
+optical disk	💿
+dvd	📀
+abacus	🧮
+movie camera	🎥
+film frames	🎞️
+film projector	📽️
+clapper board	🎬
+television	📺
+camera	📷
+camera with flash	📸
+video camera	📹
+videocassette	📼
+magnifying glass tilted left	🔍
+magnifying glass tilted right	🔎
+candle	🕯️
+light bulb	💡
+flashlight	🔦
+red paper lantern	🏮
+diya lamp	🪔
+notebook with decorative cover	📔
+closed book	📕
+open book	📖
+green book	📗
+blue book	📘
+orange book	📙
+books	📚
+notebook	📓
+ledger	📒
+page with curl	📃
+scroll	📜
+page facing up	📄
+newspaper	📰
+rolled-up newspaper	🗞️
+bookmark tabs	📑
+bookmark	🔖
+label	🏷️
+coin	🪙
+money bag	💰
+treasure chest	🪎
+yen banknote	💴
+dollar banknote	💵
+euro banknote	💶
+pound banknote	💷
+money with wings	💸
+credit card	💳
+receipt	🧾
+chart increasing with yen	💹
+envelope	✉️
+e-mail	📧
+incoming envelope	📨
+envelope with arrow	📩
+outbox tray	📤
+inbox tray	📥
+package	📦
+closed mailbox with raised flag	📫
+closed mailbox with lowered flag	📪
+open mailbox with raised flag	📬
+open mailbox with lowered flag	📭
+postbox	📮
+ballot box with ballot	🗳️
+pencil	✏️
+black nib	✒️
+fountain pen	🖋️
+pen	🖊️
+paintbrush	🖌️
+crayon	🖍️
+memo	📝
+briefcase	💼
+file folder	📁
+open file folder	📂
+card index dividers	🗂️
+calendar	📅
+tear-off calendar	📆
+spiral notepad	🗒️
+spiral calendar	🗓️
+card index	📇
+chart increasing	📈
+chart decreasing	📉
+bar chart	📊
+clipboard	📋
+pushpin	📌
+round pushpin	📍
+paperclip	📎
+linked paperclips	🖇️
+straight ruler	📏
+triangular ruler	📐
+scissors	✂️
+card file box	🗃️
+file cabinet	🗄️
+wastebasket	🗑️
+locked	🔒
+unlocked	🔓
+locked with pen	🔏
+locked with key	🔐
+key	🔑
+old key	🗝️
+hammer	🔨
+axe	🪓
+pick	⛏️
+hammer and pick	⚒️
+hammer and wrench	🛠️
+dagger	🗡️
+crossed swords	⚔️
+bomb	💣
+boomerang	🪃
+bow and arrow	🏹
+shield	🛡️
+carpentry saw	🪚
+wrench	🔧
+screwdriver	🪛
+nut and bolt	🔩
+gear	⚙️
+clamp	🗜️
+balance scale	⚖️
+white cane	🦯
+link	🔗
+broken chain	⛓️‍💥
+chains	⛓️
+hook	🪝
+toolbox	🧰
+magnet	🧲
+ladder	🪜
+shovel	🪏
+alembic	⚗️
+test tube	🧪
+petri dish	🧫
+dna	🧬
+microscope	🔬
+telescope	🔭
+satellite antenna	📡
+syringe	💉
+drop of blood	🩸
+pill	💊
+adhesive bandage	🩹
+crutch	🩼
+stethoscope	🩺
+x-ray	🩻
+door	🚪
+elevator	🛗
+mirror	🪞
+window	🪟
+bed	🛏️
+couch and lamp	🛋️
+chair	🪑
+toilet	🚽
+plunger	🪠
+shower	🚿
+bathtub	🛁
+mouse trap	🪤
+razor	🪒
+lotion bottle	🧴
+safety pin	🧷
+broom	🧹
+basket	🧺
+roll of paper	🧻
+bucket	🪣
+soap	🧼
+bubbles	🫧
+toothbrush	🪥
+sponge	🧽
+fire extinguisher	🧯
+shopping cart	🛒
+cigarette	🚬
+coffin	⚰️
+headstone	🪦
+funeral urn	⚱️
+nazar amulet	🧿
+hamsa	🪬
+moai	🗿
+placard	🪧
+identification card	🪪
+atm sign	🏧
+litter in bin sign	🚮
+potable water	🚰
+wheelchair symbol	♿
+men's room	🚹
+women's room	🚺
+restroom	🚻
+baby symbol	🚼
+water closet	🚾
+passport control	🛂
+customs	🛃
+baggage claim	🛄
+left luggage	🛅
+warning	⚠️
+children crossing	🚸
+no entry	⛔
+prohibited	🚫
+no bicycles	🚳
+no smoking	🚭
+no littering	🚯
+non-potable water	🚱
+no pedestrians	🚷
+no mobile phones	📵
+no one under eighteen	🔞
+radioactive	☢️
+biohazard	☣️
+up arrow	⬆️
+up-right arrow	↗️
+right arrow	➡️
+down-right arrow	↘️
+down arrow	⬇️
+down-left arrow	↙️
+left arrow	⬅️
+up-left arrow	↖️
+up-down arrow	↕️
+left-right arrow	↔️
+right arrow curving left	↩️
+left arrow curving right	↪️
+right arrow curving up	⤴️
+right arrow curving down	⤵️
+clockwise vertical arrows	🔃
+counterclockwise arrows button	🔄
+back arrow	🔙
+end arrow	🔚
+on! arrow	🔛
+soon arrow	🔜
+top arrow	🔝
+place of worship	🛐
+atom symbol	⚛️
+om	🕉️
+star of david	✡️
+wheel of dharma	☸️
+yin yang	☯️
+latin cross	✝️
+orthodox cross	☦️
+star and crescent	☪️
+peace symbol	☮️
+menorah	🕎
+dotted six-pointed star	🔯
+khanda	🪯
+aries	♈
+taurus	♉
+gemini	♊
+cancer	♋
+leo	♌
+virgo	♍
+libra	♎
+scorpio	♏
+sagittarius	♐
+capricorn	♑
+aquarius	♒
+pisces	♓
+ophiuchus	⛎
+shuffle tracks button	🔀
+repeat button	🔁
+repeat single button	🔂
+play button	▶️
+fast-forward button	⏩
+next track button	⏭️
+play or pause button	⏯️
+reverse button	◀️
+fast reverse button	⏪
+last track button	⏮️
+upwards button	🔼
+fast up button	⏫
+downwards button	🔽
+fast down button	⏬
+pause button	⏸️
+stop button	⏹️
+record button	⏺️
+eject button	⏏️
+cinema	🎦
+dim button	🔅
+bright button	🔆
+antenna bars	📶
+wireless	🛜
+vibration mode	📳
+mobile phone off	📴
+female sign	♀️
+male sign	♂️
+transgender symbol	⚧️
+multiply	✖️
+plus	➕
+minus	➖
+divide	➗
+heavy equals sign	🟰
+infinity	♾️
+double exclamation mark	‼️
+exclamation question mark	⁉️
+red question mark	❓
+white question mark	❔
+white exclamation mark	❕
+red exclamation mark	❗
+wavy dash	〰️
+currency exchange	💱
+heavy dollar sign	💲
+medical symbol	⚕️
+recycling symbol	♻️
+fleur-de-lis	⚜️
+trident emblem	🔱
+name badge	📛
+japanese symbol for beginner	🔰
+hollow red circle	⭕
+check mark button	✅
+check box with check	☑️
+check mark	✔️
+cross mark	❌
+cross mark button	❎
+curly loop	➰
+double curly loop	➿
+part alternation mark	〽️
+eight-spoked asterisk	✳️
+eight-pointed star	✴️
+sparkle	❇️
+copyright	©️
+registered	®️
+trade mark	™️
+splatter	🫟
+keycap: #	#️⃣
+#	#️⃣
+keycap: *	*️⃣
+*	*️⃣
+keycap: 0	0️⃣
+0	0️⃣
+keycap: 1	1️⃣
+1	1️⃣
+keycap: 2	2️⃣
+2	2️⃣
+keycap: 3	3️⃣
+3	3️⃣
+keycap: 4	4️⃣
+4	4️⃣
+keycap: 5	5️⃣
+5	5️⃣
+keycap: 6	6️⃣
+6	6️⃣
+keycap: 7	7️⃣
+7	7️⃣
+keycap: 8	8️⃣
+8	8️⃣
+keycap: 9	9️⃣
+9	9️⃣
+keycap: 10	🔟
+10	🔟
+input latin uppercase	🔠
+input latin lowercase	🔡
+input numbers	🔢
+input symbols	🔣
+input latin letters	🔤
+a button (blood type)	🅰️
+ab button (blood type)	🆎
+b button (blood type)	🅱️
+cl button	🆑
+cool button	🆒
+free button	🆓
+information	ℹ️
+id button	🆔
+circled m	Ⓜ️
+new button	🆕
+ng button	🆖
+o button (blood type)	🅾️
+ok button	🆗
+p button	🅿️
+sos button	🆘
+up! button	🆙
+vs button	🆚
+japanese “here” button	🈁
+japanese “service charge” button	🈂️
+japanese “monthly amount” button	🈷️
+japanese “not free of charge” button	🈶
+japanese “reserved” button	🈯
+japanese “bargain” button	🉐
+japanese “discount” button	🈹
+japanese “free of charge” button	🈚
+japanese “prohibited” button	🈲
+japanese “acceptable” button	🉑
+japanese “application” button	🈸
+japanese “passing grade” button	🈴
+japanese “vacancy” button	🈳
+japanese “congratulations” button	㊗️
+japanese “secret” button	㊙️
+japanese “open for business” button	🈺
+japanese “no vacancy” button	🈵
+red circle	🔴
+orange circle	🟠
+yellow circle	🟡
+green circle	🟢
+blue circle	🔵
+purple circle	🟣
+brown circle	🟤
+black circle	⚫
+white circle	⚪
+red square	🟥
+orange square	🟧
+yellow square	🟨
+green square	🟩
+blue square	🟦
+purple square	🟪
+brown square	🟫
+black large square	⬛
+white large square	⬜
+black medium square	◼️
+white medium square	◻️
+black medium-small square	◾
+white medium-small square	◽
+black small square	▪️
+white small square	▫️
+large orange diamond	🔶
+large blue diamond	🔷
+small orange diamond	🔸
+small blue diamond	🔹
+red triangle pointed up	🔺
+red triangle pointed down	🔻
+diamond with a dot	💠
+radio button	🔘
+white square button	🔳
+black square button	🔲
+chequered flag	🏁
+triangular flag	🚩
+crossed flags	🎌
+black flag	🏴
+white flag	🏳️
+rainbow flag	🏳️‍🌈
+transgender flag	🏳️‍⚧️
+pirate flag	🏴‍☠️
+flag: ascension island	🇦🇨
+ascension island	🇦🇨
+flag: andorra	🇦🇩
+andorra	🇦🇩
+flag: united arab emirates	🇦🇪
+united arab emirates	🇦🇪
+flag: afghanistan	🇦🇫
+afghanistan	🇦🇫
+flag: antigua & barbuda	🇦🇬
+antigua & barbuda	🇦🇬
+flag: anguilla	🇦🇮
+anguilla	🇦🇮
+flag: albania	🇦🇱
+albania	🇦🇱
+flag: armenia	🇦🇲
+armenia	🇦🇲
+flag: angola	🇦🇴
+angola	🇦🇴
+flag: antarctica	🇦🇶
+antarctica	🇦🇶
+flag: argentina	🇦🇷
+argentina	🇦🇷
+flag: american samoa	🇦🇸
+american samoa	🇦🇸
+flag: austria	🇦🇹
+austria	🇦🇹
+flag: australia	🇦🇺
+australia	🇦🇺
+flag: aruba	🇦🇼
+aruba	🇦🇼
+flag: åland islands	🇦🇽
+åland islands	🇦🇽
+flag: azerbaijan	🇦🇿
+azerbaijan	🇦🇿
+flag: bosnia & herzegovina	🇧🇦
+bosnia & herzegovina	🇧🇦
+flag: barbados	🇧🇧
+barbados	🇧🇧
+flag: bangladesh	🇧🇩
+bangladesh	🇧🇩
+flag: belgium	🇧🇪
+belgium	🇧🇪
+flag: burkina faso	🇧🇫
+burkina faso	🇧🇫
+flag: bulgaria	🇧🇬
+bulgaria	🇧🇬
+flag: bahrain	🇧🇭
+bahrain	🇧🇭
+flag: burundi	🇧🇮
+burundi	🇧🇮
+flag: benin	🇧🇯
+benin	🇧🇯
+flag: st. barthélemy	🇧🇱
+st. barthélemy	🇧🇱
+flag: bermuda	🇧🇲
+bermuda	🇧🇲
+flag: brunei	🇧🇳
+brunei	🇧🇳
+flag: bolivia	🇧🇴
+bolivia	🇧🇴
+flag: caribbean netherlands	🇧🇶
+caribbean netherlands	🇧🇶
+flag: brazil	🇧🇷
+brazil	🇧🇷
+flag: bahamas	🇧🇸
+bahamas	🇧🇸
+flag: bhutan	🇧🇹
+bhutan	🇧🇹
+flag: bouvet island	🇧🇻
+bouvet island	🇧🇻
+flag: botswana	🇧🇼
+botswana	🇧🇼
+flag: belarus	🇧🇾
+belarus	🇧🇾
+flag: belize	🇧🇿
+belize	🇧🇿
+flag: canada	🇨🇦
+canada	🇨🇦
+flag: cocos (keeling) islands	🇨🇨
+cocos (keeling) islands	🇨🇨
+flag: congo - kinshasa	🇨🇩
+congo - kinshasa	🇨🇩
+flag: central african republic	🇨🇫
+central african republic	🇨🇫
+flag: congo - brazzaville	🇨🇬
+congo - brazzaville	🇨🇬
+flag: switzerland	🇨🇭
+switzerland	🇨🇭
+flag: côte d'ivoire	🇨🇮
+côte d'ivoire	🇨🇮
+flag: cook islands	🇨🇰
+cook islands	🇨🇰
+flag: chile	🇨🇱
+chile	🇨🇱
+flag: cameroon	🇨🇲
+cameroon	🇨🇲
+flag: china	🇨🇳
+china	🇨🇳
+flag: colombia	🇨🇴
+colombia	🇨🇴
+flag: clipperton island	🇨🇵
+clipperton island	🇨🇵
+flag: sark	🇨🇶
+sark	🇨🇶
+flag: costa rica	🇨🇷
+costa rica	🇨🇷
+flag: cuba	🇨🇺
+cuba	🇨🇺
+flag: cape verde	🇨🇻
+cape verde	🇨🇻
+flag: curaçao	🇨🇼
+curaçao	🇨🇼
+flag: christmas island	🇨🇽
+christmas island	🇨🇽
+flag: cyprus	🇨🇾
+cyprus	🇨🇾
+flag: czechia	🇨🇿
+czechia	🇨🇿
+flag: germany	🇩🇪
+germany	🇩🇪
+flag: diego garcia	🇩🇬
+diego garcia	🇩🇬
+flag: djibouti	🇩🇯
+djibouti	🇩🇯
+flag: denmark	🇩🇰
+denmark	🇩🇰
+flag: dominica	🇩🇲
+dominica	🇩🇲
+flag: dominican republic	🇩🇴
+dominican republic	🇩🇴
+flag: algeria	🇩🇿
+algeria	🇩🇿
+flag: ceuta & melilla	🇪🇦
+ceuta & melilla	🇪🇦
+flag: ecuador	🇪🇨
+ecuador	🇪🇨
+flag: estonia	🇪🇪
+estonia	🇪🇪
+flag: egypt	🇪🇬
+egypt	🇪🇬
+flag: western sahara	🇪🇭
+western sahara	🇪🇭
+flag: eritrea	🇪🇷
+eritrea	🇪🇷
+flag: spain	🇪🇸
+spain	🇪🇸
+flag: ethiopia	🇪🇹
+ethiopia	🇪🇹
+flag: european union	🇪🇺
+european union	🇪🇺
+flag: finland	🇫🇮
+finland	🇫🇮
+flag: fiji	🇫🇯
+fiji	🇫🇯
+flag: falkland islands	🇫🇰
+falkland islands	🇫🇰
+flag: micronesia	🇫🇲
+micronesia	🇫🇲
+flag: faroe islands	🇫🇴
+faroe islands	🇫🇴
+flag: france	🇫🇷
+france	🇫🇷
+flag: gabon	🇬🇦
+gabon	🇬🇦
+flag: united kingdom	🇬🇧
+united kingdom	🇬🇧
+flag: grenada	🇬🇩
+grenada	🇬🇩
+flag: georgia	🇬🇪
+georgia	🇬🇪
+flag: french guiana	🇬🇫
+french guiana	🇬🇫
+flag: guernsey	🇬🇬
+guernsey	🇬🇬
+flag: ghana	🇬🇭
+ghana	🇬🇭
+flag: gibraltar	🇬🇮
+gibraltar	🇬🇮
+flag: greenland	🇬🇱
+greenland	🇬🇱
+flag: gambia	🇬🇲
+gambia	🇬🇲
+flag: guinea	🇬🇳
+guinea	🇬🇳
+flag: guadeloupe	🇬🇵
+guadeloupe	🇬🇵
+flag: equatorial guinea	🇬🇶
+equatorial guinea	🇬🇶
+flag: greece	🇬🇷
+greece	🇬🇷
+flag: south georgia & south sandwich islands	🇬🇸
+south georgia & south sandwich islands	🇬🇸
+flag: guatemala	🇬🇹
+guatemala	🇬🇹
+flag: guam	🇬🇺
+guam	🇬🇺
+flag: guinea-bissau	🇬🇼
+guinea-bissau	🇬🇼
+flag: guyana	🇬🇾
+guyana	🇬🇾
+flag: hong kong sar china	🇭🇰
+hong kong sar china	🇭🇰
+flag: heard & mcdonald islands	🇭🇲
+heard & mcdonald islands	🇭🇲
+flag: honduras	🇭🇳
+honduras	🇭🇳
+flag: croatia	🇭🇷
+croatia	🇭🇷
+flag: haiti	🇭🇹
+haiti	🇭🇹
+flag: hungary	🇭🇺
+hungary	🇭🇺
+flag: canary islands	🇮🇨
+canary islands	🇮🇨
+flag: indonesia	🇮🇩
+indonesia	🇮🇩
+flag: ireland	🇮🇪
+ireland	🇮🇪
+flag: israel	🇮🇱
+israel	🇮🇱
+flag: isle of man	🇮🇲
+isle of man	🇮🇲
+flag: india	🇮🇳
+india	🇮🇳
+flag: british indian ocean territory	🇮🇴
+british indian ocean territory	🇮🇴
+flag: iraq	🇮🇶
+iraq	🇮🇶
+flag: iran	🇮🇷
+iran	🇮🇷
+flag: iceland	🇮🇸
+iceland	🇮🇸
+flag: italy	🇮🇹
+italy	🇮🇹
+flag: jersey	🇯🇪
+jersey	🇯🇪
+flag: jamaica	🇯🇲
+jamaica	🇯🇲
+flag: jordan	🇯🇴
+jordan	🇯🇴
+flag: japan	🇯🇵
+japan	🇯🇵
+flag: kenya	🇰🇪
+kenya	🇰🇪
+flag: kyrgyzstan	🇰🇬
+kyrgyzstan	🇰🇬
+flag: cambodia	🇰🇭
+cambodia	🇰🇭
+flag: kiribati	🇰🇮
+kiribati	🇰🇮
+flag: comoros	🇰🇲
+comoros	🇰🇲
+flag: st. kitts & nevis	🇰🇳
+st. kitts & nevis	🇰🇳
+flag: north korea	🇰🇵
+north korea	🇰🇵
+flag: south korea	🇰🇷
+south korea	🇰🇷
+flag: kuwait	🇰🇼
+kuwait	🇰🇼
+flag: cayman islands	🇰🇾
+cayman islands	🇰🇾
+flag: kazakhstan	🇰🇿
+kazakhstan	🇰🇿
+flag: laos	🇱🇦
+laos	🇱🇦
+flag: lebanon	🇱🇧
+lebanon	🇱🇧
+flag: st. lucia	🇱🇨
+st. lucia	🇱🇨
+flag: liechtenstein	🇱🇮
+liechtenstein	🇱🇮
+flag: sri lanka	🇱🇰
+sri lanka	🇱🇰
+flag: liberia	🇱🇷
+liberia	🇱🇷
+flag: lesotho	🇱🇸
+lesotho	🇱🇸
+flag: lithuania	🇱🇹
+lithuania	🇱🇹
+flag: luxembourg	🇱🇺
+luxembourg	🇱🇺
+flag: latvia	🇱🇻
+latvia	🇱🇻
+flag: libya	🇱🇾
+libya	🇱🇾
+flag: morocco	🇲🇦
+morocco	🇲🇦
+flag: monaco	🇲🇨
+monaco	🇲🇨
+flag: moldova	🇲🇩
+moldova	🇲🇩
+flag: montenegro	🇲🇪
+montenegro	🇲🇪
+flag: st. martin	🇲🇫
+st. martin	🇲🇫
+flag: madagascar	🇲🇬
+madagascar	🇲🇬
+flag: marshall islands	🇲🇭
+marshall islands	🇲🇭
+flag: north macedonia	🇲🇰
+north macedonia	🇲🇰
+flag: mali	🇲🇱
+mali	🇲🇱
+flag: myanmar (burma)	🇲🇲
+myanmar (burma)	🇲🇲
+flag: mongolia	🇲🇳
+mongolia	🇲🇳
+flag: macao sar china	🇲🇴
+macao sar china	🇲🇴
+flag: northern mariana islands	🇲🇵
+northern mariana islands	🇲🇵
+flag: martinique	🇲🇶
+martinique	🇲🇶
+flag: mauritania	🇲🇷
+mauritania	🇲🇷
+flag: montserrat	🇲🇸
+montserrat	🇲🇸
+flag: malta	🇲🇹
+malta	🇲🇹
+flag: mauritius	🇲🇺
+mauritius	🇲🇺
+flag: maldives	🇲🇻
+maldives	🇲🇻
+flag: malawi	🇲🇼
+malawi	🇲🇼
+flag: mexico	🇲🇽
+mexico	🇲🇽
+flag: malaysia	🇲🇾
+malaysia	🇲🇾
+flag: mozambique	🇲🇿
+mozambique	🇲🇿
+flag: namibia	🇳🇦
+namibia	🇳🇦
+flag: new caledonia	🇳🇨
+new caledonia	🇳🇨
+flag: niger	🇳🇪
+niger	🇳🇪
+flag: norfolk island	🇳🇫
+norfolk island	🇳🇫
+flag: nigeria	🇳🇬
+nigeria	🇳🇬
+flag: nicaragua	🇳🇮
+nicaragua	🇳🇮
+flag: netherlands	🇳🇱
+netherlands	🇳🇱
+flag: norway	🇳🇴
+norway	🇳🇴
+flag: nepal	🇳🇵
+nepal	🇳🇵
+flag: nauru	🇳🇷
+nauru	🇳🇷
+flag: niue	🇳🇺
+niue	🇳🇺
+flag: new zealand	🇳🇿
+new zealand	🇳🇿
+flag: oman	🇴🇲
+oman	🇴🇲
+flag: panama	🇵🇦
+panama	🇵🇦
+flag: peru	🇵🇪
+peru	🇵🇪
+flag: french polynesia	🇵🇫
+french polynesia	🇵🇫
+flag: papua new guinea	🇵🇬
+papua new guinea	🇵🇬
+flag: philippines	🇵🇭
+philippines	🇵🇭
+flag: pakistan	🇵🇰
+pakistan	🇵🇰
+flag: poland	🇵🇱
+poland	🇵🇱
+flag: st. pierre & miquelon	🇵🇲
+st. pierre & miquelon	🇵🇲
+flag: pitcairn islands	🇵🇳
+pitcairn islands	🇵🇳
+flag: puerto rico	🇵🇷
+puerto rico	🇵🇷
+flag: palestinian territories	🇵🇸
+palestinian territories	🇵🇸
+flag: portugal	🇵🇹
+portugal	🇵🇹
+flag: palau	🇵🇼
+palau	🇵🇼
+flag: paraguay	🇵🇾
+paraguay	🇵🇾
+flag: qatar	🇶🇦
+qatar	🇶🇦
+flag: réunion	🇷🇪
+réunion	🇷🇪
+flag: romania	🇷🇴
+romania	🇷🇴
+flag: serbia	🇷🇸
+serbia	🇷🇸
+flag: russia	🇷🇺
+russia	🇷🇺
+flag: rwanda	🇷🇼
+rwanda	🇷🇼
+flag: saudi arabia	🇸🇦
+saudi arabia	🇸🇦
+flag: solomon islands	🇸🇧
+solomon islands	🇸🇧
+flag: seychelles	🇸🇨
+seychelles	🇸🇨
+flag: sudan	🇸🇩
+sudan	🇸🇩
+flag: sweden	🇸🇪
+sweden	🇸🇪
+flag: singapore	🇸🇬
+singapore	🇸🇬
+flag: st. helena	🇸🇭
+st. helena	🇸🇭
+flag: slovenia	🇸🇮
+slovenia	🇸🇮
+flag: svalbard & jan mayen	🇸🇯
+svalbard & jan mayen	🇸🇯
+flag: slovakia	🇸🇰
+slovakia	🇸🇰
+flag: sierra leone	🇸🇱
+sierra leone	🇸🇱
+flag: san marino	🇸🇲
+san marino	🇸🇲
+flag: senegal	🇸🇳
+senegal	🇸🇳
+flag: somalia	🇸🇴
+somalia	🇸🇴
+flag: suriname	🇸🇷
+suriname	🇸🇷
+flag: south sudan	🇸🇸
+south sudan	🇸🇸
+flag: são tomé & príncipe	🇸🇹
+são tomé & príncipe	🇸🇹
+flag: el salvador	🇸🇻
+el salvador	🇸🇻
+flag: sint maarten	🇸🇽
+sint maarten	🇸🇽
+flag: syria	🇸🇾
+syria	🇸🇾
+flag: eswatini	🇸🇿
+eswatini	🇸🇿
+flag: tristan da cunha	🇹🇦
+tristan da cunha	🇹🇦
+flag: turks & caicos islands	🇹🇨
+turks & caicos islands	🇹🇨
+flag: chad	🇹🇩
+chad	🇹🇩
+flag: french southern territories	🇹🇫
+french southern territories	🇹🇫
+flag: togo	🇹🇬
+togo	🇹🇬
+flag: thailand	🇹🇭
+thailand	🇹🇭
+flag: tajikistan	🇹🇯
+tajikistan	🇹🇯
+flag: tokelau	🇹🇰
+tokelau	🇹🇰
+flag: timor-leste	🇹🇱
+timor-leste	🇹🇱
+flag: turkmenistan	🇹🇲
+turkmenistan	🇹🇲
+flag: tunisia	🇹🇳
+tunisia	🇹🇳
+flag: tonga	🇹🇴
+tonga	🇹🇴
+flag: türkiye	🇹🇷
+türkiye	🇹🇷
+flag: trinidad & tobago	🇹🇹
+trinidad & tobago	🇹🇹
+flag: tuvalu	🇹🇻
+tuvalu	🇹🇻
+flag: taiwan	🇹🇼
+taiwan	🇹🇼
+flag: tanzania	🇹🇿
+tanzania	🇹🇿
+flag: ukraine	🇺🇦
+ukraine	🇺🇦
+flag: uganda	🇺🇬
+uganda	🇺🇬
+flag: u.s. outlying islands	🇺🇲
+u.s. outlying islands	🇺🇲
+flag: united nations	🇺🇳
+united nations	🇺🇳
+flag: united states	🇺🇸
+united states	🇺🇸
+flag: uruguay	🇺🇾
+uruguay	🇺🇾
+flag: uzbekistan	🇺🇿
+uzbekistan	🇺🇿
+flag: vatican city	🇻🇦
+vatican city	🇻🇦
+flag: st. vincent & grenadines	🇻🇨
+st. vincent & grenadines	🇻🇨
+flag: venezuela	🇻🇪
+venezuela	🇻🇪
+flag: british virgin islands	🇻🇬
+british virgin islands	🇻🇬
+flag: u.s. virgin islands	🇻🇮
+u.s. virgin islands	🇻🇮
+flag: vietnam	🇻🇳
+vietnam	🇻🇳
+flag: vanuatu	🇻🇺
+vanuatu	🇻🇺
+flag: wallis & futuna	🇼🇫
+wallis & futuna	🇼🇫
+flag: samoa	🇼🇸
+samoa	🇼🇸
+flag: kosovo	🇽🇰
+kosovo	🇽🇰
+flag: yemen	🇾🇪
+yemen	🇾🇪
+flag: mayotte	🇾🇹
+mayotte	🇾🇹
+flag: south africa	🇿🇦
+south africa	🇿🇦
+flag: zambia	🇿🇲
+zambia	🇿🇲
+flag: zimbabwe	🇿🇼
+zimbabwe	🇿🇼
+flag: england	🏴󠁧󠁢󠁥󠁮󠁧󠁿
+england	🏴󠁧󠁢󠁥󠁮󠁧󠁿
+flag: scotland	🏴󠁧󠁢󠁳󠁣󠁴󠁿
+scotland	🏴󠁧󠁢󠁳󠁣󠁴󠁿
+flag: wales	🏴󠁧󠁢󠁷󠁬󠁳󠁿
+wales	🏴󠁧󠁢󠁷󠁬󠁳󠁿
+copyright sign	©️
+registered sign	®️
+trade mark sign	™️
+information source	ℹ️
+left right arrow	↔️
+up down arrow	↕️
+north west arrow	↖️
+north east arrow	↗️
+south east arrow	↘️
+south west arrow	↙️
+leftwards arrow with hook	↩️
+rightwards arrow with hook	↪️
+hourglass	⌛
+eject symbol	⏏️
+black right-pointing double triangle	⏩
+black left-pointing double triangle	⏪
+black up-pointing double triangle	⏫
+black down-pointing double triangle	⏬
+black right-pointing double triangle with vertical bar	⏭️
+black left-pointing double triangle with vertical bar	⏮️
+black right-pointing triangle with double vertical bar	⏯️
+hourglass with flowing sand	⏳
+double vertical bar	⏸️
+black square for stop	⏹️
+black circle for record	⏺️
+circled latin capital letter m	Ⓜ️
+black right-pointing triangle	▶️
+black left-pointing triangle	◀️
+white medium small square	◽
+black medium small square	◾
+black sun with rays	☀️
+black telephone	☎️
+ballot box with check	☑️
+white up pointing index	☝️
+radioactive sign	☢️
+biohazard sign	☣️
+white frowning face	☹️
+white smiling face	☺️
+scorpius	♏
+black spade suit	♠️
+black club suit	♣️
+black heart suit	♥️
+black diamond suit	♦️
+black universal recycling symbol	♻️
+scales	⚖️
+warning sign	⚠️
+high voltage sign	⚡
+medium white circle	⚪
+medium black circle	⚫
+thunder cloud and rain	⛈️
+helmet with white cross	⛑️
+person with ball	⛹️
+black scissors	✂️
+white heavy check mark	✅
+heavy check mark	✔️
+heavy multiplication x	✖️
+eight spoked asterisk	✳️
+eight pointed black star	✴️
+negative squared cross mark	❎
+black question mark ornament	❓
+white question mark ornament	❔
+white exclamation mark ornament	❕
+heavy exclamation mark symbol	❗
+heavy heart exclamation mark ornament	❣️
+heavy black heart	❤️
+heavy plus sign	➕
+heavy minus sign	➖
+heavy division sign	➗
+black rightwards arrow	➡️
+arrow pointing rightwards then curving upwards	⤴️
+arrow pointing rightwards then curving downwards	⤵️
+leftwards black arrow	⬅️
+upwards black arrow	⬆️
+downwards black arrow	⬇️
+white medium star	⭐
+heavy large circle	⭕
+circled ideograph congratulation	㊗️
+circled ideograph secret	㊙️
+mahjong tile red dragon	🀄
+playing card black joker	🃏
+negative squared latin capital letter a	🅰️
+negative squared latin capital letter b	🅱️
+negative squared latin capital letter o	🅾️
+negative squared latin capital letter p	🅿️
+negative squared ab	🆎
+squared cl	🆑
+squared cool	🆒
+squared free	🆓
+squared id	🆔
+squared new	🆕
+squared ng	🆖
+squared ok	🆗
+squared sos	🆘
+squared up with exclamation mark	🆙
+squared vs	🆚
+squared katakana koko	🈁
+squared katakana sa	🈂️
+squared cjk unified ideograph-7121	🈚
+squared cjk unified ideograph-6307	🈯
+squared cjk unified ideograph-7981	🈲
+squared cjk unified ideograph-7a7a	🈳
+squared cjk unified ideograph-5408	🈴
+squared cjk unified ideograph-6e80	🈵
+squared cjk unified ideograph-6709	🈶
+squared cjk unified ideograph-6708	🈷️
+squared cjk unified ideograph-7533	🈸
+squared cjk unified ideograph-5272	🈹
+squared cjk unified ideograph-55b6	🈺
+circled ideograph advantage	🉐
+circled ideograph accept	🉑
+sunset over buildings	🌇
+earth globe europe-africa	🌍
+earth globe americas	🌎
+earth globe asia-australia	🌏
+new moon symbol	🌑
+waxing crescent moon symbol	🌒
+first quarter moon symbol	🌓
+waxing gibbous moon symbol	🌔
+full moon symbol	🌕
+waning gibbous moon symbol	🌖
+last quarter moon symbol	🌗
+waning crescent moon symbol	🌘
+new moon with face	🌚
+first quarter moon with face	🌛
+last quarter moon with face	🌜
+full moon with face	🌝
+white sun with small cloud	🌤️
+white sun behind cloud	🌥️
+white sun behind cloud with rain	🌦️
+cloud with tornado	🌪️
+wind blowing face	🌬️
+ear of maize	🌽
+ear of rice	🌾
+aubergine	🍆
+slice of pizza	🍕
+curry and rice	🍛
+fish cake with swirl design	🍥
+sake bottle and cup	🍶
+wrapped present	🎁
+father christmas	🎅
+firework sparkler	🎇
+school satchel	🎒
+fishing pole and fish	🎣
+direct hit	🎯
+billiards	🎱
+multiple musical notes	🎶
+running shirt with sash	🎽
+tennis racquet and ball	🎾
+ski and ski boot	🎿
+basketball and hoop	🏀
+runner	🏃
+surfer	🏄
+swimmer	🏊
+weight lifter	🏋️
+golfer	🏌️
+racing motorcycle	🏍️
+cricket bat and ball	🏏
+field hockey stick and ball	🏑
+ice hockey stick and puck	🏒
+table tennis paddle and ball	🏓
+snow capped mountain	🏔️
+house buildings	🏘️
+derelict house building	🏚️
+house building	🏠
+european post office	🏤
+automated teller machine	🏧
+izakaya lantern	🏮
+european castle	🏰
+waving white flag	🏳️
+waving black flag	🏴
+badminton racquet and shuttlecock	🏸
+emoji modifier fitzpatrick type-1-2	🏻
+emoji modifier fitzpatrick type-3	🏼
+emoji modifier fitzpatrick type-4	🏽
+emoji modifier fitzpatrick type-5	🏾
+emoji modifier fitzpatrick type-6	🏿
+sheep	🐑
+dromedary camel	🐪
+bactrian camel	🐫
+frog face	🐸
+hamster face	🐹
+wolf face	🐺
+bear face	🐻
+panda face	🐼
+white up pointing backhand index	👆
+white down pointing backhand index	👇
+white left pointing backhand index	👈
+white right pointing backhand index	👉
+fisted hand sign	👊
+waving hand sign	👋
+ok hand sign	👌
+thumbs up sign	👍
+thumbs down sign	👎
+clapping hands sign	👏
+open hands sign	👐
+womans hat	👒
+eyeglasses	👓
+womans clothes	👚
+pouch	👝
+mans shoe	👞
+athletic shoe	👟
+womans sandal	👡
+womans boots	👢
+man and woman holding hands	👫
+two men holding hands	👬
+two women holding hands	👭
+woman with bunny ears	👯
+bride with veil	👰
+person with blond hair	👱
+man with gua pi mao	👲
+man with turban	👳
+older man	👴
+older woman	👵
+japanese ogre	👹
+japanese goblin	👺
+extraterrestrial alien	👽
+imp	👿
+information desk person	💁
+guardsman	💂
+dancer	💃
+face massage	💆
+haircut	💇
+diamond shape with a dot inside	💠
+electric light bulb	💡
+sleeping symbol	💤
+collision symbol	💥
+splashing sweat symbol	💦
+dash symbol	💨
+dizzy symbol	💫
+hundred points symbol	💯
+banknote with yen sign	💴
+banknote with dollar sign	💵
+banknote with euro sign	💶
+banknote with pound sign	💷
+chart with upwards trend and yen sign	💹
+personal computer	💻
+minidisc	💽
+optical disc	💿
+chart with upwards trend	📈
+chart with downwards trend	📉
+public address loudspeaker	📢
+cheering megaphone	📣
+e-mail symbol	📧
+envelope with downwards arrow above	📩
+mobile phone with rightwards arrow at left	📲
+antenna with bars	📶
+twisted rightwards arrows	🔀
+clockwise rightwards and leftwards open circle arrows	🔁
+clockwise rightwards and leftwards open circle arrows with circled one overlay	🔂
+clockwise downwards and upwards open circle arrows	🔃
+anticlockwise downwards and upwards open circle arrows	🔄
+low brightness symbol	🔅
+high brightness symbol	🔆
+speaker with cancellation stroke	🔇
+speaker	🔈
+speaker with one sound wave	🔉
+speaker with three sound waves	🔊
+left-pointing magnifying glass	🔍
+right-pointing magnifying glass	🔎
+lock with ink pen	🔏
+closed lock with key	🔐
+lock	🔒
+open lock	🔓
+bell with cancellation stroke	🔕
+link symbol	🔗
+back with leftwards arrow above	🔙
+end with leftwards arrow above	🔚
+on with exclamation mark with left right arrow above	🔛
+soon with rightwards arrow above	🔜
+top with upwards arrow above	🔝
+no one under eighteen symbol	🔞
+keycap ten	🔟
+input symbol for latin capital letters	🔠
+input symbol for latin small letters	🔡
+input symbol for numbers	🔢
+input symbol for symbols	🔣
+input symbol for latin letters	🔤
+electric torch	🔦
+hocho	🔪
+pistol	🔫
+six pointed star with middle dot	🔯
+large red circle	🔴
+large blue circle	🔵
+up-pointing red triangle	🔺
+down-pointing red triangle	🔻
+up-pointing small red triangle	🔼
+down-pointing small red triangle	🔽
+om symbol	🕉️
+dove of peace	🕊️
+menorah with nine branches	🕎
+clock face one oclock	🕐
+clock face two oclock	🕑
+clock face three oclock	🕒
+clock face four oclock	🕓
+clock face five oclock	🕔
+clock face six oclock	🕕
+clock face seven oclock	🕖
+clock face eight oclock	🕗
+clock face nine oclock	🕘
+clock face ten oclock	🕙
+clock face eleven oclock	🕚
+clock face twelve oclock	🕛
+clock face one-thirty	🕜
+clock face two-thirty	🕝
+clock face three-thirty	🕞
+clock face four-thirty	🕟
+clock face five-thirty	🕠
+clock face six-thirty	🕡
+clock face seven-thirty	🕢
+clock face eight-thirty	🕣
+clock face nine-thirty	🕤
+clock face ten-thirty	🕥
+clock face eleven-thirty	🕦
+clock face twelve-thirty	🕧
+man in business suit levitating	🕴️
+sleuth or spy	🕵️
+dark sunglasses	🕶️
+lower left ballpoint pen	🖊️
+lower left fountain pen	🖋️
+lower left paintbrush	🖌️
+lower left crayon	🖍️
+raised hand with fingers splayed	🖐️
+reversed hand with middle finger extended	🖕
+raised hand with part between middle and ring fingers	🖖
+three button mouse	🖱️
+frame with picture	🖼️
+spiral note pad	🗒️
+spiral calendar pad	🗓️
+compression	🗜️
+dagger knife	🗡️
+speaking head in silhouette	🗣️
+silhouette of japan	🗾
+moyai	🗿
+grinning face with smiling eyes	😁
+smiling face with open mouth	😃
+smiling face with open mouth and smiling eyes	😄
+smiling face with open mouth and cold sweat	😅
+smiling face with open mouth and tightly-closed eyes	😆
+face savouring delicious food	😋
+smiling face with heart-shaped eyes	😍
+face with cold sweat	😓
+face throwing a kiss	😘
+face with stuck-out tongue	😛
+face with stuck-out tongue and winking eye	😜
+face with stuck-out tongue and tightly-closed eyes	😝
+pouting face	😡
+face with look of triumph	😤
+disappointed but relieved face	😥
+face with open mouth and cold sweat	😰
+dizzy face	😵
+grinning cat face with smiling eyes	😸
+cat face with tears of joy	😹
+smiling cat face with open mouth	😺
+smiling cat face with heart-shaped eyes	😻
+cat face with wry smile	😼
+kissing cat face with closed eyes	😽
+pouting cat face	😾
+crying cat face	😿
+weary cat face	🙀
+face with no good gesture	🙅
+face with ok gesture	🙆
+person bowing deeply	🙇
+happy person raising one hand	🙋
+person raising both hands in celebration	🙌
+person with pouting face	🙎
+person with folded hands	🙏
+steam locomotive	🚂
+high-speed train with bullet nose	🚅
+recreational vehicle	🚙
+rowboat	🚣
+construction sign	🚧
+police cars revolving light	🚨
+triangular flag on post	🚩
+no entry sign	🚫
+smoking symbol	🚬
+no smoking symbol	🚭
+put litter in its place symbol	🚮
+do not litter symbol	🚯
+potable water symbol	🚰
+non-potable water symbol	🚱
+bicyclist	🚴
+mountain bicyclist	🚵
+pedestrian	🚶
+mens symbol	🚹
+womens symbol	🚺
+bath	🛀
+sleeping accommodation	🛌
+airplane arriving	🛬
+robot face	🤖
+hugging face	🤗
+lion face	🦁
+unicorn face	🦄
+keycap number sign	#️⃣
+keycap asterisk	*️⃣
+keycap digit zero	0️⃣
+keycap digit one	1️⃣
+keycap digit two	2️⃣
+keycap digit three	3️⃣
+keycap digit four	4️⃣
+keycap digit five	5️⃣
+keycap digit six	6️⃣
+keycap digit seven	7️⃣
+keycap digit eight	8️⃣
+keycap digit nine	9️⃣
+flag for ascension island	🇦🇨
+flag for andorra	🇦🇩
+flag for united arab emirates	🇦🇪
+flag for afghanistan	🇦🇫
+flag for antigua & barbuda	🇦🇬
+flag for anguilla	🇦🇮
+flag for albania	🇦🇱
+flag for armenia	🇦🇲
+flag for angola	🇦🇴
+flag for antarctica	🇦🇶
+flag for argentina	🇦🇷
+flag for american samoa	🇦🇸
+flag for austria	🇦🇹
+flag for australia	🇦🇺
+flag for aruba	🇦🇼
+flag for åland islands	🇦🇽
+flag for azerbaijan	🇦🇿
+flag for bosnia & herzegovina	🇧🇦
+flag for barbados	🇧🇧
+flag for bangladesh	🇧🇩
+flag for belgium	🇧🇪
+flag for burkina faso	🇧🇫
+flag for bulgaria	🇧🇬
+flag for bahrain	🇧🇭
+flag for burundi	🇧🇮
+flag for benin	🇧🇯
+flag for st. barthélemy	🇧🇱
+flag for bermuda	🇧🇲
+flag for brunei	🇧🇳
+flag for bolivia	🇧🇴
+flag for caribbean netherlands	🇧🇶
+flag for brazil	🇧🇷
+flag for bahamas	🇧🇸
+flag for bhutan	🇧🇹
+flag for bouvet island	🇧🇻
+flag for botswana	🇧🇼
+flag for belarus	🇧🇾
+flag for belize	🇧🇿
+flag for canada	🇨🇦
+flag for cocos islands	🇨🇨
+cocos islands	🇨🇨
+flag for congo - kinshasa	🇨🇩
+flag for central african republic	🇨🇫
+flag for congo - brazzaville	🇨🇬
+flag for switzerland	🇨🇭
+flag for côte d'ivoire	🇨🇮
+flag for cook islands	🇨🇰
+flag for chile	🇨🇱
+flag for cameroon	🇨🇲
+flag for china	🇨🇳
+flag for colombia	🇨🇴
+flag for clipperton island	🇨🇵
+flag for costa rica	🇨🇷
+flag for cuba	🇨🇺
+flag for cape verde	🇨🇻
+flag for curaçao	🇨🇼
+flag for christmas island	🇨🇽
+flag for cyprus	🇨🇾
+flag for czech republic	🇨🇿
+czech republic	🇨🇿
+flag for germany	🇩🇪
+flag for diego garcia	🇩🇬
+flag for djibouti	🇩🇯
+flag for denmark	🇩🇰
+flag for dominica	🇩🇲
+flag for dominican republic	🇩🇴
+flag for algeria	🇩🇿
+flag for ceuta & melilla	🇪🇦
+flag for ecuador	🇪🇨
+flag for estonia	🇪🇪
+flag for egypt	🇪🇬
+flag for western sahara	🇪🇭
+flag for eritrea	🇪🇷
+flag for spain	🇪🇸
+flag for ethiopia	🇪🇹
+flag for european union	🇪🇺
+flag for finland	🇫🇮
+flag for fiji	🇫🇯
+flag for falkland islands	🇫🇰
+flag for micronesia	🇫🇲
+flag for faroe islands	🇫🇴
+flag for france	🇫🇷
+flag for gabon	🇬🇦
+flag for united kingdom	🇬🇧
+flag for grenada	🇬🇩
+flag for georgia	🇬🇪
+flag for french guiana	🇬🇫
+flag for guernsey	🇬🇬
+flag for ghana	🇬🇭
+flag for gibraltar	🇬🇮
+flag for greenland	🇬🇱
+flag for gambia	🇬🇲
+flag for guinea	🇬🇳
+flag for guadeloupe	🇬🇵
+flag for equatorial guinea	🇬🇶
+flag for greece	🇬🇷
+flag for south georgia & south sandwich islands	🇬🇸
+flag for guatemala	🇬🇹
+flag for guam	🇬🇺
+flag for guinea-bissau	🇬🇼
+flag for guyana	🇬🇾
+flag for hong kong	🇭🇰
+hong kong	🇭🇰
+flag for heard & mcdonald islands	🇭🇲
+flag for honduras	🇭🇳
+flag for croatia	🇭🇷
+flag for haiti	🇭🇹
+flag for hungary	🇭🇺
+flag for canary islands	🇮🇨
+flag for indonesia	🇮🇩
+flag for ireland	🇮🇪
+flag for israel	🇮🇱
+flag for isle of man	🇮🇲
+flag for india	🇮🇳
+flag for british indian ocean territory	🇮🇴
+flag for iraq	🇮🇶
+flag for iran	🇮🇷
+flag for iceland	🇮🇸
+flag for italy	🇮🇹
+flag for jersey	🇯🇪
+flag for jamaica	🇯🇲
+flag for jordan	🇯🇴
+flag for japan	🇯🇵
+flag for kenya	🇰🇪
+flag for kyrgyzstan	🇰🇬
+flag for cambodia	🇰🇭
+flag for kiribati	🇰🇮
+flag for comoros	🇰🇲
+flag for st. kitts & nevis	🇰🇳
+flag for north korea	🇰🇵
+flag for south korea	🇰🇷
+flag for kuwait	🇰🇼
+flag for cayman islands	🇰🇾
+flag for kazakhstan	🇰🇿
+flag for laos	🇱🇦
+flag for lebanon	🇱🇧
+flag for st. lucia	🇱🇨
+flag for liechtenstein	🇱🇮
+flag for sri lanka	🇱🇰
+flag for liberia	🇱🇷
+flag for lesotho	🇱🇸
+flag for lithuania	🇱🇹
+flag for luxembourg	🇱🇺
+flag for latvia	🇱🇻
+flag for libya	🇱🇾
+flag for morocco	🇲🇦
+flag for monaco	🇲🇨
+flag for moldova	🇲🇩
+flag for montenegro	🇲🇪
+flag for st. martin	🇲🇫
+flag for madagascar	🇲🇬
+flag for marshall islands	🇲🇭
+flag for macedonia	🇲🇰
+macedonia	🇲🇰
+flag for mali	🇲🇱
+flag for myanmar	🇲🇲
+myanmar	🇲🇲
+flag for mongolia	🇲🇳
+flag for macau	🇲🇴
+macau	🇲🇴
+flag for northern mariana islands	🇲🇵
+flag for martinique	🇲🇶
+flag for mauritania	🇲🇷
+flag for montserrat	🇲🇸
+flag for malta	🇲🇹
+flag for mauritius	🇲🇺
+flag for maldives	🇲🇻
+flag for malawi	🇲🇼
+flag for mexico	🇲🇽
+flag for malaysia	🇲🇾
+flag for mozambique	🇲🇿
+flag for namibia	🇳🇦
+flag for new caledonia	🇳🇨
+flag for niger	🇳🇪
+flag for norfolk island	🇳🇫
+flag for nigeria	🇳🇬
+flag for nicaragua	🇳🇮
+flag for netherlands	🇳🇱
+flag for norway	🇳🇴
+flag for nepal	🇳🇵
+flag for nauru	🇳🇷
+flag for niue	🇳🇺
+flag for new zealand	🇳🇿
+flag for oman	🇴🇲
+flag for panama	🇵🇦
+flag for peru	🇵🇪
+flag for french polynesia	🇵🇫
+flag for papua new guinea	🇵🇬
+flag for philippines	🇵🇭
+flag for pakistan	🇵🇰
+flag for poland	🇵🇱
+flag for st. pierre & miquelon	🇵🇲
+flag for pitcairn islands	🇵🇳
+flag for puerto rico	🇵🇷
+flag for palestinian territories	🇵🇸
+flag for portugal	🇵🇹
+flag for palau	🇵🇼
+flag for paraguay	🇵🇾
+flag for qatar	🇶🇦
+flag for réunion	🇷🇪
+flag for romania	🇷🇴
+flag for serbia	🇷🇸
+flag for russia	🇷🇺
+flag for rwanda	🇷🇼
+flag for saudi arabia	🇸🇦
+flag for solomon islands	🇸🇧
+flag for seychelles	🇸🇨
+flag for sudan	🇸🇩
+flag for sweden	🇸🇪
+flag for singapore	🇸🇬
+flag for st. helena	🇸🇭
+flag for slovenia	🇸🇮
+flag for svalbard & jan mayen	🇸🇯
+flag for slovakia	🇸🇰
+flag for sierra leone	🇸🇱
+flag for san marino	🇸🇲
+flag for senegal	🇸🇳
+flag for somalia	🇸🇴
+flag for suriname	🇸🇷
+flag for south sudan	🇸🇸
+flag for são tomé & príncipe	🇸🇹
+flag for el salvador	🇸🇻
+flag for sint maarten	🇸🇽
+flag for syria	🇸🇾
+flag for swaziland	🇸🇿
+swaziland	🇸🇿
+flag for tristan da cunha	🇹🇦
+flag for turks & caicos islands	🇹🇨
+flag for chad	🇹🇩
+flag for french southern territories	🇹🇫
+flag for togo	🇹🇬
+flag for thailand	🇹🇭
+flag for tajikistan	🇹🇯
+flag for tokelau	🇹🇰
+flag for timor-leste	🇹🇱
+flag for turkmenistan	🇹🇲
+flag for tunisia	🇹🇳
+flag for tonga	🇹🇴
+flag for turkey	🇹🇷
+turkey	🇹🇷
+flag for trinidad & tobago	🇹🇹
+flag for tuvalu	🇹🇻
+flag for taiwan	🇹🇼
+flag for tanzania	🇹🇿
+flag for ukraine	🇺🇦
+flag for uganda	🇺🇬
+flag for u.s. outlying islands	🇺🇲
+flag for united states	🇺🇸
+flag for uruguay	🇺🇾
+flag for uzbekistan	🇺🇿
+flag for vatican city	🇻🇦
+flag for st. vincent & grenadines	🇻🇨
+flag for venezuela	🇻🇪
+flag for british virgin islands	🇻🇬
+flag for u.s. virgin islands	🇻🇮
+flag for vietnam	🇻🇳
+flag for vanuatu	🇻🇺
+flag for wallis & futuna	🇼🇫
+flag for samoa	🇼🇸
+flag for kosovo	🇽🇰
+flag for yemen	🇾🇪
+flag for mayotte	🇾🇹
+flag for south africa	🇿🇦
+flag for zambia	🇿🇲
+flag for zimbabwe	🇿🇼
+1–2	🏻
+light	🏻
+3	🏼
+medium-light	🏼
+4	🏽
+medium	🏽
+5	🏾
+medium-dark	🏾
+6	🏿
+dark	🏿
+cheerful	😀
+cheery	😀
+grin	😀
+grinning	😀
+happy	😀
+laugh	😀
+nice	😀
+smile	😀
+smiling	😀
+teeth	😀
+awesome	😃
+big	😃
+eyes	😃
+grin	😃
+grinning	😃
+happy	😃
+mouth	😃
+open	😃
+smile	😃
+smiling	😃
+teeth	😃
+yay	😃
+eye	😄
+eyes	😄
+grin	😄
+grinning	😄
+happy	😄
+laugh	😄
+lol	😄
+mouth	😄
+open	😄
+smile	😄
+smiling	😄
+beaming	😁
+eye	😁
+eyes	😁
+grin	😁
+grinning	😁
+happy	😁
+nice	😁
+smile	😁
+smiling	😁
+teeth	😁
+closed	😆
+eyes	😆
+grinning	😆
+haha	😆
+hahaha	😆
+happy	😆
+laugh	😆
+lol	😆
+mouth	😆
+open	😆
+rofl	😆
+smile	😆
+smiling	😆
+squinting	😆
+cold	😅
+dejected	😅
+excited	😅
+grinning	😅
+mouth	😅
+nervous	😅
+open	😅
+smile	😅
+smiling	😅
+stress	😅
+stressed	😅
+sweat	😅
+crying	🤣
+floor	🤣
+funny	🤣
+haha	🤣
+happy	🤣
+hehe	🤣
+hilarious	🤣
+joy	🤣
+laugh	🤣
+lmao	🤣
+lol	🤣
+rofl	🤣
+roflmao	🤣
+rolling	🤣
+tear	🤣
+crying	😂
+feels	😂
+funny	😂
+haha	😂
+happy	😂
+hehe	😂
+hilarious	😂
+joy	😂
+laugh	😂
+lmao	😂
+lol	😂
+rofl	😂
+roflmao	😂
+tear	😂
+happy	🙂
+slightly	🙂
+smile	🙂
+smiling	🙂
+hehe	🙃
+smile	🙃
+upside-down	🙃
+disappear	🫠
+dissolve	🫠
+embarrassed	🫠
+haha	🫠
+heat	🫠
+hot	🫠
+liquid	🫠
+lol	🫠
+melt	🫠
+melting	🫠
+sarcasm	🫠
+sarcastic	🫠
+flirt	😉
+heartbreaker	😉
+sexy	😉
+slide	😉
+tease	😉
+wink	😉
+winking	😉
+winks	😉
+blush	😊
+eye	😊
+eyes	😊
+glad	😊
+satisfied	😊
+smile	😊
+smiling	😊
+angel	😇
+angelic	😇
+angels	😇
+blessed	😇
+fairy	😇
+fairytale	😇
+fantasy	😇
+halo	😇
+happy	😇
+innocent	😇
+peaceful	😇
+smile	😇
+smiling	😇
+spirit	😇
+tale	😇
+3	🥰
+adore	🥰
+crush	🥰
+heart	🥰
+hearts	🥰
+ily	🥰
+love	🥰
+romance	🥰
+smile	🥰
+smiling	🥰
+you	🥰
+143	😍
+bae	😍
+eye	😍
+feels	😍
+heart-eyes	😍
+hearts	😍
+ily	😍
+kisses	😍
+love	😍
+romance	😍
+romantic	😍
+smile	😍
+xoxo	😍
+excited	🤩
+eyes	🤩
+grinning	🤩
+smile	🤩
+star	🤩
+starry-eyed	🤩
+wow	🤩
+adorbs	😘
+bae	😘
+blowing	😘
+flirt	😘
+heart	😘
+ily	😘
+kiss	😘
+love	😘
+lover	😘
+miss	😘
+muah	😘
+romantic	😘
+smooch	😘
+xoxo	😘
+you	😘
+143	😗
+date	😗
+dating	😗
+flirt	😗
+ily	😗
+kiss	😗
+love	😗
+smooch	😗
+smooches	😗
+xoxo	😗
+you	😗
+happy	☺️
+outlined	☺️
+relaxed	☺️
+smile	☺️
+smiling	☺️
+143	😚
+bae	😚
+blush	😚
+closed	😚
+date	😚
+dating	😚
+eye	😚
+eyes	😚
+flirt	😚
+ily	😚
+kisses	😚
+kissing	😚
+smooches	😚
+xoxo	😚
+143	😙
+closed	😙
+date	😙
+dating	😙
+eye	😙
+eyes	😙
+flirt	😙
+ily	😙
+kiss	😙
+kisses	😙
+kissing	😙
+love	😙
+night	😙
+smile	😙
+smiling	😙
+glad	🥲
+grateful	🥲
+happy	🥲
+joy	🥲
+pain	🥲
+proud	🥲
+relieved	🥲
+smile	🥲
+smiley	🥲
+smiling	🥲
+tear	🥲
+touched	🥲
+delicious	😋
+eat	😋
+food	😋
+full	😋
+hungry	😋
+savor	😋
+smile	😋
+smiling	😋
+tasty	😋
+um	😋
+yum	😋
+yummy	😋
+awesome	😛
+cool	😛
+nice	😛
+party	😛
+stuck-out	😛
+sweet	😛
+tongue	😛
+crazy	😜
+epic	😜
+eye	😜
+funny	😜
+joke	😜
+loopy	😜
+nutty	😜
+party	😜
+stuck-out	😜
+tongue	😜
+wacky	😜
+weirdo	😜
+wink	😜
+winking	😜
+yolo	😜
+crazy	🤪
+eye	🤪
+eyes	🤪
+goofy	🤪
+large	🤪
+small	🤪
+zany	🤪
+closed	😝
+eye	😝
+eyes	😝
+gross	😝
+horrible	😝
+omg	😝
+squinting	😝
+stuck-out	😝
+taste	😝
+tongue	😝
+whatever	😝
+yolo	😝
+money	🤑
+money-mouth	🤑
+mouth	🤑
+paid	🤑
+hug	🤗
+hugging	🤗
+open	🤗
+smiling	🤗
+giggle	🤭
+giggling	🤭
+mouth	🤭
+oops	🤭
+realization	🤭
+secret	🤭
+shock	🤭
+sudden	🤭
+surprise	🤭
+whoops	🤭
+amazement	🫢
+awe	🫢
+disbelief	🫢
+embarrass	🫢
+eyes	🫢
+gasp	🫢
+mouth	🫢
+omg	🫢
+open	🫢
+over	🫢
+quiet	🫢
+scared	🫢
+shock	🫢
+surprise	🫢
+captivated	🫣
+embarrass	🫣
+eye	🫣
+hide	🫣
+hiding	🫣
+peek	🫣
+peeking	🫣
+peep	🫣
+scared	🫣
+shy	🫣
+stare	🫣
+quiet	🤫
+shh	🤫
+shush	🤫
+shushing	🤫
+chin	🤔
+consider	🤔
+hmm	🤔
+ponder	🤔
+pondering	🤔
+thinking	🤔
+wondering	🤔
+good	🫡
+luck	🫡
+ma'am	🫡
+ok	🫡
+respect	🫡
+salute	🫡
+saluting	🫡
+sir	🫡
+troops	🫡
+yes	🫡
+keep	🤐
+mouth	🤐
+quiet	🤐
+secret	🤐
+shut	🤐
+zip	🤐
+zipper	🤐
+zipper-mouth	🤐
+disapproval	🤨
+disbelief	🤨
+distrust	🤨
+emoji	🤨
+eyebrow	🤨
+hmm	🤨
+mild	🤨
+raised	🤨
+skeptic	🤨
+skeptical	🤨
+skepticism	🤨
+surprise	🤨
+what	🤨
+awkward	😐
+blank	😐
+deadpan	😐
+expressionless	😐
+fine	😐
+jealous	😐
+meh	😐
+neutral	😐
+oh	😐
+shade	😐
+straight	😐
+unamused	😐
+unhappy	😐
+unimpressed	😐
+whatever	😐
+awkward	😑
+dead	😑
+expressionless	😑
+fine	😑
+inexpressive	😑
+jealous	😑
+meh	😑
+not	😑
+oh	😑
+omg	😑
+straight	😑
+uh	😑
+unhappy	😑
+unimpressed	😑
+whatever	😑
+awkward	😶
+blank	😶
+expressionless	😶
+mouth	😶
+mouthless	😶
+mute	😶
+quiet	😶
+secret	😶
+silence	😶
+silent	😶
+speechless	😶
+depressed	🫥
+disappear	🫥
+dotted	🫥
+hidden	🫥
+hide	🫥
+introvert	🫥
+invisible	🫥
+line	🫥
+meh	🫥
+whatever	🫥
+wtv	🫥
+absentminded	😶‍🌫️
+clouds	😶‍🌫️
+fog	😶‍🌫️
+head	😶‍🌫️
+boss	😏
+dapper	😏
+flirt	😏
+homie	😏
+kidding	😏
+leer	😏
+shade	😏
+slick	😏
+sly	😏
+smirk	😏
+smug	😏
+snicker	😏
+suave	😏
+suspicious	😏
+swag	😏
+...	😒
+bored	😒
+fine	😒
+jealous	😒
+jel	😒
+jelly	😒
+pissed	😒
+smh	😒
+ugh	😒
+uhh	😒
+unamused	😒
+unhappy	😒
+weird	😒
+whatever	😒
+eyeroll	🙄
+eyes	🙄
+rolling	🙄
+shade	🙄
+ugh	🙄
+whatever	🙄
+awk	😬
+awkward	😬
+dentist	😬
+grimace	😬
+grimacing	😬
+grinning	😬
+smile	😬
+smiling	😬
+blow	😮‍💨
+blowing	😮‍💨
+exhale	😮‍💨
+exhaling	😮‍💨
+exhausted	😮‍💨
+gasp	😮‍💨
+groan	😮‍💨
+relief	😮‍💨
+sigh	😮‍💨
+smiley	😮‍💨
+smoke	😮‍💨
+whisper	😮‍💨
+whistle	😮‍💨
+liar	🤥
+lie	🤥
+lying	🤥
+pinocchio	🤥
+crazy	🫨
+daze	🫨
+earthquake	🫨
+omg	🫨
+panic	🫨
+shaking	🫨
+shock	🫨
+surprise	🫨
+vibrate	🫨
+whoa	🫨
+wow	🫨
+head	🙂‍↔️
+horizontally	🙂‍↔️
+no	🙂‍↔️
+shake	🙂‍↔️
+shaking	🙂‍↔️
+head	🙂‍↕️
+nod	🙂‍↕️
+shaking	🙂‍↕️
+vertically	🙂‍↕️
+yes	🙂‍↕️
+calm	😌
+peace	😌
+relief	😌
+relieved	😌
+zen	😌
+awful	😔
+bored	😔
+dejected	😔
+died	😔
+disappointed	😔
+losing	😔
+lost	😔
+pensive	😔
+sad	😔
+sucks	😔
+crying	😪
+good	😪
+night	😪
+sad	😪
+sleep	😪
+sleeping	😪
+sleepy	😪
+tired	😪
+drooling	🤤
+bed	😴
+bedtime	😴
+good	😴
+goodnight	😴
+nap	😴
+night	😴
+sleep	😴
+sleeping	😴
+tired	😴
+whatever	😴
+yawn	😴
+zzz	😴
+bags	🫩
+bored	🫩
+exhausted	🫩
+eyes	🫩
+fatigued	🫩
+late	🫩
+sleepy	🫩
+tired	🫩
+weary	🫩
+cold	😷
+dentist	😷
+dermatologist	😷
+doctor	😷
+dr	😷
+germs	😷
+mask	😷
+medical	😷
+medicine	😷
+sick	😷
+ill	🤒
+sick	🤒
+thermometer	🤒
+bandage	🤕
+head-bandage	🤕
+hurt	🤕
+injury	🤕
+ouch	🤕
+gross	🤢
+nasty	🤢
+nauseated	🤢
+sick	🤢
+vomit	🤢
+barf	🤮
+ew	🤮
+gross	🤮
+puke	🤮
+sick	🤮
+spew	🤮
+throw	🤮
+up	🤮
+vomit	🤮
+vomiting	🤮
+fever	🤧
+flu	🤧
+gesundheit	🤧
+sick	🤧
+sneeze	🤧
+sneezing	🤧
+dying	🥵
+feverish	🥵
+heat	🥵
+hot	🥵
+panting	🥵
+red-faced	🥵
+stroke	🥵
+sweating	🥵
+tongue	🥵
+blue	🥶
+blue-faced	🥶
+cold	🥶
+freezing	🥶
+frostbite	🥶
+icicles	🥶
+subzero	🥶
+teeth	🥶
+dizzy	🥴
+drunk	🥴
+eyes	🥴
+intoxicated	🥴
+mouth	🥴
+tipsy	🥴
+uneven	🥴
+wavy	🥴
+woozy	🥴
+crossed-out	😵
+dead	😵
+dizzy	😵
+eyes	😵
+feels	😵
+knocked	😵
+out	😵
+sick	😵
+tired	😵
+confused	😵‍💫
+dizzy	😵‍💫
+eyes	😵‍💫
+hypnotized	😵‍💫
+omg	😵‍💫
+smiley	😵‍💫
+spiral	😵‍💫
+trouble	😵‍💫
+whoa	😵‍💫
+woah	😵‍💫
+woozy	😵‍💫
+blown	🤯
+explode	🤯
+exploding	🤯
+head	🤯
+mind	🤯
+mindblown	🤯
+no	🤯
+shocked	🤯
+way	🤯
+cowboy	🤠
+cowgirl	🤠
+hat	🤠
+bday	🥳
+birthday	🥳
+celebrate	🥳
+celebration	🥳
+excited	🥳
+happy	🥳
+hat	🥳
+hooray	🥳
+horn	🥳
+party	🥳
+partying	🥳
+disguise	🥸
+eyebrow	🥸
+glasses	🥸
+incognito	🥸
+moustache	🥸
+mustache	🥸
+nose	🥸
+spy	🥸
+tache	🥸
+tash	🥸
+awesome	😎
+beach	😎
+bright	😎
+bro	😎
+chilling	😎
+cool	😎
+rad	😎
+relaxed	😎
+shades	😎
+slay	😎
+smile	😎
+style	😎
+sunglasses	😎
+swag	😎
+win	😎
+brainy	🤓
+clever	🤓
+expert	🤓
+geek	🤓
+gifted	🤓
+glasses	🤓
+intelligent	🤓
+nerd	🤓
+smart	🤓
+classy	🧐
+fancy	🧐
+monocle	🧐
+rich	🧐
+stuffy	🧐
+wealthy	🧐
+befuddled	😕
+confused	😕
+confusing	😕
+dunno	😕
+frown	😕
+hm	😕
+meh	😕
+not	😕
+sad	😕
+sorry	😕
+sure	😕
+confused	🫤
+confusion	🫤
+diagonal	🫤
+disappointed	🫤
+doubt	🫤
+doubtful	🫤
+frustrated	🫤
+frustration	🫤
+meh	🫤
+mouth	🫤
+skeptical	🫤
+unsure	🫤
+whatever	🫤
+wtv	🫤
+anxious	😟
+butterflies	😟
+nerves	😟
+nervous	😟
+sad	😟
+stress	😟
+stressed	😟
+surprised	😟
+worried	😟
+worry	😟
+frown	🙁
+frowning	🙁
+sad	🙁
+slightly	🙁
+frown	☹️
+frowning	☹️
+sad	☹️
+believe	😮
+forgot	😮
+mouth	😮
+omg	😮
+open	😮
+shocked	😮
+surprised	😮
+sympathy	😮
+unbelievable	😮
+unreal	😮
+whoa	😮
+wow	😮
+you	😮
+epic	😯
+hushed	😯
+omg	😯
+stunned	😯
+surprised	😯
+whoa	😯
+woah	😯
+astonished	😲
+cost	😲
+no	😲
+omg	😲
+shocked	😲
+totally	😲
+way	😲
+amazed	😳
+awkward	😳
+crazy	😳
+dazed	😳
+dead	😳
+disbelief	😳
+embarrassed	😳
+flushed	😳
+geez	😳
+heat	😳
+hot	😳
+impressed	😳
+jeez	😳
+what	😳
+wow	😳
+anxiety	🫪
+bloated	🫪
+panic	🫪
+shocked	🫪
+surprised	🫪
+vulnerable	🫪
+begging	🥺
+big	🥺
+eyes	🥺
+mercy	🥺
+not	🥺
+pleading	🥺
+please	🥺
+pretty	🥺
+puppy	🥺
+sad	🥺
+why	🥺
+admiration	🥹
+aww	🥹
+back	🥹
+cry	🥹
+embarrassed	🥹
+feelings	🥹
+grateful	🥹
+gratitude	🥹
+holding	🥹
+joy	🥹
+please	🥹
+proud	🥹
+resist	🥹
+sad	🥹
+tears	🥹
+caught	😦
+frown	😦
+frowning	😦
+guard	😦
+mouth	😦
+open	😦
+scared	😦
+scary	😦
+surprise	😦
+what	😦
+wow	😦
+anguished	😧
+forgot	😧
+scared	😧
+scary	😧
+stressed	😧
+surprise	😧
+unhappy	😧
+what	😧
+wow	😧
+afraid	😨
+anxious	😨
+blame	😨
+fear	😨
+fearful	😨
+scared	😨
+worried	😨
+anxious	😰
+blue	😰
+cold	😰
+eek	😰
+mouth	😰
+nervous	😰
+open	😰
+rushed	😰
+scared	😰
+sweat	😰
+yikes	😰
+anxious	😥
+call	😥
+close	😥
+complicated	😥
+disappointed	😥
+not	😥
+relieved	😥
+sad	😥
+sweat	😥
+time	😥
+whew	😥
+awful	😢
+cry	😢
+crying	😢
+feels	😢
+miss	😢
+sad	😢
+tear	😢
+triste	😢
+unhappy	😢
+bawling	😭
+cry	😭
+crying	😭
+loudly	😭
+sad	😭
+sob	😭
+tear	😭
+tears	😭
+unhappy	😭
+epic	😱
+fear	😱
+fearful	😱
+munch	😱
+scared	😱
+scream	😱
+screamer	😱
+screaming	😱
+shocked	😱
+surprised	😱
+woah	😱
+annoyed	😖
+confounded	😖
+confused	😖
+cringe	😖
+distraught	😖
+feels	😖
+frustrated	😖
+mad	😖
+sad	😖
+concentrate	😣
+concentration	😣
+focus	😣
+headache	😣
+persevere	😣
+persevering	😣
+awful	😞
+blame	😞
+dejected	😞
+disappointed	😞
+fail	😞
+losing	😞
+sad	😞
+unhappy	😞
+close	😓
+cold	😓
+downcast	😓
+feels	😓
+headache	😓
+nervous	😓
+sad	😓
+scared	😓
+sweat	😓
+yikes	😓
+crying	😩
+fail	😩
+feels	😩
+hungry	😩
+mad	😩
+nooo	😩
+sad	😩
+sleepy	😩
+tired	😩
+unhappy	😩
+weary	😩
+cost	😫
+feels	😫
+nap	😫
+sad	😫
+sneeze	😫
+tired	😫
+bedtime	🥱
+bored	🥱
+goodnight	🥱
+nap	🥱
+night	🥱
+sleep	🥱
+sleepy	🥱
+tired	🥱
+whatever	🥱
+yawn	🥱
+yawning	🥱
+zzz	🥱
+anger	😤
+angry	😤
+feels	😤
+fume	😤
+fuming	😤
+furious	😤
+fury	😤
+mad	😤
+nose	😤
+steam	😤
+triumph	😤
+unhappy	😤
+won	😤
+anger	😡
+angry	😡
+enraged	😡
+feels	😡
+mad	😡
+maddening	😡
+pouting	😡
+rage	😡
+red	😡
+shade	😡
+unhappy	😡
+upset	😡
+anger	😠
+angry	😠
+blame	😠
+feels	😠
+frustrated	😠
+mad	😠
+maddening	😠
+rage	😠
+shade	😠
+unhappy	😠
+upset	😠
+censor	🤬
+cursing	🤬
+cussing	🤬
+mad	🤬
+mouth	🤬
+pissed	🤬
+swearing	🤬
+symbols	🤬
+demon	😈
+devil	😈
+evil	😈
+fairy	😈
+fairytale	😈
+fantasy	😈
+horns	😈
+purple	😈
+shade	😈
+smile	😈
+smiling	😈
+tale	😈
+angry	👿
+demon	👿
+devil	👿
+evil	👿
+fairy	👿
+fairytale	👿
+fantasy	👿
+horns	👿
+mischievous	👿
+purple	👿
+shade	👿
+tale	👿
+dead	💀
+death	💀
+fairy	💀
+fairytale	💀
+i'm	💀
+lmao	💀
+monster	💀
+tale	💀
+yolo	💀
+bone	☠️
+crossbones	☠️
+dead	☠️
+death	☠️
+monster	☠️
+skull	☠️
+bs	💩
+comic	💩
+doo	💩
+dung	💩
+fml	💩
+monster	💩
+pile	💩
+poo	💩
+poop	💩
+smelly	💩
+smh	💩
+stink	💩
+stinks	💩
+stinky	💩
+turd	💩
+clown	🤡
+creature	👹
+devil	👹
+fairy	👹
+fairytale	👹
+fantasy	👹
+mask	👹
+monster	👹
+scary	👹
+tale	👹
+angry	👺
+creature	👺
+fairy	👺
+fairytale	👺
+fantasy	👺
+mask	👺
+mean	👺
+monster	👺
+tale	👺
+boo	👻
+creature	👻
+excited	👻
+fairy	👻
+fairytale	👻
+fantasy	👻
+halloween	👻
+haunting	👻
+monster	👻
+scary	👻
+silly	👻
+tale	👻
+creature	👽
+extraterrestrial	👽
+fairy	👽
+fairytale	👽
+fantasy	👽
+monster	👽
+space	👽
+tale	👽
+ufo	👽
+alien	👾
+creature	👾
+extraterrestrial	👾
+fairy	👾
+fairytale	👾
+fantasy	👾
+game	👾
+gamer	👾
+games	👾
+monster	👾
+pixelated	👾
+space	👾
+tale	👾
+ufo	👾
+monster	🤖
+animal	😺
+cat	😺
+grinning	😺
+mouth	😺
+open	😺
+smile	😺
+smiling	😺
+animal	😸
+cat	😸
+eye	😸
+eyes	😸
+grin	😸
+grinning	😸
+smile	😸
+smiling	😸
+animal	😹
+cat	😹
+joy	😹
+laugh	😹
+laughing	😹
+lol	😹
+tear	😹
+tears	😹
+animal	😻
+cat	😻
+eye	😻
+heart	😻
+heart-eyes	😻
+love	😻
+smile	😻
+smiling	😻
+animal	😼
+cat	😼
+ironic	😼
+smile	😼
+wry	😼
+animal	😽
+cat	😽
+closed	😽
+eye	😽
+eyes	😽
+kiss	😽
+kissing	😽
+animal	🙀
+cat	🙀
+oh	🙀
+surprised	🙀
+weary	🙀
+animal	😿
+cat	😿
+cry	😿
+crying	😿
+sad	😿
+tear	😿
+animal	😾
+cat	😾
+pouting	😾
+embarrassed	🙈
+evil	🙈
+forbidden	🙈
+forgot	🙈
+gesture	🙈
+hide	🙈
+monkey	🙈
+no	🙈
+omg	🙈
+prohibited	🙈
+scared	🙈
+secret	🙈
+smh	🙈
+watch	🙈
+animal	🙉
+ears	🙉
+evil	🙉
+forbidden	🙉
+gesture	🙉
+hear	🙉
+listen	🙉
+monkey	🙉
+no	🙉
+not	🙉
+prohibited	🙉
+secret	🙉
+shh	🙉
+tmi	🙉
+animal	🙊
+evil	🙊
+forbidden	🙊
+gesture	🙊
+monkey	🙊
+no	🙊
+not	🙊
+oops	🙊
+prohibited	🙊
+quiet	🙊
+secret	🙊
+speak	🙊
+stealth	🙊
+heart	💌
+letter	💌
+love	💌
+mail	💌
+romance	💌
+valentine	💌
+143	💘
+adorbs	💘
+arrow	💘
+cupid	💘
+date	💘
+emotion	💘
+heart	💘
+ily	💘
+love	💘
+romance	💘
+valentine	💘
+143	💝
+anniversary	💝
+emotion	💝
+heart	💝
+ily	💝
+kisses	💝
+ribbon	💝
+valentine	💝
+xoxo	💝
+143	💖
+emotion	💖
+excited	💖
+good	💖
+heart	💖
+ily	💖
+kisses	💖
+morning	💖
+night	💖
+sparkle	💖
+sparkling	💖
+xoxo	💖
+143	💗
+emotion	💗
+excited	💗
+growing	💗
+heart	💗
+heartpulse	💗
+ily	💗
+kisses	💗
+muah	💗
+nervous	💗
+pulse	💗
+xoxo	💗
+143	💓
+beating	💓
+cardio	💓
+emotion	💓
+heart	💓
+heartbeat	💓
+ily	💓
+love	💓
+pulsating	💓
+pulse	💓
+143	💞
+adorbs	💞
+anniversary	💞
+emotion	💞
+heart	💞
+hearts	💞
+revolving	💞
+143	💕
+anniversary	💕
+date	💕
+dating	💕
+emotion	💕
+heart	💕
+hearts	💕
+ily	💕
+kisses	💕
+love	💕
+loving	💕
+two	💕
+xoxo	💕
+143	💟
+decoration	💟
+emotion	💟
+heart	💟
+hearth	💟
+purple	💟
+white	💟
+exclamation	❣️
+heart	❣️
+heavy	❣️
+mark	❣️
+punctuation	❣️
+break	💔
+broken	💔
+crushed	💔
+emotion	💔
+heart	💔
+heartbroken	💔
+lonely	💔
+sad	💔
+burn	❤️‍🔥
+fire	❤️‍🔥
+heart	❤️‍🔥
+love	❤️‍🔥
+lust	❤️‍🔥
+sacred	❤️‍🔥
+healthier	❤️‍🩹
+heart	❤️‍🩹
+improving	❤️‍🩹
+mending	❤️‍🩹
+recovering	❤️‍🩹
+recuperating	❤️‍🩹
+well	❤️‍🩹
+emotion	❤️
+heart	❤️
+love	❤️
+red	❤️
+143	🩷
+adorable	🩷
+cute	🩷
+emotion	🩷
+heart	🩷
+ily	🩷
+like	🩷
+love	🩷
+pink	🩷
+special	🩷
+sweet	🩷
+143	🧡
+heart	🧡
+orange	🧡
+143	💛
+cardiac	💛
+emotion	💛
+heart	💛
+ily	💛
+love	💛
+yellow	💛
+143	💚
+emotion	💚
+green	💚
+heart	💚
+ily	💚
+love	💚
+romantic	💚
+143	💙
+blue	💙
+emotion	💙
+heart	💙
+ily	💙
+love	💙
+romance	💙
+143	🩵
+blue	🩵
+cute	🩵
+cyan	🩵
+emotion	🩵
+heart	🩵
+ily	🩵
+light	🩵
+like	🩵
+love	🩵
+sky	🩵
+special	🩵
+teal	🩵
+143	💜
+bestest	💜
+emotion	💜
+heart	💜
+ily	💜
+love	💜
+purple	💜
+143	🤎
+brown	🤎
+heart	🤎
+black	🖤
+evil	🖤
+heart	🖤
+wicked	🖤
+143	🩶
+emotion	🩶
+gray	🩶
+grey	🩶
+heart	🩶
+ily	🩶
+love	🩶
+silver	🩶
+slate	🩶
+special	🩶
+143	🤍
+heart	🤍
+white	🤍
+dating	💋
+emotion	💋
+heart	💋
+kiss	💋
+kissing	💋
+lips	💋
+mark	💋
+romance	💋
+sexy	💋
+100	💯
+a+	💯
+agree	💯
+clearly	💯
+definitely	💯
+faithful	💯
+fleek	💯
+full	💯
+hundred	💯
+keep	💯
+perfect	💯
+point	💯
+score	💯
+true	💯
+truth	💯
+yup	💯
+anger	💢
+angry	💢
+comic	💢
+mad	💢
+upset	💢
+argument	🫯
+brawl	🫯
+debate	🫯
+disagreement	🫯
+fight	🫯
+ruckus	🫯
+wrestle	🫯
+bomb	💥
+boom	💥
+collide	💥
+comic	💥
+explode	💥
+comic	💫
+shining	💫
+shooting	💫
+star	💫
+stars	💫
+comic	💦
+drip	💦
+droplet	💦
+droplets	💦
+drops	💦
+splashing	💦
+squirt	💦
+sweat	💦
+water	💦
+wet	💦
+work	💦
+workout	💦
+away	💨
+cloud	💨
+comic	💨
+dash	💨
+dashing	💨
+fart	💨
+fast	💨
+go	💨
+gone	💨
+gotta	💨
+running	💨
+smoke	💨
+balloon	💬
+bubble	💬
+comic	💬
+dialog	💬
+message	💬
+sms	💬
+speech	💬
+talk	💬
+text	💬
+typing	💬
+balloon	👁️‍🗨️
+bubble	👁️‍🗨️
+eye	👁️‍🗨️
+speech	👁️‍🗨️
+witness	👁️‍🗨️
+balloon	🗨️
+bubble	🗨️
+dialog	🗨️
+left	🗨️
+speech	🗨️
+anger	🗯️
+angry	🗯️
+balloon	🗯️
+bubble	🗯️
+mad	🗯️
+right	🗯️
+balloon	💭
+bubble	💭
+cartoon	💭
+cloud	💭
+comic	💭
+daydream	💭
+decisions	💭
+dream	💭
+idea	💭
+invent	💭
+invention	💭
+realize	💭
+think	💭
+thoughts	💭
+wonder	💭
+comic	💤
+good	💤
+goodnight	💤
+night	💤
+sleep	💤
+sleeping	💤
+sleepy	💤
+tired	💤
+bye	👋
+cya	👋
+g2g	👋
+greetings	👋
+gtg	👋
+hello	👋
+hey	👋
+hi	👋
+later	👋
+outtie	👋
+ttfn	👋
+ttyl	👋
+wave	👋
+yo	👋
+you	👋
+back	🤚
+backhand	🤚
+raised	🤚
+finger	🖐️
+fingers	🖐️
+raised	🖐️
+splayed	🖐️
+stop	🖐️
+5	✋
+five	✋
+high	✋
+raised	✋
+stop	✋
+finger	🖖
+salute	🖖
+vulcan	🖖
+handshake	🫱
+hold	🫱
+reach	🫱
+right	🫱
+rightward	🫱
+rightwards	🫱
+shake	🫱
+handshake	🫲
+hold	🫲
+left	🫲
+leftward	🫲
+leftwards	🫲
+reach	🫲
+shake	🫲
+dismiss	🫳
+down	🫳
+drop	🫳
+dropped	🫳
+palm	🫳
+pick	🫳
+shoo	🫳
+up	🫳
+beckon	🫴
+catch	🫴
+come	🫴
+hold	🫴
+know	🫴
+lift	🫴
+me	🫴
+offer	🫴
+palm	🫴
+tell	🫴
+block	🫷
+five	🫷
+halt	🫷
+high	🫷
+hold	🫷
+leftward	🫷
+leftwards	🫷
+pause	🫷
+push	🫷
+pushing	🫷
+refuse	🫷
+slap	🫷
+stop	🫷
+wait	🫷
+block	🫸
+five	🫸
+halt	🫸
+high	🫸
+hold	🫸
+pause	🫸
+push	🫸
+pushing	🫸
+refuse	🫸
+rightward	🫸
+rightwards	🫸
+slap	🫸
+stop	🫸
+wait	🫸
+awesome	👌
+bet	👌
+dope	👌
+fleek	👌
+fosho	👌
+got	👌
+gotcha	👌
+legit	👌
+ok	👌
+okay	👌
+pinch	👌
+rad	👌
+sure	👌
+sweet	👌
+three	👌
+fingers	🤌
+gesture	🤌
+hold	🤌
+huh	🤌
+interrogation	🤌
+patience	🤌
+pinched	🤌
+relax	🤌
+sarcastic	🤌
+ugh	🤌
+what	🤌
+zip	🤌
+amount	🤏
+bit	🤏
+fingers	🤏
+little	🤏
+pinching	🤏
+small	🤏
+sort	🤏
+peace	✌️
+v	✌️
+victory	✌️
+cross	🤞
+crossed	🤞
+finger	🤞
+fingers	🤞
+luck	🤞
+<3	🫰
+crossed	🫰
+expensive	🫰
+finger	🫰
+heart	🫰
+index	🫰
+love	🫰
+money	🫰
+snap	🫰
+thumb	🫰
+fingers	🤟
+gesture	🤟
+ily	🤟
+love	🤟
+love-you	🤟
+three	🤟
+you	🤟
+finger	🤘
+horns	🤘
+rock-on	🤘
+call	🤙
+hang	🤙
+loose	🤙
+me	🤙
+shaka	🤙
+backhand	👈
+finger	👈
+index	👈
+left	👈
+point	👈
+pointing	👈
+backhand	👉
+finger	👉
+index	👉
+point	👉
+pointing	👉
+right	👉
+backhand	👆
+finger	👆
+index	👆
+point	👆
+pointing	👆
+up	👆
+finger	🖕
+middle	🖕
+backhand	👇
+down	👇
+finger	👇
+index	👇
+point	👇
+pointing	👇
+finger	☝️
+index	☝️
+point	☝️
+pointing	☝️
+this	☝️
+up	☝️
+at	🫵
+finger	🫵
+index	🫵
+pointing	🫵
+poke	🫵
+viewer	🫵
+you	🫵
++1	👍
+good	👍
+like	👍
+thumb	👍
+up	👍
+yes	👍
+-1	👎
+bad	👎
+dislike	👎
+down	👎
+good	👎
+no	👎
+nope	👎
+thumb	👎
+thumbs	👎
+clenched	✊
+fist	✊
+punch	✊
+raised	✊
+solidarity	✊
+absolutely	👊
+agree	👊
+boom	👊
+bro	👊
+bruh	👊
+bump	👊
+clenched	👊
+correct	👊
+fist	👊
+knuckle	👊
+oncoming	👊
+pound	👊
+punch	👊
+rock	👊
+ttyl	👊
+fist	🤛
+left-facing	🤛
+leftwards	🤛
+fist	🤜
+right-facing	🤜
+rightwards	🤜
+applause	👏
+approval	👏
+awesome	👏
+clap	👏
+congrats	👏
+congratulations	👏
+excited	👏
+good	👏
+great	👏
+homie	👏
+job	👏
+nice	👏
+prayed	👏
+well	👏
+yay	👏
+celebration	🙌
+gesture	🙌
+hooray	🙌
+praise	🙌
+raised	🙌
+raising	🙌
+<3	🫶
+heart	🫶
+love	🫶
+you	🫶
+hug	👐
+jazz	👐
+open	👐
+swerve	👐
+cupped	🤲
+dua	🤲
+palms	🤲
+pray	🤲
+prayer	🤲
+together	🤲
+up	🤲
+wish	🤲
+agreement	🤝
+deal	🤝
+meeting	🤝
+shake	🤝
+appreciate	🙏
+ask	🙏
+beg	🙏
+blessed	🙏
+bow	🙏
+cmon	🙏
+five	🙏
+folded	🙏
+gesture	🙏
+high	🙏
+please	🙏
+pray	🙏
+thanks	🙏
+thx	🙏
+write	✍️
+writing	✍️
+bored	💅
+care	💅
+cosmetics	💅
+done	💅
+makeup	💅
+manicure	💅
+nail	💅
+polish	💅
+whatever	💅
+camera	🤳
+phone	🤳
+arm	💪
+beast	💪
+bench	💪
+biceps	💪
+bodybuilder	💪
+bro	💪
+curls	💪
+flex	💪
+gains	💪
+gym	💪
+jacked	💪
+muscle	💪
+press	💪
+ripped	💪
+strong	💪
+weightlift	💪
+accessibility	🦾
+arm	🦾
+mechanical	🦾
+prosthetic	🦾
+accessibility	🦿
+leg	🦿
+mechanical	🦿
+prosthetic	🦿
+bent	🦵
+foot	🦵
+kick	🦵
+knee	🦵
+limb	🦵
+ankle	🦶
+feet	🦶
+kick	🦶
+stomp	🦶
+ears	👂
+hear	👂
+hearing	👂
+listen	👂
+listening	👂
+sound	👂
+accessibility	🦻
+aid	🦻
+ear	🦻
+hard	🦻
+hearing	🦻
+noses	👃
+nosey	👃
+odor	👃
+smell	👃
+smells	👃
+intelligent	🧠
+smart	🧠
+anatomical	🫀
+beat	🫀
+cardiology	🫀
+heart	🫀
+heartbeat	🫀
+organ	🫀
+pulse	🫀
+real	🫀
+red	🫀
+breath	🫁
+breathe	🫁
+exhalation	🫁
+inhalation	🫁
+lung	🫁
+organ	🫁
+respiration	🫁
+dentist	🦷
+pearly	🦷
+teeth	🦷
+white	🦷
+bones	🦴
+dog	🦴
+skeleton	🦴
+wishbone	🦴
+eye	👀
+googly	👀
+look	👀
+looking	👀
+omg	👀
+peep	👀
+see	👀
+seeing	👀
+1	👁️
+one	👁️
+lick	👅
+slurp	👅
+beauty	👄
+kiss	👄
+kissing	👄
+lips	👄
+lipstick	👄
+anxious	🫦
+bite	🫦
+biting	🫦
+fear	🫦
+flirt	🫦
+flirting	🫦
+kiss	🫦
+lip	🫦
+lipstick	🫦
+nervous	🫦
+sexy	🫦
+uncomfortable	🫦
+worried	🫦
+worry	🫦
+babies	👶
+children	👶
+goo	👶
+infant	👶
+newborn	👶
+pregnant	👶
+young	👶
+bright-eyed	🧒
+grandchild	🧒
+kid	🧒
+young	🧒
+younger	🧒
+bright-eyed	👦
+child	👦
+grandson	👦
+kid	👦
+son	👦
+young	👦
+younger	👦
+bright-eyed	👧
+child	👧
+daughter	👧
+granddaughter	👧
+kid	👧
+virgo	👧
+young	👧
+younger	👧
+zodiac	👧
+adult	🧑
+blond	👱
+blond-haired	👱
+human	👱
+adult	👨
+bro	👨
+beard	🧔
+bearded	🧔
+whiskers	🧔
+beard	🧔‍♂️
+bearded	🧔‍♂️
+man	🧔‍♂️
+whiskers	🧔‍♂️
+blond	👱‍♂️
+blond-haired	👱‍♂️
+hair	👱‍♂️
+man	👱‍♂️
+adult	👩
+lady	👩
+beard	🧔‍♀️
+bearded	🧔‍♀️
+whiskers	🧔‍♀️
+woman	🧔‍♀️
+blond	👱‍♀️
+blond-haired	👱‍♀️
+blonde	👱‍♀️
+hair	👱‍♀️
+woman	👱‍♀️
+adult	🧓
+elderly	🧓
+grandparent	🧓
+old	🧓
+wise	🧓
+adult	👴
+bald	👴
+elderly	👴
+gramps	👴
+grandfather	👴
+grandpa	👴
+man	👴
+old	👴
+wise	👴
+adult	👵
+elderly	👵
+grandma	👵
+grandmother	👵
+granny	👵
+lady	👵
+old	👵
+wise	👵
+woman	👵
+annoyed	🙍
+disappointed	🙍
+disgruntled	🙍
+disturbed	🙍
+frown	🙍
+frowning	🙍
+frustrated	🙍
+gesture	🙍
+irritated	🙍
+upset	🙍
+annoyed	🙍‍♂️
+disappointed	🙍‍♂️
+disgruntled	🙍‍♂️
+disturbed	🙍‍♂️
+frown	🙍‍♂️
+frowning	🙍‍♂️
+frustrated	🙍‍♂️
+gesture	🙍‍♂️
+irritated	🙍‍♂️
+man	🙍‍♂️
+upset	🙍‍♂️
+annoyed	🙍‍♀️
+disappointed	🙍‍♀️
+disgruntled	🙍‍♀️
+disturbed	🙍‍♀️
+frown	🙍‍♀️
+frowning	🙍‍♀️
+frustrated	🙍‍♀️
+gesture	🙍‍♀️
+irritated	🙍‍♀️
+upset	🙍‍♀️
+woman	🙍‍♀️
+disappointed	🙎
+downtrodden	🙎
+frown	🙎
+grimace	🙎
+pouting	🙎
+scowl	🙎
+sulk	🙎
+upset	🙎
+whine	🙎
+disappointed	🙎‍♂️
+downtrodden	🙎‍♂️
+frown	🙎‍♂️
+grimace	🙎‍♂️
+man	🙎‍♂️
+pouting	🙎‍♂️
+scowl	🙎‍♂️
+sulk	🙎‍♂️
+upset	🙎‍♂️
+whine	🙎‍♂️
+disappointed	🙎‍♀️
+downtrodden	🙎‍♀️
+frown	🙎‍♀️
+grimace	🙎‍♀️
+pouting	🙎‍♀️
+scowl	🙎‍♀️
+sulk	🙎‍♀️
+upset	🙎‍♀️
+whine	🙎‍♀️
+woman	🙎‍♀️
+forbidden	🙅
+gesture	🙅
+no	🙅
+not	🙅
+prohibit	🙅
+forbidden	🙅‍♂️
+gesture	🙅‍♂️
+man	🙅‍♂️
+no	🙅‍♂️
+not	🙅‍♂️
+prohibit	🙅‍♂️
+forbidden	🙅‍♀️
+gesture	🙅‍♀️
+no	🙅‍♀️
+not	🙅‍♀️
+prohibit	🙅‍♀️
+woman	🙅‍♀️
+exercise	🙆
+gesture	🙆
+gesturing	🙆
+ok	🙆
+omg	🙆
+exercise	🙆‍♂️
+gesture	🙆‍♂️
+gesturing	🙆‍♂️
+man	🙆‍♂️
+ok	🙆‍♂️
+omg	🙆‍♂️
+exercise	🙆‍♀️
+gesture	🙆‍♀️
+gesturing	🙆‍♀️
+ok	🙆‍♀️
+omg	🙆‍♀️
+woman	🙆‍♀️
+fetch	💁
+flick	💁
+flip	💁
+gossip	💁
+sarcasm	💁
+sarcastic	💁
+sassy	💁
+seriously	💁
+tipping	💁
+whatever	💁
+fetch	💁‍♂️
+flick	💁‍♂️
+flip	💁‍♂️
+gossip	💁‍♂️
+man	💁‍♂️
+sarcasm	💁‍♂️
+sarcastic	💁‍♂️
+sassy	💁‍♂️
+seriously	💁‍♂️
+tipping	💁‍♂️
+whatever	💁‍♂️
+fetch	💁‍♀️
+flick	💁‍♀️
+flip	💁‍♀️
+gossip	💁‍♀️
+sarcasm	💁‍♀️
+sarcastic	💁‍♀️
+sassy	💁‍♀️
+seriously	💁‍♀️
+tipping	💁‍♀️
+whatever	💁‍♀️
+woman	💁‍♀️
+gesture	🙋
+here	🙋
+know	🙋
+me	🙋
+pick	🙋
+question	🙋
+raise	🙋
+raising	🙋
+gesture	🙋‍♂️
+here	🙋‍♂️
+know	🙋‍♂️
+man	🙋‍♂️
+me	🙋‍♂️
+pick	🙋‍♂️
+question	🙋‍♂️
+raise	🙋‍♂️
+raising	🙋‍♂️
+gesture	🙋‍♀️
+here	🙋‍♀️
+know	🙋‍♀️
+me	🙋‍♀️
+pick	🙋‍♀️
+question	🙋‍♀️
+raise	🙋‍♀️
+raising	🙋‍♀️
+woman	🙋‍♀️
+accessibility	🧏
+deaf	🧏
+ear	🧏
+gesture	🧏
+hear	🧏
+accessibility	🧏‍♂️
+deaf	🧏‍♂️
+ear	🧏‍♂️
+gesture	🧏‍♂️
+hear	🧏‍♂️
+man	🧏‍♂️
+accessibility	🧏‍♀️
+deaf	🧏‍♀️
+ear	🧏‍♀️
+gesture	🧏‍♀️
+hear	🧏‍♀️
+woman	🧏‍♀️
+apology	🙇
+ask	🙇
+beg	🙇
+bow	🙇
+bowing	🙇
+favor	🙇
+forgive	🙇
+gesture	🙇
+meditate	🙇
+meditation	🙇
+pity	🙇
+regret	🙇
+sorry	🙇
+apology	🙇‍♂️
+ask	🙇‍♂️
+beg	🙇‍♂️
+bow	🙇‍♂️
+bowing	🙇‍♂️
+favor	🙇‍♂️
+forgive	🙇‍♂️
+gesture	🙇‍♂️
+man	🙇‍♂️
+meditate	🙇‍♂️
+meditation	🙇‍♂️
+pity	🙇‍♂️
+regret	🙇‍♂️
+sorry	🙇‍♂️
+apology	🙇‍♀️
+ask	🙇‍♀️
+beg	🙇‍♀️
+bow	🙇‍♀️
+bowing	🙇‍♀️
+favor	🙇‍♀️
+forgive	🙇‍♀️
+gesture	🙇‍♀️
+meditate	🙇‍♀️
+meditation	🙇‍♀️
+pity	🙇‍♀️
+regret	🙇‍♀️
+sorry	🙇‍♀️
+woman	🙇‍♀️
+again	🤦
+bewilder	🤦
+disbelief	🤦
+exasperation	🤦
+facepalm	🤦
+no	🤦
+not	🤦
+oh	🤦
+omg	🤦
+shock	🤦
+smh	🤦
+again	🤦‍♂️
+bewilder	🤦‍♂️
+disbelief	🤦‍♂️
+exasperation	🤦‍♂️
+facepalm	🤦‍♂️
+man	🤦‍♂️
+no	🤦‍♂️
+not	🤦‍♂️
+oh	🤦‍♂️
+omg	🤦‍♂️
+shock	🤦‍♂️
+smh	🤦‍♂️
+again	🤦‍♀️
+bewilder	🤦‍♀️
+disbelief	🤦‍♀️
+exasperation	🤦‍♀️
+facepalm	🤦‍♀️
+no	🤦‍♀️
+not	🤦‍♀️
+oh	🤦‍♀️
+omg	🤦‍♀️
+shock	🤦‍♀️
+smh	🤦‍♀️
+woman	🤦‍♀️
+doubt	🤷
+dunno	🤷
+guess	🤷
+idk	🤷
+ignorance	🤷
+indifference	🤷
+knows	🤷
+maybe	🤷
+shrug	🤷
+shrugging	🤷
+whatever	🤷
+who	🤷
+doubt	🤷‍♂️
+dunno	🤷‍♂️
+guess	🤷‍♂️
+idk	🤷‍♂️
+ignorance	🤷‍♂️
+indifference	🤷‍♂️
+knows	🤷‍♂️
+man	🤷‍♂️
+maybe	🤷‍♂️
+shrug	🤷‍♂️
+shrugging	🤷‍♂️
+whatever	🤷‍♂️
+who	🤷‍♂️
+doubt	🤷‍♀️
+dunno	🤷‍♀️
+guess	🤷‍♀️
+idk	🤷‍♀️
+ignorance	🤷‍♀️
+indifference	🤷‍♀️
+knows	🤷‍♀️
+maybe	🤷‍♀️
+shrug	🤷‍♀️
+shrugging	🤷‍♀️
+whatever	🤷‍♀️
+who	🤷‍♀️
+woman	🤷‍♀️
+doctor	🧑‍⚕️
+health	🧑‍⚕️
+healthcare	🧑‍⚕️
+nurse	🧑‍⚕️
+therapist	🧑‍⚕️
+worker	🧑‍⚕️
+doctor	👨‍⚕️
+health	👨‍⚕️
+healthcare	👨‍⚕️
+man	👨‍⚕️
+nurse	👨‍⚕️
+therapist	👨‍⚕️
+worker	👨‍⚕️
+doctor	👩‍⚕️
+health	👩‍⚕️
+healthcare	👩‍⚕️
+nurse	👩‍⚕️
+therapist	👩‍⚕️
+woman	👩‍⚕️
+worker	👩‍⚕️
+graduate	🧑‍🎓
+graduate	👨‍🎓
+man	👨‍🎓
+student	👨‍🎓
+graduate	👩‍🎓
+student	👩‍🎓
+woman	👩‍🎓
+instructor	🧑‍🏫
+lecturer	🧑‍🏫
+professor	🧑‍🏫
+instructor	👨‍🏫
+lecturer	👨‍🏫
+man	👨‍🏫
+professor	👨‍🏫
+teacher	👨‍🏫
+instructor	👩‍🏫
+lecturer	👩‍🏫
+professor	👩‍🏫
+teacher	👩‍🏫
+woman	👩‍🏫
+justice	🧑‍⚖️
+law	🧑‍⚖️
+scales	🧑‍⚖️
+judge	👨‍⚖️
+justice	👨‍⚖️
+law	👨‍⚖️
+man	👨‍⚖️
+scales	👨‍⚖️
+judge	👩‍⚖️
+justice	👩‍⚖️
+law	👩‍⚖️
+scales	👩‍⚖️
+woman	👩‍⚖️
+gardener	🧑‍🌾
+rancher	🧑‍🌾
+farmer	👨‍🌾
+gardener	👨‍🌾
+man	👨‍🌾
+rancher	👨‍🌾
+farmer	👩‍🌾
+gardener	👩‍🌾
+rancher	👩‍🌾
+woman	👩‍🌾
+chef	🧑‍🍳
+chef	👨‍🍳
+cook	👨‍🍳
+man	👨‍🍳
+chef	👩‍🍳
+cook	👩‍🍳
+woman	👩‍🍳
+electrician	🧑‍🔧
+plumber	🧑‍🔧
+tradesperson	🧑‍🔧
+electrician	👨‍🔧
+man	👨‍🔧
+mechanic	👨‍🔧
+plumber	👨‍🔧
+tradesperson	👨‍🔧
+electrician	👩‍🔧
+mechanic	👩‍🔧
+plumber	👩‍🔧
+tradesperson	👩‍🔧
+woman	👩‍🔧
+assembly	🧑‍🏭
+factory	🧑‍🏭
+industrial	🧑‍🏭
+worker	🧑‍🏭
+assembly	👨‍🏭
+factory	👨‍🏭
+industrial	👨‍🏭
+man	👨‍🏭
+worker	👨‍🏭
+assembly	👩‍🏭
+factory	👩‍🏭
+industrial	👩‍🏭
+woman	👩‍🏭
+worker	👩‍🏭
+architect	🧑‍💼
+business	🧑‍💼
+manager	🧑‍💼
+office	🧑‍💼
+white-collar	🧑‍💼
+worker	🧑‍💼
+architect	👨‍💼
+business	👨‍💼
+man	👨‍💼
+manager	👨‍💼
+office	👨‍💼
+white-collar	👨‍💼
+worker	👨‍💼
+architect	👩‍💼
+business	👩‍💼
+manager	👩‍💼
+office	👩‍💼
+white-collar	👩‍💼
+woman	👩‍💼
+worker	👩‍💼
+biologist	🧑‍🔬
+chemist	🧑‍🔬
+engineer	🧑‍🔬
+mathematician	🧑‍🔬
+physicist	🧑‍🔬
+biologist	👨‍🔬
+chemist	👨‍🔬
+engineer	👨‍🔬
+man	👨‍🔬
+mathematician	👨‍🔬
+physicist	👨‍🔬
+scientist	👨‍🔬
+biologist	👩‍🔬
+chemist	👩‍🔬
+engineer	👩‍🔬
+mathematician	👩‍🔬
+physicist	👩‍🔬
+scientist	👩‍🔬
+woman	👩‍🔬
+coder	🧑‍💻
+computer	🧑‍💻
+developer	🧑‍💻
+inventor	🧑‍💻
+software	🧑‍💻
+coder	👨‍💻
+computer	👨‍💻
+developer	👨‍💻
+inventor	👨‍💻
+man	👨‍💻
+software	👨‍💻
+technologist	👨‍💻
+coder	👩‍💻
+computer	👩‍💻
+developer	👩‍💻
+inventor	👩‍💻
+software	👩‍💻
+technologist	👩‍💻
+woman	👩‍💻
+actor	🧑‍🎤
+entertainer	🧑‍🎤
+rock	🧑‍🎤
+rockstar	🧑‍🎤
+star	🧑‍🎤
+actor	👨‍🎤
+entertainer	👨‍🎤
+man	👨‍🎤
+rock	👨‍🎤
+rockstar	👨‍🎤
+singer	👨‍🎤
+star	👨‍🎤
+actor	👩‍🎤
+entertainer	👩‍🎤
+rock	👩‍🎤
+rockstar	👩‍🎤
+singer	👩‍🎤
+star	👩‍🎤
+woman	👩‍🎤
+palette	🧑‍🎨
+artist	👨‍🎨
+man	👨‍🎨
+palette	👨‍🎨
+artist	👩‍🎨
+palette	👩‍🎨
+woman	👩‍🎨
+plane	🧑‍✈️
+man	👨‍✈️
+pilot	👨‍✈️
+plane	👨‍✈️
+pilot	👩‍✈️
+plane	👩‍✈️
+woman	👩‍✈️
+rocket	🧑‍🚀
+space	🧑‍🚀
+astronaut	👨‍🚀
+man	👨‍🚀
+rocket	👨‍🚀
+space	👨‍🚀
+astronaut	👩‍🚀
+rocket	👩‍🚀
+space	👩‍🚀
+woman	👩‍🚀
+fire	🧑‍🚒
+firetruck	🧑‍🚒
+fire	👨‍🚒
+firefighter	👨‍🚒
+firetruck	👨‍🚒
+man	👨‍🚒
+fire	👩‍🚒
+firefighter	👩‍🚒
+firetruck	👩‍🚒
+woman	👩‍🚒
+apprehend	👮
+arrest	👮
+citation	👮
+cop	👮
+law	👮
+officer	👮
+over	👮
+police	👮
+pulled	👮
+undercover	👮
+apprehend	👮‍♂️
+arrest	👮‍♂️
+citation	👮‍♂️
+cop	👮‍♂️
+law	👮‍♂️
+man	👮‍♂️
+officer	👮‍♂️
+over	👮‍♂️
+police	👮‍♂️
+pulled	👮‍♂️
+undercover	👮‍♂️
+apprehend	👮‍♀️
+arrest	👮‍♀️
+citation	👮‍♀️
+cop	👮‍♀️
+law	👮‍♀️
+officer	👮‍♀️
+over	👮‍♀️
+police	👮‍♀️
+pulled	👮‍♀️
+undercover	👮‍♀️
+woman	👮‍♀️
+sleuth	🕵️
+spy	🕵️
+detective	🕵️‍♂️
+man	🕵️‍♂️
+sleuth	🕵️‍♂️
+spy	🕵️‍♂️
+detective	🕵️‍♀️
+sleuth	🕵️‍♀️
+spy	🕵️‍♀️
+woman	🕵️‍♀️
+buckingham	💂
+helmet	💂
+london	💂
+palace	💂
+buckingham	💂‍♂️
+guard	💂‍♂️
+helmet	💂‍♂️
+london	💂‍♂️
+man	💂‍♂️
+palace	💂‍♂️
+buckingham	💂‍♀️
+guard	💂‍♀️
+helmet	💂‍♀️
+london	💂‍♀️
+palace	💂‍♀️
+woman	💂‍♀️
+assassin	🥷
+fight	🥷
+fighter	🥷
+hidden	🥷
+secret	🥷
+skills	🥷
+sly	🥷
+soldier	🥷
+stealth	🥷
+war	🥷
+build	👷
+construction	👷
+fix	👷
+hardhat	👷
+hat	👷
+man	👷
+rebuild	👷
+remodel	👷
+repair	👷
+work	👷
+worker	👷
+build	👷‍♂️
+construction	👷‍♂️
+fix	👷‍♂️
+hardhat	👷‍♂️
+hat	👷‍♂️
+man	👷‍♂️
+rebuild	👷‍♂️
+remodel	👷‍♂️
+repair	👷‍♂️
+work	👷‍♂️
+worker	👷‍♂️
+build	👷‍♀️
+construction	👷‍♀️
+fix	👷‍♀️
+hardhat	👷‍♀️
+hat	👷‍♀️
+man	👷‍♀️
+rebuild	👷‍♀️
+remodel	👷‍♀️
+repair	👷‍♀️
+woman	👷‍♀️
+work	👷‍♀️
+worker	👷‍♀️
+crown	🫅
+monarch	🫅
+noble	🫅
+regal	🫅
+royal	🫅
+royalty	🫅
+crown	🤴
+fairy	🤴
+fairytale	🤴
+fantasy	🤴
+king	🤴
+royal	🤴
+royalty	🤴
+tale	🤴
+crown	👸
+fairy	👸
+fairytale	👸
+fantasy	👸
+queen	👸
+royal	👸
+royalty	👸
+tale	👸
+turban	👳
+wearing	👳
+man	👳‍♂️
+turban	👳‍♂️
+wearing	👳‍♂️
+turban	👳‍♀️
+wearing	👳‍♀️
+woman	👳‍♀️
+cap	👲
+chinese	👲
+gua	👲
+guapi	👲
+hat	👲
+mao	👲
+pi	👲
+skullcap	👲
+bandana	🧕
+head	🧕
+headscarf	🧕
+hijab	🧕
+kerchief	🧕
+mantilla	🧕
+tichel	🧕
+woman	🧕
+formal	🤵
+tuxedo	🤵
+wedding	🤵
+formal	🤵‍♂️
+groom	🤵‍♂️
+man	🤵‍♂️
+tuxedo	🤵‍♂️
+wedding	🤵‍♂️
+formal	🤵‍♀️
+tuxedo	🤵‍♀️
+wedding	🤵‍♀️
+woman	🤵‍♀️
+veil	👰
+wedding	👰
+man	👰‍♂️
+veil	👰‍♂️
+wedding	👰‍♂️
+bride	👰‍♀️
+veil	👰‍♀️
+wedding	👰‍♀️
+woman	👰‍♀️
+pregnant	🤰
+woman	🤰
+belly	🫃
+bloated	🫃
+full	🫃
+man	🫃
+overeat	🫃
+pregnant	🫃
+belly	🫄
+bloated	🫄
+full	🫄
+overeat	🫄
+pregnant	🫄
+stuffed	🫄
+baby	🤱
+breast	🤱
+feeding	🤱
+mom	🤱
+mother	🤱
+nursing	🤱
+woman	🤱
+baby	👩‍🍼
+feed	👩‍🍼
+feeding	👩‍🍼
+mom	👩‍🍼
+mother	👩‍🍼
+nanny	👩‍🍼
+newborn	👩‍🍼
+nursing	👩‍🍼
+woman	👩‍🍼
+baby	👨‍🍼
+dad	👨‍🍼
+father	👨‍🍼
+feed	👨‍🍼
+feeding	👨‍🍼
+man	👨‍🍼
+nanny	👨‍🍼
+newborn	👨‍🍼
+nursing	👨‍🍼
+baby	🧑‍🍼
+feed	🧑‍🍼
+feeding	🧑‍🍼
+nanny	🧑‍🍼
+newborn	🧑‍🍼
+nursing	🧑‍🍼
+parent	🧑‍🍼
+angel	👼
+baby	👼
+church	👼
+fairy	👼
+fairytale	👼
+fantasy	👼
+tale	👼
+celebration	🎅
+christmas	🎅
+claus	🎅
+fairy	🎅
+fantasy	🎅
+father	🎅
+holiday	🎅
+merry	🎅
+santa	🎅
+tale	🎅
+xmas	🎅
+celebration	🤶
+christmas	🤶
+claus	🤶
+fairy	🤶
+fantasy	🤶
+holiday	🤶
+merry	🤶
+mother	🤶
+mrs	🤶
+santa	🤶
+tale	🤶
+xmas	🤶
+celebration	🧑‍🎄
+christmas	🧑‍🎄
+claus	🧑‍🎄
+fairy	🧑‍🎄
+fantasy	🧑‍🎄
+holiday	🧑‍🎄
+merry	🧑‍🎄
+mx	🧑‍🎄
+santa	🧑‍🎄
+tale	🧑‍🎄
+xmas	🧑‍🎄
+good	🦸
+hero	🦸
+superpower	🦸
+good	🦸‍♂️
+hero	🦸‍♂️
+man	🦸‍♂️
+superhero	🦸‍♂️
+superpower	🦸‍♂️
+good	🦸‍♀️
+hero	🦸‍♀️
+heroine	🦸‍♀️
+superhero	🦸‍♀️
+superpower	🦸‍♀️
+woman	🦸‍♀️
+bad	🦹
+criminal	🦹
+evil	🦹
+superpower	🦹
+villain	🦹
+bad	🦹‍♂️
+criminal	🦹‍♂️
+evil	🦹‍♂️
+man	🦹‍♂️
+superpower	🦹‍♂️
+supervillain	🦹‍♂️
+villain	🦹‍♂️
+bad	🦹‍♀️
+criminal	🦹‍♀️
+evil	🦹‍♀️
+superpower	🦹‍♀️
+supervillain	🦹‍♀️
+villain	🦹‍♀️
+woman	🦹‍♀️
+fantasy	🧙
+magic	🧙
+play	🧙
+sorcerer	🧙
+sorceress	🧙
+sorcery	🧙
+spell	🧙
+summon	🧙
+witch	🧙
+wizard	🧙
+fantasy	🧙‍♂️
+mage	🧙‍♂️
+magic	🧙‍♂️
+man	🧙‍♂️
+play	🧙‍♂️
+sorcerer	🧙‍♂️
+sorceress	🧙‍♂️
+sorcery	🧙‍♂️
+spell	🧙‍♂️
+summon	🧙‍♂️
+witch	🧙‍♂️
+wizard	🧙‍♂️
+fantasy	🧙‍♀️
+mage	🧙‍♀️
+magic	🧙‍♀️
+play	🧙‍♀️
+sorcerer	🧙‍♀️
+sorceress	🧙‍♀️
+sorcery	🧙‍♀️
+spell	🧙‍♀️
+summon	🧙‍♀️
+witch	🧙‍♀️
+wizard	🧙‍♀️
+woman	🧙‍♀️
+fairytale	🧚
+fantasy	🧚
+myth	🧚
+pixie	🧚
+tale	🧚
+wings	🧚
+fairy	🧚‍♂️
+fairytale	🧚‍♂️
+fantasy	🧚‍♂️
+man	🧚‍♂️
+myth	🧚‍♂️
+oberon	🧚‍♂️
+pixie	🧚‍♂️
+puck	🧚‍♂️
+tale	🧚‍♂️
+wings	🧚‍♂️
+fairy	🧚‍♀️
+fairytale	🧚‍♀️
+fantasy	🧚‍♀️
+myth	🧚‍♀️
+pixie	🧚‍♀️
+tale	🧚‍♀️
+titania	🧚‍♀️
+wings	🧚‍♀️
+woman	🧚‍♀️
+blood	🧛
+dracula	🧛
+fangs	🧛
+halloween	🧛
+scary	🧛
+supernatural	🧛
+teeth	🧛
+undead	🧛
+blood	🧛‍♂️
+fangs	🧛‍♂️
+halloween	🧛‍♂️
+man	🧛‍♂️
+scary	🧛‍♂️
+supernatural	🧛‍♂️
+teeth	🧛‍♂️
+undead	🧛‍♂️
+vampire	🧛‍♂️
+blood	🧛‍♀️
+fangs	🧛‍♀️
+halloween	🧛‍♀️
+scary	🧛‍♀️
+supernatural	🧛‍♀️
+teeth	🧛‍♀️
+undead	🧛‍♀️
+vampire	🧛‍♀️
+woman	🧛‍♀️
+creature	🧜
+fairytale	🧜
+folklore	🧜
+ocean	🧜
+sea	🧜
+siren	🧜
+trident	🧜
+creature	🧜‍♂️
+fairytale	🧜‍♂️
+folklore	🧜‍♂️
+neptune	🧜‍♂️
+ocean	🧜‍♂️
+poseidon	🧜‍♂️
+sea	🧜‍♂️
+siren	🧜‍♂️
+trident	🧜‍♂️
+triton	🧜‍♂️
+creature	🧜‍♀️
+fairytale	🧜‍♀️
+folklore	🧜‍♀️
+merwoman	🧜‍♀️
+ocean	🧜‍♀️
+sea	🧜‍♀️
+siren	🧜‍♀️
+trident	🧜‍♀️
+elves	🧝
+enchantment	🧝
+fantasy	🧝
+folklore	🧝
+magic	🧝
+magical	🧝
+myth	🧝
+elf	🧝‍♂️
+elves	🧝‍♂️
+enchantment	🧝‍♂️
+fantasy	🧝‍♂️
+folklore	🧝‍♂️
+magic	🧝‍♂️
+magical	🧝‍♂️
+man	🧝‍♂️
+myth	🧝‍♂️
+elf	🧝‍♀️
+elves	🧝‍♀️
+enchantment	🧝‍♀️
+fantasy	🧝‍♀️
+folklore	🧝‍♀️
+magic	🧝‍♀️
+magical	🧝‍♀️
+myth	🧝‍♀️
+woman	🧝‍♀️
+djinn	🧞
+fantasy	🧞
+jinn	🧞
+lamp	🧞
+myth	🧞
+rub	🧞
+wishes	🧞
+djinn	🧞‍♂️
+fantasy	🧞‍♂️
+genie	🧞‍♂️
+jinn	🧞‍♂️
+lamp	🧞‍♂️
+man	🧞‍♂️
+myth	🧞‍♂️
+rub	🧞‍♂️
+wishes	🧞‍♂️
+djinn	🧞‍♀️
+fantasy	🧞‍♀️
+genie	🧞‍♀️
+jinn	🧞‍♀️
+lamp	🧞‍♀️
+myth	🧞‍♀️
+rub	🧞‍♀️
+wishes	🧞‍♀️
+woman	🧞‍♀️
+apocalypse	🧟
+dead	🧟
+halloween	🧟
+horror	🧟
+scary	🧟
+undead	🧟
+walking	🧟
+apocalypse	🧟‍♂️
+dead	🧟‍♂️
+halloween	🧟‍♂️
+horror	🧟‍♂️
+man	🧟‍♂️
+scary	🧟‍♂️
+undead	🧟‍♂️
+walking	🧟‍♂️
+zombie	🧟‍♂️
+apocalypse	🧟‍♀️
+dead	🧟‍♀️
+halloween	🧟‍♀️
+horror	🧟‍♀️
+scary	🧟‍♀️
+undead	🧟‍♀️
+walking	🧟‍♀️
+woman	🧟‍♀️
+zombie	🧟‍♀️
+fairy	🧌
+fantasy	🧌
+monster	🧌
+tale	🧌
+trolling	🧌
+bigfoot	🫈
+cryptid	🫈
+forest	🫈
+giant	🫈
+hairy	🫈
+sasquatch	🫈
+woodwose	🫈
+yeti	🫈
+getting	💆
+headache	💆
+massage	💆
+relax	💆
+relaxing	💆
+salon	💆
+soothe	💆
+spa	💆
+tension	💆
+therapy	💆
+treatment	💆
+getting	💆‍♂️
+headache	💆‍♂️
+man	💆‍♂️
+massage	💆‍♂️
+relax	💆‍♂️
+relaxing	💆‍♂️
+salon	💆‍♂️
+soothe	💆‍♂️
+spa	💆‍♂️
+tension	💆‍♂️
+therapy	💆‍♂️
+treatment	💆‍♂️
+getting	💆‍♀️
+headache	💆‍♀️
+massage	💆‍♀️
+relax	💆‍♀️
+relaxing	💆‍♀️
+salon	💆‍♀️
+soothe	💆‍♀️
+spa	💆‍♀️
+tension	💆‍♀️
+therapy	💆‍♀️
+treatment	💆‍♀️
+woman	💆‍♀️
+barber	💇
+beauty	💇
+chop	💇
+cosmetology	💇
+cut	💇
+groom	💇
+hair	💇
+parlor	💇
+shears	💇
+style	💇
+barber	💇‍♂️
+beauty	💇‍♂️
+chop	💇‍♂️
+cosmetology	💇‍♂️
+cut	💇‍♂️
+groom	💇‍♂️
+hair	💇‍♂️
+haircut	💇‍♂️
+man	💇‍♂️
+parlor	💇‍♂️
+shears	💇‍♂️
+style	💇‍♂️
+barber	💇‍♀️
+beauty	💇‍♀️
+chop	💇‍♀️
+cosmetology	💇‍♀️
+cut	💇‍♀️
+groom	💇‍♀️
+hair	💇‍♀️
+haircut	💇‍♀️
+parlor	💇‍♀️
+shears	💇‍♀️
+style	💇‍♀️
+woman	💇‍♀️
+amble	🚶
+gait	🚶
+hike	🚶
+man	🚶
+pace	🚶
+stride	🚶
+stroll	🚶
+walk	🚶
+walking	🚶
+amble	🚶‍♂️
+gait	🚶‍♂️
+hike	🚶‍♂️
+man	🚶‍♂️
+pace	🚶‍♂️
+pedestrian	🚶‍♂️
+stride	🚶‍♂️
+stroll	🚶‍♂️
+walk	🚶‍♂️
+walking	🚶‍♂️
+amble	🚶‍♀️
+gait	🚶‍♀️
+hike	🚶‍♀️
+man	🚶‍♀️
+pace	🚶‍♀️
+pedestrian	🚶‍♀️
+stride	🚶‍♀️
+stroll	🚶‍♀️
+walk	🚶‍♀️
+walking	🚶‍♀️
+woman	🚶‍♀️
+stand	🧍
+standing	🧍
+man	🧍‍♂️
+stand	🧍‍♂️
+standing	🧍‍♂️
+stand	🧍‍♀️
+standing	🧍‍♀️
+woman	🧍‍♀️
+kneel	🧎
+kneeling	🧎
+knees	🧎
+kneel	🧎‍♂️
+kneeling	🧎‍♂️
+knees	🧎‍♂️
+man	🧎‍♂️
+kneel	🧎‍♀️
+kneeling	🧎‍♀️
+knees	🧎‍♀️
+woman	🧎‍♀️
+accessibility	🧑‍🦯
+blind	🧑‍🦯
+cane	🧑‍🦯
+probing	🧑‍🦯
+white	🧑‍🦯
+accessibility	👨‍🦯
+blind	👨‍🦯
+cane	👨‍🦯
+man	👨‍🦯
+probing	👨‍🦯
+white	👨‍🦯
+accessibility	👩‍🦯
+blind	👩‍🦯
+cane	👩‍🦯
+probing	👩‍🦯
+white	👩‍🦯
+woman	👩‍🦯
+accessibility	🧑‍🦼
+motorized	🧑‍🦼
+wheelchair	🧑‍🦼
+accessibility	👨‍🦼
+man	👨‍🦼
+motorized	👨‍🦼
+wheelchair	👨‍🦼
+accessibility	👩‍🦼
+motorized	👩‍🦼
+wheelchair	👩‍🦼
+woman	👩‍🦼
+accessibility	🧑‍🦽
+manual	🧑‍🦽
+wheelchair	🧑‍🦽
+accessibility	👨‍🦽
+man	👨‍🦽
+manual	👨‍🦽
+wheelchair	👨‍🦽
+accessibility	👩‍🦽
+manual	👩‍🦽
+wheelchair	👩‍🦽
+woman	👩‍🦽
+fast	🏃
+hurry	🏃
+marathon	🏃
+move	🏃
+quick	🏃
+race	🏃
+racing	🏃
+run	🏃
+rush	🏃
+speed	🏃
+fast	🏃‍♂️
+hurry	🏃‍♂️
+man	🏃‍♂️
+marathon	🏃‍♂️
+move	🏃‍♂️
+quick	🏃‍♂️
+race	🏃‍♂️
+racing	🏃‍♂️
+run	🏃‍♂️
+rush	🏃‍♂️
+speed	🏃‍♂️
+fast	🏃‍♀️
+hurry	🏃‍♀️
+marathon	🏃‍♀️
+move	🏃‍♀️
+quick	🏃‍♀️
+race	🏃‍♀️
+racing	🏃‍♀️
+run	🏃‍♀️
+rush	🏃‍♀️
+speed	🏃‍♀️
+woman	🏃‍♀️
+ballet	🧑‍🩰
+dancer	🧑‍🩰
+dance	💃
+dancing	💃
+elegant	💃
+festive	💃
+flair	💃
+flamenco	💃
+groove	💃
+let's	💃
+salsa	💃
+tango	💃
+woman	💃
+dance	🕺
+dancer	🕺
+dancing	🕺
+elegant	🕺
+festive	🕺
+flair	🕺
+flamenco	🕺
+groove	🕺
+let's	🕺
+man	🕺
+salsa	🕺
+tango	🕺
+business	🕴️
+levitating	🕴️
+suit	🕴️
+bestie	👯
+bff	👯
+bunny	👯
+counterpart	👯
+dancer	👯
+double	👯
+ear	👯
+identical	👯
+pair	👯
+party	👯
+partying	👯
+soulmate	👯
+twin	👯
+twinsies	👯
+bestie	👯‍♂️
+bff	👯‍♂️
+bunny	👯‍♂️
+counterpart	👯‍♂️
+dancer	👯‍♂️
+double	👯‍♂️
+ear	👯‍♂️
+identical	👯‍♂️
+men	👯‍♂️
+pair	👯‍♂️
+party	👯‍♂️
+partying	👯‍♂️
+soulmate	👯‍♂️
+twin	👯‍♂️
+twinsies	👯‍♂️
+bestie	👯‍♀️
+bff	👯‍♀️
+bunny	👯‍♀️
+counterpart	👯‍♀️
+dancer	👯‍♀️
+double	👯‍♀️
+ear	👯‍♀️
+identical	👯‍♀️
+pair	👯‍♀️
+party	👯‍♀️
+partying	👯‍♀️
+soulmate	👯‍♀️
+twin	👯‍♀️
+twinsies	👯‍♀️
+women	👯‍♀️
+day	🧖
+luxurious	🧖
+pamper	🧖
+relax	🧖
+room	🧖
+sauna	🧖
+spa	🧖
+steam	🧖
+steambath	🧖
+unwind	🧖
+day	🧖‍♂️
+luxurious	🧖‍♂️
+man	🧖‍♂️
+pamper	🧖‍♂️
+relax	🧖‍♂️
+room	🧖‍♂️
+sauna	🧖‍♂️
+spa	🧖‍♂️
+steam	🧖‍♂️
+steambath	🧖‍♂️
+unwind	🧖‍♂️
+day	🧖‍♀️
+luxurious	🧖‍♀️
+pamper	🧖‍♀️
+relax	🧖‍♀️
+room	🧖‍♀️
+sauna	🧖‍♀️
+spa	🧖‍♀️
+steam	🧖‍♀️
+steambath	🧖‍♀️
+unwind	🧖‍♀️
+woman	🧖‍♀️
+climb	🧗
+climber	🧗
+climbing	🧗
+mountain	🧗
+rock	🧗
+scale	🧗
+up	🧗
+climb	🧗‍♂️
+climber	🧗‍♂️
+climbing	🧗‍♂️
+man	🧗‍♂️
+mountain	🧗‍♂️
+rock	🧗‍♂️
+scale	🧗‍♂️
+up	🧗‍♂️
+climb	🧗‍♀️
+climber	🧗‍♀️
+climbing	🧗‍♀️
+mountain	🧗‍♀️
+rock	🧗‍♀️
+scale	🧗‍♀️
+up	🧗‍♀️
+woman	🧗‍♀️
+fencer	🤺
+fencing	🤺
+sword	🤺
+horse	🏇
+jockey	🏇
+racehorse	🏇
+racing	🏇
+riding	🏇
+sport	🏇
+ski	⛷️
+snow	⛷️
+ski	🏂
+snow	🏂
+snowboard	🏂
+sport	🏂
+ball	🏌️
+birdie	🏌️
+caddy	🏌️
+driving	🏌️
+golf	🏌️
+golfing	🏌️
+green	🏌️
+pga	🏌️
+putt	🏌️
+range	🏌️
+tee	🏌️
+ball	🏌️‍♂️
+birdie	🏌️‍♂️
+caddy	🏌️‍♂️
+driving	🏌️‍♂️
+golf	🏌️‍♂️
+golfing	🏌️‍♂️
+green	🏌️‍♂️
+man	🏌️‍♂️
+pga	🏌️‍♂️
+putt	🏌️‍♂️
+range	🏌️‍♂️
+tee	🏌️‍♂️
+ball	🏌️‍♀️
+birdie	🏌️‍♀️
+caddy	🏌️‍♀️
+driving	🏌️‍♀️
+golf	🏌️‍♀️
+golfing	🏌️‍♀️
+green	🏌️‍♀️
+pga	🏌️‍♀️
+putt	🏌️‍♀️
+range	🏌️‍♀️
+tee	🏌️‍♀️
+woman	🏌️‍♀️
+beach	🏄
+ocean	🏄
+sport	🏄
+surf	🏄
+surfing	🏄
+swell	🏄
+waves	🏄
+beach	🏄‍♂️
+man	🏄‍♂️
+ocean	🏄‍♂️
+sport	🏄‍♂️
+surf	🏄‍♂️
+surfer	🏄‍♂️
+surfing	🏄‍♂️
+swell	🏄‍♂️
+waves	🏄‍♂️
+beach	🏄‍♀️
+ocean	🏄‍♀️
+sport	🏄‍♀️
+surf	🏄‍♀️
+surfer	🏄‍♀️
+surfing	🏄‍♀️
+swell	🏄‍♀️
+waves	🏄‍♀️
+boat	🚣
+canoe	🚣
+cruise	🚣
+fishing	🚣
+lake	🚣
+oar	🚣
+paddle	🚣
+raft	🚣
+river	🚣
+row	🚣
+rowing	🚣
+boat	🚣‍♂️
+canoe	🚣‍♂️
+cruise	🚣‍♂️
+fishing	🚣‍♂️
+lake	🚣‍♂️
+man	🚣‍♂️
+oar	🚣‍♂️
+paddle	🚣‍♂️
+raft	🚣‍♂️
+river	🚣‍♂️
+row	🚣‍♂️
+rowboat	🚣‍♂️
+rowing	🚣‍♂️
+boat	🚣‍♀️
+canoe	🚣‍♀️
+cruise	🚣‍♀️
+fishing	🚣‍♀️
+lake	🚣‍♀️
+oar	🚣‍♀️
+paddle	🚣‍♀️
+raft	🚣‍♀️
+river	🚣‍♀️
+row	🚣‍♀️
+rowboat	🚣‍♀️
+rowing	🚣‍♀️
+woman	🚣‍♀️
+freestyle	🏊
+sport	🏊
+swim	🏊
+swimming	🏊
+triathlon	🏊
+freestyle	🏊‍♂️
+man	🏊‍♂️
+sport	🏊‍♂️
+swim	🏊‍♂️
+swimmer	🏊‍♂️
+swimming	🏊‍♂️
+triathlon	🏊‍♂️
+freestyle	🏊‍♀️
+man	🏊‍♀️
+sport	🏊‍♀️
+swim	🏊‍♀️
+swimmer	🏊‍♀️
+swimming	🏊‍♀️
+triathlon	🏊‍♀️
+athletic	⛹️
+ball	⛹️
+basketball	⛹️
+bouncing	⛹️
+championship	⛹️
+dribble	⛹️
+net	⛹️
+player	⛹️
+throw	⛹️
+athletic	⛹️‍♂️
+ball	⛹️‍♂️
+basketball	⛹️‍♂️
+bouncing	⛹️‍♂️
+championship	⛹️‍♂️
+dribble	⛹️‍♂️
+man	⛹️‍♂️
+net	⛹️‍♂️
+player	⛹️‍♂️
+throw	⛹️‍♂️
+athletic	⛹️‍♀️
+ball	⛹️‍♀️
+basketball	⛹️‍♀️
+bouncing	⛹️‍♀️
+championship	⛹️‍♀️
+dribble	⛹️‍♀️
+net	⛹️‍♀️
+player	⛹️‍♀️
+throw	⛹️‍♀️
+woman	⛹️‍♀️
+barbell	🏋️
+bodybuilder	🏋️
+deadlift	🏋️
+lifter	🏋️
+lifting	🏋️
+powerlifting	🏋️
+weight	🏋️
+weightlifter	🏋️
+weights	🏋️
+workout	🏋️
+barbell	🏋️‍♂️
+bodybuilder	🏋️‍♂️
+deadlift	🏋️‍♂️
+lifter	🏋️‍♂️
+lifting	🏋️‍♂️
+man	🏋️‍♂️
+powerlifting	🏋️‍♂️
+weight	🏋️‍♂️
+weightlifter	🏋️‍♂️
+weights	🏋️‍♂️
+workout	🏋️‍♂️
+barbell	🏋️‍♀️
+bodybuilder	🏋️‍♀️
+deadlift	🏋️‍♀️
+lifter	🏋️‍♀️
+lifting	🏋️‍♀️
+powerlifting	🏋️‍♀️
+weight	🏋️‍♀️
+weightlifter	🏋️‍♀️
+weights	🏋️‍♀️
+woman	🏋️‍♀️
+workout	🏋️‍♀️
+bicycle	🚴
+bike	🚴
+biking	🚴
+cycle	🚴
+cyclist	🚴
+riding	🚴
+sport	🚴
+bicycle	🚴‍♂️
+bicyclist	🚴‍♂️
+bike	🚴‍♂️
+biking	🚴‍♂️
+cycle	🚴‍♂️
+cyclist	🚴‍♂️
+man	🚴‍♂️
+riding	🚴‍♂️
+sport	🚴‍♂️
+bicycle	🚴‍♀️
+bicyclist	🚴‍♀️
+bike	🚴‍♀️
+biking	🚴‍♀️
+cycle	🚴‍♀️
+cyclist	🚴‍♀️
+riding	🚴‍♀️
+sport	🚴‍♀️
+woman	🚴‍♀️
+bicycle	🚵
+bicyclist	🚵
+bike	🚵
+biking	🚵
+cycle	🚵
+cyclist	🚵
+mountain	🚵
+riding	🚵
+sport	🚵
+bicycle	🚵‍♂️
+bicyclist	🚵‍♂️
+bike	🚵‍♂️
+biking	🚵‍♂️
+cycle	🚵‍♂️
+cyclist	🚵‍♂️
+man	🚵‍♂️
+mountain	🚵‍♂️
+riding	🚵‍♂️
+sport	🚵‍♂️
+bicycle	🚵‍♀️
+bicyclist	🚵‍♀️
+bike	🚵‍♀️
+biking	🚵‍♀️
+cycle	🚵‍♀️
+cyclist	🚵‍♀️
+mountain	🚵‍♀️
+riding	🚵‍♀️
+sport	🚵‍♀️
+woman	🚵‍♀️
+active	🤸
+cartwheel	🤸
+cartwheeling	🤸
+excited	🤸
+flip	🤸
+gymnastics	🤸
+happy	🤸
+somersault	🤸
+active	🤸‍♂️
+cartwheel	🤸‍♂️
+cartwheeling	🤸‍♂️
+excited	🤸‍♂️
+flip	🤸‍♂️
+gymnastics	🤸‍♂️
+happy	🤸‍♂️
+man	🤸‍♂️
+somersault	🤸‍♂️
+active	🤸‍♀️
+cartwheel	🤸‍♀️
+cartwheeling	🤸‍♀️
+excited	🤸‍♀️
+flip	🤸‍♀️
+gymnastics	🤸‍♀️
+happy	🤸‍♀️
+somersault	🤸‍♀️
+woman	🤸‍♀️
+combat	🤼
+duel	🤼
+grapple	🤼
+ring	🤼
+tournament	🤼
+wrestle	🤼
+wrestling	🤼
+combat	🤼‍♂️
+duel	🤼‍♂️
+grapple	🤼‍♂️
+men	🤼‍♂️
+ring	🤼‍♂️
+tournament	🤼‍♂️
+wrestle	🤼‍♂️
+wrestling	🤼‍♂️
+combat	🤼‍♀️
+duel	🤼‍♀️
+grapple	🤼‍♀️
+ring	🤼‍♀️
+tournament	🤼‍♀️
+women	🤼‍♀️
+wrestle	🤼‍♀️
+wrestling	🤼‍♀️
+playing	🤽
+polo	🤽
+sport	🤽
+swimming	🤽
+water	🤽
+waterpolo	🤽
+man	🤽‍♂️
+playing	🤽‍♂️
+polo	🤽‍♂️
+sport	🤽‍♂️
+swimming	🤽‍♂️
+water	🤽‍♂️
+waterpolo	🤽‍♂️
+playing	🤽‍♀️
+polo	🤽‍♀️
+sport	🤽‍♀️
+swimming	🤽‍♀️
+water	🤽‍♀️
+waterpolo	🤽‍♀️
+woman	🤽‍♀️
+athletics	🤾
+ball	🤾
+catch	🤾
+chuck	🤾
+handball	🤾
+hurl	🤾
+lob	🤾
+pitch	🤾
+playing	🤾
+sport	🤾
+throw	🤾
+toss	🤾
+athletics	🤾‍♂️
+ball	🤾‍♂️
+catch	🤾‍♂️
+chuck	🤾‍♂️
+handball	🤾‍♂️
+hurl	🤾‍♂️
+lob	🤾‍♂️
+man	🤾‍♂️
+pitch	🤾‍♂️
+playing	🤾‍♂️
+sport	🤾‍♂️
+throw	🤾‍♂️
+toss	🤾‍♂️
+athletics	🤾‍♀️
+ball	🤾‍♀️
+catch	🤾‍♀️
+chuck	🤾‍♀️
+handball	🤾‍♀️
+hurl	🤾‍♀️
+lob	🤾‍♀️
+pitch	🤾‍♀️
+playing	🤾‍♀️
+sport	🤾‍♀️
+throw	🤾‍♀️
+toss	🤾‍♀️
+woman	🤾‍♀️
+act	🤹
+balance	🤹
+balancing	🤹
+handle	🤹
+juggle	🤹
+juggling	🤹
+manage	🤹
+multitask	🤹
+skill	🤹
+act	🤹‍♂️
+balance	🤹‍♂️
+balancing	🤹‍♂️
+handle	🤹‍♂️
+juggle	🤹‍♂️
+juggling	🤹‍♂️
+man	🤹‍♂️
+manage	🤹‍♂️
+multitask	🤹‍♂️
+skill	🤹‍♂️
+act	🤹‍♀️
+balance	🤹‍♀️
+balancing	🤹‍♀️
+handle	🤹‍♀️
+juggle	🤹‍♀️
+juggling	🤹‍♀️
+manage	🤹‍♀️
+multitask	🤹‍♀️
+skill	🤹‍♀️
+woman	🤹‍♀️
+cross	🧘
+legged	🧘
+legs	🧘
+lotus	🧘
+meditation	🧘
+peace	🧘
+position	🧘
+relax	🧘
+serenity	🧘
+yoga	🧘
+yogi	🧘
+zen	🧘
+cross	🧘‍♂️
+legged	🧘‍♂️
+legs	🧘‍♂️
+lotus	🧘‍♂️
+man	🧘‍♂️
+meditation	🧘‍♂️
+peace	🧘‍♂️
+position	🧘‍♂️
+relax	🧘‍♂️
+serenity	🧘‍♂️
+yoga	🧘‍♂️
+yogi	🧘‍♂️
+zen	🧘‍♂️
+cross	🧘‍♀️
+legged	🧘‍♀️
+legs	🧘‍♀️
+lotus	🧘‍♀️
+meditation	🧘‍♀️
+peace	🧘‍♀️
+position	🧘‍♀️
+relax	🧘‍♀️
+serenity	🧘‍♀️
+woman	🧘‍♀️
+yoga	🧘‍♀️
+yogi	🧘‍♀️
+zen	🧘‍♀️
+bathtub	🛀
+taking	🛀
+tub	🛀
+bed	🛌
+bedtime	🛌
+good	🛌
+goodnight	🛌
+hotel	🛌
+nap	🛌
+night	🛌
+sleep	🛌
+tired	🛌
+zzz	🛌
+bae	🧑‍🤝‍🧑
+bestie	🧑‍🤝‍🧑
+bff	🧑‍🤝‍🧑
+couple	🧑‍🤝‍🧑
+dating	🧑‍🤝‍🧑
+flirt	🧑‍🤝‍🧑
+friends	🧑‍🤝‍🧑
+hold	🧑‍🤝‍🧑
+twins	🧑‍🤝‍🧑
+bae	👭
+bestie	👭
+bff	👭
+couple	👭
+dating	👭
+flirt	👭
+friends	👭
+girls	👭
+hold	👭
+sisters	👭
+twins	👭
+women	👭
+bae	👫
+bestie	👫
+bff	👫
+couple	👫
+dating	👫
+flirt	👫
+friends	👫
+hold	👫
+man	👫
+twins	👫
+woman	👫
+bae	👬
+bestie	👬
+bff	👬
+boys	👬
+brothers	👬
+couple	👬
+dating	👬
+flirt	👬
+friends	👬
+hold	👬
+men	👬
+twins	👬
+anniversary	💏
+babe	💏
+bae	💏
+couple	💏
+date	💏
+dating	💏
+heart	💏
+love	💏
+mwah	💏
+romance	💏
+together	💏
+xoxo	💏
+anniversary	💑
+babe	💑
+bae	💑
+couple	💑
+dating	💑
+heart	💑
+kiss	💑
+love	💑
+relationship	💑
+romance	💑
+together	💑
+you	💑
+head	🗣️
+silhouette	🗣️
+speak	🗣️
+speaking	🗣️
+bust	👤
+mysterious	👤
+shadow	👤
+silhouette	👤
+bff	👥
+bust	👥
+busts	👥
+everyone	👥
+friend	👥
+friends	👥
+silhouette	👥
+comfort	🫂
+embrace	🫂
+farewell	🫂
+friendship	🫂
+goodbye	🫂
+hello	🫂
+hug	🫂
+hugging	🫂
+love	🫂
+thanks	🫂
+child	👪
+adult	🧑‍🧑‍🧒
+child	🧑‍🧑‍🧒
+family	🧑‍🧑‍🧒
+adult	🧑‍🧑‍🧒‍🧒
+child	🧑‍🧑‍🧒‍🧒
+family	🧑‍🧑‍🧒‍🧒
+adult	🧑‍🧒
+child	🧑‍🧒
+family	🧑‍🧒
+adult	🧑‍🧒‍🧒
+child	🧑‍🧒‍🧒
+family	🧑‍🧒‍🧒
+barefoot	👣
+clothing	👣
+footprint	👣
+omw	👣
+print	👣
+walk	👣
+clue	🫆
+crime	🫆
+detective	🫆
+forensics	🫆
+identity	🫆
+mystery	🫆
+print	🫆
+safety	🫆
+trace	🫆
+ginger	🦰
+hair	🦰
+red	🦰
+redhead	🦰
+afro	🦱
+curly	🦱
+hair	🦱
+ringlets	🦱
+gray	🦳
+hair	🦳
+old	🦳
+white	🦳
+chemotherapy	🦲
+hair	🦲
+hairless	🦲
+no	🦲
+shaven	🦲
+animal	🐵
+banana	🐵
+monkey	🐵
+animal	🐒
+banana	🐒
+animal	🦍
+animal	🦧
+ape	🦧
+monkey	🦧
+adorbs	🐶
+animal	🐶
+dog	🐶
+pet	🐶
+puppies	🐶
+puppy	🐶
+animal	🐕
+animals	🐕
+dogs	🐕
+pet	🐕
+accessibility	🦮
+animal	🦮
+blind	🦮
+dog	🦮
+guide	🦮
+accessibility	🐕‍🦺
+animal	🐕‍🦺
+assistance	🐕‍🦺
+dog	🐕‍🦺
+service	🐕‍🦺
+animal	🐩
+dog	🐩
+fluffy	🐩
+animal	🐺
+animal	🦊
+animal	🦝
+curious	🦝
+sly	🦝
+animal	🐱
+cat	🐱
+kitten	🐱
+kitty	🐱
+pet	🐱
+animal	🐈
+animals	🐈
+cats	🐈
+kitten	🐈
+pet	🐈
+animal	🐈‍⬛
+black	🐈‍⬛
+cat	🐈‍⬛
+feline	🐈‍⬛
+halloween	🐈‍⬛
+meow	🐈‍⬛
+unlucky	🐈‍⬛
+alpha	🦁
+animal	🦁
+leo	🦁
+mane	🦁
+order	🦁
+rawr	🦁
+roar	🦁
+safari	🦁
+strong	🦁
+zodiac	🦁
+animal	🐯
+big	🐯
+cat	🐯
+predator	🐯
+tiger	🐯
+animal	🐅
+big	🐅
+cat	🐅
+predator	🐅
+zoo	🐅
+animal	🐆
+big	🐆
+cat	🐆
+predator	🐆
+zoo	🐆
+animal	🐴
+dressage	🐴
+equine	🐴
+farm	🐴
+horse	🐴
+horses	🐴
+alces	🫎
+animal	🫎
+antlers	🫎
+elk	🫎
+mammal	🫎
+animal	🫏
+ass	🫏
+burro	🫏
+hinny	🫏
+mammal	🫏
+mule	🫏
+stubborn	🫏
+animal	🐎
+equestrian	🐎
+farm	🐎
+racehorse	🐎
+racing	🐎
+animal	🦓
+stripe	🦓
+animal	🦌
+animal	🦬
+buffalo	🦬
+herd	🦬
+wisent	🦬
+animal	🐮
+cow	🐮
+farm	🐮
+milk	🐮
+moo	🐮
+animal	🐂
+animals	🐂
+bull	🐂
+farm	🐂
+taurus	🐂
+zodiac	🐂
+animal	🐃
+buffalo	🐃
+water	🐃
+zoo	🐃
+animal	🐄
+animals	🐄
+farm	🐄
+milk	🐄
+moo	🐄
+animal	🐷
+bacon	🐷
+farm	🐷
+pig	🐷
+pork	🐷
+animal	🐖
+bacon	🐖
+farm	🐖
+pork	🐖
+sow	🐖
+animal	🐗
+pig	🐗
+animal	🐽
+farm	🐽
+nose	🐽
+pig	🐽
+smell	🐽
+snout	🐽
+animal	🐏
+aries	🐏
+horns	🐏
+male	🐏
+sheep	🐏
+zodiac	🐏
+zoo	🐏
+animal	🐑
+baa	🐑
+farm	🐑
+female	🐑
+fluffy	🐑
+lamb	🐑
+wool	🐑
+animal	🐐
+capricorn	🐐
+farm	🐐
+milk	🐐
+zodiac	🐐
+animal	🐪
+desert	🐪
+dromedary	🐪
+hump	🐪
+one	🐪
+animal	🐫
+bactrian	🐫
+camel	🐫
+desert	🐫
+hump	🐫
+two	🐫
+two-hump	🐫
+alpaca	🦙
+animal	🦙
+guanaco	🦙
+vicuña	🦙
+wool	🦙
+animal	🦒
+spots	🦒
+animal	🐘
+animal	🦣
+extinction	🦣
+large	🦣
+tusk	🦣
+wooly	🦣
+animal	🦏
+animal	🦛
+hippo	🦛
+animal	🐭
+mouse	🐭
+animal	🐁
+animals	🐁
+animal	🐀
+animal	🐹
+pet	🐹
+animal	🐰
+bunny	🐰
+pet	🐰
+rabbit	🐰
+animal	🐇
+bunny	🐇
+pet	🐇
+animal	🐿️
+squirrel	🐿️
+animal	🦫
+dam	🦫
+teeth	🦫
+animal	🦔
+spiny	🦔
+animal	🦇
+vampire	🦇
+animal	🐻
+grizzly	🐻
+growl	🐻
+honey	🐻
+animal	🐻‍❄️
+arctic	🐻‍❄️
+bear	🐻‍❄️
+polar	🐻‍❄️
+white	🐻‍❄️
+animal	🐨
+australia	🐨
+bear	🐨
+down	🐨
+marsupial	🐨
+under	🐨
+animal	🐼
+bamboo	🐼
+lazy	🦥
+slow	🦥
+animal	🦦
+fishing	🦦
+playful	🦦
+animal	🦨
+stink	🦨
+animal	🦘
+joey	🦘
+jump	🦘
+marsupial	🦘
+animal	🦡
+honey	🦡
+pester	🦡
+feet	🐾
+paw	🐾
+paws	🐾
+print	🐾
+prints	🐾
+bird	🦃
+gobble	🦃
+thanksgiving	🦃
+animal	🐔
+bird	🐔
+ornithology	🐔
+animal	🐓
+bird	🐓
+ornithology	🐓
+animal	🐣
+baby	🐣
+bird	🐣
+chick	🐣
+egg	🐣
+hatching	🐣
+animal	🐤
+baby	🐤
+bird	🐤
+chick	🐤
+ornithology	🐤
+animal	🐥
+baby	🐥
+bird	🐥
+chick	🐥
+front-facing	🐥
+newborn	🐥
+ornithology	🐥
+animal	🐦
+ornithology	🐦
+animal	🐧
+antarctica	🐧
+bird	🐧
+ornithology	🐧
+bird	🕊️
+fly	🕊️
+ornithology	🕊️
+peace	🕊️
+animal	🦅
+bird	🦅
+ornithology	🦅
+animal	🦆
+bird	🦆
+ornithology	🦆
+animal	🦢
+bird	🦢
+cygnet	🦢
+duckling	🦢
+ornithology	🦢
+ugly	🦢
+animal	🦉
+bird	🦉
+ornithology	🦉
+wise	🦉
+animal	🦤
+bird	🦤
+extinction	🦤
+large	🦤
+ornithology	🦤
+bird	🪶
+flight	🪶
+light	🪶
+plumage	🪶
+animal	🦩
+bird	🦩
+flamboyant	🦩
+ornithology	🦩
+tropical	🦩
+animal	🦚
+bird	🦚
+colorful	🦚
+ornithology	🦚
+ostentatious	🦚
+peahen	🦚
+pretty	🦚
+proud	🦚
+animal	🦜
+bird	🦜
+ornithology	🦜
+pirate	🦜
+talk	🦜
+angelic	🪽
+ascend	🪽
+aviation	🪽
+bird	🪽
+fly	🪽
+flying	🪽
+heavenly	🪽
+mythology	🪽
+soar	🪽
+animal	🐦‍⬛
+beak	🐦‍⬛
+bird	🐦‍⬛
+black	🐦‍⬛
+caw	🐦‍⬛
+corvid	🐦‍⬛
+crow	🐦‍⬛
+ornithology	🐦‍⬛
+raven	🐦‍⬛
+rook	🐦‍⬛
+animal	🪿
+bird	🪿
+duck	🪿
+flock	🪿
+fowl	🪿
+gaggle	🪿
+gander	🪿
+geese	🪿
+honk	🪿
+ornithology	🪿
+silly	🪿
+ascend	🐦‍🔥
+ascension	🐦‍🔥
+emerge	🐦‍🔥
+fantasy	🐦‍🔥
+firebird	🐦‍🔥
+glory	🐦‍🔥
+immortal	🐦‍🔥
+rebirth	🐦‍🔥
+reincarnation	🐦‍🔥
+reinvent	🐦‍🔥
+renewal	🐦‍🔥
+revival	🐦‍🔥
+revive	🐦‍🔥
+rise	🐦‍🔥
+transform	🐦‍🔥
+animal	🐸
+animal	🐊
+zoo	🐊
+animal	🐢
+terrapin	🐢
+tortoise	🐢
+animal	🦎
+reptile	🦎
+animal	🐍
+bearer	🐍
+ophiuchus	🐍
+serpent	🐍
+zodiac	🐍
+animal	🐲
+dragon	🐲
+fairy	🐲
+fairytale	🐲
+tale	🐲
+animal	🐉
+fairy	🐉
+fairytale	🐉
+knights	🐉
+tale	🐉
+brachiosaurus	🦕
+brontosaurus	🦕
+dinosaur	🦕
+diplodocus	🦕
+dinosaur	🦖
+rex	🦖
+t	🦖
+tyrannosaurus	🦖
+animal	🐳
+beach	🐳
+ocean	🐳
+spouting	🐳
+whale	🐳
+animal	🐋
+beach	🐋
+ocean	🐋
+animal	🐬
+beach	🐬
+flipper	🐬
+ocean	🐬
+marine	🫍
+ocean	🫍
+whale	🫍
+animal	🦭
+lion	🦭
+ocean	🦭
+sea	🦭
+animal	🐟
+dinner	🐟
+fishes	🐟
+fishing	🐟
+pisces	🐟
+zodiac	🐟
+animal	🐠
+fish	🐠
+fishes	🐠
+tropical	🐠
+animal	🐡
+fish	🐡
+animal	🦈
+fish	🦈
+animal	🐙
+creature	🐙
+ocean	🐙
+animal	🐚
+beach	🐚
+conch	🐚
+sea	🐚
+shell	🐚
+spiral	🐚
+change	🪸
+climate	🪸
+ocean	🪸
+reef	🪸
+sea	🪸
+animal	🪼
+aquarium	🪼
+burn	🪼
+invertebrate	🪼
+jelly	🪼
+life	🪼
+marine	🪼
+ocean	🪼
+ouch	🪼
+plankton	🪼
+sea	🪼
+sting	🪼
+stinger	🪼
+tentacles	🪼
+cancer	🦀
+zodiac	🦀
+animal	🦞
+bisque	🦞
+claws	🦞
+seafood	🦞
+food	🦐
+shellfish	🦐
+small	🦐
+animal	🦑
+food	🦑
+mollusk	🦑
+diving	🦪
+pearl	🦪
+animal	🐌
+escargot	🐌
+garden	🐌
+nature	🐌
+slug	🐌
+insect	🦋
+pretty	🦋
+animal	🐛
+garden	🐛
+insect	🐛
+animal	🐜
+garden	🐜
+insect	🐜
+animal	🐝
+bee	🐝
+bumblebee	🐝
+honey	🐝
+insect	🐝
+nature	🐝
+spring	🐝
+animal	🪲
+bug	🪲
+insect	🪲
+animal	🐞
+beetle	🐞
+garden	🐞
+insect	🐞
+lady	🐞
+ladybird	🐞
+ladybug	🐞
+nature	🐞
+animal	🦗
+bug	🦗
+grasshopper	🦗
+insect	🦗
+orthoptera	🦗
+animal	🪳
+insect	🪳
+pest	🪳
+roach	🪳
+animal	🕷️
+insect	🕷️
+spider	🕸️
+web	🕸️
+scorpio	🦂
+scorpius	🦂
+zodiac	🦂
+bite	🦟
+disease	🦟
+fever	🦟
+insect	🦟
+malaria	🦟
+pest	🦟
+virus	🦟
+animal	🪰
+disease	🪰
+insect	🪰
+maggot	🪰
+pest	🪰
+rotting	🪰
+animal	🪱
+annelid	🪱
+earthworm	🪱
+parasite	🪱
+amoeba	🦠
+bacteria	🦠
+science	🦠
+virus	🦠
+anniversary	💐
+birthday	💐
+date	💐
+flower	💐
+love	💐
+plant	💐
+romance	💐
+blossom	🌸
+cherry	🌸
+flower	🌸
+plant	🌸
+spring	🌸
+springtime	🌸
+flower	💮
+white	💮
+beauty	🪷
+buddhism	🪷
+calm	🪷
+flower	🪷
+hinduism	🪷
+peace	🪷
+purity	🪷
+serenity	🪷
+plant	🏵️
+beauty	🌹
+elegant	🌹
+flower	🌹
+love	🌹
+plant	🌹
+red	🌹
+valentine	🌹
+dying	🥀
+flower	🥀
+wilted	🥀
+flower	🌺
+plant	🌺
+flower	🌻
+outdoors	🌻
+plant	🌻
+sun	🌻
+buttercup	🌼
+dandelion	🌼
+flower	🌼
+plant	🌼
+blossom	🌷
+flower	🌷
+growth	🌷
+plant	🌷
+bloom	🪻
+bluebonnet	🪻
+flower	🪻
+indigo	🪻
+lavender	🪻
+lilac	🪻
+lupine	🪻
+plant	🪻
+purple	🪻
+shrub	🪻
+snapdragon	🪻
+spring	🪻
+violet	🪻
+plant	🌱
+sapling	🌱
+sprout	🌱
+young	🌱
+decor	🪴
+grow	🪴
+house	🪴
+nurturing	🪴
+plant	🪴
+pot	🪴
+potted	🪴
+christmas	🌲
+evergreen	🌲
+forest	🌲
+pine	🌲
+tree	🌲
+deciduous	🌳
+forest	🌳
+green	🌳
+habitat	🌳
+shedding	🌳
+tree	🌳
+beach	🌴
+palm	🌴
+plant	🌴
+tree	🌴
+tropical	🌴
+desert	🌵
+drought	🌵
+nature	🌵
+plant	🌵
+ear	🌾
+grain	🌾
+grains	🌾
+plant	🌾
+rice	🌾
+sheaf	🌾
+leaf	🌿
+plant	🌿
+irish	☘️
+plant	☘️
+4	🍀
+clover	🍀
+four	🍀
+four-leaf	🍀
+irish	🍀
+leaf	🍀
+lucky	🍀
+plant	🍀
+falling	🍁
+leaf	🍁
+maple	🍁
+autumn	🍂
+fall	🍂
+fallen	🍂
+falling	🍂
+leaf	🍂
+blow	🍃
+flutter	🍃
+fluttering	🍃
+leaf	🍃
+wind	🍃
+branch	🪹
+empty	🪹
+home	🪹
+nest	🪹
+nesting	🪹
+bird	🪺
+branch	🪺
+egg	🪺
+eggs	🪺
+nest	🪺
+nesting	🪺
+fungus	🍄
+toadstool	🍄
+bare	🪾
+barren	🪾
+branches	🪾
+dead	🪾
+drought	🪾
+leafless	🪾
+tree	🪾
+trunk	🪾
+winter	🪾
+wood	🪾
+dionysus	🍇
+fruit	🍇
+grape	🍇
+cantaloupe	🍈
+fruit	🍈
+fruit	🍉
+c	🍊
+citrus	🍊
+fruit	🍊
+nectarine	🍊
+orange	🍊
+vitamin	🍊
+citrus	🍋
+fruit	🍋
+sour	🍋
+acidity	🍋‍🟩
+citrus	🍋‍🟩
+cocktail	🍋‍🟩
+fruit	🍋‍🟩
+garnish	🍋‍🟩
+key	🍋‍🟩
+margarita	🍋‍🟩
+mojito	🍋‍🟩
+refreshing	🍋‍🟩
+salsa	🍋‍🟩
+sour	🍋‍🟩
+tangy	🍋‍🟩
+tequila	🍋‍🟩
+tropical	🍋‍🟩
+zest	🍋‍🟩
+fruit	🍌
+potassium	🍌
+colada	🍍
+fruit	🍍
+pina	🍍
+tropical	🍍
+food	🥭
+fruit	🥭
+tropical	🥭
+apple	🍎
+diet	🍎
+food	🍎
+fruit	🍎
+health	🍎
+red	🍎
+ripe	🍎
+apple	🍏
+fruit	🍏
+green	🍏
+fruit	🍐
+fruit	🍑
+berries	🍒
+cherry	🍒
+fruit	🍒
+red	🍒
+berry	🍓
+fruit	🍓
+berries	🫐
+berry	🫐
+bilberry	🫐
+blue	🫐
+blueberry	🫐
+food	🫐
+fruit	🫐
+food	🥝
+fruit	🥝
+kiwi	🥝
+food	🍅
+fruit	🍅
+vegetable	🍅
+food	🫒
+colada	🥥
+palm	🥥
+piña	🥥
+food	🥑
+fruit	🥑
+vegetable	🍆
+food	🥔
+vegetable	🥔
+food	🥕
+vegetable	🥕
+corn	🌽
+crops	🌽
+ear	🌽
+farm	🌽
+maize	🌽
+maze	🌽
+hot	🌶️
+pepper	🌶️
+bell	🫑
+capsicum	🫑
+food	🫑
+pepper	🫑
+vegetable	🫑
+food	🥒
+pickle	🥒
+vegetable	🥒
+bok	🥬
+burgers	🥬
+cabbage	🥬
+choy	🥬
+green	🥬
+kale	🥬
+leafy	🥬
+lettuce	🥬
+salad	🥬
+cabbage	🥦
+wild	🥦
+flavoring	🧄
+flavoring	🧅
+food	🥜
+nut	🥜
+peanut	🥜
+vegetable	🥜
+food	🫘
+kidney	🫘
+legume	🫘
+small	🫘
+almond	🌰
+plant	🌰
+beer	🫚
+ginger	🫚
+health	🫚
+herb	🫚
+natural	🫚
+root	🫚
+spice	🫚
+beans	🫛
+beanstalk	🫛
+edamame	🫛
+legume	🫛
+pea	🫛
+pod	🫛
+soybean	🫛
+vegetable	🫛
+veggie	🫛
+food	🍄‍🟫
+fungi	🍄‍🟫
+fungus	🍄‍🟫
+mushroom	🍄‍🟫
+nature	🍄‍🟫
+pizza	🍄‍🟫
+portobello	🍄‍🟫
+shiitake	🍄‍🟫
+shroom	🍄‍🟫
+spore	🍄‍🟫
+sprout	🍄‍🟫
+toppings	🍄‍🟫
+truffle	🍄‍🟫
+vegetable	🍄‍🟫
+vegetarian	🍄‍🟫
+veggie	🍄‍🟫
+beet	🫜
+food	🫜
+garden	🫜
+radish	🫜
+root	🫜
+salad	🫜
+turnip	🫜
+vegetable	🫜
+vegetarian	🫜
+carbs	🍞
+food	🍞
+grain	🍞
+loaf	🍞
+restaurant	🍞
+toast	🍞
+wheat	🍞
+bread	🥐
+breakfast	🥐
+crescent	🥐
+food	🥐
+french	🥐
+roll	🥐
+baguette	🥖
+bread	🥖
+food	🥖
+french	🥖
+arepa	🫓
+bread	🫓
+food	🫓
+gordita	🫓
+lavash	🫓
+naan	🫓
+pita	🫓
+convoluted	🥨
+twisted	🥨
+bakery	🥯
+bread	🥯
+breakfast	🥯
+schmear	🥯
+breakfast	🥞
+crêpe	🥞
+food	🥞
+hotcake	🥞
+pancake	🥞
+breakfast	🧇
+indecisive	🧇
+iron	🧇
+cheese	🧀
+wedge	🧀
+bone	🍖
+meat	🍖
+bone	🍗
+chicken	🍗
+drumstick	🍗
+hungry	🍗
+leg	🍗
+poultry	🍗
+turkey	🍗
+chop	🥩
+cut	🥩
+lambchop	🥩
+meat	🥩
+porkchop	🥩
+red	🥩
+steak	🥩
+breakfast	🥓
+food	🥓
+meat	🥓
+burger	🍔
+eat	🍔
+fast	🍔
+food	🍔
+hungry	🍔
+fast	🍟
+food	🍟
+french	🍟
+fries	🍟
+cheese	🍕
+food	🍕
+hungry	🍕
+pepperoni	🍕
+slice	🍕
+dog	🌭
+frankfurter	🌭
+hot	🌭
+hotdog	🌭
+sausage	🌭
+bread	🥪
+mexican	🌮
+mexican	🌯
+wrap	🌯
+food	🫔
+mexican	🫔
+pamonha	🫔
+wrapped	🫔
+falafel	🥙
+flatbread	🥙
+food	🥙
+gyro	🥙
+kebab	🥙
+stuffed	🥙
+chickpea	🧆
+meatball	🧆
+breakfast	🥚
+food	🥚
+breakfast	🍳
+easy	🍳
+egg	🍳
+fry	🍳
+frying	🍳
+over	🍳
+pan	🍳
+restaurant	🍳
+side	🍳
+sunny	🍳
+up	🍳
+casserole	🥘
+food	🥘
+paella	🥘
+pan	🥘
+shallow	🥘
+food	🍲
+pot	🍲
+soup	🍲
+stew	🍲
+cheese	🫕
+chocolate	🫕
+food	🫕
+melted	🫕
+pot	🫕
+ski	🫕
+bowl	🥣
+breakfast	🥣
+cereal	🥣
+congee	🥣
+oatmeal	🥣
+porridge	🥣
+spoon	🥣
+food	🥗
+green	🥗
+salad	🥗
+corn	🍿
+movie	🍿
+pop	🍿
+dairy	🧈
+condiment	🧂
+flavor	🧂
+mad	🧂
+salty	🧂
+shaker	🧂
+taste	🧂
+upset	🧂
+can	🥫
+canned	🥫
+food	🥫
+bento	🍱
+box	🍱
+food	🍱
+cracker	🍘
+food	🍘
+rice	🍘
+ball	🍙
+food	🍙
+japanese	🍙
+rice	🍙
+cooked	🍚
+food	🍚
+rice	🍚
+curry	🍛
+food	🍛
+rice	🍛
+bowl	🍜
+chopsticks	🍜
+food	🍜
+noodle	🍜
+pho	🍜
+ramen	🍜
+soup	🍜
+steaming	🍜
+food	🍝
+meatballs	🍝
+pasta	🍝
+restaurant	🍝
+food	🍠
+potato	🍠
+roasted	🍠
+sweet	🍠
+food	🍢
+kebab	🍢
+restaurant	🍢
+seafood	🍢
+skewer	🍢
+stick	🍢
+food	🍣
+fried	🍤
+prawn	🍤
+shrimp	🍤
+tempura	🍤
+cake	🍥
+fish	🍥
+food	🍥
+pastry	🍥
+restaurant	🍥
+swirl	🍥
+autumn	🥮
+cake	🥮
+festival	🥮
+moon	🥮
+yuèbǐng	🥮
+dessert	🍡
+japanese	🍡
+skewer	🍡
+stick	🍡
+sweet	🍡
+empanada	🥟
+gyōza	🥟
+jiaozi	🥟
+pierogi	🥟
+potsticker	🥟
+cookie	🥠
+fortune	🥠
+prophecy	🥠
+box	🥡
+chopsticks	🥡
+delivery	🥡
+food	🥡
+oyster	🥡
+pail	🥡
+takeout	🥡
+cream	🍦
+dessert	🍦
+food	🍦
+ice	🍦
+icecream	🍦
+restaurant	🍦
+serve	🍦
+soft	🍦
+sweet	🍦
+dessert	🍧
+ice	🍧
+restaurant	🍧
+shaved	🍧
+sweet	🍧
+cream	🍨
+dessert	🍨
+food	🍨
+ice	🍨
+restaurant	🍨
+sweet	🍨
+breakfast	🍩
+dessert	🍩
+donut	🍩
+food	🍩
+sweet	🍩
+chip	🍪
+chocolate	🍪
+dessert	🍪
+sweet	🍪
+bday	🎂
+birthday	🎂
+cake	🎂
+celebration	🎂
+dessert	🎂
+happy	🎂
+pastry	🎂
+sweet	🎂
+cake	🍰
+dessert	🍰
+pastry	🍰
+slice	🍰
+sweet	🍰
+bakery	🧁
+dessert	🧁
+sprinkles	🧁
+sugar	🧁
+sweet	🧁
+treat	🧁
+apple	🥧
+filling	🥧
+fruit	🥧
+meat	🥧
+pastry	🥧
+pumpkin	🥧
+slice	🥧
+bar	🍫
+candy	🍫
+chocolate	🍫
+dessert	🍫
+halloween	🍫
+sweet	🍫
+tooth	🍫
+cavities	🍬
+dessert	🍬
+halloween	🍬
+restaurant	🍬
+sweet	🍬
+tooth	🍬
+wrapper	🍬
+candy	🍭
+dessert	🍭
+food	🍭
+restaurant	🍭
+sweet	🍭
+dessert	🍮
+pudding	🍮
+sweet	🍮
+barrel	🍯
+bear	🍯
+food	🍯
+honey	🍯
+honeypot	🍯
+jar	🍯
+pot	🍯
+sweet	🍯
+babies	🍼
+baby	🍼
+birth	🍼
+born	🍼
+bottle	🍼
+drink	🍼
+infant	🍼
+milk	🍼
+newborn	🍼
+drink	🥛
+glass	🥛
+milk	🥛
+beverage	☕
+cafe	☕
+caffeine	☕
+chai	☕
+coffee	☕
+drink	☕
+hot	☕
+morning	☕
+steaming	☕
+tea	☕
+brew	🫖
+drink	🫖
+food	🫖
+pot	🫖
+tea	🫖
+beverage	🍵
+cup	🍵
+drink	🍵
+handle	🍵
+oolong	🍵
+tea	🍵
+teacup	🍵
+bar	🍶
+beverage	🍶
+bottle	🍶
+cup	🍶
+drink	🍶
+restaurant	🍶
+bar	🍾
+bottle	🍾
+cork	🍾
+drink	🍾
+popping	🍾
+alcohol	🍷
+bar	🍷
+beverage	🍷
+booze	🍷
+club	🍷
+drink	🍷
+drinking	🍷
+drinks	🍷
+glass	🍷
+restaurant	🍷
+wine	🍷
+alcohol	🍸
+bar	🍸
+booze	🍸
+club	🍸
+cocktail	🍸
+drink	🍸
+drinking	🍸
+drinks	🍸
+glass	🍸
+mad	🍸
+martini	🍸
+men	🍸
+alcohol	🍹
+bar	🍹
+booze	🍹
+club	🍹
+cocktail	🍹
+drink	🍹
+drinking	🍹
+drinks	🍹
+drunk	🍹
+mai	🍹
+party	🍹
+tai	🍹
+tropical	🍹
+tropics	🍹
+alcohol	🍺
+ale	🍺
+bar	🍺
+beer	🍺
+booze	🍺
+drink	🍺
+drinking	🍺
+drinks	🍺
+mug	🍺
+octoberfest	🍺
+oktoberfest	🍺
+pint	🍺
+stein	🍺
+summer	🍺
+alcohol	🍻
+bar	🍻
+beer	🍻
+booze	🍻
+bottoms	🍻
+cheers	🍻
+clink	🍻
+clinking	🍻
+drinking	🍻
+drinks	🍻
+mugs	🍻
+celebrate	🥂
+clink	🥂
+clinking	🥂
+drink	🥂
+glass	🥂
+glasses	🥂
+glass	🥃
+liquor	🥃
+scotch	🥃
+shot	🥃
+tumbler	🥃
+whiskey	🥃
+whisky	🥃
+accident	🫗
+drink	🫗
+empty	🫗
+glass	🫗
+liquid	🫗
+oops	🫗
+pour	🫗
+pouring	🫗
+spill	🫗
+water	🫗
+cup	🥤
+drink	🥤
+juice	🥤
+malt	🥤
+soda	🥤
+soft	🥤
+straw	🥤
+water	🥤
+boba	🧋
+bubble	🧋
+food	🧋
+milk	🧋
+pearl	🧋
+tea	🧋
+beverage	🧃
+box	🧃
+juice	🧃
+straw	🧃
+sweet	🧃
+drink	🧉
+cold	🧊
+cube	🧊
+iceberg	🧊
+hashi	🥢
+jeotgarak	🥢
+kuaizi	🥢
+cooking	🍽️
+dinner	🍽️
+eat	🍽️
+fork	🍽️
+knife	🍽️
+plate	🍽️
+breakfast	🍴
+breaky	🍴
+cooking	🍴
+cutlery	🍴
+delicious	🍴
+dinner	🍴
+eat	🍴
+feed	🍴
+food	🍴
+fork	🍴
+hungry	🍴
+knife	🍴
+lunch	🍴
+restaurant	🍴
+yum	🍴
+yummy	🍴
+eat	🥄
+tableware	🥄
+chef	🔪
+cooking	🔪
+kitchen	🔪
+knife	🔪
+tool	🔪
+weapon	🔪
+condiment	🫙
+container	🫙
+empty	🫙
+nothing	🫙
+sauce	🫙
+store	🫙
+aquarius	🏺
+cooking	🏺
+drink	🏺
+jug	🏺
+tool	🏺
+weapon	🏺
+zodiac	🏺
+africa	🌍
+earth	🌍
+europe	🌍
+europe-africa	🌍
+globe	🌍
+showing	🌍
+world	🌍
+americas	🌎
+earth	🌎
+globe	🌎
+showing	🌎
+world	🌎
+asia	🌏
+asia-australia	🌏
+australia	🌏
+earth	🌏
+globe	🌏
+showing	🌏
+world	🌏
+earth	🌐
+globe	🌐
+internet	🌐
+meridians	🌐
+web	🌐
+world	🌐
+worldwide	🌐
+map	🗺️
+world	🗺️
+japan	🗾
+map	🗾
+direction	🧭
+magnetic	🧭
+navigation	🧭
+orienteering	🧭
+cold	🏔️
+mountain	🏔️
+snow	🏔️
+snow-capped	🏔️
+avalanche	🛘
+danger	🛘
+disaster	🛘
+earthquake	🛘
+mountain	🛘
+mudslide	🛘
+rocks	🛘
+eruption	🌋
+mountain	🌋
+nature	🌋
+fuji	🗻
+mount	🗻
+mountain	🗻
+nature	🗻
+beach	🏖️
+umbrella	🏖️
+desert	🏝️
+island	🏝️
+national	🏞️
+park	🏞️
+building	🏛️
+classical	🏛️
+building	🏗️
+construction	🏗️
+crane	🏗️
+bricks	🧱
+clay	🧱
+mortar	🧱
+wall	🧱
+boulder	🪨
+heavy	🪨
+solid	🪨
+stone	🪨
+tough	🪨
+log	🪵
+lumber	🪵
+timber	🪵
+home	🛖
+house	🛖
+roundhouse	🛖
+shelter	🛖
+yurt	🛖
+house	🏘️
+derelict	🏚️
+home	🏚️
+house	🏚️
+building	🏠
+country	🏠
+heart	🏠
+home	🏠
+ranch	🏠
+settle	🏠
+simple	🏠
+suburban	🏠
+suburbia	🏠
+where	🏠
+building	🏡
+country	🏡
+garden	🏡
+heart	🏡
+home	🏡
+house	🏡
+ranch	🏡
+settle	🏡
+simple	🏡
+suburban	🏡
+suburbia	🏡
+where	🏡
+building	🏢
+city	🏢
+cubical	🏢
+job	🏢
+office	🏢
+building	🏣
+japanese	🏣
+office	🏣
+post	🏣
+building	🏤
+european	🏤
+office	🏤
+post	🏤
+building	🏥
+doctor	🏥
+medicine	🏥
+building	🏦
+building	🏨
+building	🏩
+hotel	🏩
+love	🏩
+24	🏪
+building	🏪
+convenience	🏪
+hours	🏪
+store	🏪
+building	🏫
+building	🏬
+department	🏬
+store	🏬
+building	🏭
+building	🏯
+castle	🏯
+japanese	🏯
+building	🏰
+european	🏰
+chapel	💒
+hitched	💒
+nuptials	💒
+romance	💒
+tokyo	🗼
+tower	🗼
+liberty	🗽
+new	🗽
+ny	🗽
+nyc	🗽
+statue	🗽
+york	🗽
+bless	⛪
+chapel	⛪
+christian	⛪
+cross	⛪
+religion	⛪
+islam	🕌
+masjid	🕌
+muslim	🕌
+religion	🕌
+hindu	🛕
+temple	🛕
+jew	🕍
+jewish	🕍
+judaism	🕍
+religion	🕍
+temple	🕍
+religion	⛩️
+shinto	⛩️
+shrine	⛩️
+hajj	🕋
+islam	🕋
+muslim	🕋
+religion	🕋
+umrah	🕋
+camping	⛺
+fog	🌁
+night	🌃
+star	🌃
+stars	🌃
+city	🏙️
+morning	🌄
+mountains	🌄
+over	🌄
+sun	🌄
+sunrise	🌄
+morning	🌅
+nature	🌅
+sun	🌅
+at	🌆
+building	🌆
+city	🌆
+cityscape	🌆
+dusk	🌆
+evening	🌆
+landscape	🌆
+sun	🌆
+sunset	🌆
+building	🌇
+dusk	🌇
+sun	🌇
+at	🌉
+bridge	🌉
+night	🌉
+hot	♨️
+hotsprings	♨️
+springs	♨️
+steaming	♨️
+carousel	🎠
+entertainment	🎠
+horse	🎠
+amusement	🛝
+park	🛝
+play	🛝
+playground	🛝
+playing	🛝
+slide	🛝
+sliding	🛝
+theme	🛝
+amusement	🎡
+ferris	🎡
+park	🎡
+theme	🎡
+wheel	🎡
+amusement	🎢
+coaster	🎢
+park	🎢
+roller	🎢
+theme	🎢
+barber	💈
+cut	💈
+fresh	💈
+haircut	💈
+pole	💈
+shave	💈
+circus	🎪
+tent	🎪
+caboose	🚂
+engine	🚂
+railway	🚂
+steam	🚂
+train	🚂
+trains	🚂
+travel	🚂
+car	🚃
+electric	🚃
+railway	🚃
+train	🚃
+tram	🚃
+travel	🚃
+trolleybus	🚃
+high-speed	🚄
+railway	🚄
+shinkansen	🚄
+speed	🚄
+train	🚄
+bullet	🚅
+high-speed	🚅
+nose	🚅
+railway	🚅
+shinkansen	🚅
+speed	🚅
+train	🚅
+travel	🚅
+arrived	🚆
+choo	🚆
+railway	🚆
+subway	🚇
+travel	🚇
+arrived	🚈
+light	🚈
+monorail	🚈
+rail	🚈
+railway	🚈
+railway	🚉
+train	🚉
+trolleybus	🚊
+vehicle	🚝
+car	🚞
+mountain	🚞
+railway	🚞
+trip	🚞
+bus	🚋
+car	🚋
+tram	🚋
+trolley	🚋
+trolleybus	🚋
+school	🚌
+vehicle	🚌
+bus	🚍
+cars	🚍
+oncoming	🚍
+bus	🚎
+tram	🚎
+trolley	🚎
+bus	🚐
+drive	🚐
+van	🚐
+vehicle	🚐
+emergency	🚑
+vehicle	🚑
+engine	🚒
+fire	🚒
+truck	🚒
+5–0	🚓
+car	🚓
+cops	🚓
+patrol	🚓
+police	🚓
+car	🚔
+oncoming	🚔
+police	🚔
+cab	🚕
+cabbie	🚕
+car	🚕
+drive	🚕
+vehicle	🚕
+yellow	🚕
+cab	🚖
+cabbie	🚖
+cars	🚖
+drove	🚖
+hail	🚖
+oncoming	🚖
+taxi	🚖
+yellow	🚖
+car	🚗
+driving	🚗
+vehicle	🚗
+automobile	🚘
+car	🚘
+cars	🚘
+drove	🚘
+oncoming	🚘
+vehicle	🚘
+car	🚙
+drive	🚙
+recreational	🚙
+sport	🚙
+sportutility	🚙
+utility	🚙
+vehicle	🚙
+automobile	🛻
+car	🛻
+flatbed	🛻
+pick-up	🛻
+pickup	🛻
+transportation	🛻
+truck	🛻
+car	🚚
+delivery	🚚
+drive	🚚
+truck	🚚
+vehicle	🚚
+articulated	🚛
+car	🚛
+drive	🚛
+lorry	🚛
+move	🚛
+semi	🚛
+truck	🚛
+vehicle	🚛
+vehicle	🚜
+car	🏎️
+racing	🏎️
+zoom	🏎️
+racing	🏍️
+motor	🛵
+scooter	🛵
+accessibility	🦽
+manual	🦽
+wheelchair	🦽
+accessibility	🦼
+motorized	🦼
+wheelchair	🦼
+auto	🛺
+rickshaw	🛺
+tuk	🛺
+bike	🚲
+class	🚲
+cycle	🚲
+cycling	🚲
+cyclist	🚲
+gang	🚲
+ride	🚲
+spin	🚲
+spinning	🚲
+kick	🛴
+scooter	🛴
+board	🛹
+skate	🛹
+skater	🛹
+wheels	🛹
+blades	🛼
+roller	🛼
+skate	🛼
+skates	🛼
+sport	🛼
+bus	🚏
+busstop	🚏
+stop	🚏
+highway	🛣️
+road	🛣️
+railway	🛤️
+track	🛤️
+train	🛤️
+drum	🛢️
+oil	🛢️
+diesel	⛽
+fuel	⛽
+fuelpump	⛽
+gas	⛽
+gasoline	⛽
+pump	⛽
+station	⛽
+car	🛞
+circle	🛞
+tire	🛞
+turn	🛞
+vehicle	🛞
+alarm	🚨
+alert	🚨
+beacon	🚨
+car	🚨
+emergency	🚨
+light	🚨
+police	🚨
+revolving	🚨
+siren	🚨
+horizontal	🚥
+intersection	🚥
+light	🚥
+signal	🚥
+stop	🚥
+stoplight	🚥
+traffic	🚥
+drove	🚦
+intersection	🚦
+light	🚦
+signal	🚦
+stop	🚦
+stoplight	🚦
+traffic	🚦
+vertical	🚦
+octagonal	🛑
+stop	🛑
+barrier	🚧
+ship	⚓
+tool	⚓
+buoy	🛟
+float	🛟
+life	🛟
+lifesaver	🛟
+preserver	🛟
+rescue	🛟
+ring	🛟
+safety	🛟
+save	🛟
+saver	🛟
+swim	🛟
+boat	⛵
+resort	⛵
+sailing	⛵
+sea	⛵
+yacht	⛵
+boat	🛶
+billionaire	🚤
+boat	🚤
+lake	🚤
+luxury	🚤
+millionaire	🚤
+summer	🚤
+travel	🚤
+passenger	🛳️
+ship	🛳️
+boat	⛴️
+passenger	⛴️
+boat	🛥️
+motor	🛥️
+motorboat	🛥️
+boat	🚢
+passenger	🚢
+travel	🚢
+aeroplane	✈️
+fly	✈️
+flying	✈️
+jet	✈️
+plane	✈️
+travel	✈️
+aeroplane	🛩️
+airplane	🛩️
+plane	🛩️
+small	🛩️
+aeroplane	🛫
+airplane	🛫
+check-in	🛫
+departure	🛫
+departures	🛫
+plane	🛫
+aeroplane	🛬
+airplane	🛬
+arrival	🛬
+arrivals	🛬
+arriving	🛬
+landing	🛬
+plane	🛬
+hang-glide	🪂
+parasail	🪂
+skydive	🪂
+chair	💺
+copter	🚁
+roflcopter	🚁
+travel	🚁
+vehicle	🚁
+railway	🚟
+suspension	🚟
+cable	🚠
+cableway	🚠
+gondola	🚠
+lift	🚠
+mountain	🚠
+ski	🚠
+aerial	🚡
+cable	🚡
+car	🚡
+gondola	🚡
+ropeway	🚡
+tramway	🚡
+space	🛰️
+launch	🚀
+rockets	🚀
+space	🚀
+travel	🚀
+aliens	🛸
+extra	🛸
+flying	🛸
+saucer	🛸
+terrestrial	🛸
+ufo	🛸
+bell	🛎️
+bellhop	🛎️
+hotel	🛎️
+bag	🧳
+packing	🧳
+roller	🧳
+suitcase	🧳
+travel	🧳
+done	⌛
+sand	⌛
+time	⌛
+timer	⌛
+done	⏳
+flowing	⏳
+hourglass	⏳
+hours	⏳
+not	⏳
+sand	⏳
+timer	⏳
+waiting	⏳
+yolo	⏳
+clock	⌚
+time	⌚
+alarm	⏰
+clock	⏰
+hours	⏰
+hrs	⏰
+late	⏰
+time	⏰
+waiting	⏰
+clock	⏱️
+time	⏱️
+clock	⏲️
+timer	⏲️
+clock	🕰️
+mantelpiece	🕰️
+time	🕰️
+12	🕛
+12:00	🕛
+clock	🕛
+o'clock	🕛
+time	🕛
+twelve	🕛
+12	🕧
+12:30	🕧
+30	🕧
+clock	🕧
+thirty	🕧
+time	🕧
+twelve	🕧
+1	🕐
+1:00	🕐
+clock	🕐
+o'clock	🕐
+one	🕐
+time	🕐
+1	🕜
+1:30	🕜
+30	🕜
+clock	🕜
+one	🕜
+thirty	🕜
+time	🕜
+2	🕑
+2:00	🕑
+clock	🕑
+o'clock	🕑
+time	🕑
+two	🕑
+2	🕝
+2:30	🕝
+30	🕝
+clock	🕝
+thirty	🕝
+time	🕝
+two	🕝
+3	🕒
+3:00	🕒
+clock	🕒
+o'clock	🕒
+three	🕒
+time	🕒
+3	🕞
+3:30	🕞
+30	🕞
+clock	🕞
+thirty	🕞
+three	🕞
+time	🕞
+4	🕓
+4:00	🕓
+clock	🕓
+four	🕓
+o'clock	🕓
+time	🕓
+30	🕟
+4	🕟
+4:30	🕟
+clock	🕟
+four	🕟
+thirty	🕟
+time	🕟
+5	🕔
+5:00	🕔
+clock	🕔
+five	🕔
+o'clock	🕔
+time	🕔
+30	🕠
+5	🕠
+5:30	🕠
+clock	🕠
+five	🕠
+thirty	🕠
+time	🕠
+6	🕕
+6:00	🕕
+clock	🕕
+o'clock	🕕
+six	🕕
+time	🕕
+30	🕡
+6	🕡
+6:30	🕡
+clock	🕡
+six	🕡
+thirty	🕡
+0	🕖
+7	🕖
+7:00	🕖
+clock	🕖
+o'clock	🕖
+seven	🕖
+30	🕢
+7	🕢
+7:30	🕢
+clock	🕢
+seven	🕢
+thirty	🕢
+8	🕗
+8:00	🕗
+clock	🕗
+eight	🕗
+o'clock	🕗
+time	🕗
+30	🕣
+8	🕣
+8:30	🕣
+clock	🕣
+eight	🕣
+thirty	🕣
+time	🕣
+9	🕘
+9:00	🕘
+clock	🕘
+nine	🕘
+o'clock	🕘
+time	🕘
+30	🕤
+9	🕤
+9:30	🕤
+clock	🕤
+nine	🕤
+thirty	🕤
+time	🕤
+0	🕙
+10	🕙
+10:00	🕙
+clock	🕙
+o'clock	🕙
+ten	🕙
+10	🕥
+10:30	🕥
+30	🕥
+clock	🕥
+ten	🕥
+thirty	🕥
+time	🕥
+11	🕚
+11:00	🕚
+clock	🕚
+eleven	🕚
+o'clock	🕚
+time	🕚
+11	🕦
+11:30	🕦
+30	🕦
+clock	🕦
+eleven	🕦
+thirty	🕦
+time	🕦
+dark	🌑
+moon	🌑
+new	🌑
+space	🌑
+crescent	🌒
+dreams	🌒
+moon	🌒
+space	🌒
+waxing	🌒
+first	🌓
+moon	🌓
+quarter	🌓
+space	🌓
+gibbous	🌔
+moon	🌔
+space	🌔
+waxing	🌔
+full	🌕
+moon	🌕
+space	🌕
+gibbous	🌖
+moon	🌖
+space	🌖
+waning	🌖
+last	🌗
+moon	🌗
+quarter	🌗
+space	🌗
+crescent	🌘
+moon	🌘
+space	🌘
+waning	🌘
+crescent	🌙
+moon	🌙
+ramadan	🌙
+space	🌙
+moon	🌚
+new	🌚
+space	🌚
+first	🌛
+moon	🌛
+quarter	🌛
+space	🌛
+dreams	🌜
+last	🌜
+moon	🌜
+quarter	🌜
+weather	🌡️
+bright	☀️
+rays	☀️
+space	☀️
+sunny	☀️
+weather	☀️
+bright	🌝
+full	🌝
+moon	🌝
+beach	🌞
+bright	🌞
+day	🌞
+heat	🌞
+shine	🌞
+sun	🌞
+sunny	🌞
+sunshine	🌞
+weather	🌞
+planet	🪐
+ringed	🪐
+saturn	🪐
+saturnine	🪐
+astronomy	⭐
+medium	⭐
+stars	⭐
+white	⭐
+glittery	🌟
+glow	🌟
+glowing	🌟
+night	🌟
+shining	🌟
+sparkle	🌟
+star	🌟
+win	🌟
+falling	🌠
+night	🌠
+shooting	🌠
+space	🌠
+star	🌠
+milky	🌌
+space	🌌
+way	🌌
+weather	☁️
+behind	⛅
+cloud	⛅
+cloudy	⛅
+sun	⛅
+weather	⛅
+cloud	⛈️
+lightning	⛈️
+rain	⛈️
+thunder	⛈️
+thunderstorm	⛈️
+behind	🌤️
+cloud	🌤️
+sun	🌤️
+weather	🌤️
+behind	🌥️
+cloud	🌥️
+sun	🌥️
+weather	🌥️
+behind	🌦️
+cloud	🌦️
+rain	🌦️
+sun	🌦️
+weather	🌦️
+cloud	🌧️
+rain	🌧️
+weather	🌧️
+cloud	🌨️
+cold	🌨️
+snow	🌨️
+weather	🌨️
+cloud	🌩️
+lightning	🌩️
+weather	🌩️
+cloud	🌪️
+weather	🌪️
+whirlwind	🌪️
+cloud	🌫️
+weather	🌫️
+blow	🌬️
+cloud	🌬️
+wind	🌬️
+dizzy	🌀
+hurricane	🌀
+twister	🌀
+typhoon	🌀
+weather	🌀
+gay	🌈
+genderqueer	🌈
+glbt	🌈
+glbtq	🌈
+lesbian	🌈
+lgbt	🌈
+lgbtq	🌈
+lgbtqia	🌈
+nature	🌈
+pride	🌈
+queer	🌈
+rain	🌈
+trans	🌈
+transgender	🌈
+weather	🌈
+closed	🌂
+clothing	🌂
+rain	🌂
+umbrella	🌂
+clothing	☂️
+rain	☂️
+clothing	☔
+drop	☔
+drops	☔
+rain	☔
+umbrella	☔
+weather	☔
+ground	⛱️
+rain	⛱️
+sun	⛱️
+umbrella	⛱️
+danger	⚡
+electric	⚡
+electricity	⚡
+high	⚡
+lightning	⚡
+nature	⚡
+thunder	⚡
+thunderbolt	⚡
+voltage	⚡
+zap	⚡
+cold	❄️
+snow	❄️
+weather	❄️
+cold	☃️
+man	☃️
+snow	☃️
+cold	⛄
+man	⛄
+snow	⛄
+snowman	⛄
+space	☄️
+af	🔥
+burn	🔥
+flame	🔥
+hot	🔥
+lit	🔥
+litaf	🔥
+tool	🔥
+cold	💧
+comic	💧
+drop	💧
+nature	💧
+sad	💧
+sweat	💧
+tear	💧
+water	💧
+weather	💧
+nature	🌊
+ocean	🌊
+surf	🌊
+surfer	🌊
+surfing	🌊
+water	🌊
+wave	🌊
+celebration	🎃
+halloween	🎃
+jack	🎃
+lantern	🎃
+pumpkin	🎃
+celebration	🎄
+christmas	🎄
+tree	🎄
+boom	🎆
+celebration	🎆
+entertainment	🎆
+yolo	🎆
+boom	🎇
+celebration	🎇
+fireworks	🎇
+sparkle	🎇
+dynamite	🧨
+explosive	🧨
+fire	🧨
+fireworks	🧨
+light	🧨
+pop	🧨
+popping	🧨
+spark	🧨
+*	✨
+magic	✨
+sparkle	✨
+star	✨
+birthday	🎈
+celebrate	🎈
+celebration	🎈
+awesome	🎉
+birthday	🎉
+celebrate	🎉
+celebration	🎉
+excited	🎉
+hooray	🎉
+party	🎉
+popper	🎉
+tada	🎉
+woohoo	🎉
+ball	🎊
+celebrate	🎊
+celebration	🎊
+confetti	🎊
+party	🎊
+woohoo	🎊
+banner	🎋
+celebration	🎋
+japanese	🎋
+tanabata	🎋
+tree	🎋
+bamboo	🎍
+celebration	🎍
+decoration	🎍
+japanese	🎍
+pine	🎍
+plant	🎍
+celebration	🎎
+doll	🎎
+dolls	🎎
+festival	🎎
+japanese	🎎
+carp	🎏
+celebration	🎏
+streamer	🎏
+bell	🎐
+celebration	🎐
+chime	🎐
+wind	🎐
+celebration	🎑
+ceremony	🎑
+moon	🎑
+viewing	🎑
+envelope	🧧
+gift	🧧
+good	🧧
+hóngbāo	🧧
+lai	🧧
+luck	🧧
+money	🧧
+red	🧧
+see	🧧
+celebration	🎀
+birthday	🎁
+bow	🎁
+box	🎁
+celebration	🎁
+christmas	🎁
+gift	🎁
+present	🎁
+surprise	🎁
+wrapped	🎁
+celebration	🎗️
+reminder	🎗️
+ribbon	🎗️
+admission	🎟️
+ticket	🎟️
+tickets	🎟️
+admission	🎫
+stub	🎫
+award	🎖️
+celebration	🎖️
+medal	🎖️
+military	🎖️
+champion	🏆
+champs	🏆
+prize	🏆
+slay	🏆
+sport	🏆
+victory	🏆
+win	🏆
+winning	🏆
+award	🏅
+gold	🏅
+medal	🏅
+sports	🏅
+winner	🏅
+1st	🥇
+first	🥇
+gold	🥇
+medal	🥇
+place	🥇
+2nd	🥈
+medal	🥈
+place	🥈
+second	🥈
+silver	🥈
+3rd	🥉
+bronze	🥉
+medal	🥉
+place	🥉
+third	🥉
+ball	⚽
+football	⚽
+futbol	⚽
+soccer	⚽
+sport	⚽
+ball	⚾
+sport	⚾
+ball	🥎
+glove	🥎
+sports	🥎
+underarm	🥎
+ball	🏀
+hoop	🏀
+sport	🏀
+ball	🏐
+game	🏐
+american	🏈
+ball	🏈
+bowl	🏈
+football	🏈
+sport	🏈
+super	🏈
+ball	🏉
+football	🏉
+rugby	🏉
+sport	🏉
+ball	🎾
+racquet	🎾
+sport	🎾
+disc	🥏
+flying	🥏
+ultimate	🥏
+ball	🎳
+game	🎳
+sport	🎳
+strike	🎳
+ball	🏏
+bat	🏏
+cricket	🏏
+game	🏏
+ball	🏑
+field	🏑
+game	🏑
+hockey	🏑
+stick	🏑
+game	🏒
+hockey	🏒
+ice	🏒
+puck	🏒
+stick	🏒
+ball	🥍
+goal	🥍
+sports	🥍
+stick	🥍
+ball	🏓
+bat	🏓
+game	🏓
+paddle	🏓
+ping	🏓
+pingpong	🏓
+pong	🏓
+table	🏓
+tennis	🏓
+birdie	🏸
+game	🏸
+racquet	🏸
+shuttlecock	🏸
+boxing	🥊
+glove	🥊
+arts	🥋
+judo	🥋
+karate	🥋
+martial	🥋
+taekwondo	🥋
+uniform	🥋
+goal	🥅
+net	🥅
+flag	⛳
+golf	⛳
+hole	⛳
+sport	⛳
+ice	⛸️
+skate	⛸️
+skating	⛸️
+entertainment	🎣
+fish	🎣
+fishing	🎣
+pole	🎣
+sport	🎣
+diving	🤿
+mask	🤿
+scuba	🤿
+snorkeling	🤿
+athletics	🎽
+running	🎽
+sash	🎽
+shirt	🎽
+ski	🎿
+snow	🎿
+sport	🎿
+luge	🛷
+sledge	🛷
+sleigh	🛷
+snow	🛷
+toboggan	🛷
+curling	🥌
+game	🥌
+rock	🥌
+stone	🥌
+bull	🎯
+dart	🎯
+direct	🎯
+entertainment	🎯
+game	🎯
+hit	🎯
+target	🎯
+fluctuate	🪀
+toy	🪀
+fly	🪁
+soar	🪁
+gun	🔫
+handgun	🔫
+revolver	🔫
+tool	🔫
+water	🔫
+weapon	🔫
+8	🎱
+8ball	🎱
+ball	🎱
+billiard	🎱
+eight	🎱
+game	🎱
+pool	🎱
+ball	🔮
+crystal	🔮
+fairy	🔮
+fairytale	🔮
+fantasy	🔮
+fortune	🔮
+future	🔮
+magic	🔮
+tale	🔮
+tool	🔮
+magic	🪄
+magician	🪄
+wand	🪄
+witch	🪄
+wizard	🪄
+controller	🎮
+entertainment	🎮
+game	🎮
+video	🎮
+game	🕹️
+video	🕹️
+videogame	🕹️
+casino	🎰
+gamble	🎰
+gambling	🎰
+game	🎰
+machine	🎰
+slot	🎰
+slots	🎰
+dice	🎲
+die	🎲
+entertainment	🎲
+game	🎲
+clue	🧩
+interlocking	🧩
+jigsaw	🧩
+piece	🧩
+puzzle	🧩
+bear	🧸
+plaything	🧸
+plush	🧸
+stuffed	🧸
+teddy	🧸
+toy	🧸
+candy	🪅
+celebrate	🪅
+celebration	🪅
+cinco	🪅
+de	🪅
+festive	🪅
+mayo	🪅
+party	🪅
+pinada	🪅
+pinata	🪅
+ball	🪩
+dance	🪩
+disco	🪩
+glitter	🪩
+mirror	🪩
+party	🪩
+babooshka	🪆
+baboushka	🪆
+babushka	🪆
+doll	🪆
+dolls	🪆
+matryoshka	🪆
+nesting	🪆
+russia	🪆
+card	♠️
+game	♠️
+spade	♠️
+suit	♠️
+card	♥️
+emotion	♥️
+game	♥️
+heart	♥️
+hearts	♥️
+suit	♥️
+card	♦️
+diamond	♦️
+game	♦️
+suit	♦️
+card	♣️
+club	♣️
+clubs	♣️
+game	♣️
+suit	♣️
+chess	♟️
+dupe	♟️
+expendable	♟️
+pawn	♟️
+card	🃏
+game	🃏
+wildcard	🃏
+dragon	🀄
+game	🀄
+mahjong	🀄
+red	🀄
+card	🎴
+cards	🎴
+flower	🎴
+game	🎴
+japanese	🎴
+playing	🎴
+actor	🎭
+actress	🎭
+art	🎭
+arts	🎭
+entertainment	🎭
+mask	🎭
+performing	🎭
+theater	🎭
+theatre	🎭
+thespian	🎭
+art	🖼️
+frame	🖼️
+framed	🖼️
+museum	🖼️
+painting	🖼️
+picture	🖼️
+art	🎨
+artist	🎨
+artsy	🎨
+arty	🎨
+colorful	🎨
+creative	🎨
+entertainment	🎨
+museum	🎨
+painter	🎨
+painting	🎨
+palette	🎨
+needle	🧵
+sewing	🧵
+spool	🧵
+string	🧵
+embroidery	🪡
+needle	🪡
+sew	🪡
+sewing	🪡
+stitches	🪡
+sutures	🪡
+tailoring	🪡
+thread	🪡
+ball	🧶
+crochet	🧶
+knit	🧶
+cord	🪢
+rope	🪢
+tangled	🪢
+tie	🪢
+twine	🪢
+twist	🪢
+clothing	👓
+eye	👓
+eyewear	👓
+dark	🕶️
+eye	🕶️
+eyewear	🕶️
+glasses	🕶️
+dive	🥽
+eye	🥽
+protection	🥽
+scuba	🥽
+swimming	🥽
+welding	🥽
+clothes	🥼
+coat	🥼
+doctor	🥼
+dr	🥼
+experiment	🥼
+jacket	🥼
+lab	🥼
+scientist	🥼
+white	🥼
+emergency	🦺
+safety	🦺
+vest	🦺
+clothing	👔
+employed	👔
+serious	👔
+shirt	👔
+tie	👔
+blue	👕
+casual	👕
+clothes	👕
+clothing	👕
+collar	👕
+dressed	👕
+shirt	👕
+shopping	👕
+tshirt	👕
+weekend	👕
+blue	👖
+casual	👖
+clothes	👖
+clothing	👖
+denim	👖
+dressed	👖
+pants	👖
+shopping	👖
+trousers	👖
+weekend	👖
+bundle	🧣
+cold	🧣
+neck	🧣
+up	🧣
+brr	🧥
+bundle	🧥
+cold	🧥
+jacket	🧥
+up	🧥
+stocking	🧦
+clothes	👗
+clothing	👗
+dressed	👗
+fancy	👗
+shopping	👗
+clothing	👘
+comfortable	👘
+clothing	🥻
+dress	🥻
+bathing	🩱
+one-piece	🩱
+suit	🩱
+swimsuit	🩱
+bathing	🩲
+one-piece	🩲
+suit	🩲
+swimsuit	🩲
+underwear	🩲
+bathing	🩳
+pants	🩳
+suit	🩳
+swimsuit	🩳
+underwear	🩳
+bathing	👙
+beach	👙
+clothing	👙
+pool	👙
+suit	👙
+swim	👙
+blouse	👚
+clothes	👚
+clothing	👚
+collar	👚
+dress	👚
+dressed	👚
+lady	👚
+shirt	👚
+shopping	👚
+woman	👚
+woman's	👚
+clack	🪭
+clap	🪭
+cool	🪭
+cooling	🪭
+dance	🪭
+fan	🪭
+flirt	🪭
+flutter	🪭
+folding	🪭
+hot	🪭
+shy	🪭
+clothes	👛
+clothing	👛
+coin	👛
+dress	👛
+fancy	👛
+handbag	👛
+shopping	👛
+bag	👜
+clothes	👜
+clothing	👜
+dress	👜
+lady	👜
+purse	👜
+shopping	👜
+bag	👝
+clothes	👝
+clothing	👝
+clutch	👝
+dress	👝
+handbag	👝
+purse	👝
+bag	🛍️
+bags	🛍️
+hotel	🛍️
+shopping	🛍️
+backpacking	🎒
+bag	🎒
+bookbag	🎒
+education	🎒
+rucksack	🎒
+satchel	🎒
+school	🎒
+beach	🩴
+flip	🩴
+flop	🩴
+sandal	🩴
+sandals	🩴
+shoe	🩴
+thong	🩴
+thongs	🩴
+zōri	🩴
+brown	👞
+clothes	👞
+clothing	👞
+feet	👞
+foot	👞
+kick	👞
+man	👞
+man's	👞
+shoe	👞
+shoes	👞
+shopping	👞
+athletic	👟
+clothes	👟
+clothing	👟
+fast	👟
+kick	👟
+running	👟
+shoe	👟
+shoes	👟
+shopping	👟
+sneaker	👟
+tennis	👟
+backpacking	🥾
+boot	🥾
+brown	🥾
+camping	🥾
+hiking	🥾
+outdoors	🥾
+shoe	🥾
+ballet	🥿
+comfy	🥿
+flat	🥿
+flats	🥿
+shoe	🥿
+slip-on	🥿
+slipper	🥿
+clothes	👠
+clothing	👠
+dress	👠
+fashion	👠
+heel	👠
+heels	👠
+high-heeled	👠
+shoe	👠
+shoes	👠
+shopping	👠
+stiletto	👠
+woman	👠
+clothing	👡
+sandal	👡
+shoe	👡
+woman	👡
+woman's	👡
+ballet	🩰
+dance	🩰
+shoes	🩰
+boot	👢
+clothes	👢
+clothing	👢
+dress	👢
+shoe	👢
+shoes	👢
+shopping	👢
+woman	👢
+woman's	👢
+afro	🪮
+comb	🪮
+groom	🪮
+hair	🪮
+pick	🪮
+clothing	👑
+family	👑
+king	👑
+medieval	👑
+queen	👑
+royal	👑
+royalty	👑
+win	👑
+clothes	👒
+clothing	👒
+garden	👒
+hat	👒
+hats	👒
+party	👒
+woman	👒
+woman's	👒
+clothes	🎩
+clothing	🎩
+fancy	🎩
+formal	🎩
+hat	🎩
+magic	🎩
+top	🎩
+tophat	🎩
+cap	🎓
+celebration	🎓
+clothing	🎓
+education	🎓
+graduation	🎓
+hat	🎓
+scholar	🎓
+baseball	🧢
+bent	🧢
+billed	🧢
+cap	🧢
+dad	🧢
+hat	🧢
+army	🪖
+helmet	🪖
+military	🪖
+soldier	🪖
+war	🪖
+warrior	🪖
+aid	⛑️
+cross	⛑️
+hat	⛑️
+helmet	⛑️
+rescue	⛑️
+worker's	⛑️
+beads	📿
+clothing	📿
+necklace	📿
+prayer	📿
+religion	📿
+cosmetics	💄
+date	💄
+makeup	💄
+diamond	💍
+engaged	💍
+engagement	💍
+married	💍
+romance	💍
+shiny	💍
+sparkling	💍
+wedding	💍
+diamond	💎
+engagement	💎
+gem	💎
+jewel	💎
+money	💎
+romance	💎
+stone	💎
+wedding	💎
+mute	🔇
+muted	🔇
+quiet	🔇
+silent	🔇
+sound	🔇
+speaker	🔇
+low	🔈
+soft	🔈
+sound	🔈
+volume	🔈
+medium	🔉
+sound	🔉
+speaker	🔉
+volume	🔉
+high	🔊
+loud	🔊
+music	🔊
+sound	🔊
+speaker	🔊
+volume	🔊
+address	📢
+communication	📢
+loud	📢
+public	📢
+sound	📢
+cheering	📣
+sound	📣
+horn	📯
+post	📯
+postal	📯
+break	🔔
+church	🔔
+sound	🔔
+bell	🔕
+forbidden	🔕
+mute	🔕
+no	🔕
+not	🔕
+prohibited	🔕
+quiet	🔕
+silent	🔕
+slash	🔕
+sound	🔕
+music	🎼
+musical	🎼
+note	🎼
+score	🎼
+music	🎵
+musical	🎵
+note	🎵
+sound	🎵
+music	🎶
+musical	🎶
+note	🎶
+notes	🎶
+sound	🎶
+mic	🎙️
+microphone	🎙️
+music	🎙️
+studio	🎙️
+level	🎚️
+music	🎚️
+slider	🎚️
+control	🎛️
+knobs	🎛️
+music	🎛️
+karaoke	🎤
+mic	🎤
+music	🎤
+sing	🎤
+sound	🎤
+earbud	🎧
+sound	🎧
+entertainment	📻
+tbt	📻
+video	📻
+instrument	🎷
+music	🎷
+sax	🎷
+instrument	🎺
+music	🎺
+brass	🪊
+instrument	🪊
+jazz	🪊
+music	🪊
+sad	🪊
+slide	🪊
+box	🪗
+concertina	🪗
+instrument	🪗
+music	🪗
+squeeze	🪗
+squeezebox	🪗
+instrument	🎸
+music	🎸
+strat	🎸
+instrument	🎹
+keyboard	🎹
+music	🎹
+musical	🎹
+piano	🎹
+instrument	🎻
+music	🎻
+music	🪕
+stringed	🪕
+drumsticks	🥁
+music	🥁
+beat	🪘
+conga	🪘
+drum	🪘
+instrument	🪘
+long	🪘
+rhythm	🪘
+cha	🪇
+dance	🪇
+instrument	🪇
+music	🪇
+party	🪇
+percussion	🪇
+rattle	🪇
+shake	🪇
+shaker	🪇
+band	🪈
+fife	🪈
+flautist	🪈
+instrument	🪈
+marching	🪈
+music	🪈
+orchestra	🪈
+piccolo	🪈
+pipe	🪈
+recorder	🪈
+woodwind	🪈
+cupid	🪉
+instrument	🪉
+love	🪉
+music	🪉
+orchestra	🪉
+cell	📱
+communication	📱
+mobile	📱
+phone	📱
+telephone	📱
+arrow	📲
+build	📲
+call	📲
+cell	📲
+communication	📲
+mobile	📲
+phone	📲
+receive	📲
+telephone	📲
+phone	☎️
+communication	📞
+phone	📞
+receiver	📞
+telephone	📞
+voip	📞
+communication	📟
+communication	📠
+fax	📠
+machine	📠
+battery	🪫
+drained	🪫
+electronic	🪫
+energy	🪫
+low	🪫
+power	🪫
+electric	🔌
+electricity	🔌
+plug	🔌
+computer	💻
+office	💻
+pc	💻
+personal	💻
+computer	🖥️
+desktop	🖥️
+monitor	🖥️
+computer	🖨️
+computer	⌨️
+computer	🖱️
+mouse	🖱️
+computer	🖲️
+computer	💽
+disk	💽
+minidisk	💽
+optical	💽
+computer	💾
+disk	💾
+floppy	💾
+blu-ray	💿
+cd	💿
+computer	💿
+disk	💿
+dvd	💿
+optical	💿
+blu-ray	📀
+cd	📀
+computer	📀
+disk	📀
+optical	📀
+calculation	🧮
+calculator	🧮
+bollywood	🎥
+camera	🎥
+cinema	🎥
+film	🎥
+hollywood	🎥
+movie	🎥
+record	🎥
+cinema	🎞️
+film	🎞️
+frames	🎞️
+movie	🎞️
+cinema	📽️
+film	📽️
+movie	📽️
+projector	📽️
+video	📽️
+action	🎬
+board	🎬
+clapper	🎬
+movie	🎬
+tv	📺
+video	📺
+photo	📷
+selfie	📷
+snap	📷
+tbt	📷
+trip	📷
+video	📷
+camera	📸
+flash	📸
+video	📸
+camcorder	📹
+camera	📹
+tbt	📹
+video	📹
+old	📼
+school	📼
+tape	📼
+vcr	📼
+vhs	📼
+video	📼
+glass	🔍
+lab	🔍
+left	🔍
+left-pointing	🔍
+magnifying	🔍
+science	🔍
+search	🔍
+tilted	🔍
+tool	🔍
+contact	🔎
+glass	🔎
+lab	🔎
+magnifying	🔎
+right	🔎
+right-pointing	🔎
+science	🔎
+search	🔎
+tilted	🔎
+tool	🔎
+light	🕯️
+bulb	💡
+comic	💡
+electric	💡
+idea	💡
+light	💡
+electric	🔦
+light	🔦
+tool	🔦
+torch	🔦
+bar	🏮
+lantern	🏮
+light	🏮
+paper	🏮
+red	🏮
+restaurant	🏮
+diya	🪔
+lamp	🪔
+light	🪔
+oil	🪔
+book	📔
+cover	📔
+decorated	📔
+decorative	📔
+education	📔
+notebook	📔
+school	📔
+writing	📔
+book	📕
+closed	📕
+education	📕
+book	📖
+education	📖
+fantasy	📖
+knowledge	📖
+library	📖
+novels	📖
+open	📖
+reading	📖
+book	📗
+education	📗
+fantasy	📗
+green	📗
+library	📗
+reading	📗
+blue	📘
+book	📘
+education	📘
+fantasy	📘
+library	📘
+reading	📘
+book	📙
+education	📙
+fantasy	📙
+library	📙
+orange	📙
+reading	📙
+book	📚
+education	📚
+fantasy	📚
+knowledge	📚
+library	📚
+novels	📚
+reading	📚
+school	📚
+study	📚
+notebook	📒
+curl	📃
+document	📃
+page	📃
+paper	📃
+paper	📜
+document	📄
+facing	📄
+page	📄
+paper	📄
+up	📄
+communication	📰
+news	📰
+paper	📰
+news	🗞️
+newspaper	🗞️
+paper	🗞️
+rolled	🗞️
+rolled-up	🗞️
+bookmark	📑
+mark	📑
+marker	📑
+tabs	📑
+mark	🔖
+tag	🏷️
+dollar	🪙
+euro	🪙
+gold	🪙
+metal	🪙
+money	🪙
+rich	🪙
+silver	🪙
+treasure	🪙
+bag	💰
+bank	💰
+bet	💰
+billion	💰
+cash	💰
+cost	💰
+dollar	💰
+gold	💰
+million	💰
+money	💰
+moneybag	💰
+paid	💰
+paying	💰
+pot	💰
+rich	💰
+win	💰
+gem	🪎
+gold	🪎
+jewels	🪎
+loot	🪎
+money	🪎
+prize	🪎
+silver	🪎
+valuables	🪎
+wealth	🪎
+bank	💴
+banknote	💴
+bill	💴
+currency	💴
+money	💴
+note	💴
+yen	💴
+bank	💵
+banknote	💵
+bill	💵
+currency	💵
+dollar	💵
+money	💵
+note	💵
+100	💶
+bank	💶
+banknote	💶
+bill	💶
+currency	💶
+euro	💶
+money	💶
+note	💶
+rich	💶
+bank	💷
+banknote	💷
+bill	💷
+billion	💷
+cash	💷
+currency	💷
+money	💷
+note	💷
+pound	💷
+pounds	💷
+bank	💸
+banknote	💸
+bill	💸
+billion	💸
+cash	💸
+dollar	💸
+fly	💸
+million	💸
+money	💸
+note	💸
+pay	💸
+wings	💸
+bank	💳
+card	💳
+cash	💳
+charge	💳
+credit	💳
+money	💳
+pay	💳
+accounting	🧾
+bookkeeping	🧾
+evidence	🧾
+invoice	🧾
+proof	🧾
+bank	💹
+chart	💹
+currency	💹
+graph	💹
+growth	💹
+increasing	💹
+market	💹
+money	💹
+rise	💹
+trend	💹
+upward	💹
+yen	💹
+e-mail	✉️
+email	✉️
+letter	✉️
+email	📧
+letter	📧
+mail	📧
+delivering	📨
+e-mail	📨
+email	📨
+envelope	📨
+incoming	📨
+letter	📨
+mail	📨
+receive	📨
+sent	📨
+arrow	📩
+communication	📩
+down	📩
+e-mail	📩
+email	📩
+envelope	📩
+letter	📩
+mail	📩
+outgoing	📩
+send	📩
+sent	📩
+box	📤
+email	📤
+letter	📤
+mail	📤
+outbox	📤
+sent	📤
+tray	📤
+box	📥
+email	📥
+inbox	📥
+letter	📥
+mail	📥
+receive	📥
+tray	📥
+zero	📥
+box	📦
+communication	📦
+delivery	📦
+parcel	📦
+shipping	📦
+closed	📫
+communication	📫
+flag	📫
+mail	📫
+mailbox	📫
+postbox	📫
+raised	📫
+closed	📪
+flag	📪
+lowered	📪
+mail	📪
+mailbox	📪
+postbox	📪
+flag	📬
+mail	📬
+mailbox	📬
+open	📬
+postbox	📬
+raised	📬
+flag	📭
+lowered	📭
+mail	📭
+mailbox	📭
+open	📭
+postbox	📭
+mail	📮
+mailbox	📮
+ballot	🗳️
+box	🗳️
+black	✒️
+nib	✒️
+pen	✒️
+fountain	🖋️
+pen	🖋️
+ballpoint	🖊️
+painting	🖌️
+communication	📝
+media	📝
+notes	📝
+pencil	📝
+office	💼
+file	📁
+folder	📁
+file	📂
+folder	📂
+open	📂
+card	🗂️
+dividers	🗂️
+index	🗂️
+date	📅
+calendar	📆
+tear-off	📆
+note	🗒️
+notepad	🗒️
+pad	🗒️
+spiral	🗒️
+calendar	🗓️
+pad	🗓️
+spiral	🗓️
+card	📇
+index	📇
+old	📇
+rolodex	📇
+school	📇
+chart	📈
+data	📈
+graph	📈
+growth	📈
+increasing	📈
+right	📈
+trend	📈
+up	📈
+upward	📈
+chart	📉
+data	📉
+decreasing	📉
+down	📉
+downward	📉
+graph	📉
+negative	📉
+trend	📉
+bar	📊
+chart	📊
+data	📊
+graph	📊
+do	📋
+list	📋
+notes	📋
+collage	📌
+pin	📌
+location	📍
+map	📍
+pin	📍
+pushpin	📍
+round	📍
+link	🖇️
+linked	🖇️
+paperclip	🖇️
+paperclips	🖇️
+angle	📏
+edge	📏
+math	📏
+ruler	📏
+straight	📏
+straightedge	📏
+angle	📐
+math	📐
+rule	📐
+ruler	📐
+set	📐
+slide	📐
+triangle	📐
+triangular	📐
+cut	✂️
+cutting	✂️
+paper	✂️
+tool	✂️
+box	🗃️
+card	🗃️
+file	🗃️
+cabinet	🗄️
+file	🗄️
+filing	🗄️
+paper	🗄️
+can	🗑️
+garbage	🗑️
+trash	🗑️
+waste	🗑️
+closed	🔒
+private	🔒
+cracked	🔓
+lock	🔓
+open	🔓
+unlock	🔓
+ink	🔏
+lock	🔏
+locked	🔏
+nib	🔏
+pen	🔏
+privacy	🔏
+bike	🔐
+closed	🔐
+key	🔐
+lock	🔐
+locked	🔐
+secure	🔐
+keys	🔑
+lock	🔑
+major	🔑
+password	🔑
+unlock	🔑
+clue	🗝️
+key	🗝️
+lock	🗝️
+old	🗝️
+home	🔨
+improvement	🔨
+repairs	🔨
+tool	🔨
+ax	🪓
+chop	🪓
+hatchet	🪓
+split	🪓
+wood	🪓
+hammer	⛏️
+mining	⛏️
+tool	⛏️
+hammer	⚒️
+pick	⚒️
+tool	⚒️
+hammer	🛠️
+spanner	🛠️
+tool	🛠️
+wrench	🛠️
+knife	🗡️
+weapon	🗡️
+crossed	⚔️
+swords	⚔️
+weapon	⚔️
+boom	💣
+comic	💣
+dangerous	💣
+explosion	💣
+hot	💣
+rebound	🪃
+repercussion	🪃
+weapon	🪃
+archer	🏹
+archery	🏹
+arrow	🏹
+bow	🏹
+sagittarius	🏹
+tool	🏹
+weapon	🏹
+zodiac	🏹
+weapon	🛡️
+carpenter	🪚
+carpentry	🪚
+cut	🪚
+lumber	🪚
+saw	🪚
+tool	🪚
+trim	🪚
+home	🔧
+improvement	🔧
+spanner	🔧
+tool	🔧
+flathead	🪛
+handy	🪛
+screw	🪛
+tool	🪛
+bolt	🔩
+home	🔩
+improvement	🔩
+nut	🔩
+tool	🔩
+cog	⚙️
+cogwheel	⚙️
+tool	⚙️
+compress	🗜️
+tool	🗜️
+vice	🗜️
+balance	⚖️
+justice	⚖️
+libra	⚖️
+scale	⚖️
+tool	⚖️
+weight	⚖️
+zodiac	⚖️
+accessibility	🦯
+blind	🦯
+cane	🦯
+probing	🦯
+white	🦯
+links	🔗
+break	⛓️‍💥
+breaking	⛓️‍💥
+broken	⛓️‍💥
+chain	⛓️‍💥
+cuffs	⛓️‍💥
+freedom	⛓️‍💥
+chain	⛓️
+catch	🪝
+crook	🪝
+curve	🪝
+ensnare	🪝
+point	🪝
+selling	🪝
+box	🧰
+chest	🧰
+mechanic	🧰
+red	🧰
+tool	🧰
+attraction	🧲
+horseshoe	🧲
+magnetic	🧲
+negative	🧲
+positive	🧲
+shape	🧲
+u	🧲
+climb	🪜
+rung	🪜
+step	🪜
+bury	🪏
+dig	🪏
+garden	🪏
+hole	🪏
+plant	🪏
+scoop	🪏
+snow	🪏
+spade	🪏
+chemistry	⚗️
+tool	⚗️
+chemist	🧪
+chemistry	🧪
+experiment	🧪
+lab	🧪
+science	🧪
+test	🧪
+tube	🧪
+bacteria	🧫
+biologist	🧫
+biology	🧫
+culture	🧫
+dish	🧫
+lab	🧫
+petri	🧫
+biologist	🧬
+evolution	🧬
+gene	🧬
+genetics	🧬
+life	🧬
+experiment	🔬
+lab	🔬
+science	🔬
+tool	🔬
+contact	🔭
+extraterrestrial	🔭
+science	🔭
+tool	🔭
+aliens	📡
+antenna	📡
+contact	📡
+dish	📡
+satellite	📡
+science	📡
+doctor	💉
+flu	💉
+medicine	💉
+needle	💉
+shot	💉
+sick	💉
+tool	💉
+vaccination	💉
+bleed	🩸
+blood	🩸
+donation	🩸
+drop	🩸
+injury	🩸
+medicine	🩸
+menstruation	🩸
+doctor	💊
+drugs	💊
+medicated	💊
+medicine	💊
+pills	💊
+sick	💊
+vitamin	💊
+adhesive	🩹
+bandage	🩹
+aid	🩼
+cane	🩼
+disability	🩼
+help	🩼
+hurt	🩼
+injured	🩼
+mobility	🩼
+stick	🩼
+doctor	🩺
+heart	🩺
+medicine	🩺
+bones	🩻
+doctor	🩻
+medical	🩻
+skeleton	🩻
+skull	🩻
+xray	🩻
+back	🚪
+closet	🚪
+front	🚪
+accessibility	🛗
+hoist	🛗
+lift	🛗
+makeup	🪞
+reflection	🪞
+reflector	🪞
+speculum	🪞
+air	🪟
+frame	🪟
+fresh	🪟
+opening	🪟
+transparent	🪟
+view	🪟
+hotel	🛏️
+sleep	🛏️
+couch	🛋️
+hotel	🛋️
+lamp	🛋️
+seat	🪑
+sit	🪑
+bathroom	🚽
+cup	🪠
+force	🪠
+plumber	🪠
+poop	🪠
+suction	🪠
+toilet	🪠
+water	🚿
+bath	🛁
+bait	🪤
+cheese	🪤
+lure	🪤
+mouse	🪤
+mousetrap	🪤
+snare	🪤
+trap	🪤
+sharp	🪒
+shave	🪒
+bottle	🧴
+lotion	🧴
+moisturizer	🧴
+shampoo	🧴
+sunscreen	🧴
+diaper	🧷
+pin	🧷
+punk	🧷
+rock	🧷
+safety	🧷
+cleaning	🧹
+sweeping	🧹
+witch	🧹
+farming	🧺
+laundry	🧺
+picnic	🧺
+paper	🧻
+roll	🧻
+toilet	🧻
+towels	🧻
+cask	🪣
+pail	🪣
+vat	🪣
+bar	🧼
+bathing	🧼
+clean	🧼
+cleaning	🧼
+lather	🧼
+soapdish	🧼
+bubble	🫧
+burp	🫧
+clean	🫧
+floating	🫧
+pearl	🫧
+soap	🫧
+underwater	🫧
+bathroom	🪥
+brush	🪥
+clean	🪥
+dental	🪥
+hygiene	🪥
+teeth	🪥
+toiletry	🪥
+absorbing	🧽
+cleaning	🧽
+porous	🧽
+soak	🧽
+extinguish	🧯
+extinguisher	🧯
+fire	🧯
+quench	🧯
+cart	🛒
+shopping	🛒
+trolley	🛒
+smoking	🚬
+dead	⚰️
+death	⚰️
+vampire	⚰️
+cemetery	🪦
+dead	🪦
+grave	🪦
+graveyard	🪦
+memorial	🪦
+rip	🪦
+tomb	🪦
+tombstone	🪦
+ashes	⚱️
+death	⚱️
+funeral	⚱️
+urn	⚱️
+amulet	🧿
+bead	🧿
+blue	🧿
+charm	🧿
+evil-eye	🧿
+nazar	🧿
+talisman	🧿
+amulet	🪬
+fatima	🪬
+fortune	🪬
+guide	🪬
+mary	🪬
+miriam	🪬
+palm	🪬
+protect	🪬
+protection	🪬
+statue	🗿
+stoneface	🗿
+travel	🗿
+card	🪧
+demonstration	🪧
+notice	🪧
+picket	🪧
+plaque	🪧
+protest	🪧
+card	🪪
+credentials	🪪
+document	🪪
+id	🪪
+identification	🪪
+license	🪪
+security	🪪
+atm	🏧
+automated	🏧
+bank	🏧
+cash	🏧
+money	🏧
+teller	🏧
+bin	🚮
+litter	🚮
+litterbin	🚮
+drinking	🚰
+potable	🚰
+water	🚰
+access	♿
+handicap	♿
+wheelchair	♿
+bathroom	🚹
+lavatory	🚹
+man	🚹
+men's	🚹
+restroom	🚹
+room	🚹
+toilet	🚹
+wc	🚹
+bathroom	🚺
+lavatory	🚺
+restroom	🚺
+room	🚺
+toilet	🚺
+wc	🚺
+woman	🚺
+women's	🚺
+bathroom	🚻
+lavatory	🚻
+toilet	🚻
+wc	🚻
+baby	🚼
+changing	🚼
+bathroom	🚾
+closet	🚾
+lavatory	🚾
+restroom	🚾
+toilet	🚾
+water	🚾
+wc	🚾
+control	🛂
+passport	🛂
+packing	🛃
+arrived	🛄
+baggage	🛄
+bags	🛄
+case	🛄
+checked	🛄
+claim	🛄
+journey	🛄
+packing	🛄
+plane	🛄
+ready	🛄
+travel	🛄
+trip	🛄
+baggage	🛅
+case	🛅
+left	🛅
+locker	🛅
+luggage	🛅
+caution	⚠️
+child	🚸
+children	🚸
+crossing	🚸
+pedestrian	🚸
+traffic	🚸
+do	⛔
+entry	⛔
+fail	⛔
+forbidden	⛔
+no	⛔
+not	⛔
+pass	⛔
+prohibited	⛔
+traffic	⛔
+entry	🚫
+forbidden	🚫
+no	🚫
+not	🚫
+smoke	🚫
+bicycle	🚳
+bicycles	🚳
+bike	🚳
+forbidden	🚳
+no	🚳
+not	🚳
+prohibited	🚳
+forbidden	🚭
+no	🚭
+not	🚭
+prohibited	🚭
+smoke	🚭
+smoking	🚭
+forbidden	🚯
+litter	🚯
+littering	🚯
+no	🚯
+not	🚯
+prohibited	🚯
+dry	🚱
+non-drinking	🚱
+non-potable	🚱
+prohibited	🚱
+water	🚱
+forbidden	🚷
+no	🚷
+not	🚷
+pedestrian	🚷
+pedestrians	🚷
+prohibited	🚷
+cell	📵
+forbidden	📵
+mobile	📵
+no	📵
+not	📵
+phone	📵
+phones	📵
+prohibited	📵
+telephone	📵
+18	🔞
+age	🔞
+eighteen	🔞
+forbidden	🔞
+no	🔞
+not	🔞
+one	🔞
+prohibited	🔞
+restriction	🔞
+underage	🔞
+arrow	⬆️
+cardinal	⬆️
+direction	⬆️
+north	⬆️
+up	⬆️
+arrow	↗️
+direction	↗️
+intercardinal	↗️
+northeast	↗️
+up-right	↗️
+arrow	➡️
+cardinal	➡️
+direction	➡️
+east	➡️
+right	➡️
+arrow	↘️
+direction	↘️
+down-right	↘️
+intercardinal	↘️
+southeast	↘️
+arrow	⬇️
+cardinal	⬇️
+direction	⬇️
+down	⬇️
+south	⬇️
+arrow	↙️
+direction	↙️
+down-left	↙️
+intercardinal	↙️
+southwest	↙️
+arrow	⬅️
+cardinal	⬅️
+direction	⬅️
+left	⬅️
+west	⬅️
+arrow	↖️
+direction	↖️
+intercardinal	↖️
+northwest	↖️
+up-left	↖️
+arrow	↕️
+up-down	↕️
+arrow	↔️
+left-right	↔️
+arrow	↩️
+curving	↩️
+left	↩️
+right	↩️
+arrow	↪️
+curving	↪️
+left	↪️
+right	↪️
+arrow	⤴️
+curving	⤴️
+right	⤴️
+up	⤴️
+arrow	⤵️
+curving	⤵️
+down	⤵️
+right	⤵️
+arrow	🔃
+arrows	🔃
+clockwise	🔃
+refresh	🔃
+reload	🔃
+vertical	🔃
+again	🔄
+anticlockwise	🔄
+arrow	🔄
+arrows	🔄
+counterclockwise	🔄
+deja	🔄
+refresh	🔄
+rewindershins	🔄
+vu	🔄
+arrow	🔙
+back	🔙
+arrow	🔚
+end	🔚
+arrow	🔛
+mark	🔛
+on!	🔛
+arrow	🔜
+brb	🔜
+omw	🔜
+soon	🔜
+arrow	🔝
+homie	🔝
+top	🔝
+up	🔝
+place	🛐
+pray	🛐
+religion	🛐
+worship	🛐
+atheist	⚛️
+atom	⚛️
+hindu	🕉️
+religion	🕉️
+david	✡️
+jew	✡️
+jewish	✡️
+judaism	✡️
+religion	✡️
+star	✡️
+buddhist	☸️
+dharma	☸️
+religion	☸️
+wheel	☸️
+difficult	☯️
+lives	☯️
+religion	☯️
+tao	☯️
+taoist	☯️
+total	☯️
+yang	☯️
+yin	☯️
+yinyang	☯️
+christ	✝️
+christian	✝️
+cross	✝️
+latin	✝️
+religion	✝️
+christian	☦️
+cross	☦️
+orthodox	☦️
+religion	☦️
+crescent	☪️
+islam	☪️
+muslim	☪️
+ramadan	☪️
+religion	☪️
+star	☪️
+healing	☮️
+peace	☮️
+peaceful	☮️
+candelabrum	🕎
+candlestick	🕎
+hanukkah	🕎
+jewish	🕎
+judaism	🕎
+religion	🕎
+dotted	🔯
+fortune	🔯
+jewish	🔯
+judaism	🔯
+six-pointed	🔯
+star	🔯
+deg	🪯
+fateh	🪯
+khalsa	🪯
+religion	🪯
+sikh	🪯
+sikhism	🪯
+tegh	🪯
+horoscope	♈
+ram	♈
+zodiac	♈
+bull	♉
+horoscope	♉
+ox	♉
+zodiac	♉
+horoscope	♊
+twins	♊
+zodiac	♊
+crab	♋
+horoscope	♋
+zodiac	♋
+horoscope	♌
+lion	♌
+zodiac	♌
+horoscope	♍
+zodiac	♍
+balance	♎
+horoscope	♎
+justice	♎
+scales	♎
+zodiac	♎
+horoscope	♏
+scorpion	♏
+zodiac	♏
+archer	♐
+horoscope	♐
+zodiac	♐
+goat	♑
+horoscope	♑
+zodiac	♑
+bearer	♒
+horoscope	♒
+water	♒
+zodiac	♒
+fish	♓
+horoscope	♓
+zodiac	♓
+bearer	⛎
+serpent	⛎
+snake	⛎
+zodiac	⛎
+arrow	🔀
+crossed	🔀
+shuffle	🔀
+tracks	🔀
+arrow	🔁
+clockwise	🔁
+repeat	🔁
+arrow	🔂
+clockwise	🔂
+once	🔂
+repeat	🔂
+single	🔂
+arrow	▶️
+play	▶️
+right	▶️
+triangle	▶️
+arrow	⏩
+double	⏩
+fast	⏩
+fast-forward	⏩
+forward	⏩
+arrow	⏭️
+next	⏭️
+scene	⏭️
+track	⏭️
+triangle	⏭️
+arrow	⏯️
+pause	⏯️
+play	⏯️
+right	⏯️
+triangle	⏯️
+arrow	◀️
+left	◀️
+reverse	◀️
+triangle	◀️
+arrow	⏪
+double	⏪
+fast	⏪
+reverse	⏪
+rewind	⏪
+arrow	⏮️
+last	⏮️
+previous	⏮️
+scene	⏮️
+track	⏮️
+triangle	⏮️
+arrow	🔼
+red	🔼
+up	🔼
+upwards	🔼
+arrow	⏫
+double	⏫
+fast	⏫
+up	⏫
+arrow	🔽
+down	🔽
+downwards	🔽
+red	🔽
+arrow	⏬
+double	⏬
+down	⏬
+fast	⏬
+bar	⏸️
+double	⏸️
+pause	⏸️
+vertical	⏸️
+square	⏹️
+stop	⏹️
+circle	⏺️
+record	⏺️
+eject	⏏️
+camera	🎦
+film	🎦
+movie	🎦
+brightness	🔅
+dim	🔅
+low	🔅
+bright	🔆
+brightness	🔆
+light	🔆
+antenna	📶
+bar	📶
+bars	📶
+cell	📶
+communication	📶
+mobile	📶
+phone	📶
+signal	📶
+telephone	📶
+broadband	🛜
+computer	🛜
+connectivity	🛜
+hotspot	🛜
+internet	🛜
+network	🛜
+router	🛜
+smartphone	🛜
+wi-fi	🛜
+wifi	🛜
+wlan	🛜
+cell	📳
+communication	📳
+mobile	📳
+mode	📳
+phone	📳
+telephone	📳
+vibration	📳
+cell	📴
+mobile	📴
+off	📴
+phone	📴
+telephone	📴
+female	♀️
+woman	♀️
+male	♂️
+man	♂️
+transgender	⚧️
+×	✖️
+cancel	✖️
+multiplication	✖️
+x	✖️
++	➕
+-	➖
+−	➖
+heavy	➖
+math	➖
+÷	➗
+division	➗
+heavy	➗
+math	➗
+answer	🟰
+equal	🟰
+equality	🟰
+equals	🟰
+heavy	🟰
+math	🟰
+forever	♾️
+unbounded	♾️
+universal	♾️
+!	‼️
+!!	‼️
+bangbang	‼️
+double	‼️
+exclamation	‼️
+mark	‼️
+punctuation	‼️
+!	⁉️
+!?	⁉️
+?	⁉️
+exclamation	⁉️
+interrobang	⁉️
+mark	⁉️
+punctuation	⁉️
+question	⁉️
+?	❓
+mark	❓
+punctuation	❓
+question	❓
+red	❓
+?	❔
+mark	❔
+outlined	❔
+punctuation	❔
+question	❔
+white	❔
+!	❕
+exclamation	❕
+mark	❕
+outlined	❕
+punctuation	❕
+white	❕
+!	❗
+exclamation	❗
+mark	❗
+punctuation	❗
+red	❗
+dash	〰️
+punctuation	〰️
+wavy	〰️
+bank	💱
+currency	💱
+exchange	💱
+money	💱
+billion	💲
+cash	💲
+charge	💲
+currency	💲
+dollar	💲
+heavy	💲
+million	💲
+money	💲
+pay	💲
+aesculapius	⚕️
+medical	⚕️
+medicine	⚕️
+staff	⚕️
+recycle	♻️
+recycling	♻️
+knights	⚜️
+anchor	🔱
+emblem	🔱
+poseidon	🔱
+ship	🔱
+tool	🔱
+trident	🔱
+badge	📛
+name	📛
+beginner	🔰
+chevron	🔰
+green	🔰
+japanese	🔰
+leaf	🔰
+tool	🔰
+yellow	🔰
+circle	⭕
+heavy	⭕
+hollow	⭕
+large	⭕
+o	⭕
+red	⭕
+✓	✅
+check	✅
+checked	✅
+checkmark	✅
+complete	✅
+completed	✅
+done	✅
+fixed	✅
+mark	✅
+tick	✅
+✓	☑️
+ballot	☑️
+box	☑️
+check	☑️
+checked	☑️
+done	☑️
+off	☑️
+tick	☑️
+✓	✔️
+check	✔️
+checked	✔️
+checkmark	✔️
+done	✔️
+heavy	✔️
+mark	✔️
+tick	✔️
+×	❌
+cancel	❌
+cross	❌
+mark	❌
+multiplication	❌
+multiply	❌
+x	❌
+×	❎
+cross	❎
+mark	❎
+multiplication	❎
+multiply	❎
+square	❎
+x	❎
+curl	➰
+curly	➰
+loop	➰
+curl	➿
+curly	➿
+double	➿
+loop	➿
+alternation	〽️
+mark	〽️
+part	〽️
+*	✳️
+asterisk	✳️
+eight-spoked	✳️
+*	✴️
+eight-pointed	✴️
+star	✴️
+*	❇️
+c	©️
+r	®️
+mark	™️
+tm	™️
+trade	™️
+trademark	™️
+drip	🫟
+holi	🫟
+ink	🫟
+liquid	🫟
+mess	🫟
+paint	🫟
+spill	🫟
+stain	🫟
+abcd	🔠
+input	🔠
+latin	🔠
+letters	🔠
+uppercase	🔠
+abcd	🔡
+input	🔡
+latin	🔡
+letters	🔡
+lowercase	🔡
+1234	🔢
+input	🔢
+numbers	🔢
+&	🔣
+%	🔣
+♪	🔣
+〒	🔣
+input	🔣
+symbols	🔣
+abc	🔤
+alphabet	🔤
+input	🔤
+latin	🔤
+letters	🔤
+blood	🅰️
+ab	🆎
+blood	🆎
+b	🅱️
+blood	🅱️
+cl	🆑
+cool	🆒
+free	🆓
+i	ℹ️
+id	🆔
+identity	🆔
+circle	Ⓜ️
+circled	Ⓜ️
+m	Ⓜ️
+new	🆕
+ng	🆖
+blood	🅾️
+o	🅾️
+ok	🆗
+okay	🆗
+p	🅿️
+parking	🅿️
+help	🆘
+sos	🆘
+mark	🆙
+up	🆙
+up!	🆙
+versus	🆚
+vs	🆚
+here	🈁
+japanese	🈁
+katakana	🈁
+charge	🈂️
+japanese	🈂️
+katakana	🈂️
+service	🈂️
+amount	🈷️
+ideograph	🈷️
+japanese	🈷️
+monthly	🈷️
+charge	🈶
+free	🈶
+ideograph	🈶
+japanese	🈶
+not	🈶
+ideograph	🈯
+japanese	🈯
+reserved	🈯
+bargain	🉐
+ideograph	🉐
+japanese	🉐
+discount	🈹
+ideograph	🈹
+japanese	🈹
+charge	🈚
+free	🈚
+ideograph	🈚
+japanese	🈚
+ideograph	🈲
+japanese	🈲
+prohibited	🈲
+acceptable	🉑
+ideograph	🉑
+japanese	🉑
+application	🈸
+ideograph	🈸
+japanese	🈸
+grade	🈴
+ideograph	🈴
+japanese	🈴
+passing	🈴
+ideograph	🈳
+japanese	🈳
+vacancy	🈳
+congratulations	㊗️
+ideograph	㊗️
+japanese	㊗️
+ideograph	㊙️
+japanese	㊙️
+secret	㊙️
+business	🈺
+ideograph	🈺
+japanese	🈺
+open	🈺
+ideograph	🈵
+japanese	🈵
+no	🈵
+vacancy	🈵
+circle	🔴
+geometric	🔴
+red	🔴
+circle	🟠
+orange	🟠
+circle	🟡
+yellow	🟡
+circle	🟢
+green	🟢
+blue	🔵
+circle	🔵
+geometric	🔵
+circle	🟣
+purple	🟣
+brown	🟤
+circle	🟤
+black	⚫
+circle	⚫
+geometric	⚫
+circle	⚪
+geometric	⚪
+white	⚪
+card	🟥
+penalty	🟥
+red	🟥
+square	🟥
+orange	🟧
+square	🟧
+card	🟨
+penalty	🟨
+square	🟨
+yellow	🟨
+green	🟩
+square	🟩
+blue	🟦
+square	🟦
+purple	🟪
+square	🟪
+brown	🟫
+square	🟫
+black	⬛
+geometric	⬛
+large	⬛
+square	⬛
+geometric	⬜
+large	⬜
+square	⬜
+white	⬜
+black	◼️
+geometric	◼️
+medium	◼️
+square	◼️
+geometric	◻️
+medium	◻️
+square	◻️
+white	◻️
+black	◾
+geometric	◾
+medium-small	◾
+square	◾
+geometric	◽
+medium-small	◽
+square	◽
+white	◽
+black	▪️
+geometric	▪️
+small	▪️
+square	▪️
+geometric	▫️
+small	▫️
+square	▫️
+white	▫️
+diamond	🔶
+geometric	🔶
+large	🔶
+orange	🔶
+blue	🔷
+diamond	🔷
+geometric	🔷
+large	🔷
+diamond	🔸
+geometric	🔸
+orange	🔸
+small	🔸
+blue	🔹
+diamond	🔹
+geometric	🔹
+small	🔹
+geometric	🔺
+pointed	🔺
+red	🔺
+triangle	🔺
+up	🔺
+down	🔻
+geometric	🔻
+pointed	🔻
+red	🔻
+triangle	🔻
+comic	💠
+diamond	💠
+dot	💠
+geometric	💠
+geometric	🔘
+radio	🔘
+geometric	🔳
+outlined	🔳
+square	🔳
+white	🔳
+black	🔲
+geometric	🔲
+square	🔲
+checkered	🏁
+chequered	🏁
+finish	🏁
+flag	🏁
+flags	🏁
+game	🏁
+race	🏁
+racing	🏁
+sport	🏁
+win	🏁
+construction	🚩
+flag	🚩
+golf	🚩
+post	🚩
+triangular	🚩
+celebration	🎌
+cross	🎌
+crossed	🎌
+flags	🎌
+japanese	🎌
+black	🏴
+flag	🏴
+waving	🏴
+flag	🏳️
+waving	🏳️
+white	🏳️
+bisexual	🏳️‍🌈
+flag	🏳️‍🌈
+gay	🏳️‍🌈
+genderqueer	🏳️‍🌈
+glbt	🏳️‍🌈
+glbtq	🏳️‍🌈
+lesbian	🏳️‍🌈
+lgbt	🏳️‍🌈
+lgbtq	🏳️‍🌈
+lgbtqia	🏳️‍🌈
+pride	🏳️‍🌈
+queer	🏳️‍🌈
+rainbow	🏳️‍🌈
+trans	🏳️‍🌈
+transgender	🏳️‍🌈
+blue	🏳️‍⚧️
+flag	🏳️‍⚧️
+light	🏳️‍⚧️
+pink	🏳️‍⚧️
+transgender	🏳️‍⚧️
+white	🏳️‍⚧️
+flag	🏴‍☠️
+jolly	🏴‍☠️
+pirate	🏴‍☠️
+plunder	🏴‍☠️
+roger	🏴‍☠️
+treasure	🏴‍☠️
+keycap	0️⃣
+zero	0️⃣
+keycap	1️⃣
+one	1️⃣
+keycap	2️⃣
+two	2️⃣
+keycap	3️⃣
+three	3️⃣
+four	4️⃣
+keycap	4️⃣
+five	5️⃣
+keycap	5️⃣
+keycap	6️⃣
+six	6️⃣
+keycap	7️⃣
+seven	7️⃣
+eight	8️⃣
+keycap	8️⃣
+keycap	9️⃣
+nine	9️⃣
