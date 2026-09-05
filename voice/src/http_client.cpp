@@ -7,7 +7,7 @@ namespace {
 struct Response { std::string body; };
 std::size_t write(void* data, std::size_t size, std::size_t count, void* context) noexcept {
     constexpr std::size_t limit = 1024 * 1024;
-    if (size && count > std::numeric_limits<std::size_t>::max() / size) return 0;
+    if (size && count > (std::numeric_limits<std::size_t>::max)() / size) return 0;
     const auto length = size * count;
     auto& body = static_cast<Response*>(context)->body;
     if (length > limit - body.size()) return 0;
