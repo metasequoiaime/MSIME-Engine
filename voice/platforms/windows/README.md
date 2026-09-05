@@ -6,7 +6,7 @@ This is a voice input module for [MSIME-Windows](https://github.com/metasequoiai
 
 ## How to run
 
-Download release exe file from [releases](https://github.com/metasequoiaime/MetasequoiaVoiceInput/releases).
+Download the release exe from [releases](https://github.com/metasequoiaime/MetasequoiaVoiceInput/releases). That repository is archived and read-only; its source lives under `voice/` here now, and its published releases remain downloadable.
 
 Then, copy all the contents of this project's `assets` folder to `$env:LOCALAPPDATA\MetasequoiaVoiceInput\`. And replace your siliconflow token in `config.toml`.
 

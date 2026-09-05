@@ -12,7 +12,7 @@
 
 ## 运行方法
 
-1. 从 GitHub 的 Releases 页面下载最新版本：
+1. 从 GitHub 的 Releases 页面下载最新版本。该仓库已归档为只读，源码现在在本仓的 `voice/`，已发布的版本仍可下载：
 
 [https://github.com/metasequoiaime/MetasequoiaVoiceInput/releases](https://github.com/metasequoiaime/MetasequoiaVoiceInput/releases)
 
