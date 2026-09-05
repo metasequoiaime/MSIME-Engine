@@ -201,6 +201,10 @@ int main()
                 japanese.local_input_mode() == metasequoia::LocalInputMode::None &&
                 japanese.scheme() == SchemeType::Quanpin,
             "A bare temporary-Japanese display prefix escaped into committed text.");
+    require(japanese.handle_character('R', true).handled, "Temporary Japanese could not start for a flush.");
+    const auto empty_flush = japanese.finish_composition();
+    require(empty_flush.handled && !empty_flush.commit.has_value() && !japanese.has_composition(),
+            "Flushing a bare local-mode prefix produced a spurious client insertion.");
     require(japanese.handle_character('R', true).handled, "Temporary Japanese could not be re-entered.");
     type(japanese, "ka");
     require(japanese.handle_command(metasequoia::Command::Cancel).handled &&
