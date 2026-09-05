@@ -1,7 +1,7 @@
 """Overlay a small custom translation list onto english.db gloss tables.
 
 The large ECDICT-derived tables stay untouched as a source.  This script only
-INSERT OR REPLACES the keys listed in ``MetasequoiaImeCustomDict/translations.txt``.
+INSERT OR REPLACES the keys listed in ``custom/translations.txt``.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ import sqlite3
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPOSITORY_ROOT = SCRIPT_DIR.parents[2]
-DEFAULT_SOURCE = REPOSITORY_ROOT / "MetasequoiaImeCustomDict" / "translations.txt"
+DEFAULT_SOURCE = REPOSITORY_ROOT / "custom" / "translations.txt"
 DEFAULT_ENGLISH_DB = REPOSITORY_ROOT / "out" / "english.db"
 DEFAULT_SIDECAR = REPOSITORY_ROOT / "out" / "custom_translations.txt"
 CJK_RE_START = 0x3400

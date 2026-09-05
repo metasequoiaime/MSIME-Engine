@@ -1,4 +1,7 @@
 import unittest
+from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from dictionary_format import FORMAT, pinyin_table, quanpin_tables
 
 class DictionaryFormatTests(unittest.TestCase):

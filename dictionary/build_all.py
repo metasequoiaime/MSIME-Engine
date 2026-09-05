@@ -166,10 +166,10 @@ STAGES: tuple[Stage, ...] = (
     Stage(
         name="custom-translations",
         # Overlays the hand-maintained fixes on top of the ECDICT tables, so it runs last.
-        description="Overlay MetasequoiaImeCustomDict translations onto the gloss tables",
+        description="Overlay custom translations onto the gloss tables",
         steps=(("makecikudb/englishdb/makedb/apply_custom_translations.py", "--no-app-data"),),
         produces=("english.db",),
-        needs_paths=("MetasequoiaImeCustomDict/translations.txt",),
+        needs_paths=("custom/translations.txt",),
     ),
     Stage(
         name="emoji",

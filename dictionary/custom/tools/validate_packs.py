@@ -1,8 +1,7 @@
 """Validate importable professional dictionary packs.
 
 The checks mirror the Settings dictionary import rules closely enough to catch
-bad pull requests before users discover them at import time.  When this repo is
-checked out as the MetasequoiaImeDict submodule, the validator also checks each
+bad pull requests before users discover them at import time.  Within the Engine dictionary tree, the validator also checks each
 Chinese character pronunciation and detects entries already present upstream.
 """
 

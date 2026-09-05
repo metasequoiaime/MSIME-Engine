@@ -1,6 +1,6 @@
-# FanImeHelpCode
+# 公共辅助码
 
-Helpcodes for [MetasequoiaImeTsf](https://github.com/metasequoiaime/MetasequoiaImeTsf).
+供 Windows、Apple 和 Linux 共用的辅助码数据。
 
 所有辅助码文件统一放在 `helpcodes\` 目录下。当前 server 使用的方案和文件为：
 
@@ -10,16 +10,7 @@ Helpcodes for [MetasequoiaImeTsf](https://github.com/metasequoiaime/MetasequoiaI
 - `shouyouplus`：`shouyouplus_helpcode.txt`（首右plus）
 - `xiaohe`：`xiaohe_helpcode.txt`（小鹤）
 
-本地调试时，可以把整个目录链接到 server 的数据目录：
-
-```powershell
-$target = Join-Path $env:LOCALAPPDATA 'metasequoiaime\helpcodes'
-if (Test-Path -LiteralPath $target) {
-    Remove-Item -LiteralPath $target -Recurse -Force
-}
-New-Item -ItemType SymbolicLink -Path $target `
-    -Target 'C:\Users\SonnyCalcr\EDisk\CppCodes\IMECodes\MetasequoiaImeHelpCode\helpcodes'
-```
+公共数据位于 Engine 的 `helpcode/helpcodes/`，平台打包时复制需要的文件到应用资源目录。运行时路径由平台传给引擎，不依赖作者机器的绝对路径。合仓后的消费端无需再单独检出 HelpCode 仓库。
 
 ## 参考
 

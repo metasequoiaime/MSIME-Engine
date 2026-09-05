@@ -1,4 +1,6 @@
-# 介绍
+# 公共词库
+
+本目录由 MSIME-Dict 导入 MSIME-Engine。以下命令在 `dictionary/` 中执行；推荐使用仓库根 `build_profile.py` 构建和验证桌面/移动产品，详见[根说明](../README.md)。
 
 ## 初始词库的来源
 
@@ -40,7 +42,7 @@ python tools/verify_dictionaries.py
 | `dict_japanese.dat` | 日语整句解码用的只读 Viterbi 模型 |
 | `mozc_dictionary_oss_README.txt` | Mozc 词典的 IPAdic / ICOT / 冲绳授权声明，**必须随 `dict_japanese.dat` 一起分发** |
 
-`--fetch-references` 会把两个外部数据源按固定 revision clone 到仓库同级的 `ReferenceProjects/`：ECDICT 提供候选窗释义，rime-jp_sela 提供日语词表。不加这个参数时，依赖它们的 stage 会被跳过而不是报错；发布构建请配合 `--require-all` 让缺失直接失败。日语整句模型的 Mozc 原始数据由脚本自己下载。
+`--fetch-references` 会把两个外部数据源按固定 revision clone 到Engine 根目录下的 `ReferenceProjects/`：ECDICT 提供候选窗释义，rime-jp_sela 提供日语词表。不加这个参数时，依赖它们的 stage 会被跳过而不是报错；发布构建请配合 `--require-all` 让缺失直接失败。日语整句模型的 Mozc 原始数据由脚本自己下载。
 
 常用参数：
 
@@ -60,7 +62,7 @@ python build_all.py --skip english-glosses    # 跳过指定 stage
 
 我自己添加的条目会放到 FanyExtDict.txt 中。
 
-候选窗中英翻译的补丁不要改 ECDICT 大词库，写到 `MetasequoiaImeCustomDict/translations.txt`。
+候选窗中英翻译的补丁不要改 ECDICT 大词库，写到 `custom/translations.txt`。
 
 ### cn 目录
 

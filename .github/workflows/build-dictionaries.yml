@@ -29,6 +29,9 @@ jobs:
     name: Build and verify
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: dictionary
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -45,6 +48,13 @@ jobs:
       - name: Verify the notice still points at real files
         run: python3 tools/verify_notice_paths.py
 
+      - name: Check the consolidated public entry point
+        working-directory: .
+        run: python3 -m unittest discover -s tests -p test_consolidation.py
+
+      - name: Validate custom dictionary packs
+        run: python3 custom/tools/validate_packs.py
+
       - name: Install build dependencies
         run: python -m pip install --disable-pip-version-check -r requirements.txt
 
@@ -58,7 +68,7 @@ jobs:
           python build_profile.py --profile mobile --source out/desktop/msime.db
           python build_profile.py --profile mobile --verify
 
-      - name: Build the pinned Engine consumer
+      - name: Build the same-checkout Engine consumer
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake libboost-dev libfmt-dev libspdlog-dev libsqlite3-dev
@@ -89,13 +99,13 @@ jobs:
         with:
           name: dictionaries
           path: |
-            out/desktop/msime.db
-            out/desktop/english.db
-            out/desktop/others.db
-            out/desktop/dict_japanese.dat
-            out/desktop/mozc_dictionary_oss_README.txt
-            out/desktop/SHA256SUMS.txt
-            out/desktop/dictionary-manifest.json
+            dictionary/out/desktop/msime.db
+            dictionary/out/desktop/english.db
+            dictionary/out/desktop/others.db
+            dictionary/out/desktop/dict_japanese.dat
+            dictionary/out/desktop/mozc_dictionary_oss_README.txt
+            dictionary/out/desktop/SHA256SUMS.txt
+            dictionary/out/desktop/dictionary-manifest.json
           retention-days: 7
           compression-level: 9
 
@@ -103,7 +113,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: dictionaries-mobile
-          path: out/mobile/
+          path: dictionary/out/mobile/
           retention-days: 7
 
   publish:

@@ -1,10 +1,10 @@
-"""Load the public table format API from the reviewed Engine gitlink."""
+"""Load the public table format API from this Engine checkout."""
 import importlib.util
 from pathlib import Path
 
-path = Path(__file__).resolve().parent / 'vendor/MetasequoiaImeEngine/contracts/dictionary/format.py'
+path = Path(__file__).resolve().parents[1] / 'contracts/dictionary/format.py'
 if not path.is_file():
-    raise RuntimeError('Initialize vendor/MetasequoiaImeEngine before building dictionaries')
+    raise RuntimeError('The Engine dictionary format contract is missing')
 spec = importlib.util.spec_from_file_location('msime_dictionary_format_contract', path)
 contract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(contract)

@@ -10,7 +10,7 @@ python makecikudb/englishdb/extract_oaldpe_headwords.py "C:\path\to\oaldpe.mdx"
 
 英文数据库由 `oaldpe_words.txt` 和 `BaseDictIceEn.txt` 合并去重生成，不使用 Google 词频数据。BaseDict 只插入纯 ASCII 字母组成的显示词，两个来源不设权重。查询时依次按完整匹配、词长和字母顺序排序。
 
-候选窗翻译的大词库由 `makedb/clean_ecdict.py` 从 ECDICT 写入 `en_zh_glosses` / `zh_en_glosses`。需要补全或覆盖某条释义时，把条目写到 `MetasequoiaImeCustomDict/translations.txt`（源词 TAB 译文），不要改 ECDICT。`clean_ecdict.py` 重建大表后会再套用这份小词库；也可以单独跑：
+候选窗翻译的大词库由 `makedb/clean_ecdict.py` 从 ECDICT 写入 `en_zh_glosses` / `zh_en_glosses`。需要补全或覆盖某条释义时，把条目写到 `custom/translations.txt`（源词 TAB 译文），不要改 ECDICT。`clean_ecdict.py` 重建大表后会再套用这份小词库；也可以单独跑：
 
 ```powershell
 python makecikudb/englishdb/makedb/apply_custom_translations.py

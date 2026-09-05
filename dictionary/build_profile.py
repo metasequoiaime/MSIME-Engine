@@ -17,6 +17,7 @@ from profiles.compact import compact_dictionary
 from dictionary_format import FORMAT, verify_product
 
 ROOT = Path(__file__).resolve().parent
+REPOSITORY_ROOT = ROOT.parent
 FORMAT_VERSION = FORMAT['formatVersion']
 MANIFEST = 'dictionary-manifest.json'
 
@@ -41,7 +42,7 @@ def freeze_database(path: Path) -> None:
 def provenance() -> dict:
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     dirty = bool(subprocess.check_output(['git', '-C', str(ROOT), 'status', '--porcelain'], text=True).strip())
-    return {'repository': 'metasequoiaime/MSIME-Dict', 'commit': commit, 'dirty': dirty}
+    return {'repository': 'metasequoiaime/MSIME-Engine', 'path': 'dictionary', 'commit': commit, 'dirty': dirty}
 
 
 def write_manifest(output: Path, profile: str, names: list[str], source_database: str | None = None, minimum_weight: int = 2000) -> dict:
@@ -50,8 +51,10 @@ def write_manifest(output: Path, profile: str, names: list[str], source_database
         'engine_compatibility': {'dictionary_format': FORMAT_VERSION, 'japanese_model_magic': 'MSJPDT1' if profile == 'desktop' else None},
         'source': provenance(),
         'sqlite_journal_mode': 'delete',
-        'format_contract_commit': subprocess.check_output(['git', '-C', str(ROOT / 'vendor/MetasequoiaImeEngine'), 'rev-parse', 'HEAD'], text=True).strip(),
-        'custom_dictionary_commit': subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD:MetasequoiaImeCustomDict'], text=True).strip() if profile == 'desktop' else None,
+        'format_contract_commit': subprocess.check_output(['git', '-C', str(REPOSITORY_ROOT), 'rev-parse', 'HEAD'], text=True).strip(),
+        'custom_dictionary_commit': subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip() if profile == 'desktop' else None,
+        'custom_dictionary_repository': 'metasequoiaime/MSIME-Engine' if profile == 'desktop' else None,
+        'custom_dictionary_path': 'dictionary/custom' if profile == 'desktop' else None,
         'references': {name: {'repository': repo, 'commit': revision}
                        for name, (repo, revision) in build_all.REFERENCES.items()} if profile == 'desktop' else {},
         'mozc_revision': build_all.MOZC_REVISION if profile == 'desktop' else None,

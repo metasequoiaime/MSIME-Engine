@@ -1,4 +1,4 @@
-# AGENTS.md — MSIME-Dict
+# AGENTS.md — MSIME-Engine dictionary/
 
 组织级约定和跨仓边界以 [组织 AGENTS.md](https://github.com/metasequoiaime/.github/blob/main/AGENTS.md) 为准。本文件补充本仓的实现、数据和验证规则。
 
@@ -8,7 +8,6 @@
 
 ```bash
 python -m pip install -r requirements.txt
-git submodule update --init
 python build_profile.py --profile desktop --fetch-references
 python build_profile.py --profile desktop --verify
 ```
@@ -35,13 +34,13 @@ python build_profile.py --profile desktop --verify
 
 `msime.db` 按音节数加首音节首字母分表，1–7 音节是 `tbl_{N}_{首字母}`，≥8 音节是 `tbl_others_{首字母}`。
 
-**权威定义在固定 Engine 子模块的 `contracts/dictionary/format.json`**。本仓通过 `dictionary_format.py` 加载其 Python API，建表、插入、索引共用该 API；查询、设置页写入与用户词库回放使用同源 C++ 定义。禁止在建库脚本复制命名规则。
+**权威定义在仓库根 `contracts/dictionary/format.json`**。本仓通过 `dictionary_format.py` 加载其 Python API，建表、插入、索引共用该 API；查询、设置页写入与用户词库回放使用同源 C++ 定义。禁止在建库脚本复制命名规则。
 
 **禁止对 ≥8 音节拼出 `tbl_8_*`**，建库脚本不会创建这些表。
 
 ## 外部数据
 
-两个 stage 读仓外数据，`--fetch-references` 会按固定 revision clone 到仓库同级的 `ReferenceProjects/`：
+两个 stage 读仓外数据，`--fetch-references` 会按固定 revision clone 到Engine 根目录下的 `ReferenceProjects/`：
 
 - `skywind3000/ECDICT` — 候选窗中英释义的来源
 - `Selaube/rime-jp_sela` — 日语词表
@@ -62,7 +61,9 @@ python build_profile.py --profile desktop --verify
 
 ## 发布
 
-CI 每次 push 和 PR 都跑完整构建加校验。手动触发 `Build dictionaries` 并勾选 `publish` 时，会把产物和 `SHA256SUMS.txt` 发成 `dict-YYYY.MM.DD` 的 release，供 MSIME-Windows 的安装包发布流程下载并校验。
+工作目录为 `dictionary/`，公共入口也可从 Engine 根调用 `build_profile.py`。
+
+根 `.github/workflows/build-dictionaries.yml` 每次 push 和 PR 都跑完整构建加校验。手动触发 `Build dictionaries` 并勾选 `publish` 时，会把产物和 `SHA256SUMS.txt` 发成 `dict-YYYY.MM.DD` 的 release（发布仓库为 MSIME-Engine），供 MSIME-Windows 的安装包发布流程下载并校验。
 
 **词库改了要先发一个新的 `dict-*` release，Windows 端的下一个安装包版本才会带上。** 只合进 main 不发 release 的话，用户拿到的还是旧词库。
 

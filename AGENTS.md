@@ -2,7 +2,7 @@
 
 组织级约定和跨仓边界以 [组织 AGENTS.md](https://github.com/metasequoiaime/.github/blob/main/AGENTS.md) 为准。本文件补充本仓的实现、数据和验证规则。
 
-本仓是纯输入引擎：拼音切分、候选查询、用户词库、各输入方案。不含界面代码，被 Windows（经 Server）、macOS/iOS、Linux 三个前端复用。
+本仓拥有跨平台输入引擎及公共数据：`dictionary/` 负责建库，`dictionary/custom/` 负责人工词条和专业包，`helpcode/` 负责辅助码。平台 UI、权限和上屏适配仍由平台仓维护。修改数据时同时遵循 `dictionary/AGENTS.md`。
 
 ## 构建与测试
 
@@ -21,7 +21,7 @@ CI 在 `ubuntu-24.04`、`macos-15`、`windows-2025` 三个平台跑这套，共 
 
 ### tests/ 是一个 CI 不构建的独立工程
 
-`tests/CMakeLists.txt` 产出 `imetest`，源文件只有 `tests/src/test_pinyin.cpp`。它**不被根 `CMakeLists.txt` 引入**——根目录没有任何 `add_subdirectory`。所以：
+`tests/CMakeLists.txt` 产出 `imetest`，源文件只有 `tests/src/test_pinyin.cpp`。它**不被根 `CMakeLists.txt` 引入**——根目录没有引入 `tests/`。所以：
 
 - `tests/src/test_pinyin.cpp` 里的用例**在 CI 中不会执行**
 - 往那个文件加测试，PR 的绿勾只代表引擎仍能编译，不代表测试跑过
@@ -58,7 +58,9 @@ CI 在 `ubuntu-24.04`、`macos-15`、`windows-2025` 三个平台跑这套，共 
 
 ## 数据
 
-词库由 [MSIME-Dict](https://github.com/metasequoiaime/MSIME-Dict) 构建：`msime.db`、`english.db`、`others.db`、`dict_japanese.dat`。本仓不生成词库，只读取。
+词库由本仓 `dictionary/` 构建：`msime.db`、`english.db`、`others.db`、`dict_japanese.dat`。公共入口为根 `build_profile.py`；建库和查询使用同一提交的格式契约。
+
+迁移来源见 `docs/consolidation-sources.json`。不重写导入历史；不把平台消费端锁到尚未合入默认分支的生产者提交。
 
 候选窗的中英翻译除 `english.db` 的大表外还有一层人工覆盖：`english.db` 同目录的 `custom_translations.txt`，格式 `源<Tab>释义`，优先级高于大表（`english/english_dictionary.cpp`）。要纠正个别释义改这里，不要动 ECDICT 生成的大表。
 
