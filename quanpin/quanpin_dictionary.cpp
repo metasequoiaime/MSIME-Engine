@@ -39,6 +39,19 @@ std::string remove_delimiters(const std::string &segmented)
     return normalized;
 }
 
+quanpin::Segments normalize_umlaut_aliases(quanpin::Segments segments)
+{
+    for (auto &segment : segments)
+    {
+        if (segment.size() >= 2 && segment[1] == 'v' &&
+            (segment[0] == 'j' || segment[0] == 'q' || segment[0] == 'x' || segment[0] == 'y'))
+        {
+            segment[1] = 'u';
+        }
+    }
+    return segments;
+}
+
 std::string series_cache_key(const std::string &raw_input, const std::string &segmentation)
 {
     const char *prefix = raw_input.find('\'') == std::string::npos ? "A:" : "M:";
@@ -388,7 +401,8 @@ std::vector<WordItem> QuanpinDictionary::query_database(const quanpin::Segments 
             return result;
         }
 
-        const auto flat_items = quanpin::query_segments_keyed_flat(segments, db_, statement_cache_, INT_MAX);
+        const auto lookup_segments = normalize_umlaut_aliases(segments);
+        const auto flat_items = quanpin::query_segments_keyed_flat(lookup_segments, db_, statement_cache_, INT_MAX);
         std::vector<WordItem> result;
         result.reserve(flat_items.size());
         const std::string code = segmentation.empty() ? quanpin::join_segments(segments) : segmentation;
