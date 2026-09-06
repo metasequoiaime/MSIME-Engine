@@ -159,10 +159,12 @@ KeyResult InputSession::handle_character(char character, bool shift_only)
     }
 
     const bool lowercase_letter = character >= 'a' && character <= 'z';
+    const bool microsoft_final = character == ';' && scheme() == SchemeType::Shuangpin &&
+                                 shuangpin_profile_.name == "microsoft";
     const bool active_helpcode = character >= 'A' && character <= 'Z' && has_composition() &&
                                  ((scheme() == SchemeType::Quanpin && quanpin_helpcode_enabled_) ||
                                   (scheme() == SchemeType::Shuangpin && shuangpin_helpcode_enabled_));
-    if (!lowercase_letter && !active_helpcode && character != '\'')
+    if (!lowercase_letter && !active_helpcode && character != '\'' && !microsoft_final)
     {
         return {};
     }
@@ -174,7 +176,8 @@ KeyResult InputSession::handle_character(char character, bool shift_only)
     const std::string previous_preedit = preedit();
     const auto unsigned_character = static_cast<unsigned char>(character);
     const ImeKeyCode key_code =
-        character == '\'' ? ImeKey::Apostrophe : static_cast<ImeKeyCode>(std::toupper(unsigned_character));
+        character == '\'' ? ImeKey::Apostrophe :
+        (microsoft_final ? ImeKey::Semicolon : static_cast<ImeKeyCode>(std::toupper(unsigned_character)));
     engine_.handle_key(key_code, 0, static_cast<ImeCharacter>(unsigned_character));
     update_mixed_candidates();
     const bool handled = preedit() != previous_preedit;
