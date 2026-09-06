@@ -29,6 +29,11 @@ get_target_property(METASEQUOIA_IME_SPDLOG_INCLUDE_DIRS spdlog::spdlog_header_on
 set(METASEQUOIA_IME_ENGINE_SOURCES
     common/helpcode_utils.cpp
     common/string_utils.cpp
+    core/session.cpp
+    core/candidate_queries.cpp
+    core/punctuation_policy.cpp
+    core/runtime_paths.cpp
+    core/pinyin_decoder.cpp
     core/ime_session.cpp
     core/input_session.cpp
     core/input_session_composition.cpp
@@ -79,12 +84,25 @@ set(METASEQUOIA_IME_ENGINE_SOURCES
     googlepinyinime-rev/src/share/utf16reader.cpp
 )
 
+# The pinned decoder accepts UTF-8 paths. Adapt its namespace-local file IO to native
+# Windows paths without changing the submodule or the process locale.
+if(WIN32)
+    if(MSVC)
+        set(METASEQUOIA_PINYIN_FILE_IO_OPTIONS "/FI${CMAKE_CURRENT_SOURCE_DIR}/core/pinyin_file_io.h")
+    else()
+        set(METASEQUOIA_PINYIN_FILE_IO_OPTIONS -include "${CMAKE_CURRENT_SOURCE_DIR}/core/pinyin_file_io.h")
+    endif()
+    set_property(SOURCE googlepinyinime-rev/src/share/dicttrie.cpp googlepinyinime-rev/src/share/userdict.cpp
+        APPEND PROPERTY COMPILE_OPTIONS ${METASEQUOIA_PINYIN_FILE_IO_OPTIONS})
+endif()
+
 add_library(MetasequoiaImeEngine STATIC ${METASEQUOIA_IME_ENGINE_SOURCES})
 add_library(MetasequoiaIme::Engine ALIAS MetasequoiaImeEngine)
 
 target_include_directories(MetasequoiaImeEngine
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source
     SYSTEM PRIVATE
@@ -127,11 +145,12 @@ if(BUILD_TESTING)
     add_executable(test_windows_ipc_contract contracts/tests/windows_ipc_contract.cpp)
     add_test(NAME windows_ipc_contract COMMAND test_windows_ipc_contract)
 
-    add_executable(test_platform_api tests/src/test_platform_api.cpp)
+    add_executable(test_platform_api tests/src/test_platform_api.cpp tests/src/test_public_session.cpp)
     target_link_libraries(test_platform_api PRIVATE MetasequoiaIme::Engine)
     add_test(NAME platform_api COMMAND test_platform_api)
 
-    add_executable(test_data_path tests/src/test_data_path.cpp)
+    add_executable(test_data_path tests/src/test_data_path.cpp tests/src/test_runtime_isolation.cpp)
+    target_compile_definitions(test_data_path PRIVATE METASEQUOIA_TEST_PINYIN_MODEL="${CMAKE_CURRENT_SOURCE_DIR}/googlepinyinime-rev/data/dict_pinyin.dat")
     target_link_libraries(test_data_path PRIVATE MetasequoiaIme::Engine)
     add_test(NAME data_path COMMAND test_data_path)
 

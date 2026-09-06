@@ -17,7 +17,7 @@ enum class DictionaryKind
 };
 
 std::string default_user_db_path();
-// Call only after quiescing operations that can use the process-wide default database.
+// Compatibility no-op; journal connections are operation-scoped.
 void close_default_user_database();
 
 bool record_upsert(const std::string &user_db_path, DictionaryKind kind, const std::string &key,
@@ -30,7 +30,7 @@ bool is_user_inserted(const std::string &user_db_path, DictionaryKind kind, cons
                       const std::string &value);
 bool ensure_user_database(const std::string &user_db_path);
 bool record_pinyin_upsert_from_database(const std::string &main_db_path, const std::string &key,
-                                        const std::string &value);
+                                        const std::string &value, const std::string &user_db_path = default_user_db_path());
 
 struct ReplayResult
 {

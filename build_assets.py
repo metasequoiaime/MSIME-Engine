@@ -12,21 +12,9 @@ import zipfile
 
 from dictionary.dictionary_format import verify_product
 
+from contracts.assets.product import ARCHIVE, MANIFEST, VERSION, STATIC_FILES, verify
+
 ROOT = Path(__file__).resolve().parent
-ARCHIVE = 'engine-assets-desktop.zip'
-MANIFEST = 'engine-assets-manifest.json'
-HELPCODES = ('helpcode.txt', 'zrm_helpcode_big_unique.txt', 'shouyou2_0_helpcode.txt',
-             'shouyouplus_helpcode.txt', 'xiaohe_helpcode.txt')
-STATIC_FILES = {
-    'dict_pinyin.dat': 'googlepinyinime-rev/data/dict_pinyin.dat',
-    'custom_translations.txt': 'dictionary/custom/translations.txt',
-    **{f'helpcodes/{name}': f'helpcode/helpcodes/{name}' for name in HELPCODES},
-    'licenses/googlepinyinime-LICENSE': 'googlepinyinime-rev/LICENSE',
-    'licenses/helpcode-NOTICE.md': 'helpcode/NOTICE.md',
-    'licenses/dictionary-NOTICE.md': 'dictionary/NOTICE.md',
-    'licenses/Engine-NOTICE.md': 'NOTICE.md',
-    'licenses/Engine-LICENSE': 'LICENSE',
-}
 
 
 def sha256(data: bytes) -> str:
@@ -35,34 +23,6 @@ def sha256(data: bytes) -> str:
 
 def git(*args: str) -> str:
     return subprocess.check_output(['git', '-C', str(ROOT), *args], text=True).strip()
-
-
-def verify(archive: Path) -> dict:
-    with zipfile.ZipFile(archive) as bundle:
-        names = bundle.namelist()
-        manifest = json.loads(bundle.read(MANIFEST))
-        expected = set(STATIC_FILES) | {
-            'msime.db', 'english.db', 'others.db', 'dict_japanese.dat',
-            'mozc_dictionary_oss_README.txt', 'dictionary-manifest.json',
-        }
-        if (manifest.get('manifest_version') != 1 or manifest.get('profile') != 'desktop'
-                or set(manifest.get('files', {})) != expected
-                or len(names) != len(set(names))
-                or set(names) != expected | {MANIFEST}):
-            raise ValueError('Unexpected engine assets manifest or archive contents')
-        for name, entry in manifest['files'].items():
-            data = bundle.read(name)
-            if len(data) != entry['size'] or sha256(data) != entry['sha256']:
-                raise ValueError(f'Engine asset changed: {name}')
-        # Reuse the dictionary format contract, including model magic and profile checks.
-        with tempfile.TemporaryDirectory() as temporary:
-            directory = Path(temporary)
-            for name in expected - set(STATIC_FILES):
-                (directory / name).write_bytes(bundle.read(name))
-            product = verify_product(directory, 'desktop')
-        if product['source']['commit'] != manifest['source']['commit']:
-            raise ValueError('Dictionary and runtime assets must have the same source commit')
-        return manifest
 
 
 def build(dictionary_dir: Path, output: Path) -> Path:
@@ -74,7 +34,7 @@ def build(dictionary_dir: Path, output: Path) -> Path:
     files['dictionary-manifest.json'] = dictionary_dir / 'dictionary-manifest.json'
     files.update({name: ROOT / source for name, source in STATIC_FILES.items()})
     manifest = {
-        'manifest_version': 1, 'profile': 'desktop',
+        'manifest_version': 1, 'assets_contract_version': VERSION, 'profile': 'desktop',
         'source': {'repository': 'metasequoiaime/MSIME-Engine', 'commit': commit,
                    'dirty': bool(product['source'].get('dirty')) or bool(
                        git('status', '--porcelain', '--untracked-files=no'))},

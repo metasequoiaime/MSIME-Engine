@@ -14,7 +14,6 @@
 #include <unordered_set>
 #include <utility>
 #include <cstdlib>
-#include "../googlepinyinime-rev/src/include/pinyinime.h"
 #include <climits>
 #include <boost/algorithm/string.hpp>
 #include <fmt/xchar.h>
@@ -44,22 +43,15 @@ std::string escape_sql_text(std::string text)
 
 } // namespace
 
-ShuangpinDictionary::ShuangpinDictionary(const ShuangpinProfile &profile)
-    : profile_(profile), _kb_input_sequence(100), _cached_buffer(128), _cached_buffer_sgl(128),
+ShuangpinDictionary::ShuangpinDictionary(const ShuangpinProfile &profile, metasequoia::RuntimePaths paths)
+    : profile_(profile), paths_(std::move(paths)),
+      decoder_(paths_.resource(metasequoia::assets::pinyin_model), paths_.user(metasequoia::assets::pinyin_user_dictionary)),
+      helpcodes_(HelpcodeUtils::load_helpcode_keymap(paths_.resources, HelpcodeUtils::selected_helpcode_schema())), _kb_input_sequence(100), _cached_buffer(128), _cached_buffer_sgl(128),
       _cached_buffer_sgl_reversed(128), _cached_buffer_dbl(128), _cached_buffer_series(128)
 {
     // 最多可以输出 64 个汉字，拼音最多可以接受 128 个字符
-    ime_pinyin::im_set_max_lens(128, 64);
-    bool _res = ime_pinyin::im_open_decoder( //
-        metasequoia::path_to_utf8(shuangpin::get_data_file_path("dict_pinyin.dat")).c_str(), //
-        metasequoia::path_to_utf8(shuangpin::get_data_file_path("user_dict.dat")).c_str() //
-    );
-    if (!_res)
-    {
-        (void)0;
-    }
 
-    quanpin_db_path_ = quanpin::get_default_db_path();
+    quanpin_db_path_ = metasequoia::path_to_utf8(paths_.dictionary(metasequoia::assets::main_dictionary));
     int exit = sqlite3_open(quanpin_db_path_.c_str(), &quanpin_db_);
     if (exit != SQLITE_OK)
     {
@@ -241,7 +233,7 @@ void ShuangpinDictionary::filter_with_single_helpcode(           //
 
     for (const auto &cand : candidate_list)
     {
-        switch (HelpcodeUtils::match_single_helpcode(cand.word, normalized_help_code))
+        switch (HelpcodeUtils::match_single_helpcode(cand.word, normalized_help_code, helpcodes_.get()))
         {
         case HelpcodeUtils::SingleHelpcodeMatch::First:
             first_helpcode_matched_list.push_back(cand);
@@ -302,7 +294,7 @@ void ShuangpinDictionary::filter_with_double_helpcodes(               //
 
     for (const auto &cand : candidate_list)
     {
-        if (HelpcodeUtils::matches_double_helpcodes(cand.word, help_codes))
+        if (HelpcodeUtils::matches_double_helpcodes(cand.word, help_codes, helpcodes_.get()))
         {
             result_list.push_back(cand);
         }
@@ -664,7 +656,7 @@ int ShuangpinDictionary::create_word_from_quanpin(string pinyin, string word)
     {
         return ERROR_CODE;
     }
-    (void)user_dictionary::record_user_insert(user_dictionary::default_user_db_path(),
+    (void)user_dictionary::record_user_insert(metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)),
                                               user_dictionary::DictionaryKind::Pinyin, pinyin, word, 10000);
     /* 插入新词之后要清理缓存 */
     reset_cache();
@@ -730,7 +722,7 @@ int ShuangpinDictionary::update_weight_by_pinyin_and_word(string pinyin, string 
     {
         return ERROR_CODE;
     }
-    (void)user_dictionary::record_pinyin_upsert_from_database(quanpin_db_path_, normalized, word);
+    (void)user_dictionary::record_pinyin_upsert_from_database(quanpin_db_path_, normalized, word, metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)));
     reset_cache();
     return OK;
 }
@@ -757,7 +749,7 @@ int ShuangpinDictionary::delete_by_pinyin_and_word(string pinyin, string word)
     {
         return ERROR_CODE;
     }
-    (void)user_dictionary::record_delete(user_dictionary::default_user_db_path(),
+    (void)user_dictionary::record_delete(metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)),
                                          user_dictionary::DictionaryKind::Pinyin, normalized, word);
     reset_cache();
     return OK;
@@ -1057,29 +1049,11 @@ bool ShuangpinDictionary::do_validate(string key, string jp, string value) const
     return pure_key.size() % 2 == 0 && pure_key.size() == han_count * 2;
 }
 
-string from_utf16(const ime_pinyin::char16 *buf, size_t len)
-{
-    u16string utf16Str(reinterpret_cast<const char16_t *>(buf), len);
-    return utf8::utf16to8(utf16Str);
-}
+
 
 string ShuangpinDictionary::search_sentence_from_ime_engine(const string &user_pinyin)
 {
-    string pinyin_str = user_pinyin;
-    const char *pinyin = pinyin_str.c_str();
-    size_t cand_cnt = ime_pinyin::im_search(pinyin, strlen(pinyin));
-    string msg;
-    cand_cnt = cand_cnt > 0 ? 1 : 0;
-    for (size_t i = 0; i < cand_cnt; ++i)
-    {
-        ime_pinyin::char16 buf[256] = {0};
-        ime_pinyin::im_get_candidate(i, buf, 255);
-        size_t len = 0;
-        while (buf[len] != 0 && len < 255)
-            ++len;
-        msg = from_utf16(buf, len);
-    }
-    return msg;
+    return decoder_.sentence(user_pinyin);
 }
 
 void ShuangpinDictionary::reset_state()

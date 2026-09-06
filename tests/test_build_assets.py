@@ -38,7 +38,9 @@ class AssetsTests(unittest.TestCase):
 
     def test_complete_bundle_and_rebuild(self):
         archive = assets.build(self.product, self.directory / 'out')
-        manifest = assets.verify(archive)
+        manifest = assets.verify(archive, expected_sha256=assets.sha256(archive.read_bytes()))
+        with self.assertRaisesRegex(ValueError, 'pinned digest'):
+            assets.verify(archive, expected_sha256='0' * 64)
         self.assertEqual(manifest['source']['commit'], self.manifest['source']['commit'])
         with zipfile.ZipFile(archive) as bundle:
             self.assertNotIn('user_dict.dat', bundle.namelist())

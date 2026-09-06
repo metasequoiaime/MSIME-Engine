@@ -81,6 +81,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - run: python3 contracts/assets/generate.py --check
       - run: python3 contracts/dictionary/generate.py --check
       - run: python3 -m unittest discover -s contracts/dictionary -p test_product.py
       - run: python3 contracts/webview/generate.py --check

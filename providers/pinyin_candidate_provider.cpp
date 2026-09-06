@@ -3,8 +3,8 @@
 #include "../shuangpin/shuangpin_query.h"
 #include "../shuangpin/shuangpin_utils.h"
 
-PinyinCandidateProvider::PinyinCandidateProvider(const ShuangpinProfile &shuangpin_profile)
-    : shuangpin_profile_(shuangpin_profile), shuangpin_engine_(shuangpin_profile)
+PinyinCandidateProvider::PinyinCandidateProvider(const ShuangpinProfile &shuangpin_profile, metasequoia::RuntimePaths paths)
+    : shuangpin_profile_(shuangpin_profile), quanpin_engine_(paths), shuangpin_engine_(shuangpin_profile, paths)
 {
 }
 

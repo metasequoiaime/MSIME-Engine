@@ -1,4 +1,8 @@
 #include "helpcode_utils.h"
+#include "../contracts/assets/assets.h"
+#include "../core/data_path.h"
+#include <mutex>
+#include <stdexcept>
 #include "../shuangpin/shuangpin_utils.h"
 
 #include <utf8.h>
@@ -16,23 +20,8 @@
 
 namespace
 {
-const std::string kHelpcodeDirectoryName = "helpcodes";
-const std::string kLantianHelpcodeFileName = "helpcode.txt";
-const std::string kZiranmaHelpcodeFileName = "zrm_helpcode_big_unique.txt";
-const std::string kShouyou2_0HelpcodeFileName = "shouyou2_0_helpcode.txt";
-const std::string kShouyouplusHelpcodeFileName = "shouyouplus_helpcode.txt";
-const std::string kXiaoheHelpcodeFileName = "xiaohe_helpcode.txt";
-
-enum class HelpcodeSchemaIndex
-{
-    Lantian,
-    Ziranma,
-    Shouyou2_0,
-    Shouyouplus,
-    Xiaohe,
-};
-
-std::atomic<HelpcodeSchemaIndex> g_helpcode_schema{HelpcodeSchemaIndex::Lantian};
+std::mutex schema_mutex;
+std::string default_schema = "lantian";
 
 bool is_han_code_point(std::uint32_t code_point)
 {
@@ -43,84 +32,50 @@ bool is_han_code_point(std::uint32_t code_point)
            (code_point >= 0x30000 && code_point <= 0x323AF);
 }
 
-std::unordered_map<std::string, std::string> initialize_helpcode_keymap(const std::string &file_name)
-{
-    std::unordered_map<std::string, std::string> result;
-    std::ifstream helpcode_path(shuangpin::get_data_file_path(std::filesystem::path(kHelpcodeDirectoryName) / file_name));
-    if (!helpcode_path.is_open())
-    {
-        (void)0;
-        return result;
-    }
-
-    std::string line;
-    while (getline(helpcode_path, line))
-    {
-        size_t pos = line.find('=');
-        if (pos == std::string::npos)
-        {
-            continue;
-        }
-        result[line.substr(0, pos)] = line.substr(pos + 1, 2);
-    }
-    return result;
-}
 } // namespace
 
 namespace HelpcodeUtils
 {
-
-const std::unordered_map<std::string, std::string> &helpcode_keymap()
+SharedKeymap load_helpcode_keymap(const std::filesystem::path &resources, const std::string &schema)
 {
-    static const auto lantian_keymap = initialize_helpcode_keymap(kLantianHelpcodeFileName);
-    static const auto ziranma_keymap = initialize_helpcode_keymap(kZiranmaHelpcodeFileName);
-    static const auto shouyou2_0_keymap = initialize_helpcode_keymap(kShouyou2_0HelpcodeFileName);
-    static const auto shouyouplus_keymap = initialize_helpcode_keymap(kShouyouplusHelpcodeFileName);
-    static const auto xiaohe_keymap = initialize_helpcode_keymap(kXiaoheHelpcodeFileName);
-
-    switch (g_helpcode_schema.load(std::memory_order_relaxed))
+    const auto found = std::find_if(metasequoia::assets::helpcodes.begin(), metasequoia::assets::helpcodes.end(),
+        [&](const auto &entry) { return entry.schema == schema; });
+    if (found == metasequoia::assets::helpcodes.end()) throw std::invalid_argument("Unknown helpcode schema");
+    auto result = std::make_shared<Keymap>();
+    std::ifstream input(resources / found->path);
+    std::string line;
+    while (std::getline(input, line))
     {
-    case HelpcodeSchemaIndex::Ziranma:
-        return ziranma_keymap;
-    case HelpcodeSchemaIndex::Shouyou2_0:
-        return shouyou2_0_keymap;
-    case HelpcodeSchemaIndex::Shouyouplus:
-        return shouyouplus_keymap;
-    case HelpcodeSchemaIndex::Xiaohe:
-        return xiaohe_keymap;
-    case HelpcodeSchemaIndex::Lantian:
-    default:
-        return lantian_keymap;
+        const auto pos = line.find('=');
+        if (pos == std::string::npos || pos == 0) continue;
+        const auto code = line.substr(pos + 1, 2);
+        if (code.empty() || !std::all_of(code.begin(), code.end(), [](char ch) { return ch >= 'a' && ch <= 'z'; })) continue;
+        (*result)[line.substr(0, pos)] = code;
     }
+    return result;
 }
 
-bool is_supported_helpcode_schema(const std::string &schema)
+std::string selected_helpcode_schema()
 {
-    return schema == "lantian" || schema == "ziranma" || schema == "shouyou2_0" || schema == "shouyouplus" ||
-           schema == "xiaohe";
+    std::lock_guard lock(schema_mutex);
+    return default_schema;
 }
 
-bool select_helpcode_schema(const std::string &schema)
+const Keymap &helpcode_keymap()
 {
-    if (!is_supported_helpcode_schema(schema))
-        return false;
-
-    HelpcodeSchemaIndex selected_schema;
-    if (schema == "lantian")
-        selected_schema = HelpcodeSchemaIndex::Lantian;
-    else if (schema == "ziranma")
-        selected_schema = HelpcodeSchemaIndex::Ziranma;
-    else if (schema == "shouyou2_0")
-        selected_schema = HelpcodeSchemaIndex::Shouyou2_0;
-    else if (schema == "shouyouplus")
-        selected_schema = HelpcodeSchemaIndex::Shouyouplus;
-    else if (schema == "xiaohe")
-        selected_schema = HelpcodeSchemaIndex::Xiaohe;
-    else
-        return false;
-
-    g_helpcode_schema.store(selected_schema, std::memory_order_relaxed);
-    return true;
+    // Compatibility API for standalone callers. Sessions hold their own immutable table.
+    thread_local SharedKeymap table;
+    thread_local std::filesystem::path loaded_path;
+    thread_local std::string loaded_schema;
+    const auto path = metasequoia::data_directory();
+    const auto schema = selected_helpcode_schema();
+    if (!table || path != loaded_path || schema != loaded_schema)
+    {
+        table = load_helpcode_keymap(path, schema);
+        loaded_path = path;
+        loaded_schema = schema;
+    }
+    return *table;
 }
 
 std::string get_first_han_char(const std::string &words)
@@ -199,10 +154,10 @@ std::string::size_type count_utf8_chars(const std::string &text)
     return utf8::distance(text.begin(), text.end());
 }
 
-std::string compute_helpcodes(const std::string &words, bool uppercase_all)
+std::string compute_helpcodes(const std::string &words, bool uppercase_all, const Keymap *configured_keymap)
 {
     std::string helpcodes;
-    const auto &keymap = helpcode_keymap();
+    const auto &keymap = configured_keymap ? *configured_keymap : helpcode_keymap();
 
     if (count_han_chars(words) == 1)
     {
@@ -282,14 +237,14 @@ bool is_quanpin_double_help_mode(const std::string &pinyin_with_cases)
     return help_code_1 >= 'A' && help_code_1 <= 'Z' && help_code_2 >= 'A' && help_code_2 <= 'Z';
 }
 
-SingleHelpcodeMatch match_single_helpcode(const std::string &word, const std::string &help_code)
+SingleHelpcodeMatch match_single_helpcode(const std::string &word, const std::string &help_code, const Keymap *configured_keymap)
 {
     if (word.empty() || help_code.size() != 1)
     {
         return SingleHelpcodeMatch::None;
     }
 
-    const auto &keymap = helpcode_keymap();
+    const auto &keymap = configured_keymap ? *configured_keymap : helpcode_keymap();
 
     if (count_han_chars(word) == 1)
     {
@@ -316,14 +271,14 @@ SingleHelpcodeMatch match_single_helpcode(const std::string &word, const std::st
                                          : SingleHelpcodeMatch::None;
 }
 
-bool matches_double_helpcodes(const std::string &word, const std::string &help_codes)
+bool matches_double_helpcodes(const std::string &word, const std::string &help_codes, const Keymap *configured_keymap)
 {
     if (word.empty() || help_codes.size() != 2)
     {
         return false;
     }
 
-    const auto &keymap = helpcode_keymap();
+    const auto &keymap = configured_keymap ? *configured_keymap : helpcode_keymap();
 
     if (count_han_chars(word) == 1)
     {
@@ -336,6 +291,20 @@ bool matches_double_helpcodes(const std::string &word, const std::string &help_c
     const auto last = keymap.find(get_last_han_char(word));
     return first != keymap.end() && last != keymap.end() && first->second[0] == help_codes[0] &&
            last->second[0] == help_codes[1];
+}
+
+bool is_supported_helpcode_schema(const std::string &schema)
+{
+    return std::any_of(metasequoia::assets::helpcodes.begin(), metasequoia::assets::helpcodes.end(),
+        [&](const auto &entry) { return entry.schema == schema; });
+}
+
+bool select_helpcode_schema(const std::string &schema)
+{
+    if (!is_supported_helpcode_schema(schema)) return false;
+    std::lock_guard lock(schema_mutex);
+    default_schema = schema;
+    return true;
 }
 
 } // namespace HelpcodeUtils

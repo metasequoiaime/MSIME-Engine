@@ -4,7 +4,6 @@
 #include "../common/helpcode_utils.h"
 #include "quanpin_query.h"
 #include "quanpin_utils.h"
-#include "../googlepinyinime-rev/src/include/pinyinime.h"
 #include "../shuangpin/shuangpin_utils.h"
 #include <algorithm>
 #include <climits>
@@ -26,11 +25,7 @@ bool is_alpha_vk(ImeKeyCode vk)
     return vk >= 'A' && vk <= 'Z';
 }
 
-std::string from_utf16(const ime_pinyin::char16 *buf, size_t len)
-{
-    std::u16string utf16(reinterpret_cast<const char16_t *>(buf), len);
-    return utf8::utf16to8(utf16);
-}
+
 
 std::string remove_delimiters(const std::string &segmented)
 {
@@ -96,18 +91,11 @@ std::string escape_sql_text(std::string text)
 
 } // namespace
 
-QuanpinDictionary::QuanpinDictionary(std::string db_path)
+QuanpinDictionary::QuanpinDictionary(std::string db_path, metasequoia::RuntimePaths paths)
     : cache_(128), series_cache_(128), segmentation_cache_(128),
-      db_path_(db_path.empty() ? quanpin::get_default_db_path() : std::move(db_path))
+      paths_(std::move(paths)), decoder_(paths_.resource(metasequoia::assets::pinyin_model), paths_.user(metasequoia::assets::pinyin_user_dictionary)),
+      db_path_(db_path.empty() ? metasequoia::path_to_utf8(paths_.dictionary(metasequoia::assets::main_dictionary)) : std::move(db_path))
 {
-    ime_pinyin::im_set_max_lens(128, 64);
-    decoder_ready_ = ime_pinyin::im_open_decoder(
-        metasequoia::path_to_utf8(shuangpin::get_data_file_path("dict_pinyin.dat")).c_str(),
-        metasequoia::path_to_utf8(shuangpin::get_data_file_path("user_dict.dat")).c_str());
-    if (!decoder_ready_)
-    {
-        (void)0;
-    }
 
     const int exit = sqlite3_open(db_path_.c_str(), &db_);
     if (exit != SQLITE_OK)
@@ -601,7 +589,7 @@ int QuanpinDictionary::create_word(std::string pinyin, std::string word)
     {
         return ERROR_CODE;
     }
-    (void)user_dictionary::record_user_insert(user_dictionary::default_user_db_path(),
+    (void)user_dictionary::record_user_insert(metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)),
                                               user_dictionary::DictionaryKind::Pinyin, pinyin, word, 10000);
     reset_cache();
     return OK;
@@ -633,7 +621,7 @@ int QuanpinDictionary::create_word_from_canonical_pinyin(std::string pinyin, std
     {
         return ERROR_CODE;
     }
-    (void)user_dictionary::record_user_insert(user_dictionary::default_user_db_path(),
+    (void)user_dictionary::record_user_insert(metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)),
                                               user_dictionary::DictionaryKind::Pinyin, pinyin, word, 10000);
     reset_cache();
     return OK;
@@ -659,7 +647,7 @@ int QuanpinDictionary::update_weight_by_pinyin_and_word(std::string pinyin, std:
     {
         return ERROR_CODE;
     }
-    (void)user_dictionary::record_pinyin_upsert_from_database(db_path_, normalized, word);
+    (void)user_dictionary::record_pinyin_upsert_from_database(db_path_, normalized, word, metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)));
     reset_cache();
     return OK;
 }
@@ -675,7 +663,7 @@ int QuanpinDictionary::delete_by_pinyin_and_word(std::string pinyin, std::string
     {
         return ERROR_CODE;
     }
-    (void)user_dictionary::record_delete(user_dictionary::default_user_db_path(),
+    (void)user_dictionary::record_delete(metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)),
                                          user_dictionary::DictionaryKind::Pinyin, normalized, word);
     reset_cache();
     return OK;
@@ -755,28 +743,7 @@ int QuanpinDictionary::insert_word_to_series_cache_key(const std::string &cache_
 
 std::string QuanpinDictionary::search_sentence_from_ime_engine(const std::string &user_pinyin)
 {
-    if (!decoder_ready_)
-    {
-        return "";
-    }
-
-    const char *pinyin = user_pinyin.c_str();
-    const size_t cand_cnt = ime_pinyin::im_search(pinyin, strlen(pinyin));
-    for (size_t i = 0; i < cand_cnt; ++i)
-    {
-        ime_pinyin::char16 buf[256] = {0};
-        ime_pinyin::im_get_candidate(i, buf, 255);
-        size_t len = 0;
-        while (buf[len] != 0 && len < 255)
-        {
-            ++len;
-        }
-        if (len > 0)
-        {
-            return from_utf16(buf, len);
-        }
-    }
-    return "";
+    return decoder_.sentence(user_pinyin);
 }
 
 void QuanpinDictionary::reset_state()

@@ -1,3 +1,4 @@
+#include "../contracts/assets/assets.h"
 #include "../contracts/dictionary/format.h"
 #include "user_dictionary_journal.h"
 
@@ -321,49 +322,18 @@ bool apply_english(sqlite3 *db, const std::string &key, const std::string &value
 
 std::string default_user_db_path()
 {
-    return metasequoia::path_to_utf8(metasequoia::data_file_path("msime_user.db"));
+    return metasequoia::path_to_utf8(metasequoia::data_file_path(metasequoia::assets::user_journal));
 }
 
 namespace
 {
-struct PersistentDefaultUserDatabase
-{
-    std::mutex mutex;
-    Db database;
-};
-
-PersistentDefaultUserDatabase &persistent_default_user_database_state()
-{
-    static PersistentDefaultUserDatabase state;
-    return state;
-}
-
-sqlite3 *persistent_default_user_database()
-{
-    PersistentDefaultUserDatabase &state = persistent_default_user_database_state();
-    std::lock_guard lock(state.mutex);
-    if (!state.database)
-    {
-        state.database = open_database(default_user_db_path(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
-        if (state.database && !ensure_schema(state.database.get())) state.database.reset();
-    }
-    return state.database.get();
-}
-
 class UserDatabase
 {
 public:
     explicit UserDatabase(const std::string &path)
     {
-        if (path == default_user_db_path())
-        {
-            db_ = persistent_default_user_database();
-        }
-        else
-        {
-            owned_ = open_database(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
-            if (owned_ && ensure_schema(owned_.get())) db_ = owned_.get();
-        }
+        owned_ = open_database(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+        if (owned_ && ensure_schema(owned_.get())) db_ = owned_.get();
     }
 
     explicit operator bool() const { return db_ != nullptr; }
@@ -377,9 +347,7 @@ private:
 
 void close_default_user_database()
 {
-    PersistentDefaultUserDatabase &state = persistent_default_user_database_state();
-    std::lock_guard lock(state.mutex);
-    state.database.reset();
+    // Compatibility no-op: every journal operation now owns and closes its connection.
 }
 
 bool ensure_user_database(const std::string &user_db_path)
@@ -448,7 +416,7 @@ bool is_user_inserted(const std::string &user_db_path, DictionaryKind kind, cons
 }
 
 bool record_pinyin_upsert_from_database(const std::string &main_db_path, const std::string &key,
-                                        const std::string &value)
+                                        const std::string &value, const std::string &user_db_path)
 {
     auto db = open_database(main_db_path, SQLITE_OPEN_READONLY);
     const std::string table = pinyin_table(key);
@@ -457,7 +425,7 @@ bool record_pinyin_upsert_from_database(const std::string &main_db_path, const s
     if (!stmt || !bind_text(stmt.get(), 1, key) || !bind_text(stmt.get(), 2, value) ||
         sqlite3_step(stmt.get()) != SQLITE_ROW)
         return false;
-    return record_upsert(default_user_db_path(), DictionaryKind::Pinyin, key, value,
+    return record_upsert(user_db_path, DictionaryKind::Pinyin, key, value,
                          sqlite3_column_int64(stmt.get(), 0));
 }
 

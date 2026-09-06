@@ -11,6 +11,9 @@
 | `helpcode/` | 原 HelpCode 的数据和生成脚本 |
 | `voice/` | 公共语音录音、识别、文本处理；独立可选构建 |
 
+新平台通过 `<metasequoia/session.h>` 接入；会话隔离、资源目录和兼容接口迁移见
+[运行时架构](docs/runtime-architecture.md)。资源清单与校验权威为 [assets 契约](contracts/assets/README.md)。
+
 迁移来源、历史与下游接入顺序见 [合仓说明](docs/consolidation.md)。
 
 General IME engine shared by the Metasequoia IME frontends: [MSIME-Windows](https://github.com/metasequoiaime/MSIME-Windows) (through [its server/ component](https://github.com/metasequoiaime/MSIME-Windows/tree/main/server)), [MSIME-Apple](https://github.com/metasequoiaime/MSIME-Apple) and [MSIME-Linux](https://github.com/metasequoiaime/MSIME-Linux).

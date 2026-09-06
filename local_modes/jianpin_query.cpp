@@ -1,3 +1,4 @@
+#include "../contracts/assets/assets.h"
 #include "jianpin_query.h"
 
 #include "../core/data_path.h"
@@ -158,7 +159,7 @@ std::string jianpin_ranking_context(const std::string &code, SchemeType scheme,
 LocalQueryResult query_jianpin(const std::string &code, SchemeType scheme, int limit,
                                const ShuangpinProfile &profile)
 {
-    return query_jianpin(code, scheme, data_file_path("msime.db"), limit, profile);
+    return query_jianpin(code, scheme, data_file_path(metasequoia::assets::main_dictionary), limit, profile);
 }
 
 LocalQueryResult query_jianpin(const std::string &code, SchemeType scheme,

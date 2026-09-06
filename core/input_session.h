@@ -1,6 +1,10 @@
 #pragma once
 
 #include "ime_session.h"
+#include "input_session_types.h"
+#include "candidate_queries.h"
+#include "punctuation_policy.h"
+#include "online_request_guard.h"
 #include "../local_modes/date_time_query.h"
 #include "../english/english_dictionary.h"
 #include "word_item.h"
@@ -16,99 +20,6 @@
 
 namespace metasequoia
 {
-// Editing intents a platform frontend maps its own key events onto. Printable input goes through
-// handle_character instead, so this covers only the commands that act on an existing composition.
-enum class Command
-{
-    Backspace,
-    CommitCandidate,
-    CommitRaw,
-    Cancel,
-};
-
-// Outcome of one dispatched key or selection. `handled` tells the frontend whether to swallow the
-// event, and `commit` carries the text the frontend should insert into the client application.
-struct KeyResult
-{
-    bool handled = false;
-    std::optional<std::string> commit;
-    std::optional<std::string> diagnostic;
-};
-
-enum class CandidateEdge
-{
-    FirstHan,
-    LastHan,
-};
-
-enum class FrequencyAdjustmentMode
-{
-    Disabled,
-    Pin,
-    Halve,
-    Linear,
-    Promote,
-};
-
-struct FrequencyAdjustmentOptions
-{
-    FrequencyAdjustmentMode mode = FrequencyAdjustmentMode::Disabled;
-    int trigger_count = 1;
-    int linear_step = 1;
-};
-
-enum class LocalInputMode
-{
-    None,
-    Unicode,
-    DateTime,
-    QuickPhrase,
-    Emoji,
-    Kaomoji,
-    SuperJianpin,
-    TemporaryEnglish,
-    TemporaryJapanese,
-};
-
-struct LocalModeOptions
-{
-    bool unicode = true;
-    bool date_time = true;
-    bool quick_phrase = true;
-    bool emoji = true;
-    bool kaomoji = true;
-    bool super_jianpin = true;
-    bool temporary_english = true;
-    bool temporary_japanese = true;
-};
-
-struct EnglishInputOptions
-{
-    bool mixed_candidates = false;
-    std::size_t minimum_prefix = 2;
-};
-
-struct MixedExpressiveOptions
-{
-    bool emoji_candidates = false;
-    bool kaomoji_candidates = false;
-};
-
-// Immutable description of the current composition for asynchronous providers. Frontends copy
-// this value into a request and return it unchanged with the result; InputSession revalidates it
-// against the live composition before changing candidates.
-struct OnlineQuery
-{
-    SchemeType scheme = SchemeType::Quanpin;
-    std::uint64_t generation = 0;
-    std::string identity;
-    std::string query_text;
-    std::string cache_key;
-    std::vector<std::string> pinyin_segments;
-    bool cloud_eligible = false;
-    bool ai_eligible = false;
-};
-
 // Platform-neutral composition session shared by the native frontends. It owns an ImeSession and
 // applies the key-handling and commit policy that each frontend would otherwise reimplement, so a
 // frontend only has to translate platform key events into these calls.
@@ -119,8 +30,10 @@ class InputSession
     // engine configuration and commit policy.
     explicit InputSession(SchemeType scheme_type = SchemeType::Quanpin, bool quanpin_autocorrect_enabled = true,
                           bool helpcode_enabled = true, bool chinese_punctuation_enabled = true,
-                          bool candidate_learning_enabled = true);
-    InputSession(SchemeType scheme_type, const ShuangpinProfile &shuangpin_profile);
+                          bool candidate_learning_enabled = true,
+                          RuntimePaths paths = RuntimePaths::legacy());
+    InputSession(SchemeType scheme_type, const ShuangpinProfile &shuangpin_profile,
+                 RuntimePaths paths = RuntimePaths::legacy());
 
     // Feeds one lowercase ASCII letter or an in-composition apostrophe. Other input is rejected as
     // unhandled so the frontend can pass it through to the client application.
@@ -141,6 +54,8 @@ class InputSession
     void set_shuangpin_helpcode_enabled(bool enabled);
     void set_quanpin_helpcode_enabled(bool enabled);
     static bool is_supported_helpcode_schema(const std::string &schema);
+    bool set_helpcode_schema(const std::string &schema);
+    // Compatibility default for subsequently created sessions.
     static bool select_helpcode_schema(const std::string &schema);
     bool set_frequency_adjustment(FrequencyAdjustmentOptions options);
     const FrequencyAdjustmentOptions &frequency_adjustment() const;
@@ -239,6 +154,8 @@ class InputSession
                                                        const SelectionTransition &selection_transition) const;
 
     void set_quanpin_autocorrect_enabled(bool enabled);
+    void set_chinese_punctuation_enabled(bool enabled) { chinese_punctuation_enabled_ = enabled; }
+    void set_candidate_learning_enabled(bool enabled) { candidate_learning_enabled_ = enabled; }
     void set_shuangpin_preedit_uses_raw(bool enabled)
     {
         shuangpin_preedit_uses_raw_ = enabled;
@@ -257,7 +174,6 @@ class InputSession
     std::optional<std::string> update_local_candidates();
     void update_mixed_candidates();
     void update_dedicated_english_candidates();
-    EnglishDictionary &english_dictionary();
     void reset_composition();
     void discard_abandoned_phrase_progress();
     std::optional<std::string> learn_candidate(std::size_t index);
@@ -270,23 +186,21 @@ class InputSession
     bool has_pending_pinyin_sequence_ = false;
     bool has_pending_pinyin_sequence_with_cases_ = false;
 
+    RuntimePaths paths_;
+    CandidateQueries candidate_queries_;
     ImeSession engine_;
     bool quanpin_autocorrect_enabled_ = true;
     bool quanpin_helpcode_enabled_ = true;
     bool shuangpin_helpcode_enabled_ = true;
     bool chinese_punctuation_enabled_ = true;
     bool candidate_learning_enabled_ = true;
-    bool next_double_quote_is_opening_ = true;
-    bool next_single_quote_is_opening_ = true;
-    // Depth of open book title marks, so '<' can pick 《 or 〈 and '>' the matching close.
-    int book_title_nesting_ = 0;
-    const ShuangpinProfile &shuangpin_profile_;
+    PunctuationPolicy punctuation_;
+    const ShuangpinProfile shuangpin_profile_;
     FrequencyAdjustmentOptions frequency_adjustment_;
     bool frequency_adjustment_configured_ = false;
     LocalModeOptions local_mode_options_;
     EnglishInputOptions english_input_options_;
     MixedExpressiveOptions mixed_expressive_options_;
-    std::unique_ptr<EnglishDictionary> english_dictionary_;
     bool dedicated_english_mode_ = false;
     std::string dedicated_english_preedit_;
     std::vector<WordItem> dedicated_english_candidates_;
@@ -296,6 +210,6 @@ class InputSession
     std::string local_preedit_;
     std::vector<WordItem> local_candidates_;
     std::function<local_modes::LocalDateTime()> local_date_time_provider_;
-    std::uint64_t online_generation_ = 0;
+    OnlineRequestGuard online_requests_;
 };
 } // namespace metasequoia

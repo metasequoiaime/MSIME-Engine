@@ -1,7 +1,10 @@
 #include "provider_registry.h"
 #include <stdexcept>
 
-ProviderRegistry::ProviderRegistry(const ShuangpinProfile &shuangpin_profile) : pinyin_provider_(shuangpin_profile)
+ProviderRegistry::ProviderRegistry(const ShuangpinProfile &shuangpin_profile, metasequoia::RuntimePaths paths) : pinyin_provider_(shuangpin_profile, paths),
+    wubi_provider_(metasequoia::path_to_utf8(paths.dictionary(metasequoia::assets::main_dictionary))),
+    japanese_provider_(metasequoia::path_to_utf8(paths.dictionary(metasequoia::assets::main_dictionary)),
+                       metasequoia::path_to_utf8(paths.resource(metasequoia::assets::japanese_model)))
 {
 }
 

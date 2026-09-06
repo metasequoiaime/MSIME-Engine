@@ -3,7 +3,8 @@
 #include "quanpin_query.h"
 #include "quanpin_utils.h"
 
-QuanpinEngine::QuanpinEngine() = default;
+QuanpinEngine::QuanpinEngine(metasequoia::RuntimePaths paths) : dictionary_({}, paths),
+    helpcodes_(HelpcodeUtils::load_helpcode_keymap(paths.resources, HelpcodeUtils::selected_helpcode_schema())) {}
 
 QuanpinEngine::~QuanpinEngine() = default;
 
@@ -33,7 +34,7 @@ std::vector<WordItem> QuanpinEngine::query(const QueryRequest &request)
         const std::string help_codes = request.raw_input.substr(request.raw_input.size() - 2, 2);
         const auto base_candidates =
             dictionary_.query(base_raw_input, base_segmentation, request.enable_quanpin_autocorrect);
-        return HelpcodeUtils::filter_candidates_with_double_helpcodes(base_candidates, help_codes);
+        return HelpcodeUtils::filter_candidates_with_double_helpcodes(base_candidates, help_codes, helpcodes_.get());
     }
 
     if (helpcode_length == 1)
@@ -45,7 +46,7 @@ std::vector<WordItem> QuanpinEngine::query(const QueryRequest &request)
         const std::string help_code = request.raw_input.substr(request.raw_input.size() - 1, 1);
         const auto base_candidates =
             dictionary_.query(base_raw_input, base_segmentation, request.enable_quanpin_autocorrect);
-        return HelpcodeUtils::reorder_candidates_with_single_helpcode(base_candidates, help_code);
+        return HelpcodeUtils::reorder_candidates_with_single_helpcode(base_candidates, help_code, helpcodes_.get());
     }
 
     return dictionary_.query(request.raw_input, request.segmentation, request.enable_quanpin_autocorrect);

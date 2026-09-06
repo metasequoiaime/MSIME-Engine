@@ -1,4 +1,6 @@
+#include "../contracts/assets/assets.h"
 #include "japanese_sentence_decoder.h"
+#include "../core/data_path.h"
 #include "../shuangpin/shuangpin_utils.h"
 #include <algorithm>
 #include <cstring>
@@ -67,14 +69,14 @@ JapaneseSentenceDecoder::JapaneseSentenceDecoder(std::string model_path)
 {
     if (model_path.empty())
     {
-        model_path = metasequoia::path_to_utf8(shuangpin::get_data_file_path("dict_japanese.dat"));
+        model_path = metasequoia::path_to_utf8(shuangpin::get_data_file_path(metasequoia::assets::japanese_model));
     }
     ready_ = Load(model_path);
 }
 
 bool JapaneseSentenceDecoder::Load(const std::string &path)
 {
-    std::ifstream stream(path, std::ios::binary);
+    std::ifstream stream(metasequoia::path_from_utf8(path.c_str()), std::ios::binary);
     ModelHeader header{};
     if (!stream.read(reinterpret_cast<char *>(&header), sizeof(header)) ||
         std::memcmp(header.magic, kMagic, sizeof(kMagic)) != 0 || header.version != 1 ||

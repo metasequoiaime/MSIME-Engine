@@ -47,18 +47,12 @@ std::string online_identity(const QueryRequest &request)
     return std::to_string(static_cast<int>(request.scheme)) + ":" + input;
 }
 
-bool same_online_query(const OnlineQuery &left, const OnlineQuery &right)
-{
-    return left.scheme == right.scheme && left.generation == right.generation && left.identity == right.identity &&
-           left.query_text == right.query_text && left.cache_key == right.cache_key &&
-           left.pinyin_segments == right.pinyin_segments && left.cloud_eligible == right.cloud_eligible &&
-           left.ai_eligible == right.ai_eligible;
-}
 } // namespace
 
 InputSession::InputSession(SchemeType scheme_type, bool quanpin_autocorrect_enabled, bool helpcode_enabled,
-                           bool chinese_punctuation_enabled, bool candidate_learning_enabled)
-    : engine_(scheme_type), quanpin_autocorrect_enabled_(quanpin_autocorrect_enabled),
+                           bool chinese_punctuation_enabled, bool candidate_learning_enabled, RuntimePaths paths)
+    : paths_(std::move(paths)), candidate_queries_(paths_, GetXiaoheShuangpinProfile()),
+      engine_(scheme_type, GetXiaoheShuangpinProfile(), paths_), quanpin_autocorrect_enabled_(quanpin_autocorrect_enabled),
       quanpin_helpcode_enabled_(helpcode_enabled), shuangpin_helpcode_enabled_(helpcode_enabled),
       chinese_punctuation_enabled_(chinese_punctuation_enabled),
       candidate_learning_enabled_(candidate_learning_enabled),
@@ -69,8 +63,9 @@ InputSession::InputSession(SchemeType scheme_type, bool quanpin_autocorrect_enab
     engine_.set_shuangpin_helpcode_enabled(shuangpin_helpcode_enabled_);
 }
 
-InputSession::InputSession(SchemeType scheme_type, const ShuangpinProfile &shuangpin_profile)
-    : engine_(scheme_type, shuangpin_profile), shuangpin_profile_(shuangpin_profile)
+InputSession::InputSession(SchemeType scheme_type, const ShuangpinProfile &shuangpin_profile, RuntimePaths paths)
+    : paths_(std::move(paths)), candidate_queries_(paths_, shuangpin_profile),
+      engine_(scheme_type, shuangpin_profile, paths_), shuangpin_profile_(shuangpin_profile)
 {
     engine_.set_quanpin_autocorrect_enabled(quanpin_autocorrect_enabled_);
     engine_.set_quanpin_helpcode_enabled(quanpin_helpcode_enabled_);
@@ -185,7 +180,7 @@ KeyResult InputSession::handle_character(char character, bool shift_only)
     const bool handled = preedit() != previous_preedit;
     if (handled)
     {
-        ++online_generation_;
+        online_requests_.invalidate();
     }
     return {handled, std::nullopt, std::nullopt};
 }
@@ -206,81 +201,8 @@ KeyResult InputSession::handle_punctuation(char character)
         return {};
     }
 
-    const char *punctuation = nullptr;
-    switch (character)
-    {
-    case ',':
-        punctuation = "，";
-        break;
-    case '.':
-        punctuation = "。";
-        break;
-    case '?':
-        punctuation = "？";
-        break;
-    case '!':
-        punctuation = "！";
-        break;
-    case ';':
-        punctuation = "；";
-        break;
-    case ':':
-        punctuation = "：";
-        break;
-    case '"':
-        punctuation = next_double_quote_is_opening_ ? "“" : "”";
-        next_double_quote_is_opening_ = !next_double_quote_is_opening_;
-        break;
-    case '\'':
-        punctuation = next_single_quote_is_opening_ ? "‘" : "’";
-        next_single_quote_is_opening_ = !next_single_quote_is_opening_;
-        break;
-    case '(':
-        punctuation = "（";
-        break;
-    case ')':
-        punctuation = "）";
-        break;
-    case '[':
-        punctuation = "【";
-        break;
-    case ']':
-        punctuation = "】";
-        break;
-    // Book title marks nest: the outer pair is 《》 and anything inside it uses 〈〉. The counter is
-    // what decides which, so an unmatched '>' has to leave it at zero rather than drive it negative.
-    case '<':
-        punctuation = book_title_nesting_++ == 0 ? "《" : "〈";
-        break;
-    case '>':
-        if (book_title_nesting_ > 0)
-        {
-            --book_title_nesting_;
-            punctuation = book_title_nesting_ == 0 ? "》" : "〉";
-        }
-        else
-        {
-            punctuation = "》";
-        }
-        break;
-    case '\\':
-        punctuation = "、";
-        break;
-    case '`':
-        punctuation = "·";
-        break;
-    case '$':
-        punctuation = "￥";
-        break;
-    case '^':
-        punctuation = "……";
-        break;
-    case '_':
-        punctuation = "——";
-        break;
-    default:
-        return {};
-    }
+    const auto punctuation = punctuation_.translate(character);
+    if (!punctuation) return {};
 
     KeyResult result = finish_composition();
     result.handled = true;
@@ -329,7 +251,7 @@ KeyResult InputSession::handle_command(Command command)
         engine_.handle_key(ImeKey::Backspace);
         update_mixed_candidates();
         discard_abandoned_phrase_progress();
-        ++online_generation_;
+        online_requests_.invalidate();
         return {true, std::nullopt, std::nullopt};
     case Command::CommitCandidate:
         return commit(0);
@@ -344,7 +266,7 @@ KeyResult InputSession::handle_command(Command command)
         std::optional<std::string> diagnostic;
         if (dedicated_english_mode_ &&
             !user_dictionary::learn_entered_english_word(
-                path_to_utf8(data_file_path("english.db")), user_dictionary::default_user_db_path(), raw))
+                path_to_utf8(paths_.dictionary(assets::english_dictionary)), path_to_utf8(paths_.user(assets::user_journal)), raw))
         {
             diagnostic = "English word could not be learned.";
         }
@@ -429,7 +351,7 @@ void InputSession::set_shuangpin_helpcode_enabled(bool enabled)
     }
     shuangpin_helpcode_enabled_ = enabled;
     engine_.set_shuangpin_helpcode_enabled(enabled);
-    ++online_generation_;
+    online_requests_.invalidate();
 }
 
 void InputSession::set_quanpin_helpcode_enabled(bool enabled)
@@ -440,12 +362,20 @@ void InputSession::set_quanpin_helpcode_enabled(bool enabled)
     }
     quanpin_helpcode_enabled_ = enabled;
     engine_.set_quanpin_helpcode_enabled(enabled);
-    ++online_generation_;
+    online_requests_.invalidate();
 }
 
 bool InputSession::is_supported_helpcode_schema(const std::string &schema)
 {
     return HelpcodeUtils::is_supported_helpcode_schema(schema);
+}
+
+bool InputSession::set_helpcode_schema(const std::string &schema)
+{
+    if (!HelpcodeUtils::is_supported_helpcode_schema(schema)) return false;
+    engine_.set_helpcode_keymap(HelpcodeUtils::load_helpcode_keymap(paths_.resources, schema));
+    update_mixed_candidates();
+    return true;
 }
 
 bool InputSession::select_helpcode_schema(const std::string &schema)
@@ -553,7 +483,7 @@ std::optional<OnlineQuery> InputSession::online_query() const
     const QueryRequest &request = engine_.get_request();
     OnlineQuery query;
     query.scheme = request.scheme;
-    query.generation = online_generation_;
+    online_requests_.stamp(query);
     query.identity = online_identity(request);
 
     const auto state = get_cloud_query_state();
@@ -589,7 +519,7 @@ bool InputSession::apply_online_candidate(const OnlineQuery &query, std::string 
         return false;
     }
     const auto current = online_query();
-    if (!current.has_value() || !same_online_query(*current, query) ||
+    if (!current.has_value() || !online_requests_.matches(*current, query) ||
         (source == CandidateSource::CloudSuggestion && !current->cloud_eligible) ||
         (source == CandidateSource::AiSuggestion && !current->ai_eligible) ||
         std::any_of(candidates().begin(), candidates().end(),
@@ -843,182 +773,16 @@ KeyResult InputSession::handle_local_character(char character)
 
 std::optional<std::string> InputSession::update_local_candidates()
 {
-    switch (local_input_mode_)
-    {
-    case LocalInputMode::Unicode:
-        local_candidates_ = local_modes::query_unicode(local_preedit_.substr(1));
-        return std::nullopt;
-    case LocalInputMode::DateTime:
-    {
-        const local_modes::LocalDateTime now = local_date_time_provider_ ?
-            local_date_time_provider_() : local_modes::current_local_date_time();
-        local_candidates_ = local_modes::query_date_time(local_preedit_.substr(1), &now);
-        return std::nullopt;
-    }
-    case LocalInputMode::QuickPhrase:
-    {
-        local_modes::QuickPhraseQueryResult result =
-            local_modes::query_quick_phrases(local_preedit_.substr(1));
-        local_candidates_ = std::move(result.candidates);
-        return std::move(result.diagnostic);
-    }
-    case LocalInputMode::Emoji:
-    {
-        local_modes::LocalQueryResult result = local_modes::query_emoji(
-            local_preedit_.substr(1), scheme(), 10, shuangpin_profile_);
-        local_candidates_ = std::move(result.candidates);
-        return std::move(result.diagnostic);
-    }
-    case LocalInputMode::Kaomoji:
-    {
-        local_modes::LocalQueryResult result = local_modes::query_kaomoji(
-            local_preedit_.substr(1), scheme(), 10, shuangpin_profile_);
-        local_candidates_ = std::move(result.candidates);
-        return std::move(result.diagnostic);
-    }
-    case LocalInputMode::SuperJianpin:
-    {
-        const std::string code = local_preedit_.substr(1);
-        const int limit = code.size() == 1 ? 24 : 100;
-        local_modes::LocalQueryResult result =
-            local_modes::query_jianpin(code, scheme(), limit, shuangpin_profile_);
-        local_candidates_ = std::move(result.candidates);
-        return std::move(result.diagnostic);
-    }
-    case LocalInputMode::TemporaryEnglish:
-    {
-        const std::string raw = local_preedit_.substr(1);
-        local_candidates_.clear();
-        if (raw.empty())
-        {
-            return std::nullopt;
-        }
-        local_candidates_.emplace_back("", raw, 0, CandidateSource::Generated);
-        std::string prefix = raw;
-        std::transform(prefix.begin(), prefix.end(), prefix.begin(), [](unsigned char character) {
-            return static_cast<char>(std::tolower(character));
-        });
-        auto completions = english_dictionary().query_prefix(prefix, 1000);
-        completions.erase(std::remove_if(completions.begin(), completions.end(), [&](const WordItem &candidate) {
-                              if (candidate.word.size() != raw.size())
-                              {
-                                  return false;
-                              }
-                              return std::equal(candidate.word.begin(), candidate.word.end(), raw.begin(),
-                                                [](unsigned char left, unsigned char right) {
-                                                    return std::tolower(left) == std::tolower(right);
-                                                });
-                          }),
-                          completions.end());
-        local_candidates_.insert(local_candidates_.end(),
-                                 std::make_move_iterator(completions.begin()),
-                                 std::make_move_iterator(completions.end()));
-        return std::nullopt;
-    }
-    case LocalInputMode::TemporaryJapanese:
-        local_candidates_ = engine_.get_candidates();
-        return std::nullopt;
-    case LocalInputMode::None:
-        local_candidates_.clear();
-        return std::nullopt;
-    }
-    return std::nullopt;
+    auto result = candidate_queries_.local(local_input_mode_, local_preedit_, scheme(),
+                                           local_date_time_provider_, engine_.get_candidates());
+    local_candidates_ = std::move(result.candidates);
+    return std::move(result.diagnostic);
 }
 
 void InputSession::update_mixed_candidates()
 {
-    mixed_candidates_ = engine_.get_candidates();
-    if ((!english_input_options_.mixed_candidates && !mixed_expressive_options_.emoji_candidates &&
-         !mixed_expressive_options_.kaomoji_candidates) ||
-        dedicated_english_mode_ || local_input_mode_ != LocalInputMode::None ||
-        (scheme() != SchemeType::Quanpin && scheme() != SchemeType::Shuangpin))
-    {
-        return;
-    }
-
-    const std::string &prefix = engine_.get_request().raw_input;
-    if (prefix.empty())
-    {
-        return;
-    }
-
-    std::unordered_set<std::string> seen;
-    for (const auto &candidate : mixed_candidates_)
-    {
-        seen.insert(candidate.word);
-    }
-
-    const auto collect_unique = [&](std::vector<WordItem> candidates) {
-        std::vector<WordItem> unique;
-        unique.reserve(candidates.size());
-        for (auto &candidate : candidates)
-        {
-            if (seen.insert(candidate.word).second)
-            {
-                unique.push_back(std::move(candidate));
-            }
-        }
-        return unique;
-    };
-
-    std::vector<WordItem> english_candidates;
-    const bool lower_ascii_prefix =
-        std::all_of(prefix.begin(), prefix.end(), [](unsigned char character) {
-            return character >= 'a' && character <= 'z';
-        });
-    if (english_input_options_.mixed_candidates &&
-        prefix.size() >= english_input_options_.minimum_prefix && lower_ascii_prefix)
-    {
-        english_candidates = collect_unique(english_dictionary().query_prefix(prefix, 5));
-    }
-
-    std::vector<WordItem> emoji_candidates;
-    if (mixed_expressive_options_.emoji_candidates && prefix.size() >= 2)
-    {
-        emoji_candidates = collect_unique(
-            local_modes::query_emoji(prefix, scheme(), 3, shuangpin_profile_).candidates);
-    }
-
-    std::vector<WordItem> kaomoji_candidates;
-    if (mixed_expressive_options_.kaomoji_candidates && prefix.size() >= 2)
-    {
-        kaomoji_candidates = collect_unique(
-            local_modes::query_kaomoji(prefix, scheme(), 3, shuangpin_profile_).candidates);
-    }
-
-    std::size_t priority_slot = std::min<std::size_t>(1, mixed_candidates_.size());
-    const auto has_source = [&](CandidateSource source) {
-        return std::any_of(mixed_candidates_.begin(), mixed_candidates_.end(),
-                           [source](const WordItem &candidate) { return candidate.source == source; });
-    };
-    if (has_source(CandidateSource::CloudSuggestion))
-    {
-        priority_slot = std::min<std::size_t>(2, mixed_candidates_.size());
-    }
-    if (has_source(CandidateSource::AiSuggestion))
-    {
-        priority_slot = std::min<std::size_t>(3, mixed_candidates_.size());
-    }
-    const auto insert_leading = [&](std::vector<WordItem> &source) {
-        if (source.empty())
-        {
-            return;
-        }
-        mixed_candidates_.insert(mixed_candidates_.begin() + static_cast<std::ptrdiff_t>(priority_slot),
-                                 std::move(source.front()));
-        source.erase(source.begin());
-        ++priority_slot;
-    };
-    insert_leading(english_candidates);
-    insert_leading(emoji_candidates);
-    insert_leading(kaomoji_candidates);
-
-    for (auto *source : {&english_candidates, &emoji_candidates, &kaomoji_candidates})
-    {
-        mixed_candidates_.insert(mixed_candidates_.end(),
-                                 std::make_move_iterator(source->begin()),
-                                 std::make_move_iterator(source->end()));
-    }
+    mixed_candidates_ = candidate_queries_.mixed(engine_.get_candidates(), engine_.get_request().raw_input,
+        scheme(), english_input_options_, mixed_expressive_options_, dedicated_english_mode_, local_input_mode_);
 }
 
 void InputSession::update_dedicated_english_candidates()
@@ -1033,7 +797,7 @@ void InputSession::update_dedicated_english_candidates()
     std::transform(prefix.begin(), prefix.end(), prefix.begin(), [](unsigned char character) {
         return static_cast<char>(std::tolower(character));
     });
-    dedicated_english_candidates_ = english_dictionary().query_prefix(prefix, 1000);
+    dedicated_english_candidates_ = candidate_queries_.english_dictionary().query_prefix(prefix, 1000);
     if (dedicated_english_candidates_.empty())
     {
         dedicated_english_candidates_.emplace_back(
@@ -1041,21 +805,12 @@ void InputSession::update_dedicated_english_candidates()
     }
 }
 
-EnglishDictionary &InputSession::english_dictionary()
-{
-    if (!english_dictionary_)
-    {
-        english_dictionary_ = std::make_unique<EnglishDictionary>(
-            path_to_utf8(data_file_path("english.db")), false);
-    }
-    return *english_dictionary_;
-}
 
 void InputSession::reset_composition()
 {
     immediate_phrase_progress_ = {};
     clear_pending_sequence();
-    ++online_generation_;
+    online_requests_.invalidate();
     const std::optional<SchemeType> original_scheme = temporary_original_scheme_;
     local_input_mode_ = LocalInputMode::None;
     temporary_original_scheme_.reset();
@@ -1104,7 +859,7 @@ std::optional<std::string> InputSession::learn_candidate(std::size_t index)
                      });
         bool ranking_changed = false;
         const bool adjusted = user_dictionary::adjust_english_candidate_ranking(
-            path_to_utf8(data_file_path("english.db")), user_dictionary::default_user_db_path(),
+            path_to_utf8(paths_.dictionary(assets::english_dictionary)), path_to_utf8(paths_.user(assets::user_journal)),
             "english:" + context, ranked_candidates, selected.pinyin, selected.word,
             frequency_mode_name(frequency_adjustment_.mode), frequency_adjustment_.linear_step,
             frequency_adjustment_.trigger_count, false, &ranking_changed);
@@ -1147,7 +902,7 @@ std::optional<std::string> InputSession::learn_candidate(std::size_t index)
                                                                           : selected.canonical_pinyin);
     bool ranking_changed = false;
     const bool adjusted = user_dictionary::adjust_candidate_ranking(
-        path_to_utf8(data_file_path("msime.db")), user_dictionary::default_user_db_path(), context_key,
+        path_to_utf8(paths_.dictionary(assets::main_dictionary)), path_to_utf8(paths_.user(assets::user_journal)), context_key,
         candidates(), entry_key, selected.word, frequency_mode_name(frequency_adjustment_.mode),
         frequency_adjustment_.linear_step, frequency_adjustment_.trigger_count, false, &ranking_changed,
         (wubi && !super_jianpin) ? user_dictionary::DictionaryKind::Wubi :

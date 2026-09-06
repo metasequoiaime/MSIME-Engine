@@ -1,4 +1,8 @@
 #pragma once
+#include "../core/runtime_paths.h"
+#include "../core/pinyin_decoder.h"
+#include "../core/data_path.h"
+#include "../contracts/assets/assets.h"
 
 #include "../common/cache.h"
 #include "../core/key_event.h"
@@ -16,7 +20,7 @@ class QuanpinDictionary
     static const int OK = 0;
     static const int ERROR_CODE = -1;
 
-    explicit QuanpinDictionary(std::string db_path = {});
+    explicit QuanpinDictionary(std::string db_path = {}, metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
     ~QuanpinDictionary();
 
     std::vector<WordItem> query(const std::string &raw_input, const std::string &segmentation = "",
@@ -97,9 +101,11 @@ class QuanpinDictionary
     CircularBuffer<std::string, quanpin::Segments> segmentation_cache_;
     sqlite3 *db_ = nullptr;
     sqlite3_int64 data_version_ = -1;
+    metasequoia::RuntimePaths paths_;
+    metasequoia::PinyinDecoder decoder_;
     std::unordered_map<std::string, sqlite3_stmt *> statement_cache_;
     std::string db_path_;
-    bool decoder_ready_ = false;
+
 
     std::string pinyin_sequence_;
     std::string pinyin_segmentation_;

@@ -1,3 +1,4 @@
+#include "../contracts/assets/assets.h"
 #include "kaomoji_query.h"
 
 #include "../core/data_path.h"
@@ -66,7 +67,7 @@ LocalQueryResult query_failure(const char *diagnostic)
 LocalQueryResult query_kaomoji(const std::string &code, SchemeType scheme, int limit,
                                const ShuangpinProfile &profile)
 {
-    return query_kaomoji(code, scheme, data_file_path("others.db"), limit, profile);
+    return query_kaomoji(code, scheme, data_file_path(metasequoia::assets::other_dictionary), limit, profile);
 }
 
 LocalQueryResult query_kaomoji(const std::string &code, SchemeType scheme,

@@ -1,4 +1,6 @@
+#include "../contracts/assets/assets.h"
 #include "english_dictionary.h"
+#include "../core/data_path.h"
 
 #include <algorithm>
 #include <cctype>
@@ -17,7 +19,7 @@ bool IsLowerAsciiWord(const std::string &value)
 }
 } // namespace
 
-EnglishDictionary::EnglishDictionary(std::string db_path, bool initialize_schema) : db_path_(std::move(db_path))
+EnglishDictionary::EnglishDictionary(std::string db_path, bool initialize_schema, std::string translations_path) : translations_path_(std::move(translations_path)), db_path_(std::move(db_path))
 {
     if (initialize_schema)
     {
@@ -151,7 +153,8 @@ void EnglishDictionary::load_custom_translations()
     if (db_path_.empty())
         return;
 
-    const auto sidecar = std::filesystem::path(db_path_).parent_path() / "custom_translations.txt";
+    const auto sidecar = translations_path_.empty() ? metasequoia::path_from_utf8(db_path_.c_str()).parent_path() / metasequoia::assets::translations
+                                                   : metasequoia::path_from_utf8(translations_path_.c_str());
     std::ifstream input(sidecar, std::ios::binary);
     if (!input)
         return;
