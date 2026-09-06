@@ -1,5 +1,14 @@
 # Metasequoia IME Engine（水杉输入法引擎）
 
+<!-- badges:start -->
+[![CI](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/ci.yml?branch=main&label=CI)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/ci.yml)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/codeql.yml?branch=main&label=CodeQL)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/codeql.yml)
+[![Release](https://img.shields.io/github/v/release/metasequoiaime/MSIME-Engine?include_prereleases&label=release)](https://github.com/metasequoiaime/MSIME-Engine/releases)
+[![Downloads](https://img.shields.io/github/downloads/metasequoiaime/MSIME-Engine/total?label=downloads)](https://github.com/metasequoiaime/MSIME-Engine/releases)
+[![License](https://img.shields.io/github/license/metasequoiaime/MSIME-Engine)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/metasequoiaime/MSIME-Engine?style=flat)](https://github.com/metasequoiaime/MSIME-Engine/stargazers)
+<!-- badges:end -->
+
 水杉输入法的公共仓库：输入引擎、词库构建、自定义词库、辅助码和公共语音模块。引擎现有头文件路径与 `MetasequoiaIme::Engine` 目标保持兼容，各平台前端继续独立维护。
 
 | 目录 | 职责 |
@@ -128,3 +137,11 @@ Google 拼音子模块提交。辅助码的授权现状仍以随包的 `helpcode
 `engine-assets-desktop` artifact；手动发布时追加到现有 `dict-*` Release，原有
 独立词库 assets 保留兼容。移动端继续使用 `build_profile.py --profile mobile`。
 消费者应锁定已合入默认分支的来源提交及发布包摘要；此入口不会自动修改平台锁文件。
+
+<!-- star-history:start -->
+## Star History
+
+<a href="https://star-history.com/#metasequoiaime/MSIME-Engine&Date">
+  <img src="https://api.star-history.com/svg?repos=metasequoiaime/MSIME-Engine&type=Date" alt="Star History Chart" width="600">
+</a>
+<!-- star-history:end -->
