@@ -1,7 +1,7 @@
 name: Repository quality
 on:
   push:
-    branches: [develop, main]
+    branches: [main]
   pull_request:
   merge_group:
   workflow_dispatch:
@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # This job must not skip. It is one of the required status checks on main and develop, and a required check that reports "skipped" blocks a merge instead of passing it, so guarding it on the pull_request event leaves merge_group and workflow_dispatch runs permanently unmergeable. MSIME-Windows hit exactly that on its release pull request and fixed it the same way.
+      # This job must not skip. It is one of the required status checks on main, and a required check that reports "skipped" blocks a merge instead of passing it, so guarding it on the pull_request event leaves merge_group and workflow_dispatch runs permanently unmergeable. MSIME-Windows hit exactly that on its release pull request and fixed it the same way.
       #
       # A pull_request event supplies both refs on its own. Every other trigger has to be told what to
       # compare, and comparing the default branch against the checked-out commit is the same question

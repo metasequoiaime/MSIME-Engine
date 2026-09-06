@@ -1,7 +1,7 @@
 name: Shared VoiceInput
 on:
   push:
-    branches: [develop, main]
+    branches: [main]
   pull_request:
 permissions:
   contents: read
