@@ -38,8 +38,11 @@ cd "$project_root"
 # Vendored trees are excluded: googlepinyinime-rev keeps its AOSP formatting,
 # utfcpp and voice/third_party are upstream copies, ReferenceProjects is read-only
 # reference material, and eng/ is a scratch area.
+#
+# Generated headers are excluded as well: contracts/{assets,dictionary,webview}/generate.py emit them from JSON, and CI re-runs each generator with --check. Reformatting their output only makes the checked-in file disagree with what the generator produces, which fails that check.
 git ls-files --cached --others --exclude-standard '*.cpp' '*.h' '*.hpp' \
     | grep -vE '^(googlepinyinime-rev|utfcpp|ReferenceProjects|eng)/' \
     | grep -v '/third_party/' \
+    | grep -vxF -e contracts/assets/assets.h -e contracts/dictionary/format.h -e contracts/webview/schema.h \
     | sort -u \
     | xargs "$clang_format" "${clang_format_arguments[@]}" --style=file
