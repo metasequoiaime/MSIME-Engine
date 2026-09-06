@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.3.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.2.0...v0.3.0) (2026-09-06)
+
+
+### Features
+
+* **contracts:** centralize punctuation and product lock contracts ([9bec871](https://github.com/metasequoiaime/MSIME-Engine/commit/9bec871eb6c84224c93586be23604df64bb6258c))
+* **contracts:** centralize punctuation and product lock contracts ([7d8ec04](https://github.com/metasequoiaime/MSIME-Engine/commit/7d8ec04055c52c6771c127eaf290ac3ce7285c8d))
+* Limit local sentence suggestions to the Google Pinyin result and the ([f139737](https://github.com/metasequoiaime/MSIME-Engine/commit/f1397379bbf630bdf26863bbffbfd9d7a9b9221b))
+* 优化长句候选结果条数并减少重复候选 ([c1dea47](https://github.com/metasequoiaime/MSIME-Engine/commit/c1dea47cbe62b5c2b95a869d148c351d21597ba4))
+
+
+### Bug Fixes
+
+* **ci:** allow Windows filesystem tests more time ([c6130cf](https://github.com/metasequoiaime/MSIME-Engine/commit/c6130cf63dcf96f1780642e7d6ee91a26c6e5fad))
+* **ci:** allow Windows filesystem tests more time ([88191c0](https://github.com/metasequoiaime/MSIME-Engine/commit/88191c03aefe4ec2ee8037d1fba931829d1fd8d5))
+* **ci:** avoid duplicate CodeQL scans on pushes ([2983fe8](https://github.com/metasequoiaime/MSIME-Engine/commit/2983fe87b5a715eb86500d6337d46894d9aa16f8))
+* **ci:** avoid duplicate CodeQL scans on pushes ([ee4d3b3](https://github.com/metasequoiaime/MSIME-Engine/commit/ee4d3b324dc2b8a8710295a329e25b5a98c8685f))
+* **release:** release-please 显式指向 main ([537b7b0](https://github.com/metasequoiaime/MSIME-Engine/commit/537b7b075b679163554c89c5bc1e140e9b48f122))
+* **release:** target main for release-please and back-merge main ([be4eeb4](https://github.com/metasequoiaime/MSIME-Engine/commit/be4eeb418b1306ca5e44607c890cef45db278b6f))
+
 ## [0.2.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.1.0...v0.2.0) (2026-09-06)
 
 
