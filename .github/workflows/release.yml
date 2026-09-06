@@ -37,7 +37,7 @@ jobs:
       - name: Prepare release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5
         with:
-          # release-please reads and writes the repository's default branch unless told otherwise, and that is now develop. The release branch is main: without this the version pull request, the changelog and the tag all land on develop, and the branch this workflow waits for (release-please--branches--main--*) is never created.
+          # The repository's default branch and release branch are both main. Keep this explicit so the version pull request, changelog and tag stay on the branch this workflow watches.
           target-branch: main
           # A pull request opened by github-actions[bot] is treated as coming from a first-time
           # contributor, so its checks are held until someone presses Approve. Opening it as a real

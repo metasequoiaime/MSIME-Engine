@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [develop, main]
+    branches: [main]
   pull_request:
 
   merge_group:
@@ -84,7 +84,7 @@ jobs:
   # frontends records the cost in its own comment: "the semantic changes to helpcode_enabled() and
   # handle_character() went through exactly this way."
   #
-  # This builds the Linux frontend's default branch -- `develop` since the branch model changed -- against *this* pull request's engine commit. Linux is the cheapest of the three to stand up (apt dependencies, no vcpkg tree and no Xcode), so it is the one that runs on every change. Adding the Windows and Apple frontends is the same shape with a longer setup.
+  # This builds the Linux frontend's default branch against *this* pull request's engine commit. Linux is the cheapest of the three to stand up (apt dependencies, no vcpkg tree and no Xcode), so it is the one that runs on every change. Adding the Windows and Apple frontends is the same shape with a longer setup.
   downstream:
     name: Linux frontend against this engine
     runs-on: ubuntu-24.04

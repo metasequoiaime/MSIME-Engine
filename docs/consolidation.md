@@ -18,7 +18,7 @@ CustomDict 导入当前 main，而非 Dict 原先固定的 `691ef18`：包含更
 
 ## 发布和下游切换
 
-1. 先合入本公共仓库变更；平台随后固定已合入默认分支的 Engine 提交。
+1. 先合入本公共仓库 `main` 变更；平台随后固定已合入 `main` 的 Engine 提交。
 2. 平台删除各自 Dict/CustomDict/HelpCode 的重复 checkout，辅助码路径改为 Engine 的 `helpcode/helpcodes/`，构建器改为 Engine 根 `build_profile.py`。
 3. 既有 `MSIME-Dict/dict-2026.09.05` 及其 digest 锁继续有效。本迁移不删除、重发或重定向旧 release。
 4. 后续在 MSIME-Engine 显式发布新 `dict-*` 产品时，平台同时评审产物 repository/tag/digest 锁变更。仅合仓不会自动改变用户安装包。
