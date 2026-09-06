@@ -43,6 +43,6 @@ cd "$project_root"
 git ls-files --cached --others --exclude-standard '*.cpp' '*.h' '*.hpp' \
     | grep -vE '^(googlepinyinime-rev|utfcpp|ReferenceProjects|eng)/' \
     | grep -v '/third_party/' \
-    | grep -vxF -e contracts/assets/assets.h -e contracts/dictionary/format.h -e contracts/webview/schema.h \
+    | grep -vxF -e contracts/assets/assets.h -e contracts/dictionary/format.h -e contracts/punctuation/policy.h -e contracts/webview/schema.h \
     | sort -u \
     | xargs "$clang_format" "${clang_format_arguments[@]}" --style=file

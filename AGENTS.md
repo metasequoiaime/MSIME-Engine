@@ -2,6 +2,8 @@
 
 组织级约定和跨仓边界以 [组织 AGENTS.md](https://github.com/metasequoiaime/.github/blob/main/AGENTS.md) 为准。本文件补充本仓的实现、数据和验证规则。
 
+本仓默认分支是 `develop`，日常改动从 `develop` 切分支并合回 `develop`；`main` 是发布分支，只在发版时由维护者从 `develop` 合入，`release.yml` 也只监听 `main`。特性分支直接提到 `main` 会被 `Branch guard` 拦下。平台仓的 gitlink 指向本仓 `develop` 上已合并的提交，规则见[组织 AGENTS.md 的分支模型](https://github.com/metasequoiaime/.github/blob/main/AGENTS.md#分支模型)。
+
 本仓拥有跨平台输入引擎及公共数据：`dictionary/` 负责建库，`dictionary/custom/` 负责人工词条和专业包，`helpcode/` 负责辅助码。`voice/` 负责可选公共语音模块，规则见 `voice/AGENTS.md`；导入的 Windows 独立程序位于 `voice/platforms/windows/`，不进入公共库目标。平台 UI、权限和上屏适配仍由平台仓维护。修改数据时同时遵循 `dictionary/AGENTS.md`。
 
 ## 构建与测试
@@ -15,7 +17,7 @@ ctest --test-dir build --output-on-failure --timeout 20
 
 根 `CMakeLists.txt` 会编译 `googlepinyinime-rev/src/share/` 下的源码并把 `utfcpp/source` 加为 include 目录，两个目录都是 submodule。CI 的三个 job 都用 `submodules: recursive` 检出，所以这一步在本地容易被漏掉：目录为空时配置阶段就会失败。
 
-CI 在 `ubuntu-24.04`、`macos-15`、`windows-2025` 三个平台跑这套，共 14 个 ctest 目标。依赖 CMake 3.25+、Boost、fmt、spdlog、SQLite3，各平台的安装命令见 `.github/workflows/ci.yml`。
+CI 在 `ubuntu-24.04`、`macos-15`、`windows-2025` 三个平台跑这套，共 15 个 ctest 目标。依赖 CMake 3.25+、Boost、fmt、spdlog、SQLite3，各平台的安装命令见 `.github/workflows/ci.yml`。
 
 **改了引擎就要跑 ctest。** 本仓是三个平台共用的，只在一个平台上想当然很容易漏。
 

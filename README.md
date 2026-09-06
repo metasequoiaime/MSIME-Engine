@@ -3,8 +3,8 @@
 [English README](README.en.md)
 
 <!-- badges:start -->
-[![CI](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/ci.yml?branch=main&label=CI)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/ci.yml)
-[![CodeQL](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/codeql.yml?branch=main&label=CodeQL)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/codeql.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/ci.yml?branch=develop&label=CI)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/ci.yml)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/codeql.yml?branch=develop&label=CodeQL)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/codeql.yml)
 [![Release](https://img.shields.io/github/v/release/metasequoiaime/MSIME-Engine?include_prereleases&label=release)](https://github.com/metasequoiaime/MSIME-Engine/releases)
 [![Downloads](https://img.shields.io/github/downloads/metasequoiaime/MSIME-Engine/total?label=downloads)](https://github.com/metasequoiaime/MSIME-Engine/releases)
 [![License](https://img.shields.io/github/license/metasequoiaime/MSIME-Engine)](LICENSE)
@@ -27,7 +27,7 @@
 
 迁移来源、历史与下游接入顺序见 [合仓说明](docs/consolidation.md)。
 
-General IME engine shared by the Metasequoia IME frontends: [MSIME-Windows](https://github.com/metasequoiaime/MSIME-Windows) (through [its server/ component](https://github.com/metasequoiaime/MSIME-Windows/tree/main/server)), [MSIME-Apple](https://github.com/metasequoiaime/MSIME-Apple) and [MSIME-Linux](https://github.com/metasequoiaime/MSIME-Linux).
+General IME engine shared by the Metasequoia IME frontends: [MSIME-Windows](https://github.com/metasequoiaime/MSIME-Windows) (through [its server/ component](https://github.com/metasequoiaime/MSIME-Windows/tree/develop/server)), [MSIME-Apple](https://github.com/metasequoiaime/MSIME-Apple) and [MSIME-Linux](https://github.com/metasequoiaime/MSIME-Linux).
 
 ## 构建与测试
 
@@ -67,7 +67,7 @@ cmake --build build --config Release --parallel
 ctest --test-dir build -C Release --output-on-failure --timeout 20
 ```
 
-`ctest` 默认跑 13 个测试目标：`segmentation_contract`、`windows_ipc_contract`、`platform_api`、`data_path`、`engine_smoke`、`input_session`、`frequency_input_session`、`english_input_session`、`mixed_expressive_input_session`、`jianpin_input_session`、`temporary_input_session`、`local_modes`、`online_input_session`。
+`ctest` 默认跑 15 个根工程测试目标：`segmentation_contract`、`windows_ipc_contract`、`punctuation_contract`、`platform_api`、`data_path`、`candidate_removal`、`engine_smoke`、`input_session`、`frequency_input_session`、`english_input_session`、`mixed_expressive_input_session`、`jianpin_input_session`、`temporary_input_session`、`local_modes`、`online_input_session`。Voice 目标在启用 Voice 的独立构建中另行注册。
 
 ## tests/ 下那套独立工程
 

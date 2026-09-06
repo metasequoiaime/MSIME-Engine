@@ -299,14 +299,42 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
         result.insert(result.end(), partial_result.begin(), partial_result.end());
     }
 
-    if (quanpin::has_only_complete_pinyin_segments(segments))
+    if (segments.size() >= 3 && quanpin::has_only_complete_pinyin_segments(segments))
     {
-        const quanpin::WordLatticeOptions lattice_options;
+        // Keep one local Google-Pinyin sentence as the primary whole-sentence
+        // suggestion.  The lattice is a secondary source; it should add only
+        // its best path rather than filling the candidate page with near-
+        // duplicate low-quality sentences.
+        const std::string normalized = remove_delimiters(segmentation.empty() ? raw_input : segmentation);
+        const std::string google_sentence = search_sentence_from_ime_engine(normalized);
+        if (!google_sentence.empty())
+        {
+            const auto duplicate = std::find_if(result.begin(), result.end(),
+                                                [&](const WordItem &item) { return item.word == google_sentence; });
+            if (duplicate == result.end())
+                result.insert(result.begin(), WordItem(segmentation.empty() ? raw_input : segmentation, google_sentence,
+                                                       1, CandidateSource::Fallback));
+        }
+
+        quanpin::WordLatticeOptions lattice_options;
+        lattice_options.nbest = 1;
         quanpin::merge_lattice_candidates(result, segments,
                                           quanpin::make_lattice_db_lookup(db_, statement_cache_,
                                                                           quanpin::QuerySource::Quanpin,
                                                                           lattice_options.span_limit),
                                           segmentation.empty() ? raw_input : segmentation, lattice_options);
+        if (!google_sentence.empty())
+        {
+            const auto google = std::find_if(result.begin(), result.end(), [&](const WordItem &item) {
+                return item.word == google_sentence && item.source == CandidateSource::Fallback;
+            });
+            if (google != result.end() && google != result.begin())
+            {
+                WordItem preferred = std::move(*google);
+                result.erase(google);
+                result.insert(result.begin(), std::move(preferred));
+            }
+        }
     }
 
     if (result.size() < kSparsePinyinFallbackThreshold)

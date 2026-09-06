@@ -3,8 +3,8 @@
 [中文 README](README.md) · [Website](https://msime.app)
 
 <!-- badges:start -->
-[![CI](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/ci.yml?branch=main&label=CI)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/ci.yml)
-[![CodeQL](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/codeql.yml?branch=main&label=CodeQL)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/codeql.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/ci.yml?branch=develop&label=CI)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/ci.yml)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/codeql.yml?branch=develop&label=CodeQL)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/codeql.yml)
 [![License](https://img.shields.io/github/license/metasequoiaime/MSIME-Engine)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/metasequoiaime/MSIME-Engine?style=flat)](https://github.com/metasequoiaime/MSIME-Engine/stargazers)
 <!-- badges:end -->
@@ -37,7 +37,7 @@ ctest --test-dir build --output-on-failure --timeout 20
 
 On Windows, pass `-DCMAKE_TOOLCHAIN_FILE` for vcpkg; on macOS, `-DCMAKE_PREFIX_PATH="$(brew --prefix)"`. The Chinese README has the exact per-platform invocations.
 
-`ctest` runs 13 targets covering segmentation, the IPC contract, sessions and the local query modes. `tests/` additionally holds a separate Windows-only project that CI does **not** build — add new tests to the targets registered in the root `CMakeLists.txt` so they actually run.
+`ctest` runs 15 root targets covering segmentation, the IPC and punctuation contracts, candidate removal, sessions and the local query modes. Voice targets are registered separately when the optional Voice build is enabled. `tests/` additionally holds a separate Windows-only project that CI does **not** build — add new tests to the targets registered in the root `CMakeLists.txt` so they actually run.
 
 ## Contract rules
 

@@ -147,6 +147,12 @@ if(BUILD_TESTING)
     add_executable(test_windows_ipc_contract contracts/tests/windows_ipc_contract.cpp)
     add_test(NAME windows_ipc_contract COMMAND test_windows_ipc_contract)
 
+    add_executable(test_punctuation_contract contracts/tests/punctuation_contract.cpp)
+    if(MSVC)
+        target_compile_options(test_punctuation_contract PRIVATE /utf-8)
+    endif()
+    add_test(NAME punctuation_contract COMMAND test_punctuation_contract)
+
     add_executable(test_platform_api tests/src/test_platform_api.cpp tests/src/test_public_session.cpp)
     target_link_libraries(test_platform_api PRIVATE MetasequoiaIme::Engine)
     add_test(NAME platform_api COMMAND test_platform_api)

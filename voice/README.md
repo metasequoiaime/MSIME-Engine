@@ -53,6 +53,15 @@ std::string text = recognizer.recognize(pcm); // worker queue, mono 16 kHz float
 
 `CloudSttWorker` supports multipart `file` + `model` with JSON `text`, `transcription` or `result.text` responses. This is a protocol adapter, not a claim that every provider supports that protocol. Endpoints/models are host configuration; the token-only constructor retains the old SiliconFlow defaults for the imported Windows host. Windows-specific WebSocket/Doubao transport remains in MSIME-Windows/server; the public codecs support hosts that retain their own transport.
 
+### Streaming scope
+
+Streaming recognition is currently a Windows product capability, implemented by
+`MSIME-Windows/server`. The shared `MetasequoiaIme::Voice` API intentionally provides bounded,
+one-shot HTTP recognition; it does not expose a streaming transport or partial-text commit
+semantics. macOS and Linux must not assume that the shared library supplies Windows' incremental
+transcription behavior. Making streaming shared is a future cross-repository API and frontend
+change, not a drop-in provider replacement.
+
 `provider_protocol.h` exposes the same multipart and JSON codecs to hosts with an existing HTTP transport. `make_transcription_request` takes an encoded WAV (up to 20 MiB), preserves binary bytes and accepts an optional language field; omit language for services that reject it. `make_polish_request` sends the supplied user message verbatim, so hosts retain their prompt/delimiter policy. Response parsers reject malformed, missing, empty or oversized text responses with `VoiceError`. Hosts retain endpoint validation, credentials, timeouts, cancellation, status checks and stricter upload/response limits. The PCM recognizer still enforces the 60-second contract below.
 
 Each request has a timeout and optional shared atomic cancellation flag. Set that flag to abort an in-flight request; a cancelled flag stays cancelled until the host supplies a new one. Recognition errors throw `VoiceError`. `TextPolisher` returns the original text on failure, timeout, cancellation or an empty result. It never logs tokens, audio or response bodies. Redirects are rejected, HTTP status is checked and responses are capped at 1 MiB.
@@ -78,6 +87,6 @@ A product host must declare `NSMicrophoneUsageDescription` and request audio acc
 
 The original standalone UI and hotkeys remain under `platforms/windows/`. Build it with `MSIME_VOICE_WINDOWS_APP=ON` and `VCPKG_MANIFEST_FEATURES=windows-app`. It links the shared targets. See [the imported usage guide](platforms/windows/README.md) for the asset/config layout. Use the CMake commands in that guide from the Engine root. Obsolete developer scripts and templates were removed: their environment generator overwrote this public CMake project with the old standalone project. Their original versions remain in Git history.
 
-The Windows product host is maintained in [MSIME-Windows/server](https://github.com/metasequoiaime/MSIME-Windows/tree/main/server), and platform consumers pin merged Engine commits. Common capture, WAV and provider codecs belong here; Windows keeps its evolved provider transport, native interaction and streaming behavior. The old standalone VoiceInput and Server repositories are archived; their existing releases remain available.
+The Windows product host is maintained in [MSIME-Windows/server](https://github.com/metasequoiaime/MSIME-Windows/tree/develop/server), and platform consumers pin merged Engine commits. Common capture, WAV and provider codecs belong here; Windows keeps its evolved provider transport, native interaction and streaming behavior. The old standalone VoiceInput and Server repositories are archived; their existing releases remain available.
 
 Original VoiceInput history and GPL-3.0 `LICENSE` are preserved; third-party libraries retain their own licenses. Import source: `413f734e1d4694748d3cf88b8df95f37528e8a97` in `metasequoiaime/MetasequoiaVoiceInput`.
