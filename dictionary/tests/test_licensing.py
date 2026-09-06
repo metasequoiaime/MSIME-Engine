@@ -27,14 +27,19 @@ class Defaults(unittest.TestCase):
             self.assertTrue(is_excluded(identifier), identifier)
 
     def test_the_opt_in_turns_every_exclusion_off(self):
-        for value in ('1', 'yes', 'true'):
+        for value in ('1', 'yes', 'true', 'TRUE', 'On', ' 1 '):
             os.environ[ENV_FLAG] = value
             self.assertTrue(include_unlicensed(), value)
             self.assertEqual(describe_exclusions(), [])
-        # Explicitly-off spellings must not read as an opt-in.
-        for value in ('', '0', 'false', 'False'):
+
+    def test_anything_not_an_explicit_yes_leaves_the_exclusions_on(self):
+        # The "on" position of this switch is what puts unlicensed data into a build, so an
+        # unrecognised value has to fall on the safe side. A denylist of falsey spellings would
+        # read `no`, `off` and a typo as an opt-in.
+        for value in ('', '0', 'false', 'False', 'FALSE', 'no', 'off', 'nope', 'disabled', '2'):
             os.environ[ENV_FLAG] = value
             self.assertFalse(include_unlicensed(), value)
+            self.assertTrue(is_excluded('rime-jp_sela'), value)
 
     def test_licensed_inputs_are_never_excluded(self):
         for identifier in ('cn/BaseDictIceV1.txt', 'cn/Wubi86.txt', 'en/BaseDictIceEn.txt', 'ECDICT'):

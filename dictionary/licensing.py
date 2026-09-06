@@ -44,9 +44,16 @@ FALLBACKS: dict[str, str | None] = {
 }
 
 
+# Only these spellings turn the exclusions off. An allowlist rather than a denylist of falsey
+# spellings, because the "on" position of this switch is the one that puts data with no
+# redistribution grant into a build: anything unrecognised -- `no`, `off`, `FALSE`, a typo -- has to
+# land on the safe side, not enable the risky behaviour by accident.
+TRUE_SPELLINGS = frozenset({"1", "true", "yes", "on"})
+
+
 def include_unlicensed() -> bool:
     """True when the caller has explicitly asked for a complete, non-redistributable build."""
-    return os.environ.get(ENV_FLAG, "") not in ("", "0", "false", "False")
+    return os.environ.get(ENV_FLAG, "").strip().lower() in TRUE_SPELLINGS
 
 
 def is_excluded(identifier: str) -> bool:
