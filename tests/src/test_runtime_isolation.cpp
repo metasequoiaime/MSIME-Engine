@@ -397,6 +397,80 @@ void test_runtime_isolation()
             "INSERT INTO english_words(word,display,weight) VALUES('help','help',5);");
     const auto pin_main_bytes = bytes(pin_resources / assets::main_dictionary);
     const auto pin_english_bytes = bytes(pin_resources / assets::english_dictionary);
+    for (const auto scheme : {SchemeType::Quanpin, SchemeType::Shuangpin, SchemeType::Wubi})
+    {
+        const auto suffix = std::to_string(static_cast<int>(scheme));
+        const auto user = root / ("position-user-" + suffix);
+        const auto cache = root / ("position-cache-" + suffix);
+        SessionOptions options;
+        options.paths = prepare_runtime_paths(pin_resources, user, cache, "v1");
+        options.scheme = scheme;
+        options.learning = false;
+        const auto input = scheme == SchemeType::Quanpin ? "nihao" : (scheme == SchemeType::Shuangpin ? "nihc" : "wq");
+        {
+            Session session(options);
+            type(session, input);
+            const auto before = session.snapshot();
+            const auto found = std::find_if(before.candidates.begin(), before.candidates.end(),
+                                            [](const auto &word) { return word.word == "拟好"; });
+            require(found != before.candidates.end(), "Missing fixed-position fixture");
+            const auto index = static_cast<std::size_t>(found - before.candidates.begin());
+            require(!session.fix_position(index, 0).handled && !session.fix_position(index, 6).handled,
+                    "Invalid fixed slot accepted");
+            const auto fixed = session.fix_position(index, 1);
+            require(fixed.handled && !fixed.commit && !fixed.diagnostic &&
+                        session.snapshot().preedit == before.preedit &&
+                        session.snapshot().candidates.front().word == "拟好" &&
+                        session.snapshot().candidates.front().fixed_position == 1,
+                    "Fixed slot did not refresh snapshot");
+            execute(options.paths.user(assets::user_journal),
+                    "CREATE TRIGGER reject_fixed BEFORE INSERT ON fixed_candidate_positions "
+                    "BEGIN SELECT RAISE(ABORT,'fixture rejection'); END;");
+            const auto rejected = session.fix_position(0, 2);
+            require(rejected.handled && rejected.diagnostic && !rejected.commit &&
+                        session.snapshot().candidates.front().fixed_position == 1,
+                    "Failed fixed-slot write changed the snapshot or hid its diagnostic");
+            execute(options.paths.user(assets::user_journal), "DROP TRIGGER reject_fixed");
+            auto independent_options = options;
+            independent_options.paths =
+                prepare_runtime_paths(pin_resources, root / ("independent-position-user-" + suffix),
+                                      root / ("independent-position-cache-" + suffix), "v1");
+            Session independent(independent_options);
+            type(independent, input);
+            require(independent.snapshot().candidates.front().word == "你好",
+                    "Fixed position leaked into another user layout");
+        }
+        options.paths = prepare_runtime_paths(pin_resources, user, cache, "v2");
+        Session replayed(options);
+        type(replayed, input);
+        require(replayed.snapshot().candidates.front().word == "拟好", "Fixed slot lost after generation change");
+        const auto cleared = replayed.clear_position(0);
+        require(cleared.handled && !cleared.diagnostic && !cleared.commit &&
+                    replayed.snapshot().candidates.front().word == "你好",
+                "Clearing slot did not restore dictionary order");
+    }
+    for (const int mode : {0, 1, 2})
+    {
+        SessionOptions options;
+        options.paths = prepare_runtime_paths(pin_resources, root / ("fixed-english-" + std::to_string(mode)),
+                                              root / ("fixed-english-cache-" + std::to_string(mode)), "v1");
+        options.learning = false;
+        options.english.mixed_candidates = mode == 2;
+        Session session(options);
+        if (mode == 1)
+            session.character('Y', true);
+        else if (mode == 0)
+            session.set_dedicated_english(true);
+        type(session, "he");
+        const auto before = session.snapshot();
+        const auto found = std::find_if(before.candidates.begin(), before.candidates.end(),
+                                        [](const auto &word) { return word.word == "help"; });
+        require(found != before.candidates.end(), "Missing English fixed-slot fixture");
+        const auto fixed = session.fix_position(static_cast<std::size_t>(found - before.candidates.begin()), 1);
+        require(fixed.handled && !fixed.diagnostic && session.snapshot().candidates.front().word == "help",
+                "English fixed slot was not applied");
+        require(session.clear_position(0).handled, "English fixed slot could not be cleared");
+    }
     const auto pin_word = [&](Session &session, const std::string &word) {
         const auto before = session.snapshot();
         const auto selected = std::find_if(before.candidates.begin(), before.candidates.end(),

@@ -17,6 +17,7 @@ class Session::Impl
             throw std::invalid_argument("Invalid session options");
         session.set_local_mode_options(options.local_modes);
         session.set_mixed_expressive_options(options.expressive);
+        session.enable_fixed_positions();
     }
     InputSession session;
 };
@@ -60,6 +61,16 @@ KeyResult Session::pin(std::size_t index)
 KeyResult Session::remove(std::size_t index)
 {
     return impl_->session.remove_candidate(index);
+}
+KeyResult Session::fix_position(std::size_t index, int position)
+{
+    if (position < 1 || position > 5)
+        return {};
+    return impl_->session.set_candidate_position(index, position);
+}
+KeyResult Session::clear_position(std::size_t index)
+{
+    return impl_->session.set_candidate_position(index, 0);
 }
 KeyResult Session::finish()
 {

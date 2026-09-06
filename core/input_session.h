@@ -52,6 +52,8 @@ class InputSession
     KeyResult select_candidate_edge(std::size_t index, CandidateEdge edge);
     KeyResult pin_candidate(std::size_t index);
     KeyResult remove_candidate(std::size_t index);
+    KeyResult set_candidate_position(std::size_t index, int position);
+    void enable_fixed_positions();
     void set_shuangpin_helpcode_enabled(bool enabled);
     void set_quanpin_helpcode_enabled(bool enabled);
     static bool is_supported_helpcode_schema(const std::string &schema);
@@ -186,6 +188,9 @@ class InputSession
     std::optional<std::size_t> caret_;
     std::optional<std::string> update_local_candidates();
     void update_mixed_candidates();
+    void apply_candidate_positions(std::vector<WordItem> &items);
+    std::string position_context(bool english) const;
+    bool fixed_positions_enabled_ = false;
     void update_dedicated_english_candidates();
     void reset_composition();
     void discard_abandoned_phrase_progress();

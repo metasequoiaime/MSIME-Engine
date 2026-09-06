@@ -68,6 +68,16 @@ candidate-index actions against their displayed snapshot.
 
 ## Resources and user state
 
+`fix_position(index, slot)` and `clear_position(index)` manage slots 1–5 for dictionary
+candidates in the current ranking context. They reuse the existing fixed-position table
+in the session's user journal, not a new resource format. Successful actions refresh the
+snapshot without committing or changing preedit; persistence failure returns a diagnostic.
+Unsupported sources and invalid indices/slots are unhandled. Fixed positions are applied
+during candidate refresh, so snapshot reads perform no extra database work. The public
+facade enables this ordering; compatibility InputSession callers retain their host-side
+ordering until migration. Pinyin, Wubi, super-jianpin and English contexts use the captured
+user layout, including temporary and mixed English candidates.
+
 The host first verifies the downloaded bundle using `contracts/assets/product.py` and its
 pinned ZIP digest, extracts it into an immutable resource directory, and supplies that
 content ID to `prepare_runtime_paths`. All directory paths must be absolute. For this

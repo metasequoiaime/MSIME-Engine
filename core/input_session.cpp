@@ -366,6 +366,7 @@ void InputSession::set_shuangpin_helpcode_enabled(bool enabled)
     }
     shuangpin_helpcode_enabled_ = enabled;
     engine_.set_shuangpin_helpcode_enabled(enabled);
+    update_mixed_candidates();
     online_requests_.invalidate();
 }
 
@@ -377,6 +378,7 @@ void InputSession::set_quanpin_helpcode_enabled(bool enabled)
     }
     quanpin_helpcode_enabled_ = enabled;
     engine_.set_quanpin_helpcode_enabled(enabled);
+    update_mixed_candidates();
     online_requests_.invalidate();
 }
 
@@ -621,9 +623,10 @@ const std::vector<WordItem> &InputSession::candidates() const
     {
         return local_candidates_;
     }
-    if ((english_input_options_.mixed_candidates || mixed_expressive_options_.emoji_candidates ||
-         mixed_expressive_options_.kaomoji_candidates) &&
-        (scheme() == SchemeType::Quanpin || scheme() == SchemeType::Shuangpin))
+    if (fixed_positions_enabled_ ||
+        ((english_input_options_.mixed_candidates || mixed_expressive_options_.emoji_candidates ||
+          mixed_expressive_options_.kaomoji_candidates) &&
+         (scheme() == SchemeType::Quanpin || scheme() == SchemeType::Shuangpin)))
     {
         return mixed_candidates_;
     }
@@ -788,6 +791,7 @@ std::optional<std::string> InputSession::update_local_candidates()
     auto result = candidate_queries_.local(local_input_mode_, local_preedit_, scheme(), local_date_time_provider_,
                                            engine_.get_candidates());
     local_candidates_ = std::move(result.candidates);
+    apply_candidate_positions(local_candidates_);
     return std::move(result.diagnostic);
 }
 
@@ -796,6 +800,7 @@ void InputSession::update_mixed_candidates()
     mixed_candidates_ = candidate_queries_.mixed(engine_.get_candidates(), engine_.get_request().raw_input, scheme(),
                                                  english_input_options_, mixed_expressive_options_,
                                                  dedicated_english_mode_, local_input_mode_);
+    apply_candidate_positions(mixed_candidates_);
 }
 
 void InputSession::update_dedicated_english_candidates()
@@ -810,6 +815,7 @@ void InputSession::update_dedicated_english_candidates()
     std::transform(prefix.begin(), prefix.end(), prefix.begin(),
                    [](unsigned char character) { return static_cast<char>(std::tolower(character)); });
     dedicated_english_candidates_ = candidate_queries_.english_dictionary().query_prefix(prefix, 1000);
+    apply_candidate_positions(dedicated_english_candidates_);
     if (dedicated_english_candidates_.empty())
     {
         dedicated_english_candidates_.emplace_back("", dedicated_english_preedit_, 0, CandidateSource::Generated);
@@ -964,6 +970,7 @@ void InputSession::set_quanpin_autocorrect_enabled(bool enabled)
 {
     quanpin_autocorrect_enabled_ = enabled;
     engine_.set_quanpin_autocorrect_enabled(enabled);
+    update_mixed_candidates();
 }
 
 } // namespace metasequoia
