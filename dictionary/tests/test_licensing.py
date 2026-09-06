@@ -105,5 +105,53 @@ class Driver(unittest.TestCase):
         self.assertEqual(build_all.STAGES_BY_NAME['japanese-lexicon'].needs_reference, 'rime-jp_sela')
 
 
+class Verification(unittest.TestCase):
+    """The row-count floors were calibrated against the complete build. A redistributable build
+    legitimately produces fewer rows and no japanese_lexicon table, so checking it against those
+    floors reports a correct build as broken -- which is exactly what CI did the first time."""
+
+    @staticmethod
+    def thresholds(complete: bool) -> dict:
+        """Reload the verifier under one setting and copy out what it decided.
+
+        Values, not the module: reloading again rebinds the same module object, so holding two
+        references would leave both showing whichever setting was loaded last.
+        """
+        import importlib
+        saved = os.environ.pop(ENV_FLAG, None)
+        if complete:
+            os.environ[ENV_FLAG] = '1'
+        try:
+            sys.path.insert(0, str(REPO_ROOT / 'tools'))
+            import verify_dictionaries
+            module = importlib.reload(verify_dictionaries)
+            return {
+                'quanpin': module.QUANPIN_MINIMUM_ROWS,
+                'msime_tables': [name for name, _ in module.EXPECTED_TABLES['msime.db']],
+                'english': dict(module.EXPECTED_TABLES['english.db']),
+            }
+        finally:
+            os.environ.pop(ENV_FLAG, None)
+            if saved is not None:
+                os.environ[ENV_FLAG] = saved
+
+    def test_the_japanese_table_is_only_required_when_its_source_is_included(self):
+        self.assertNotIn('japanese_lexicon', self.thresholds(False)['msime_tables'])
+        self.assertIn('japanese_lexicon', self.thresholds(True)['msime_tables'])
+        # The tables that do not depend on an unlicensed input are required either way.
+        for table in ('wubi86', 'quick_parases'):
+            self.assertIn(table, self.thresholds(False)['msime_tables'])
+
+    def test_floors_are_lower_for_a_redistributable_build_but_still_meaningful(self):
+        redistributable, complete = self.thresholds(False), self.thresholds(True)
+        self.assertLess(redistributable['quanpin'], complete['quanpin'])
+        # 911,991 rows measured; the floor sits below that and far above an empty table.
+        self.assertLess(redistributable['quanpin'], 911_991)
+        self.assertGreater(redistributable['quanpin'], 100_000)
+        for table, lower in redistributable['english'].items():
+            self.assertLessEqual(lower, complete['english'][table], table)
+            self.assertGreater(lower, 0, table)
+
+
 if __name__ == '__main__':
     unittest.main()
