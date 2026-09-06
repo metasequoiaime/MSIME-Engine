@@ -37,6 +37,7 @@ set(METASEQUOIA_IME_ENGINE_SOURCES
     core/ime_session.cpp
     core/input_session.cpp
     core/input_session_composition.cpp
+    core/input_session_candidates.cpp
     english/english_dictionary.cpp
     japanese/japanese_matrix_search.cpp
     japanese/japanese_sentence_decoder.cpp
@@ -153,6 +154,10 @@ if(BUILD_TESTING)
     target_compile_definitions(test_data_path PRIVATE METASEQUOIA_TEST_PINYIN_MODEL="${CMAKE_CURRENT_SOURCE_DIR}/googlepinyinime-rev/data/dict_pinyin.dat")
     target_link_libraries(test_data_path PRIVATE MetasequoiaIme::Engine)
     add_test(NAME data_path COMMAND test_data_path)
+
+    add_executable(test_candidate_removal tests/src/test_candidate_removal.cpp)
+    target_link_libraries(test_candidate_removal PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME candidate_removal COMMAND test_candidate_removal)
 
     add_executable(test_engine_smoke tests/src/test_engine_smoke.cpp)
     target_link_libraries(test_engine_smoke PRIVATE MetasequoiaIme::Engine)

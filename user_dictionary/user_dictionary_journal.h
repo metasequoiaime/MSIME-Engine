@@ -54,6 +54,11 @@ bool adjust_english_candidate_ranking(const std::string &english_db_path, const 
                                       const std::string &entry_key, const std::string &value,
                                       const std::string &mode, int linear_step, int trigger_count,
                                       bool force_top, bool *ranking_changed = nullptr);
+// Delete an exact dictionary key and persist its tombstone in one attached-database
+// transaction. Supports Pinyin, Wubi and English; false preserves candidate rows and journal operations
+// on statement/commit failures (not a cross-file power-loss guarantee in WAL mode).
+bool delete_dictionary_candidate(const std::string &dictionary_db_path, const std::string &user_db_path,
+                                  DictionaryKind kind, const std::string &entry_key, const std::string &value);
 bool delete_english_candidate(const std::string &english_db_path, const std::string &user_db_path,
                               const std::string &entry_key, const std::string &value);
 bool learn_entered_english_word(const std::string &english_db_path, const std::string &user_db_path,

@@ -42,6 +42,16 @@ an English completion ahead of the temporary mode's raw-text entry. Invalid indi
 a failed write returns a handled result with a diagnostic and no commit. Hosts serialize this
 index action against the snapshot they display, just as they do for `select(index)`.
 
+`remove(index)` deletes a visible dictionary phrase without committing text or changing preedit.
+It uses the exact canonical pinyin key (or Wubi/English key), writes a deletion journal entry,
+and refreshes candidates. Automatic learning may be disabled. Single-character non-English
+candidates and non-dictionary sources are protected and return unhandled, as do invalid indices.
+A database or journal failure returns a diagnostic with no commit. The working-dictionary delete
+and journal entry share an attached SQLite transaction, so a statement/commit failure rolls back
+both; this does not promise multi-file power-loss atomicity when SQLite uses WAL. Existing
+quanpin/shuangpin and English deletion callers share this persistence helper. Hosts serialize
+candidate-index actions against their displayed snapshot.
+
 ## Resources and user state
 
 The host first verifies the downloaded bundle using `contracts/assets/product.py` and its
