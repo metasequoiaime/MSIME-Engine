@@ -5,13 +5,20 @@ on:
     branches: [main]
   pull_request:
 
+  merge_group:
+
 permissions:
   contents: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   linux:
     name: Ubuntu x64
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -29,6 +36,7 @@ jobs:
   macos:
     name: macOS arm64
     runs-on: macos-15
+    timeout-minutes: 60
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -48,6 +56,7 @@ jobs:
   windows:
     name: Windows x64
     runs-on: windows-2025
+    timeout-minutes: 60
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -69,6 +78,7 @@ jobs:
   webview-contract:
     name: Shared WebView bindings
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - run: python3 contracts/dictionary/generate.py --check
@@ -78,3 +88,27 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install --no-install-recommends -y cmake libboost-json-dev
       - run: cmake -S contracts/webview -B build-webview && cmake --build build-webview
       - run: ctest --test-dir build-webview --output-on-failure
+
+  sanitizers:
+    name: Linux ASan and UBSan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y cmake ninja-build libboost-dev libfmt-dev libspdlog-dev libsqlite3-dev
+      - name: Configure instrumented debug build
+        run: >-
+          cmake -S . -B build-sanitizers -G Ninja -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
+          -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+      - name: Build
+        run: cmake --build build-sanitizers --parallel 4
+      - name: Test memory safety and undefined behavior
+        env:
+          ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+        run: ctest --test-dir build-sanitizers --output-on-failure --no-tests=error --timeout 60
