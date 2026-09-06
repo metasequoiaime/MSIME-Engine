@@ -71,7 +71,8 @@ int main()
     auto incomplete = frames;
     incomplete.erase(incomplete.begin());
     CHECK(FanyImeVoiceCompositionPipe::AssembleFrames(incomplete).empty());
-    // A middle frame legally carries flags 0, so an unterminated packet must be rejected on the chunk, not accepted because data[0] happens to be a NUL.
+    // A middle frame legally carries flags 0, so an unterminated packet must be rejected on the chunk, not accepted
+    // because data[0] happens to be a NUL.
     std::array<wchar_t, FanyImeVoiceCompositionPipe::kPacketChars> packet{};
     packet.fill(L'x');
     packet[0] = 0; // middle frame

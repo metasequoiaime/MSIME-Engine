@@ -42,8 +42,8 @@ const std::unordered_set<std::string> &shuangpin_pinyin_set()
         // for shuangpin validation.  The full quanpin table accepts a few extra
         // spellings whose presence changes ambiguous shuangpin segmentation.
         result.insert("eng");
-        for (const char *pinyin : {"chua", "den", "fiao", "jve", "lo", "lue", "nou", "nue", "nun",
-                                   "qve", "xve", "yo", "yve", "zhei"})
+        for (const char *pinyin :
+             {"chua", "den", "fiao", "jve", "lo", "lue", "nou", "nue", "nun", "qve", "xve", "yo", "yve", "zhei"})
         {
             result.erase(pinyin);
         }
@@ -291,9 +291,8 @@ std::string ShuangpinUtil::GetFullHelpCodes(std::string pinyin)
 
     const bool reverse = pinyin[pinyin.size() - 2] >= 'A' && pinyin[pinyin.size() - 2] <= 'Z';
     std::string help_codes = pinyin.substr(pinyin.size() - 2, 2);
-    std::transform(help_codes.begin(), help_codes.end(), help_codes.begin(), [](unsigned char ch) {
-        return static_cast<char>(std::tolower(ch));
-    });
+    std::transform(help_codes.begin(), help_codes.end(), help_codes.begin(),
+                   [](unsigned char ch) { return static_cast<char>(std::tolower(ch)); });
     if (reverse)
     {
         std::swap(help_codes[0], help_codes[1]);

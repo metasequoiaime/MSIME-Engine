@@ -15,15 +15,21 @@
 namespace
 {
 using namespace metasequoia;
-void require(bool value, const char *message) { if (!value) throw std::runtime_error(message); }
+void require(bool value, const char *message)
+{
+    if (!value)
+        throw std::runtime_error(message);
+}
 void execute(const std::filesystem::path &path, const std::string &sql)
 {
     sqlite3 *db = nullptr;
-    if (sqlite3_open(path_to_utf8(path).c_str(), &db) != SQLITE_OK) throw std::runtime_error("fixture open failed");
+    if (sqlite3_open(path_to_utf8(path).c_str(), &db) != SQLITE_OK)
+        throw std::runtime_error("fixture open failed");
     const int result = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, nullptr);
     const std::string error = sqlite3_errmsg(db);
     sqlite3_close(db);
-    if (result != SQLITE_OK) throw std::runtime_error(error);
+    if (result != SQLITE_OK)
+        throw std::runtime_error(error);
 }
 std::string bytes(const std::filesystem::path &path)
 {
@@ -35,42 +41,59 @@ void make_japanese_model(const std::filesystem::path &path, const std::string &s
     // One-token MSJPDT1 fixture, with explicit little-endian fields rather than native packing.
     std::ofstream output(path, std::ios::binary);
     const auto integer = [&](std::uint64_t value, int width) {
-        for (int i = 0; i < width; ++i) output.put(static_cast<char>((value >> (i * 8)) & 255));
+        for (int i = 0; i < width; ++i)
+            output.put(static_cast<char>((value >> (i * 8)) & 255));
     };
     const std::string reading = "かな";
     output.write("MSJPDT1", 8);
-    integer(1, 4); integer(1, 4); integer(1, 4); integer(0, 4);
-    integer(56, 8); integer(76, 8); integer(78, 8); integer(reading.size() + surface.size(), 8);
-    integer(0, 4); integer(reading.size(), 2); integer(reading.size(), 4); integer(surface.size(), 2);
-    integer(0, 2); integer(0, 2); integer(1, 4);
+    integer(1, 4);
+    integer(1, 4);
+    integer(1, 4);
+    integer(0, 4);
+    integer(56, 8);
+    integer(76, 8);
+    integer(78, 8);
+    integer(reading.size() + surface.size(), 8);
+    integer(0, 4);
+    integer(reading.size(), 2);
+    integer(reading.size(), 4);
+    integer(surface.size(), 2);
+    integer(0, 2);
+    integer(0, 2);
+    integer(1, 4);
     integer(0, 2);
     output << reading << surface;
 }
 void make_resources(const std::filesystem::path &path, const std::string &word)
 {
     std::filesystem::create_directories(path / "helpcodes");
-    execute(path / assets::main_dictionary,
-        "CREATE TABLE tbl_1_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
-        "INSERT INTO tbl_1_n VALUES('ni','n','" + word + "',10000),('ni','n','拟',9000);"
-        "CREATE TABLE quick_parases(key TEXT,value TEXT,weight INTEGER);"
-        "INSERT INTO quick_parases VALUES('x','" + word + "短语',10);");
-    require(EnglishDictionary::ensure_schema(path_to_utf8(path / assets::english_dictionary)), "English fixture failed");
-    execute(path / assets::english_dictionary, "INSERT INTO english_words(word,display,weight) VALUES('hello','hello',10);");
+    execute(path / assets::main_dictionary, "CREATE TABLE tbl_1_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                                            "INSERT INTO tbl_1_n VALUES('ni','n','" +
+                                                word +
+                                                "',10000),('ni','n','拟',9000);"
+                                                "CREATE TABLE quick_parases(key TEXT,value TEXT,weight INTEGER);"
+                                                "INSERT INTO quick_parases VALUES('x','" +
+                                                word + "短语',10);");
+    require(EnglishDictionary::ensure_schema(path_to_utf8(path / assets::english_dictionary)),
+            "English fixture failed");
+    execute(path / assets::english_dictionary,
+            "INSERT INTO english_words(word,display,weight) VALUES('hello','hello',10);");
     std::ofstream(path / assets::translations) << "hello\t" << word << "翻译\n";
     std::ofstream(path / assets::helpcode_lantian) << word << "=aa\n拟=cc\n";
     std::ofstream(path / assets::helpcode_xiaohe) << word << "=cc\n拟=aa\n";
 }
 void type(Session &session, const std::string &input)
 {
-    for (char ch : input) session.character(ch);
+    for (char ch : input)
+        session.character(ch);
 }
-}
+} // namespace
 
 void test_runtime_isolation()
 {
     using namespace metasequoia;
     const auto root = std::filesystem::temp_directory_path() /
-        ("msime-runtime-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+                      ("msime-runtime-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     test::ScopedDataDirectoryCleanup cleanup(root);
     const auto resource_a = root / std::filesystem::u8path("资源甲");
     const auto resource_b = root / std::filesystem::u8path("资源乙");
@@ -78,11 +101,17 @@ void test_runtime_isolation()
     make_resources(resource_b, "妮");
     make_japanese_model(resource_a / assets::japanese_model, "甲");
     make_japanese_model(resource_b / assets::japanese_model, "乙");
-    const auto reject_overlap = [&](const std::filesystem::path &resources,
-                                    const std::filesystem::path &user, const std::filesystem::path &cache) {
+    const auto reject_overlap = [&](const std::filesystem::path &resources, const std::filesystem::path &user,
+                                    const std::filesystem::path &cache) {
         bool rejected = false;
-        try { (void)prepare_runtime_paths(resources, user, cache, "overlap"); }
-        catch (const std::invalid_argument &) { rejected = true; }
+        try
+        {
+            (void)prepare_runtime_paths(resources, user, cache, "overlap");
+        }
+        catch (const std::invalid_argument &)
+        {
+            rejected = true;
+        }
         require(rejected, "Overlapping runtime roots were accepted");
         require(!std::filesystem::exists(user / "dictionaries/overlap"),
                 "Rejected runtime roots still published a generation");
@@ -93,10 +122,8 @@ void test_runtime_isolation()
     reject_overlap(resource_a, resource_a / "user", root / "separate-cache");
     reject_overlap(resource_a, root / "separate-user", resource_a / "cache");
     reject_overlap(resource_a, root, root / "separate-cache");
-    require(!std::filesystem::exists(root / "same-user-cache") &&
-            !std::filesystem::exists(root / "cache-parent") &&
-            !std::filesystem::exists(resource_a / "user") &&
-            !std::filesystem::exists(resource_a / "cache"),
+    require(!std::filesystem::exists(root / "same-user-cache") && !std::filesystem::exists(root / "cache-parent") &&
+                !std::filesystem::exists(resource_a / "user") && !std::filesystem::exists(resource_a / "cache"),
             "Path validation created directories before rejecting overlap");
 #ifndef _WIN32
     const auto resource_alias = root / "resource-alias";
@@ -168,7 +195,8 @@ void test_runtime_isolation()
         require(session.snapshot().editing_text == "i", "Forward delete removed the wrong character");
         session.character('n');
         require(session.snapshot().editing_text == "ni" && session.snapshot().caret_position == 1 &&
-                session.snapshot().candidates.front().word == "你", "Middle insertion did not refresh candidates");
+                    session.snapshot().candidates.front().word == "你",
+                "Middle insertion did not refresh candidates");
         require(!session.apply_online_candidate(*query, "旧响应", CandidateSource::CloudSuggestion),
                 "Editing back to the same text accepted an old online response");
         session.character('\'');
@@ -200,7 +228,8 @@ void test_runtime_isolation()
         session.command(Command::DeleteForward);
         session.character(payload.front());
         require(session.snapshot().editing_text == std::string(1, marker) + payload &&
-                session.snapshot().caret_position == 2, "Local-mode middle edit lost its source text");
+                    session.snapshot().caret_position == 2,
+                "Local-mode middle edit lost its source text");
         session.command(Command::Cancel);
         require(session.snapshot().editing_text.empty() && session.snapshot().caret_position == 0,
                 "Cancel retained local-mode editing state");
@@ -230,7 +259,8 @@ void test_runtime_isolation()
         session.command(Command::MoveHome);
         session.character('H');
         require(session.snapshot().editing_text == "Hello" && session.snapshot().caret_position == 1 &&
-                session.snapshot().candidates.front().word == "hello", "English middle edit lost case or candidates");
+                    session.snapshot().candidates.front().word == "hello",
+                "English middle edit lost case or candidates");
     }
     {
         execute(paths_a.dictionary(assets::main_dictionary),
@@ -243,12 +273,13 @@ void test_runtime_isolation()
         type(session, "nihao");
         const auto view = session.snapshot();
         const auto prefix = std::find_if(view.candidates.begin(), view.candidates.end(),
-                                        [](const auto &word) { return word.word == "你"; });
+                                         [](const auto &word) { return word.word == "你"; });
         require(prefix != view.candidates.end(), "Missing partial-selection fixture");
         session.command(Command::MoveHome);
         const auto selected = session.select(static_cast<std::size_t>(prefix - view.candidates.begin()));
         require(selected.commit == "你" && session.snapshot().editing_text == "hao" &&
-                session.snapshot().caret_position == 3, "Partial selection retained the old caret");
+                    session.snapshot().caret_position == 3,
+                "Partial selection retained the old caret");
         session.command(Command::MoveHome);
         session.command(Command::DeleteForward);
         session.character('h');
@@ -257,10 +288,15 @@ void test_runtime_isolation()
     require(paths_a.resources != paths_a.dictionaries && paths_a.cache != paths_a.dictionaries,
             "Mutable dictionaries must live separately from resources and cache");
     {
-        SessionOptions options_a; options_a.paths = paths_a; options_a.learning = false;
-        SessionOptions options_b; options_b.paths = paths_b; options_b.learning = false;
+        SessionOptions options_a;
+        options_a.paths = paths_a;
+        options_a.learning = false;
+        SessionOptions options_b;
+        options_b.paths = paths_b;
+        options_b.learning = false;
         Session a(options_a), b(options_b);
-        type(a, "ni"); type(b, "ni");
+        type(a, "ni");
+        type(b, "ni");
         require(a.snapshot().candidates.front().word == "你", "Session A used another resource directory");
         require(b.snapshot().candidates.front().word == "妮", "Session B used another resource directory");
         const auto query_a = a.online_query();
@@ -269,9 +305,11 @@ void test_runtime_isolation()
                 "Another session's online response was accepted");
         require(a.apply_online_candidate(*query_a, "本会话建议", CandidateSource::CloudSuggestion),
                 "Own online response was rejected");
-        a.command(Command::Cancel); b.command(Command::Cancel);
+        a.command(Command::Cancel);
+        b.command(Command::Cancel);
         require(a.set_helpcode_schema("lantian") && b.set_helpcode_schema("xiaohe"), "Cannot select helpcodes");
-        type(a, "niC"); type(b, "niC");
+        type(a, "niC");
+        type(b, "niC");
         require(a.snapshot().candidates.front().word == "拟", "Session A helpcode changed with B");
         require(b.snapshot().candidates.front().word == "妮", "Session B helpcode was not isolated");
         require(a.punctuation('"').commit == "拟“", "Punctuation did not flush composition");
@@ -289,18 +327,22 @@ void test_runtime_isolation()
         };
         auto first_session = std::async(std::launch::async, run_session, std::ref(a), "你");
         auto second_session = std::async(std::launch::async, run_session, std::ref(b), "妮");
-        first_session.get(); second_session.get();
+        first_session.get();
+        second_session.get();
         a.command(Command::Cancel);
-        a.character('K', true); a.character('x');
+        a.character('K', true);
+        a.character('x');
         require(a.snapshot().candidates.front().word == "你短语", "Local mode ignored runtime paths");
     }
     {
-        SessionOptions options; options.paths = paths_a; options.learning = false;
+        SessionOptions options;
+        options.paths = paths_a;
+        options.learning = false;
         Session session(options);
         type(session, "ni'ni");
         const auto view = session.snapshot();
         const auto selected = std::find_if(view.candidates.begin(), view.candidates.end(),
-            [](const auto &item) { return item.word == "拟"; });
+                                           [](const auto &item) { return item.word == "拟"; });
         require(selected != view.candidates.end(), "No alternate first-segment candidate");
         require(session.finish(static_cast<std::size_t>(selected - view.candidates.begin())).commit == "拟你",
                 "Finishing ignored the highlight or dropped the remaining segment");
@@ -326,14 +368,19 @@ void test_runtime_isolation()
                 "Leaving dedicated English left stale snapshot state");
     }
     {
-        SessionOptions options_a; options_a.paths = paths_a; options_a.scheme = SchemeType::JapaneseRomaji;
-        SessionOptions options_b; options_b.paths = paths_b; options_b.scheme = SchemeType::JapaneseRomaji;
+        SessionOptions options_a;
+        options_a.paths = paths_a;
+        options_a.scheme = SchemeType::JapaneseRomaji;
+        SessionOptions options_b;
+        options_b.paths = paths_b;
+        options_b.scheme = SchemeType::JapaneseRomaji;
         Session a(options_a), b(options_b);
-        type(a, "kana"); type(b, "kana");
+        type(a, "kana");
+        type(b, "kana");
         const auto has = [](const Session &session, const std::string &word) {
             const auto snapshot = session.snapshot();
             return std::any_of(snapshot.candidates.begin(), snapshot.candidates.end(),
-                [&](const auto &candidate) { return candidate.word == word; });
+                               [&](const auto &candidate) { return candidate.word == word; });
         };
         require(has(a, "甲") && !has(a, "乙"), "Japanese session A used another model");
         require(has(b, "乙") && !has(b, "甲"), "Japanese session B reused the first model");
@@ -342,12 +389,12 @@ void test_runtime_isolation()
     const auto pin_resources = root / "pin-resources";
     make_resources(pin_resources, "你");
     execute(pin_resources / assets::main_dictionary,
-        "CREATE TABLE tbl_2_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
-        "INSERT INTO tbl_2_n VALUES('ni''hao','nh','你好',10000),('ni''hao','nh','拟好',9000);"
-        "CREATE TABLE wubi86(key TEXT,value TEXT,weight INTEGER);"
-        "INSERT INTO wubi86 VALUES('wq','你好',10000),('wq','拟好',9000);");
+            "CREATE TABLE tbl_2_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+            "INSERT INTO tbl_2_n VALUES('ni''hao','nh','你好',10000),('ni''hao','nh','拟好',9000);"
+            "CREATE TABLE wubi86(key TEXT,value TEXT,weight INTEGER);"
+            "INSERT INTO wubi86 VALUES('wq','你好',10000),('wq','拟好',9000);");
     execute(pin_resources / assets::english_dictionary,
-        "INSERT INTO english_words(word,display,weight) VALUES('help','help',5);");
+            "INSERT INTO english_words(word,display,weight) VALUES('help','help',5);");
     const auto pin_main_bytes = bytes(pin_resources / assets::main_dictionary);
     const auto pin_english_bytes = bytes(pin_resources / assets::english_dictionary);
     for (const auto scheme : {SchemeType::Quanpin, SchemeType::Shuangpin, SchemeType::Wubi})
@@ -359,34 +406,35 @@ void test_runtime_isolation()
         options.paths = prepare_runtime_paths(pin_resources, user, cache, "v1");
         options.scheme = scheme;
         options.learning = false;
-        const auto input = scheme == SchemeType::Quanpin ? "nihao" :
-                           (scheme == SchemeType::Shuangpin ? "nihc" : "wq");
+        const auto input = scheme == SchemeType::Quanpin ? "nihao" : (scheme == SchemeType::Shuangpin ? "nihc" : "wq");
         {
             Session session(options);
             type(session, input);
             const auto before = session.snapshot();
             const auto found = std::find_if(before.candidates.begin(), before.candidates.end(),
-                                           [](const auto &word) { return word.word == "拟好"; });
+                                            [](const auto &word) { return word.word == "拟好"; });
             require(found != before.candidates.end(), "Missing fixed-position fixture");
             const auto index = static_cast<std::size_t>(found - before.candidates.begin());
             require(!session.fix_position(index, 0).handled && !session.fix_position(index, 6).handled,
                     "Invalid fixed slot accepted");
             const auto fixed = session.fix_position(index, 1);
             require(fixed.handled && !fixed.commit && !fixed.diagnostic &&
-                    session.snapshot().preedit == before.preedit &&
-                    session.snapshot().candidates.front().word == "拟好" &&
-                    session.snapshot().candidates.front().fixed_position == 1, "Fixed slot did not refresh snapshot");
+                        session.snapshot().preedit == before.preedit &&
+                        session.snapshot().candidates.front().word == "拟好" &&
+                        session.snapshot().candidates.front().fixed_position == 1,
+                    "Fixed slot did not refresh snapshot");
             execute(options.paths.user(assets::user_journal),
                     "CREATE TRIGGER reject_fixed BEFORE INSERT ON fixed_candidate_positions "
                     "BEGIN SELECT RAISE(ABORT,'fixture rejection'); END;");
             const auto rejected = session.fix_position(0, 2);
             require(rejected.handled && rejected.diagnostic && !rejected.commit &&
-                    session.snapshot().candidates.front().fixed_position == 1,
+                        session.snapshot().candidates.front().fixed_position == 1,
                     "Failed fixed-slot write changed the snapshot or hid its diagnostic");
             execute(options.paths.user(assets::user_journal), "DROP TRIGGER reject_fixed");
             auto independent_options = options;
-            independent_options.paths = prepare_runtime_paths(pin_resources,
-                root / ("independent-position-user-" + suffix), root / ("independent-position-cache-" + suffix), "v1");
+            independent_options.paths =
+                prepare_runtime_paths(pin_resources, root / ("independent-position-user-" + suffix),
+                                      root / ("independent-position-cache-" + suffix), "v1");
             Session independent(independent_options);
             type(independent, input);
             require(independent.snapshot().candidates.front().word == "你好",
@@ -398,22 +446,25 @@ void test_runtime_isolation()
         require(replayed.snapshot().candidates.front().word == "拟好", "Fixed slot lost after generation change");
         const auto cleared = replayed.clear_position(0);
         require(cleared.handled && !cleared.diagnostic && !cleared.commit &&
-                replayed.snapshot().candidates.front().word == "你好", "Clearing slot did not restore dictionary order");
+                    replayed.snapshot().candidates.front().word == "你好",
+                "Clearing slot did not restore dictionary order");
     }
     for (const int mode : {0, 1, 2})
     {
         SessionOptions options;
         options.paths = prepare_runtime_paths(pin_resources, root / ("fixed-english-" + std::to_string(mode)),
-                                             root / ("fixed-english-cache-" + std::to_string(mode)), "v1");
+                                              root / ("fixed-english-cache-" + std::to_string(mode)), "v1");
         options.learning = false;
         options.english.mixed_candidates = mode == 2;
         Session session(options);
-        if (mode == 1) session.character('Y', true);
-        else if (mode == 0) session.set_dedicated_english(true);
+        if (mode == 1)
+            session.character('Y', true);
+        else if (mode == 0)
+            session.set_dedicated_english(true);
         type(session, "he");
         const auto before = session.snapshot();
         const auto found = std::find_if(before.candidates.begin(), before.candidates.end(),
-                                       [](const auto &word) { return word.word == "help"; });
+                                        [](const auto &word) { return word.word == "help"; });
         require(found != before.candidates.end(), "Missing English fixed-slot fixture");
         const auto fixed = session.fix_position(static_cast<std::size_t>(found - before.candidates.begin()), 1);
         require(fixed.handled && !fixed.diagnostic && session.snapshot().candidates.front().word == "help",
@@ -423,14 +474,14 @@ void test_runtime_isolation()
     const auto pin_word = [&](Session &session, const std::string &word) {
         const auto before = session.snapshot();
         const auto selected = std::find_if(before.candidates.begin(), before.candidates.end(),
-            [&](const auto &item) { return item.word == word; });
+                                           [&](const auto &item) { return item.word == word; });
         require(selected != before.candidates.end(), "No candidate for explicit pinning");
         const auto result = session.pin(static_cast<std::size_t>(selected - before.candidates.begin()));
         require(result.handled && !result.commit && !result.diagnostic, "Explicit pin failed or committed text");
         require(session.snapshot().preedit == before.preedit, "Pin changed the composition");
         const auto after = session.snapshot();
         const auto first = std::find_if(after.candidates.begin(), after.candidates.end(),
-            [&](const auto &item) { return item.source == selected->source; });
+                                        [&](const auto &item) { return item.source == selected->source; });
         require(first != after.candidates.end() && first->word == word,
                 "Pin did not refresh dictionary candidate order");
         require(!session.pin(before.candidates.size() + 100).handled, "Invalid pin index was accepted");
@@ -444,8 +495,8 @@ void test_runtime_isolation()
         options.paths = prepare_runtime_paths(pin_resources, user, cache, "v1");
         options.scheme = scheme;
         options.learning = false;
-        const std::string input = scheme == SchemeType::Quanpin ? "nihao" :
-            (scheme == SchemeType::Shuangpin ? "nihc" : "wq");
+        const std::string input =
+            scheme == SchemeType::Quanpin ? "nihao" : (scheme == SchemeType::Shuangpin ? "nihc" : "wq");
         {
             Session session(options);
             require(!session.pin(0).handled, "Empty session accepted pin");
@@ -468,8 +519,10 @@ void test_runtime_isolation()
         options.learning = false;
         {
             Session session(options);
-            if (temporary) session.character('Y', true);
-            else session.set_dedicated_english(true);
+            if (temporary)
+                session.character('Y', true);
+            else
+                session.set_dedicated_english(true);
             type(session, "he");
             pin_word(session, "help");
         }
@@ -502,17 +555,17 @@ void test_runtime_isolation()
         type(session, "nihao");
         const auto before = session.snapshot();
         const auto selected = std::find_if(before.candidates.begin(), before.candidates.end(),
-            [](const auto &item) { return item.word == "拟好"; });
+                                           [](const auto &item) { return item.word == "拟好"; });
         require(selected != before.candidates.end(), "No candidate for failed pin test");
         const auto result = session.pin(static_cast<std::size_t>(selected - before.candidates.begin()));
         require(result.handled && !result.commit && result.diagnostic.has_value(),
                 "Failed pin was reported as success or committed text");
         require(session.snapshot().preedit == before.preedit &&
-                session.snapshot().candidates.front().word == before.candidates.front().word,
+                    session.snapshot().candidates.front().word == before.candidates.front().word,
                 "Failed pin changed input or candidate order");
     }
     require(bytes(pin_resources / assets::main_dictionary) == pin_main_bytes &&
-            bytes(pin_resources / assets::english_dictionary) == pin_english_bytes,
+                bytes(pin_resources / assets::english_dictionary) == pin_english_bytes,
             "Explicit pinning modified immutable resources");
     // Query/learning changes affect only the user working copy and journal; replay retains them.
     {
@@ -547,12 +600,20 @@ void test_runtime_isolation()
     }
     const auto before_failure = bytes(paths_v2.dictionary(assets::main_dictionary));
     require(user_dictionary::record_upsert(path_to_utf8(paths_a.user(assets::user_journal)),
-            user_dictionary::DictionaryKind::Pinyin, "@", "无效词", 10), "Cannot write failure fixture");
+                                           user_dictionary::DictionaryKind::Pinyin, "@", "无效词", 10),
+            "Cannot write failure fixture");
     bool rejected = false;
-    try { (void)prepare_runtime_paths(resource_a, paths_a.user_data, paths_a.cache, "v3"); }
-    catch (const std::runtime_error &) { rejected = true; }
+    try
+    {
+        (void)prepare_runtime_paths(resource_a, paths_a.user_data, paths_a.cache, "v3");
+    }
+    catch (const std::runtime_error &)
+    {
+        rejected = true;
+    }
     require(rejected, "Invalid replay did not reject generation");
-    require(bytes(paths_v2.dictionary(assets::main_dictionary)) == before_failure, "Failed replay replaced working data");
+    require(bytes(paths_v2.dictionary(assets::main_dictionary)) == before_failure,
+            "Failed replay replaced working data");
     require(!std::filesystem::exists(paths_a.user_data / "dictionaries/v3"), "Failed generation was published");
     require(!std::filesystem::exists(paths_a.user_data / "dictionaries/v3.incoming"), "Failed staging was retained");
 
@@ -576,6 +637,7 @@ void test_runtime_isolation()
         };
         auto first = std::async(std::launch::async, run, std::cref(decoder_a), "nihao", expected_a);
         auto second = std::async(std::launch::async, run, std::cref(decoder_b), "zhongguo", expected_b);
-        first.get(); second.get();
+        first.get();
+        second.get();
     }
 }

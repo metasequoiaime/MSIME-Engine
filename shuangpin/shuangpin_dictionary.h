@@ -28,15 +28,15 @@ class ShuangpinDictionary
     static const int OK = 0;
     static const int ERROR_CODE = -1;
 
-    std::vector<WordItem> generate(            //
-        const std::string &pinyin_sequence,    //
+    std::vector<WordItem> generate(             //
+        const std::string &pinyin_sequence,     //
         const std::string &pinyin_segmentation, //
-        const std::string &cache_key = ""      //
+        const std::string &cache_key = ""       //
     );
-    std::vector<WordItem> generateSeries(      //
-        const std::string &pinyin_sequence,    //
+    std::vector<WordItem> generateSeries(       //
+        const std::string &pinyin_sequence,     //
         const std::string &pinyin_segmentation, //
-        const std::string &cache_key = ""      //
+        const std::string &cache_key = ""       //
     );
     std::vector<WordItem> generate_with_helpcodes(   //
         const std::string &pure_pinyin,              //
@@ -65,10 +65,14 @@ class ShuangpinDictionary
 
     std::string search_sentence_from_ime_engine(const std::string &user_pinyin);
 
-    explicit ShuangpinDictionary(const ShuangpinProfile &profile = GetXiaoheShuangpinProfile(), metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
+    explicit ShuangpinDictionary(const ShuangpinProfile &profile = GetXiaoheShuangpinProfile(),
+                                 metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
     ~ShuangpinDictionary();
 
-    const ShuangpinProfile &profile() const { return profile_; }
+    const ShuangpinProfile &profile() const
+    {
+        return profile_;
+    }
 
   private:
     const ShuangpinProfile profile_;
@@ -104,11 +108,9 @@ class ShuangpinDictionary
     std::string normalize_shuangpin_to_quanpin_segmentation(const std::string &pinyin) const;
     std::string normalize_shuangpin_to_quanpin_input(const std::string &pinyin) const;
     std::string build_quanpin_sql_for_creating_word(const std::string &pinyin) const;
-    std::string build_quanpin_sql_for_checking_word(const std::string &key,
-                                                    const std::string &jp,
+    std::string build_quanpin_sql_for_checking_word(const std::string &key, const std::string &jp,
                                                     const std::string &value) const;
-    std::string build_quanpin_sql_for_inserting_word(const std::string &key,
-                                                     const std::string &jp,
+    std::string build_quanpin_sql_for_inserting_word(const std::string &key, const std::string &jp,
                                                      const std::string &value) const;
     std::string build_quanpin_sql_for_updating_word(const std::string &word) const;
     std::string build_quanpin_sql_for_updating_word(std::string pinyin, const std::string &word) const;
@@ -127,10 +129,10 @@ class ShuangpinDictionary
     // Whether in full help mode
     bool _is_full_help_mode = false;
     // Localtion of starting position
-    int _help_mode_raw_pos = 0;           // Start from pos, e.g. 妮: ninv: 2
-    std::string _pinyin_helpcodes = "";   // Help codes
+    int _help_mode_raw_pos = 0;                 // Start from pos, e.g. 妮: ninv: 2
+    std::string _pinyin_helpcodes = "";         // Help codes
     std::vector<ImeKeyCode> _kb_input_sequence; // Keyboard input sequence
-    std::string _pinyin_sequence = "";    // Pinyin extracted from from keyboard sequence
+    std::string _pinyin_sequence = "";          // Pinyin extracted from from keyboard sequence
     std::string _pinyin_sequence_with_cases =
         ""; // Pinyin extracted from from keyboard sequence, but with letters' original cases
     std::string _pure_pinyin_sequence = "";        // Pinyin without help code
@@ -141,10 +143,10 @@ class ShuangpinDictionary
     std::vector<WordItem> _cur_candidate_list;
     std::vector<WordItem> _cur_page_candidate_list; // Current candidate list
     // boost::circular_buffer<std::pair<std::string, std::vector<WordItem>>> _cached_buffer;
-    CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer;        // 缓存纯拼音的结果
-    CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer_sgl;    // 缓存单码辅助结果
+    CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer;              // 缓存纯拼音的结果
+    CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer_sgl;          // 缓存单码辅助结果
     CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer_sgl_reversed; // 缓存反向单码辅助结果
-    CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer_dbl;    // 缓存双码辅助结果
+    CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer_dbl;          // 缓存双码辅助结果
     CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer_series; // 缓存拼音序列对应的所有结果
 
   public:
@@ -207,8 +209,7 @@ class ShuangpinDictionary
         return get_current_candidate_list();
     }
 
-    int insert_word_to_cached_buffer_series(const std::string &pinyin, const std::string &word,
-                                            CandidateSource source);
+    int insert_word_to_cached_buffer_series(const std::string &pinyin, const std::string &word, CandidateSource source);
     int insert_word_to_active_helpcode_cache(const std::string &pinyin, const std::string &word,
                                              CandidateSource source);
 
@@ -221,7 +222,11 @@ class ShuangpinDictionary
 
     void reset_state();
     void reset_cache();
-    void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table) { helpcodes_ = std::move(table); reset_cache(); }
+    void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table)
+    {
+        helpcodes_ = std::move(table);
+        reset_cache();
+    }
 };
 
 using DictionaryUlPb = ShuangpinDictionary;

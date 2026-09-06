@@ -35,11 +35,8 @@ struct WordItem
     int fixed_position = 0;
 
     WordItem() = default;
-    WordItem(std::string pinyin_value,
-             std::string word_value,
-             std::int64_t weight_value,
-             CandidateSource source_value = CandidateSource::Database,
-             std::string canonical_pinyin_value = {})
+    WordItem(std::string pinyin_value, std::string word_value, std::int64_t weight_value,
+             CandidateSource source_value = CandidateSource::Database, std::string canonical_pinyin_value = {})
         : pinyin(std::move(pinyin_value)), canonical_pinyin(std::move(canonical_pinyin_value)),
           word(std::move(word_value)), weight(weight_value), source(source_value)
     {

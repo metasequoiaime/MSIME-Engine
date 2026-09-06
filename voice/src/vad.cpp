@@ -4,18 +4,21 @@
 #include "vad.h"
 #include <cmath>
 #include <utility>
-namespace metasequoia::voice {
+namespace metasequoia::voice
+{
 
 static constexpr float RMS_THRESHOLD = 0.01f;     // 声音能量阈值
 static constexpr float SILENCE_LIMIT_MS = 500.0f; // 连续静音持续时间阈值
 
 bool VadSegmenter::process(const float *samples, size_t count)
 {
-    if (count == 0) return active_;
+    if (count == 0)
+        return active_;
     if (!samples || count > maximum_samples || buffer_.size() > maximum_samples - count)
         throw VoiceError("VAD audio limit exceeded; take_audio before continuing");
     for (size_t i = 0; i < count; ++i)
-        if (!std::isfinite(samples[i])) throw VoiceError("Invalid audio sample");
+        if (!std::isfinite(samples[i]))
+            throw VoiceError("Invalid audio sample");
     float rms = 0.0f; // root mean square, 均方根
     for (size_t i = 0; i < count; ++i)
         rms += samples[i] * samples[i];
@@ -67,4 +70,4 @@ std::vector<float> VadSegmenter::take_audio()
     pre_roll_buffer_.clear();
     return std::exchange(buffer_, {});
 }
-}
+} // namespace metasequoia::voice

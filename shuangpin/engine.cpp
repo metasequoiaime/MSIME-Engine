@@ -50,12 +50,13 @@ std::vector<WordItem> query_normal(ShuangpinDictionary &dictionary, const QueryR
                                    const ShuangpinProfile &profile)
 {
     const std::string pure_input = shuangpin::remove_manual_delimiters(request.raw_input);
-    return dictionary.generateSeries(pure_input, shuangpin::segment_input(request.raw_input, profile), request.raw_input);
+    return dictionary.generateSeries(pure_input, shuangpin::segment_input(request.raw_input, profile),
+                                     request.raw_input);
 }
 
 std::optional<HelpcodeQuery> build_full_helpcode_query(const std::string &raw_input,
-                                                        const std::string &raw_input_with_cases,
-                                                        const ShuangpinProfile &profile)
+                                                       const std::string &raw_input_with_cases,
+                                                       const ShuangpinProfile &profile)
 {
     if (shuangpin::detect_active_double_helpcode_length(raw_input, raw_input_with_cases, profile) != 2)
     {
@@ -66,8 +67,7 @@ std::optional<HelpcodeQuery> build_full_helpcode_query(const std::string &raw_in
     query.base_raw_input = shuangpin::trim_trailing_letters_preserve_delimiters(raw_input, 2);
     query.base_pure_input = shuangpin::remove_manual_delimiters(query.base_raw_input);
     query.base_segmentation = shuangpin::segment_input(query.base_raw_input, profile);
-    query.help_codes =
-        ShuangpinUtil::GetFullHelpCodes(shuangpin::remove_manual_delimiters(raw_input_with_cases));
+    query.help_codes = ShuangpinUtil::GetFullHelpCodes(shuangpin::remove_manual_delimiters(raw_input_with_cases));
     return query;
 }
 
@@ -129,21 +129,17 @@ std::vector<WordItem> ShuangpinEngine::query(const QueryRequest &request)
     if (request.enable_shuangpin_helpcode)
     {
         // 双码辅助
-        if (const auto full_helpcode =
-                build_full_helpcode_query(raw_input, raw_input_with_cases, profile_))
+        if (const auto full_helpcode = build_full_helpcode_query(raw_input, raw_input_with_cases, profile_))
         {
-            return dictionary_.generate_with_helpcodes(full_helpcode->base_pure_input,
-                                                       full_helpcode->base_segmentation,
-                                                       raw_input,
-                                                       full_helpcode->help_codes);
+            return dictionary_.generate_with_helpcodes(full_helpcode->base_pure_input, full_helpcode->base_segmentation,
+                                                       raw_input, full_helpcode->help_codes);
         }
 
         // 单码辅助
         if (const auto single_helpcode = build_single_helpcode_query(raw_input, pure_input_with_cases, profile_))
         {
             return dictionary_.generate_with_helpcodes(single_helpcode->base_pure_input,
-                                                       single_helpcode->base_segmentation,
-                                                       raw_input,
+                                                       single_helpcode->base_segmentation, raw_input,
                                                        single_helpcode->help_codes);
         }
 
@@ -193,7 +189,7 @@ int ShuangpinEngine::insert_word_to_series_cache(const std::string &pinyin, cons
 }
 
 int ShuangpinEngine::insert_word_to_active_helpcode_cache(const std::string &pinyin, const std::string &word,
-                                                         CandidateSource source)
+                                                          CandidateSource source)
 {
     return dictionary_.insert_word_to_active_helpcode_cache(pinyin, word, source);
 }

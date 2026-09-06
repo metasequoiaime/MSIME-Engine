@@ -39,10 +39,8 @@ using Statement = std::unique_ptr<sqlite3_stmt, StatementCloser>;
 
 bool valid_prefix(const std::string &prefix)
 {
-    return !prefix.empty() &&
-           std::all_of(prefix.begin(), prefix.end(), [](unsigned char character) {
-               return character >= 'a' && character <= 'z';
-           });
+    return !prefix.empty() && std::all_of(prefix.begin(), prefix.end(),
+                                          [](unsigned char character) { return character >= 'a' && character <= 'z'; });
 }
 
 QuickPhraseQueryResult query_failure(const char *diagnostic)
@@ -56,8 +54,7 @@ QuickPhraseQueryResult query_quick_phrases(const std::string &prefix, int limit)
     return query_quick_phrases(prefix, data_file_path(metasequoia::assets::main_dictionary), limit);
 }
 
-QuickPhraseQueryResult query_quick_phrases(const std::string &prefix,
-                                           const std::filesystem::path &database_path,
+QuickPhraseQueryResult query_quick_phrases(const std::string &prefix, const std::filesystem::path &database_path,
                                            int limit)
 {
     if (!valid_prefix(prefix) || limit <= 0)
@@ -82,9 +79,8 @@ QuickPhraseQueryResult query_quick_phrases(const std::string &prefix,
     Database database(raw_database);
     sqlite3_busy_timeout(database.get(), 1000);
 
-    constexpr const char *kSql =
-        "SELECT key,value,weight FROM quick_parases WHERE key>=?1 AND key<?2 "
-        "ORDER BY weight DESC,key,value LIMIT ?3";
+    constexpr const char *kSql = "SELECT key,value,weight FROM quick_parases WHERE key>=?1 AND key<?2 "
+                                 "ORDER BY weight DESC,key,value LIMIT ?3";
     sqlite3_stmt *raw_statement = nullptr;
     if (sqlite3_prepare_v2(database.get(), kSql, -1, &raw_statement, nullptr) != SQLITE_OK)
     {

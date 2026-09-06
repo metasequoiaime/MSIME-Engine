@@ -14,7 +14,7 @@ std::string segment_chunk(const std::string &chunk, const ShuangpinProfile &prof
 {
     return chunk.empty() ? std::string{} : ShuangpinUtil::pinyin_segmentation(chunk, profile);
 }
-}
+} // namespace
 
 std::string segment_input(const std::string &raw_input, const ShuangpinProfile &profile)
 {
@@ -29,8 +29,9 @@ std::string segment_input(const std::string &raw_input, const ShuangpinProfile &
     while (segment_start <= raw_input.size())
     {
         const size_t separator = raw_input.find('\'', segment_start);
-        const std::string chunk = separator == std::string::npos ? raw_input.substr(segment_start)
-                                                                 : raw_input.substr(segment_start, separator - segment_start);
+        const std::string chunk = separator == std::string::npos
+                                      ? raw_input.substr(segment_start)
+                                      : raw_input.substr(segment_start, separator - segment_start);
         if (!chunk.empty())
         {
             if (!first_segment)
@@ -118,13 +119,12 @@ std::string trim_trailing_letters_preserve_delimiters(const std::string &raw_inp
     return {};
 }
 
-size_t detect_active_double_helpcode_length(const std::string &raw_input,
-                                            const std::string &raw_input_with_cases,
+size_t detect_active_double_helpcode_length(const std::string &raw_input, const std::string &raw_input_with_cases,
                                             const ShuangpinProfile &profile)
 {
     const std::string effective_input = remove_manual_delimiters(raw_input);
-    const std::string effective_input_with_cases = remove_manual_delimiters(
-        raw_input_with_cases.empty() ? raw_input : raw_input_with_cases);
+    const std::string effective_input_with_cases =
+        remove_manual_delimiters(raw_input_with_cases.empty() ? raw_input : raw_input_with_cases);
     if (!ShuangpinUtil::IsFullHelpMode(effective_input_with_cases, profile))
     {
         return 0;
@@ -142,7 +142,8 @@ size_t detect_active_double_helpcode_length(const std::string &raw_input,
 
 bool is_complete_input(const std::string &raw_input, const ShuangpinProfile &profile)
 {
-    if (raw_input.empty() || raw_input.front() == '\'' || raw_input.back() == '\'' || raw_input.find("''") != std::string::npos)
+    if (raw_input.empty() || raw_input.front() == '\'' || raw_input.back() == '\'' ||
+        raw_input.find("''") != std::string::npos)
     {
         return false;
     }
@@ -151,8 +152,9 @@ bool is_complete_input(const std::string &raw_input, const ShuangpinProfile &pro
     while (segment_start <= raw_input.size())
     {
         const size_t separator = raw_input.find('\'', segment_start);
-        const std::string chunk = separator == std::string::npos ? raw_input.substr(segment_start)
-                                                                 : raw_input.substr(segment_start, separator - segment_start);
+        const std::string chunk = separator == std::string::npos
+                                      ? raw_input.substr(segment_start)
+                                      : raw_input.substr(segment_start, separator - segment_start);
         if (chunk.empty() ||
             !ShuangpinUtil::is_all_complete_pinyin(chunk, ShuangpinUtil::pinyin_segmentation(chunk, profile)))
         {
