@@ -19,18 +19,27 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = REPO_ROOT / "out"
 sys.path.insert(0, str(REPO_ROOT))
 from dictionary_format import quanpin_tables
+from licensing import include_unlicensed
+
+# The floors depend on what the build was allowed to read. A redistributable build leaves out
+# CustomPinyinDictionary, rime-jp_sela and the OALDPE word list (see licensing.py and NOTICE.md), so
+# it legitimately produces fewer rows and no japanese_lexicon table at all. Checking it against the
+# complete build's floors would report a correct build as broken.
+COMPLETE = include_unlicensed()
 
 # (table, minimum rows) per database.
 EXPECTED_TABLES = {
     "msime.db": [
         ("wubi86", 50_000),
         ("quick_parases", 1),
-        ("japanese_lexicon", 5_000),
+        # Built from rime-jp_sela, which has no redistribution grant.
+        *([("japanese_lexicon", 5_000)] if COMPLETE else []),
     ],
     "english.db": [
-        ("english_words", 100_000),
-        ("en_zh_glosses", 50_000),
-        ("zh_en_glosses", 20_000),
+        # Without the OALDPE extract the word list is BaseDictIceEn alone.
+        ("english_words", 100_000 if COMPLETE else 15_000),
+        ("en_zh_glosses", 50_000 if COMPLETE else 15_000),
+        ("zh_en_glosses", 20_000 if COMPLETE else 15_000),
     ],
     "others.db": [
         ("emoji", 1_000),
@@ -43,7 +52,9 @@ EXPECTED_TABLES = {
 
 # The quanpin entries are spread over tbl_{1..7,others}_{letter}; check the total instead.
 QUANPIN_TABLE_COUNT = len(quanpin_tables())
-QUANPIN_MINIMUM_ROWS = 1_000_000
+# The redistributable build uses rime-ice alone in place of the merged BaseDictAllV1 parts, which
+# measured 911,991 rows against the complete build's 1,268,935.
+QUANPIN_MINIMUM_ROWS = 1_000_000 if COMPLETE else 800_000
 
 # dict_japanese.dat has no schema to inspect, so check the magic header and a floor size.
 JAPANESE_MODEL_MAGIC = b"MSJPDT1\0"

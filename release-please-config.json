@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "MetasequoiaImeEngine",
+      "include-component-in-tag": false,
+      "include-v-in-tag": true,
+      "version-file": "version.txt",
+      "draft": false,
+      "force-tag-creation": true,
+      "pull-request-header": "This PR prepares the next shared engine release.",
+      "pull-request-footer": "The engine ships as a submodule, so this release publishes no binaries. Its purpose is a readable record of what changed between the commits the three platform frontends pin.",
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "CMakeLists.txt"
+        }
+      ]
+    }
+  }
+}

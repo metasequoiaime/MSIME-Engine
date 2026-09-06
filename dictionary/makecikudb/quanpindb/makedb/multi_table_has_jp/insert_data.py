@@ -9,24 +9,33 @@ import sqlite3
 import string
 from pathlib import Path
 
-single_char_path = os.path.join(
-    os.path.dirname(__file__), "../../../../cn/SingleCharsAllV1.txt"
-)
-single_char_whitelist_path = os.path.join(
-    os.path.dirname(__file__), "../../../../cn/SingleCharWhitelist.txt"
-)
-basedict_part1_path = os.path.join(
-    os.path.dirname(__file__), "../../../../cn/BaseDictAllV1Part1.txt"
-)
-basedict_part2_path = os.path.join(
-    os.path.dirname(__file__), "../../../../cn/BaseDictAllV1Part2.txt"
-)
-
-
 repo_root = Path(__file__).resolve().parents[4]
 import sys
 sys.path.insert(0, str(repo_root))
 from dictionary_format import pinyin_table, quanpin_tables
+from licensing import is_excluded
+
+single_char_path = os.path.join(
+    os.path.dirname(__file__), "../../../../cn/SingleCharsAllV1.txt"
+)
+# The whitelist has no recorded origin, so by default no filter is applied and every single
+# character in the licensed source is inserted. See dictionary/licensing.py.
+single_char_whitelist_path = (
+    None
+    if is_excluded("cn/SingleCharWhitelist.txt")
+    else os.path.join(os.path.dirname(__file__), "../../../../cn/SingleCharWhitelist.txt")
+)
+# The merged BaseDictAllV1 parts carry CustomPinyinDictionary content, which declares no licence.
+# rime-ice on its own is GPL-3.0 and is what a redistributable build uses instead.
+if is_excluded("cn/BaseDictAllV1Part1.txt"):
+    basedict_paths = [
+        os.path.join(os.path.dirname(__file__), "../../../../cn/BaseDictIceV1.txt")
+    ]
+else:
+    basedict_paths = [
+        os.path.join(os.path.dirname(__file__), "../../../../cn/BaseDictAllV1Part1.txt"),
+        os.path.join(os.path.dirname(__file__), "../../../../cn/BaseDictAllV1Part2.txt"),
+    ]
 db_path = repo_root / "out" / "msime.db"
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
@@ -88,11 +97,13 @@ def insert_lines_from_file_to_db_tbl(
 
 
 # 插入单个汉字
-single_char_whitelist = load_single_char_whitelist(single_char_whitelist_path)
+single_char_whitelist = (
+    load_single_char_whitelist(single_char_whitelist_path) if single_char_whitelist_path else None
+)
 insert_lines_from_file_to_db_tbl(single_char_path, single_char_whitelist)
 # 插入词语
-insert_lines_from_file_to_db_tbl(basedict_part1_path)
-insert_lines_from_file_to_db_tbl(basedict_part2_path)
+for basedict_path in basedict_paths:
+    insert_lines_from_file_to_db_tbl(basedict_path)
 
 conn.commit()
 conn.close()

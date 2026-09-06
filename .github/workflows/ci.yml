@@ -75,6 +75,60 @@ jobs:
         shell: pwsh
         run: ctest --test-dir build -C Release --output-on-failure --timeout 20
 
+  # Every job above builds the engine on its own. None of them builds anything that consumes it, so
+  # a change to a signature or a semantic that all three frontends depend on passes here and is
+  # discovered one at a time, later, in three separate repositories. engine-bump-triage.yml in the
+  # frontends records the cost in its own comment: "the semantic changes to helpcode_enabled() and
+  # handle_character() went through exactly this way."
+  #
+  # This builds the Linux frontend's main branch against *this* pull request's engine commit. Linux
+  # is the cheapest of the three to stand up -- apt dependencies, no vcpkg tree and no Xcode -- so
+  # it is the one that runs on every change. Adding the Windows and Apple frontends is the same
+  # shape with a longer setup.
+  downstream:
+    name: Linux frontend against this engine
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out the Linux frontend
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: metasequoiaime/MSIME-Linux
+          submodules: recursive
+          persist-credentials: false
+      - name: Point its engine submodule at this commit
+        env:
+          ENGINE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          cd vendor/MetasequoiaImeEngine
+          git fetch --depth 1 origin "$ENGINE_SHA"
+          git checkout --force "$ENGINE_SHA"
+          git submodule update --init --recursive --depth 1
+          echo "Engine now at $(git rev-parse --short HEAD)"
+      - name: Install dependencies
+        run: >-
+          sudo apt-get update && sudo apt-get install --no-install-recommends -y
+          build-essential cmake file pkg-config libibus-1.0-dev libboost-dev libboost-json-dev
+          libcurl4-openssl-dev nlohmann-json3-dev libfmt-dev libspdlog-dev libsqlite3-dev
+          libsecret-1-dev libgtk-3-dev tesseract-ocr python3
+      # Deliberately no dictionary fetch: this job is here to catch interface and semantic breaks at
+      # compile and unit-test time, and the ~174 MB download buys nothing for that. The tests that
+      # need real dictionary data run in the Linux repository's own CI.
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --parallel
+      # Excluded because this job deliberately installs only what compiling and unit-testing needs:
+      # ibus_smoke and the *Smoke suites want a session bus and a running IBus, secret_store wants a
+      # desktop Secret Service, and uninstall_smoke wants an installed tree. All four are covered by
+      # MSIME-Linux's own CI, which stands that environment up. What is wanted here is the interface
+      # and semantic breakage that a signature change in this repository would cause.
+      - name: Test
+        run: >-
+          ctest --test-dir build --output-on-failure --timeout 120
+          -E '(^ibus_smoke$|[Ss]moke$|^secret_store$)'
+
   webview-contract:
     name: Shared WebView bindings
     runs-on: ubuntu-24.04

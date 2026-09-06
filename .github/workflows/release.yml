@@ -1,0 +1,44 @@
+name: Release
+
+# The engine ships as a submodule: the three platform frontends pin a commit, and there are no
+# binaries to publish. This workflow exists for the other half of a release -- a tag and a
+# CHANGELOG, so a frontend bumping its pin can read what changed instead of reading the diff.
+#
+# engine-bump-triage.yml in the frontend repositories says what the absence costs: "the semantic
+# changes to helpcode_enabled() and handle_character() went through exactly this way". A version
+# number and a changelog entry do not prevent that on their own, but they give the bump PR
+# something to quote.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Prepare release metadata
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      # release-please opens a version pull request from the conventional commits since the last
+      # tag. Merging that pull request is what tags the release and writes CHANGELOG.md.
+      - name: Prepare release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5
+        with:
+          # A pull request opened by github-actions[bot] is treated as coming from a first-time
+          # contributor, so its checks are held until someone presses Approve. Opening it as a real
+          # account removes that gate at the source. Falls back to the repository token so a fork
+          # without the secret still runs, just with the gate.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}

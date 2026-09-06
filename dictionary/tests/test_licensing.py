@@ -1,0 +1,209 @@
+import os
+from pathlib import Path
+import subprocess
+import sys
+import unittest
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
+from licensing import ENV_FLAG, FALLBACKS, UNLICENSED_INPUTS, describe_exclusions, include_unlicensed, is_excluded
+
+import build_all
+
+
+class Defaults(unittest.TestCase):
+    def setUp(self):
+        self._saved = os.environ.pop(ENV_FLAG, None)
+
+    def tearDown(self):
+        if self._saved is None:
+            os.environ.pop(ENV_FLAG, None)
+        else:
+            os.environ[ENV_FLAG] = self._saved
+
+    def test_unlicensed_inputs_are_excluded_unless_asked_for(self):
+        self.assertFalse(include_unlicensed())
+        for identifier in UNLICENSED_INPUTS:
+            self.assertTrue(is_excluded(identifier), identifier)
+
+    def test_the_opt_in_turns_every_exclusion_off(self):
+        for value in ('1', 'yes', 'true', 'TRUE', 'On', ' 1 '):
+            os.environ[ENV_FLAG] = value
+            self.assertTrue(include_unlicensed(), value)
+            self.assertEqual(describe_exclusions(), [])
+
+    def test_anything_not_an_explicit_yes_leaves_the_exclusions_on(self):
+        # The "on" position of this switch is what puts unlicensed data into a build, so an
+        # unrecognised value has to fall on the safe side. A denylist of falsey spellings would
+        # read `no`, `off` and a typo as an opt-in.
+        for value in ('', '0', 'false', 'False', 'FALSE', 'no', 'off', 'nope', 'disabled', '2'):
+            os.environ[ENV_FLAG] = value
+            self.assertFalse(include_unlicensed(), value)
+            self.assertTrue(is_excluded('rime-jp_sela'), value)
+
+    def test_licensed_inputs_are_never_excluded(self):
+        for identifier in ('cn/BaseDictIceV1.txt', 'cn/Wubi86.txt', 'en/BaseDictIceEn.txt', 'ECDICT'):
+            self.assertFalse(is_excluded(identifier), identifier)
+
+    def test_every_exclusion_is_explained(self):
+        for identifier, reason in UNLICENSED_INPUTS.items():
+            self.assertTrue(reason.strip(), identifier)
+            self.assertIn(identifier, FALLBACKS)
+        self.assertEqual(len(describe_exclusions()), len(UNLICENSED_INPUTS))
+
+
+class StageInputs(unittest.TestCase):
+    def setUp(self):
+        self._saved = os.environ.pop(ENV_FLAG, None)
+
+    def tearDown(self):
+        if self._saved is None:
+            os.environ.pop(ENV_FLAG, None)
+        else:
+            os.environ[ENV_FLAG] = self._saved
+
+    def test_quanpin_swaps_the_merged_source_for_the_licensed_one(self):
+        required = build_all.required_paths(build_all.STAGES_BY_NAME['quanpin'])
+        self.assertIn('cn/BaseDictIceV1.txt', required)
+        self.assertNotIn('cn/BaseDictAllV1Part1.txt', required)
+        self.assertNotIn('cn/BaseDictAllV1Part2.txt', required)
+        self.assertNotIn('cn/SingleCharWhitelist.txt', required)
+        # The licensed inputs the stage also needs are untouched.
+        self.assertIn('cn/SingleCharsAllV1.txt', required)
+
+    def test_english_stage_drops_only_the_commercial_extract(self):
+        required = build_all.required_paths(build_all.STAGES_BY_NAME['english'])
+        self.assertNotIn('en/oaldpe_words.txt', required)
+        self.assertIn('en/BaseDictIceEn.txt', required)
+
+    def test_opting_in_restores_the_original_inputs(self):
+        os.environ[ENV_FLAG] = '1'
+        required = build_all.required_paths(build_all.STAGES_BY_NAME['quanpin'])
+        self.assertIn('cn/BaseDictAllV1Part1.txt', required)
+        self.assertIn('cn/SingleCharWhitelist.txt', required)
+        self.assertNotIn('cn/BaseDictIceV1.txt', required)
+
+    def test_every_required_path_exists_in_the_repository(self):
+        # A swapped-in fallback that does not exist would silently skip the stage instead of
+        # building a smaller dictionary.
+        for stage in build_all.STAGES:
+            for path in build_all.required_paths(stage):
+                self.assertTrue((REPO_ROOT / path).exists(), f'{stage.name}: {path}')
+
+
+class Driver(unittest.TestCase):
+    def run_build(self, *arguments, include=False):
+        env = dict(os.environ)
+        env.pop(ENV_FLAG, None)
+        return subprocess.run(
+            [sys.executable, str(REPO_ROOT / 'build_all.py'), '--only', 'symbols', *arguments],
+            cwd=REPO_ROOT, env=env, capture_output=True, text=True, check=False,
+        )
+
+    def test_the_default_run_reports_what_it_left_out(self):
+        result = self.run_build('--list')
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_the_japanese_lexicon_stage_is_skipped_by_default(self):
+        # rime-jp_sela declares no licence, so its stage does not run in a redistributable build.
+        self.assertTrue(is_excluded('rime-jp_sela'))
+        self.assertEqual(build_all.STAGES_BY_NAME['japanese-lexicon'].needs_reference, 'rime-jp_sela')
+
+
+class Verification(unittest.TestCase):
+    """The row-count floors were calibrated against the complete build. A redistributable build
+    legitimately produces fewer rows and no japanese_lexicon table, so checking it against those
+    floors reports a correct build as broken -- which is exactly what CI did the first time."""
+
+    @staticmethod
+    def thresholds(complete: bool) -> dict:
+        """Reload the verifier under one setting and copy out what it decided.
+
+        Values, not the module: reloading again rebinds the same module object, so holding two
+        references would leave both showing whichever setting was loaded last.
+        """
+        import importlib
+        saved = os.environ.pop(ENV_FLAG, None)
+        if complete:
+            os.environ[ENV_FLAG] = '1'
+        try:
+            sys.path.insert(0, str(REPO_ROOT / 'tools'))
+            import verify_dictionaries
+            module = importlib.reload(verify_dictionaries)
+            return {
+                'quanpin': module.QUANPIN_MINIMUM_ROWS,
+                'msime_tables': [name for name, _ in module.EXPECTED_TABLES['msime.db']],
+                'english': dict(module.EXPECTED_TABLES['english.db']),
+            }
+        finally:
+            os.environ.pop(ENV_FLAG, None)
+            if saved is not None:
+                os.environ[ENV_FLAG] = saved
+
+    def test_the_japanese_table_is_only_required_when_its_source_is_included(self):
+        self.assertNotIn('japanese_lexicon', self.thresholds(False)['msime_tables'])
+        self.assertIn('japanese_lexicon', self.thresholds(True)['msime_tables'])
+        # The tables that do not depend on an unlicensed input are required either way.
+        for table in ('wubi86', 'quick_parases'):
+            self.assertIn(table, self.thresholds(False)['msime_tables'])
+
+    def test_floors_are_lower_for_a_redistributable_build_but_still_meaningful(self):
+        redistributable, complete = self.thresholds(False), self.thresholds(True)
+        self.assertLess(redistributable['quanpin'], complete['quanpin'])
+        # 911,991 rows measured; the floor sits below that and far above an empty table.
+        self.assertLess(redistributable['quanpin'], 911_991)
+        self.assertGreater(redistributable['quanpin'], 100_000)
+        for table, lower in redistributable['english'].items():
+            self.assertLessEqual(lower, complete['english'][table], table)
+            self.assertGreater(lower, 0, table)
+
+
+class Manifest(unittest.TestCase):
+    """A published dictionary release has to be distinguishable from a complete local build after
+    the fact. Without this field, "only redistributable data ships" rests on remembering which
+    command produced the assets."""
+
+    def write(self, complete: bool) -> dict:
+        """Actually run write_manifest and read back what it produced."""
+        import importlib
+        import tempfile
+        saved = os.environ.pop(ENV_FLAG, None)
+        if complete:
+            os.environ[ENV_FLAG] = '1'
+        try:
+            import licensing as licensing_module
+            importlib.reload(licensing_module)
+            import build_profile
+            importlib.reload(build_profile)
+            with tempfile.TemporaryDirectory() as directory:
+                output = Path(directory)
+                (output / 'msime.db').write_bytes(b'not a real database')
+                return build_profile.write_manifest(output, 'mobile', ['msime.db'])
+        finally:
+            os.environ.pop(ENV_FLAG, None)
+            if saved is not None:
+                os.environ[ENV_FLAG] = saved
+
+    def test_a_redistributable_build_names_what_it_left_out(self):
+        block = self.write(False)['licensing']
+        self.assertFalse(block['includes_unlicensed_inputs'])
+        self.assertEqual(block['excluded_inputs'], sorted(UNLICENSED_INPUTS))
+
+    def test_a_complete_build_says_so_and_excludes_nothing(self):
+        block = self.write(True)['licensing']
+        self.assertTrue(block['includes_unlicensed_inputs'])
+        self.assertEqual(block['excluded_inputs'], [])
+
+    def test_the_rest_of_the_manifest_is_unchanged(self):
+        # The three platform repositories verify this manifest with their own pinned copy of
+        # contracts/dictionary/product.py, which reads specific keys and ignores the rest. The new
+        # block must be additive, not a reshuffle.
+        manifest = self.write(False)
+        for key in ('manifest_version', 'profile', 'format_version', 'engine_compatibility',
+                    'source', 'files'):
+            self.assertIn(key, manifest, key)
+        self.assertEqual(manifest['manifest_version'], 1)
+
+
+if __name__ == '__main__':
+    unittest.main()

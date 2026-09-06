@@ -3,10 +3,14 @@
 from collections import defaultdict
 from pathlib import Path
 import sqlite3
+import sys
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPOSITORY_ROOT = SCRIPT_DIR.parents[2]
+sys.path.insert(0, str(REPOSITORY_ROOT))
+from licensing import is_excluded  # noqa: E402  -- needs REPOSITORY_ROOT on the path first
+
 OALDPE_WORDS_PATH = REPOSITORY_ROOT / "en" / "oaldpe_words.txt"
 BASE_DICT_PATH = REPOSITORY_ROOT / "en" / "BaseDictIceEn.txt"
 DB_PATH = REPOSITORY_ROOT / "out" / "english.db"
@@ -101,7 +105,9 @@ def main() -> None:
             f"Database does not exist: {DB_PATH}. Run create_db_and_table.py first."
         )
 
-    oaldpe_words = load_oaldpe_words()
+    # oaldpe_words.txt is extracted from a commercial dictionary. A redistributable build is
+    # BaseDictIceEn (GPL-3.0) alone. See dictionary/licensing.py.
+    oaldpe_words: set[str] = set() if is_excluded("en/oaldpe_words.txt") else load_oaldpe_words()
     base_words = load_base_dict_words()
     rows = build_rows(oaldpe_words, base_words)
     with sqlite3.connect(DB_PATH) as conn:
