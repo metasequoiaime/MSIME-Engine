@@ -119,8 +119,15 @@ jobs:
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: cmake --build build --parallel
+      # Excluded because this job deliberately installs only what compiling and unit-testing needs:
+      # ibus_smoke and the *Smoke suites want a session bus and a running IBus, secret_store wants a
+      # desktop Secret Service, and uninstall_smoke wants an installed tree. All four are covered by
+      # MSIME-Linux's own CI, which stands that environment up. What is wanted here is the interface
+      # and semantic breakage that a signature change in this repository would cause.
       - name: Test
-        run: ctest --test-dir build --output-on-failure --timeout 120 -E '^(ibus_smoke|.*Smoke)$'
+        run: >-
+          ctest --test-dir build --output-on-failure --timeout 120
+          -E '(^ibus_smoke$|[Ss]moke$|^secret_store$)'
 
   webview-contract:
     name: Shared WebView bindings
