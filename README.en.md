@@ -3,8 +3,8 @@
 [中文 README](README.md) · [Website](https://msime.app)
 
 <!-- badges:start -->
-[![CI](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/ci.yml?branch=main&label=CI)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/ci.yml)
-[![CodeQL](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/codeql.yml?branch=main&label=CodeQL)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/codeql.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/ci.yml?branch=develop&label=CI)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/ci.yml)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/codeql.yml?branch=develop&label=CodeQL)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/codeql.yml)
 [![License](https://img.shields.io/github/license/metasequoiaime/MSIME-Engine)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/metasequoiaime/MSIME-Engine?style=flat)](https://github.com/metasequoiaime/MSIME-Engine/stargazers)
 <!-- badges:end -->

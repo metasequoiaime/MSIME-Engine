@@ -2,7 +2,7 @@
 
 English | [简体中文](../../README.zh-CN.md)
 
-This standalone Windows host is maintained in MSIME-Engine's `voice/platforms/windows/` and links the public voice targets. The Windows input method's own host is maintained in [MSIME-Windows/server](https://github.com/metasequoiaime/MSIME-Windows/tree/main/server).
+This standalone Windows host is maintained in MSIME-Engine's `voice/platforms/windows/` and links the public voice targets. The Windows input method's own host is maintained in [MSIME-Windows/server](https://github.com/metasequoiaime/MSIME-Windows/tree/develop/server).
 
 ## Build and run
 
