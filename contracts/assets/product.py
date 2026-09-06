@@ -79,4 +79,3 @@ def verify(archive: Path, expected_sha256: str | None = None) -> dict:
         if product['source']['commit'] != manifest['source']['commit']:
             raise ValueError('Dictionary and runtime assets must have the same source commit')
         return manifest
-
