@@ -94,3 +94,34 @@ python build_profile.py --profile mobile --verify
 ## 公共语音
 
 [VoiceInput](voice/README.md) 提供 `MetasequoiaIme::Voice`、`VoiceCapture` 和可选 `VoiceWhisper`。Windows 与 Apple 可直接链接相同实现。根构建通过 `METASEQUOIA_IME_BUILD_VOICE=ON` 开启，也可独立构建 `voice/`。平台权限、快捷键、界面和上屏由宿主负责；macOS 示例见 `voice/examples/macos/`。
+
+## 完整运行时资源包
+
+从同一 Engine 提交构建桌面词库后，运行：
+
+```bash
+python build_profile.py --profile desktop --fetch-references
+python build_assets.py
+python build_assets.py --verify
+```
+
+默认生成 `build/assets/engine-assets-desktop.zip` 和同名 `.sha256` 校验文件。
+可用 `--dictionary-dir` 指定已构建的 desktop 词库目录，`--output` 指定输出目录。
+打包前校验词库格式和摘要，并要求词库来源提交与当前 Engine 提交一致。
+
+包内根目录包含四个词库文件、`dict_pinyin.dat`、`custom_translations.txt`、
+Mozc 授权文件和 `dictionary-manifest.json`；`helpcodes/` 包含五种运行时辅助码，
+`licenses/` 保留 Engine、词库、辅助码和 Google 拼音的来源及许可声明。
+`engine-assets-manifest.json` 记录逐文件大小、SHA-256、来源路径、Engine 提交和
+Google 拼音子模块提交。辅助码的授权现状仍以随包的 `helpcode-NOTICE.md` 为准。
+
+平台先按固定摘要校验 ZIP，再将数据文件安装到引擎数据目录，并配置辅助码目录。
+`custom_translations.txt` 必须与 `english.db` 同目录。包不含可写用户学习数据
+`user_dict.dat`，升级时应保留已有用户数据。历史 `pinyin.txt` 已内置到代码。
+公共 Voice 没有必需的外置模型；Whisper 模型由宿主提供，导入的独立 Windows
+程序的模型、图标和 HTML 不属于这个公共资源包。
+
+`Build dictionaries` 在 push / PR 中构建并校验完整包，上传为
+`engine-assets-desktop` artifact；手动发布时追加到现有 `dict-*` Release，原有
+独立词库 assets 保留兼容。移动端继续使用 `build_profile.py --profile mobile`。
+消费者应锁定已合入默认分支的来源提交及发布包摘要；此入口不会自动修改平台锁文件。
