@@ -548,15 +548,51 @@ bool adjust_english_candidate_ranking(const std::string &english_db_path, const 
     return ok;
 }
 
+bool delete_dictionary_candidate(const std::string &dictionary_db_path, const std::string &user_db_path,
+                                  DictionaryKind kind, const std::string &entry_key, const std::string &value)
+{
+    if (entry_key.empty() || value.empty()) return false;
+    std::string table;
+    switch (kind)
+    {
+    case DictionaryKind::Pinyin: table = pinyin_table(entry_key); break;
+    case DictionaryKind::Wubi: table = "wubi86"; break;
+    case DictionaryKind::English: table = "english_words"; break;
+    default: return false;
+    }
+    if (table.empty()) return false;
+    // Initialize the journal before attaching it; every operation owns its connections.
+    if (!ensure_user_database(user_db_path)) return false;
+    auto database = open_database(dictionary_db_path, SQLITE_OPEN_READWRITE);
+    auto attach = database ? prepare(database.get(), "ATTACH DATABASE ?1 AS candidate_journal") : Stmt{};
+    if (!attach || !bind_text(attach.get(), 1, user_db_path) || sqlite3_step(attach.get()) != SQLITE_DONE)
+        return false;
+    attach.reset();
+    if (!execute_sql(database.get(), "BEGIN IMMEDIATE")) return false;
+    const auto rollback = [&]() { (void)execute_sql(database.get(), "ROLLBACK"); return false; };
+    const std::string columns = kind == DictionaryKind::English ? "word=?1 AND display=?2" : "key=?1 AND value=?2";
+    auto remove = prepare(database.get(), "DELETE FROM main.\"" + table + "\" WHERE " + columns);
+    if (!remove || !bind_text(remove.get(), 1, entry_key) || !bind_text(remove.get(), 2, value) ||
+        sqlite3_step(remove.get()) != SQLITE_DONE || sqlite3_changes(database.get()) == 0)
+        return rollback();
+    remove.reset();
+    auto journal = prepare(database.get(),
+        "INSERT INTO candidate_journal.user_dictionary_operations(dictionary,key,value,operation)"
+        " VALUES(?1,?2,?3,'delete')"
+        " ON CONFLICT(dictionary,key,value) DO UPDATE SET operation='delete',weight=0,display='',"
+        " updated_at=unixepoch()");
+    if (!journal || !bind_text(journal.get(), 1, kind_name(kind)) || !bind_text(journal.get(), 2, entry_key) ||
+        !bind_text(journal.get(), 3, value) || sqlite3_step(journal.get()) != SQLITE_DONE)
+        return rollback();
+    journal.reset();
+    if (!execute_sql(database.get(), "COMMIT")) return rollback();
+    return true;
+}
+
 bool delete_english_candidate(const std::string &english_db_path, const std::string &user_db_path,
                               const std::string &entry_key, const std::string &value)
 {
-    auto database = open_database(english_db_path, SQLITE_OPEN_READWRITE);
-    auto remove = database ? prepare(database.get(),
-        "DELETE FROM english_words WHERE word=?1 AND display=?2") : Stmt{};
-    const bool ok = remove && bind_text(remove.get(),1,entry_key) && bind_text(remove.get(),2,value) &&
-        sqlite3_step(remove.get()) == SQLITE_DONE && sqlite3_changes(database.get()) > 0;
-    return ok && record_delete(user_db_path, DictionaryKind::English, entry_key, value);
+    return delete_dictionary_candidate(english_db_path, user_db_path, DictionaryKind::English, entry_key, value);
 }
 
 bool learn_entered_english_word(const std::string &english_db_path, const std::string &user_db_path,

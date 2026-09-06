@@ -52,6 +52,7 @@ class InputSession
     KeyResult select_candidate(const std::string &candidate);
     KeyResult select_candidate_edge(std::size_t index, CandidateEdge edge);
     KeyResult pin_candidate(std::size_t index);
+    KeyResult remove_candidate(std::size_t index);
     void set_shuangpin_helpcode_enabled(bool enabled);
     void set_quanpin_helpcode_enabled(bool enabled);
     static bool is_supported_helpcode_schema(const std::string &schema);

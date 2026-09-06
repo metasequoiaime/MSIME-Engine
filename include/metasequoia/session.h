@@ -54,6 +54,9 @@ public:
     // Explicit user action: promote a dictionary candidate without committing input.
     // Invalid/unsupported candidates are unhandled; persistence failures carry a diagnostic.
     KeyResult pin(std::size_t index);
+    // Remove a dictionary phrase without committing; single-character non-English
+    // candidates are protected. Invalid/unsupported selections are unhandled.
+    KeyResult remove(std::size_t index);
     KeyResult finish();
     // Finish the whole composition, starting with the host-highlighted candidate.
     // Remaining segments use their leading candidate; an invalid index commits raw input.
