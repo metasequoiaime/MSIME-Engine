@@ -1,0 +1,32 @@
+{
+  "contractVersion": 1,
+  "simple": [
+    { "input": ",", "output": "，" },
+    { "input": ".", "output": "。" },
+    { "input": "?", "output": "？" },
+    { "input": "!", "output": "！" },
+    { "input": ";", "output": "；" },
+    { "input": ":", "output": "：" },
+    { "input": "(", "output": "（" },
+    { "input": ")", "output": "）" },
+    { "input": "[", "output": "【" },
+    { "input": "]", "output": "】" },
+    { "input": "\\", "output": "、" },
+    { "input": "`", "output": "·" },
+    { "input": "$", "output": "￥" },
+    { "input": "^", "output": "……" },
+    { "input": "_", "output": "——" }
+  ],
+  "alternating": [
+    { "input": "\"", "opening": "“", "closing": "”" },
+    { "input": "'", "opening": "‘", "closing": "’" }
+  ],
+  "nested": {
+    "openingInput": "<",
+    "closingInput": ">",
+    "opening": "《",
+    "nestedOpening": "〈",
+    "closing": "》",
+    "nestedClosing": "〉"
+  }
+}
