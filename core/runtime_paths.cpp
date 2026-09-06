@@ -21,6 +21,20 @@ std::filesystem::path join(const std::filesystem::path &root, const std::filesys
     return root / name;
 }
 
+std::filesystem::path normalized_root(const std::filesystem::path &path)
+{
+    auto result = std::filesystem::weakly_canonical(path).lexically_normal();
+    if (result.filename().empty())
+        result = result.parent_path();
+    return result;
+}
+
+bool roots_overlap(const std::filesystem::path &first, const std::filesystem::path &second)
+{
+    const auto common = std::mismatch(first.begin(), first.end(), second.begin(), second.end());
+    return common.first == first.end() || common.second == second.end();
+}
+
 void copy_database(const std::filesystem::path &source, const std::filesystem::path &target)
 {
     // SQLite backup includes committed WAL content; copying a live .db alone would lose it.
@@ -76,8 +90,14 @@ RuntimePaths prepare_runtime_paths(const std::filesystem::path &resources, const
         throw std::invalid_argument("Invalid runtime content ID");
     RuntimePaths result{resources, user_data, cache, user_data / "dictionaries" / content_id};
     result.validate();
-    if (std::filesystem::weakly_canonical(resources) == std::filesystem::weakly_canonical(user_data))
-        throw std::invalid_argument("Resource and user-data directories must differ");
+    // Each root has a different lifetime. Validate before creating anything: clearing cache
+    // must not delete durable data, and preparation must not write inside immutable resources.
+    const auto resource_root = normalized_root(resources);
+    const auto user_root = normalized_root(user_data);
+    const auto cache_root = normalized_root(cache);
+    if (roots_overlap(resource_root, user_root) || roots_overlap(resource_root, cache_root) ||
+        roots_overlap(user_root, cache_root))
+        throw std::invalid_argument("Resource, user-data and cache directories must not overlap");
     std::filesystem::create_directories(user_data);
     std::filesystem::create_directories(cache);
     const auto marker = result.dictionaries / ".ready";

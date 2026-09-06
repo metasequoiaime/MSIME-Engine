@@ -157,10 +157,12 @@ KeyResult InputSession::handle_character(char character, bool shift_only)
     }
 
     const bool lowercase_letter = character >= 'a' && character <= 'z';
+    const bool microsoft_final =
+        character == ';' && scheme() == SchemeType::Shuangpin && shuangpin_profile_.name == "microsoft";
     const bool active_helpcode = character >= 'A' && character <= 'Z' && has_composition() &&
                                  ((scheme() == SchemeType::Quanpin && quanpin_helpcode_enabled_) ||
                                   (scheme() == SchemeType::Shuangpin && shuangpin_helpcode_enabled_));
-    if (!lowercase_letter && !active_helpcode && character != '\'')
+    if (!lowercase_letter && !active_helpcode && character != '\'' && !microsoft_final)
     {
         return {};
     }
@@ -172,7 +174,9 @@ KeyResult InputSession::handle_character(char character, bool shift_only)
     const std::string previous_preedit = preedit();
     const auto unsigned_character = static_cast<unsigned char>(character);
     const ImeKeyCode key_code =
-        character == '\'' ? ImeKey::Apostrophe : static_cast<ImeKeyCode>(std::toupper(unsigned_character));
+        character == '\''
+            ? ImeKey::Apostrophe
+            : (microsoft_final ? ImeKey::Semicolon : static_cast<ImeKeyCode>(std::toupper(unsigned_character)));
     engine_.handle_key(key_code, 0, static_cast<ImeCharacter>(unsigned_character));
     update_mixed_candidates();
     const bool handled = preedit() != previous_preedit;
@@ -838,25 +842,11 @@ std::optional<std::string> InputSession::learn_candidate(std::size_t index)
         return std::nullopt;
     }
     const bool temporary_english = local_input_mode_ == LocalInputMode::TemporaryEnglish;
-    if ((dedicated_english_mode_ || temporary_english) && index < candidates().size() &&
+    if ((dedicated_english_mode_ || temporary_english) &&
         candidates()[index].source == CandidateSource::EnglishDictionary && frequency_adjustment_configured_ &&
         frequency_adjustment_.mode != FrequencyAdjustmentMode::Disabled && index != 0)
     {
-        std::string context = temporary_english ? local_preedit_.substr(1) : dedicated_english_preedit_;
-        std::transform(context.begin(), context.end(), context.begin(),
-                       [](unsigned char character) { return static_cast<char>(std::tolower(character)); });
-        const WordItem &selected = candidates()[index];
-        std::vector<WordItem> ranked_candidates;
-        std::copy_if(candidates().begin(), candidates().end(), std::back_inserter(ranked_candidates),
-                     [](const WordItem &candidate) { return candidate.source == CandidateSource::EnglishDictionary; });
-        bool ranking_changed = false;
-        const bool adjusted = user_dictionary::adjust_english_candidate_ranking(
-            path_to_utf8(paths_.dictionary(assets::english_dictionary)),
-            path_to_utf8(paths_.user(assets::user_journal)), "english:" + context, ranked_candidates, selected.pinyin,
-            selected.word, frequency_mode_name(frequency_adjustment_.mode), frequency_adjustment_.linear_step,
-            frequency_adjustment_.trigger_count, false, &ranking_changed);
-        return adjusted ? std::nullopt
-                        : std::optional<std::string>("English candidate frequency could not be persisted.");
+        return adjust_candidate_frequency(index, frequency_adjustment_, false);
     }
 
     const WordItem &selected = candidates()[index];
@@ -879,6 +869,55 @@ std::optional<std::string> InputSession::learn_candidate(std::size_t index)
         return std::nullopt;
     }
 
+    return adjust_candidate_frequency(index, frequency_adjustment_, false);
+}
+
+KeyResult InputSession::pin_candidate(std::size_t index)
+{
+    if (index >= candidates().size())
+        return {};
+    const auto source = candidates()[index].source;
+    if (source != CandidateSource::EnglishDictionary &&
+        ((source != CandidateSource::Database && source != CandidateSource::UserDatabase) ||
+         scheme() == SchemeType::JapaneseRomaji))
+        return {};
+
+    // Manual pinning is independent of automatic learning preferences and never selects text.
+    auto diagnostic = adjust_candidate_frequency(index, {FrequencyAdjustmentMode::Pin, 1, 1}, true);
+    if (diagnostic)
+        return {true, std::nullopt, std::move(diagnostic)};
+    reset_cache();
+    if (dedicated_english_mode_)
+        update_dedicated_english_candidates();
+    else if (local_input_mode_ != LocalInputMode::None)
+        diagnostic = update_local_candidates();
+    else
+        recompute_candidates();
+    return {true, std::nullopt, std::move(diagnostic)};
+}
+
+std::optional<std::string> InputSession::adjust_candidate_frequency(std::size_t index,
+                                                                    FrequencyAdjustmentOptions options, bool force_top)
+{
+    const WordItem &selected = candidates()[index];
+    if (selected.source == CandidateSource::EnglishDictionary)
+    {
+        std::string context = dedicated_english_mode_ ? dedicated_english_preedit_
+                                                      : (local_input_mode_ == LocalInputMode::TemporaryEnglish
+                                                             ? local_preedit_.substr(1)
+                                                             : engine_.get_request().raw_input);
+        std::transform(context.begin(), context.end(), context.begin(),
+                       [](unsigned char character) { return static_cast<char>(std::tolower(character)); });
+        std::vector<WordItem> ranked_candidates;
+        std::copy_if(candidates().begin(), candidates().end(), std::back_inserter(ranked_candidates),
+                     [](const WordItem &candidate) { return candidate.source == CandidateSource::EnglishDictionary; });
+        const bool adjusted = user_dictionary::adjust_english_candidate_ranking(
+            path_to_utf8(paths_.dictionary(assets::english_dictionary)),
+            path_to_utf8(paths_.user(assets::user_journal)), "english:" + context, ranked_candidates, selected.pinyin,
+            selected.word, frequency_mode_name(options.mode), options.linear_step, options.trigger_count, force_top);
+        return adjusted ? std::nullopt
+                        : std::optional<std::string>("English candidate frequency could not be persisted.");
+    }
     const bool super_jianpin = local_input_mode_ == LocalInputMode::SuperJianpin;
     const bool wubi = scheme() == SchemeType::Wubi;
     std::string context_key =
@@ -894,8 +933,8 @@ std::optional<std::string> InputSession::learn_candidate(std::size_t index)
     bool ranking_changed = false;
     const bool adjusted = user_dictionary::adjust_candidate_ranking(
         path_to_utf8(paths_.dictionary(assets::main_dictionary)), path_to_utf8(paths_.user(assets::user_journal)),
-        context_key, candidates(), entry_key, selected.word, frequency_mode_name(frequency_adjustment_.mode),
-        frequency_adjustment_.linear_step, frequency_adjustment_.trigger_count, false, &ranking_changed,
+        context_key, candidates(), entry_key, selected.word, frequency_mode_name(options.mode), options.linear_step,
+        options.trigger_count, force_top, &ranking_changed,
         (wubi && !super_jianpin) ? user_dictionary::DictionaryKind::Wubi : user_dictionary::DictionaryKind::Pinyin);
     if (!adjusted)
     {

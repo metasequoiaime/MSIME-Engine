@@ -53,17 +53,38 @@ KeyResult Session::select_edge(std::size_t index, CandidateEdge edge)
 {
     return impl_->session.select_candidate_edge(index, edge);
 }
+KeyResult Session::pin(std::size_t index)
+{
+    return impl_->session.pin_candidate(index);
+}
+KeyResult Session::remove(std::size_t index)
+{
+    return impl_->session.remove_candidate(index);
+}
 KeyResult Session::finish()
 {
-    return impl_->session.finish_composition();
+    return finish(0);
+}
+KeyResult Session::finish(std::size_t first_index)
+{
+    return impl_->session.finish_composition(first_index);
 }
 void Session::switch_scheme(SchemeType scheme)
 {
     impl_->session.switch_scheme(scheme);
 }
+bool Session::is_supported_helpcode_schema(const std::string &schema)
+{
+    return InputSession::is_supported_helpcode_schema(schema);
+}
 bool Session::set_helpcode_schema(const std::string &schema)
 {
     return impl_->session.set_helpcode_schema(schema);
+}
+void Session::set_helpcode_enabled(bool enabled)
+{
+    impl_->session.set_quanpin_helpcode_enabled(enabled);
+    impl_->session.set_shuangpin_helpcode_enabled(enabled);
 }
 void Session::set_dedicated_english(bool enabled)
 {
@@ -72,8 +93,13 @@ void Session::set_dedicated_english(bool enabled)
 SessionSnapshot Session::snapshot() const
 {
     const auto &session = impl_->session;
-    return {session.scheme(),           session.local_input_mode(),        session.preedit(),
-            session.raw_segmentation(), session.normalized_segmentation(), session.candidates()};
+    return {session.scheme(),
+            session.local_input_mode(),
+            session.preedit(),
+            session.raw_segmentation(),
+            session.normalized_segmentation(),
+            session.candidates(),
+            session.dedicated_english_mode()};
 }
 std::optional<OnlineQuery> Session::online_query() const
 {

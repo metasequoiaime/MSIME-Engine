@@ -50,6 +50,8 @@ class InputSession
     KeyResult finish_composition(std::size_t first_index = 0);
     KeyResult select_candidate(const std::string &candidate);
     KeyResult select_candidate_edge(std::size_t index, CandidateEdge edge);
+    KeyResult pin_candidate(std::size_t index);
+    KeyResult remove_candidate(std::size_t index);
     void set_shuangpin_helpcode_enabled(bool enabled);
     void set_quanpin_helpcode_enabled(bool enabled);
     static bool is_supported_helpcode_schema(const std::string &schema);
@@ -182,6 +184,8 @@ class InputSession
     void reset_composition();
     void discard_abandoned_phrase_progress();
     std::optional<std::string> learn_candidate(std::size_t index);
+    std::optional<std::string> adjust_candidate_frequency(std::size_t index, FrequencyAdjustmentOptions options,
+                                                          bool force_top);
 
     CreatingWordProgress immediate_phrase_progress_;
     bool shuangpin_preedit_uses_raw_ = true;

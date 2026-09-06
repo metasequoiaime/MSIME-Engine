@@ -26,11 +26,41 @@ frontends can migrate independently after the producer commit merges; this chang
 move their locks to an unmerged producer. Do not expand the compatibility interface for
 new platform features when they can use editing intents and snapshots.
 
+Desktop hosts may call `finish(highlighted_index)` to commit the highlighted first candidate
+and all remaining segments through Engine's existing composition policy. `finish()` retains
+the leading-candidate behavior. Snapshots include `dedicated_english` even with empty preedit,
+so hosts need not maintain a second mode flag. `set_helpcode_enabled` applies to both pinyin
+schemes; a host with separate persisted preferences applies the selected flag on scheme change.
+
+`pin(index)` promotes a currently visible dictionary candidate without selecting it or changing
+preedit. It persists through the session's user journal and working dictionaries, then refreshes
+the snapshot. Explicit pinning works even when automatic learning is disabled. Pinyin (including
+shuangpin canonical keys), Wubi and English dictionary candidates use their existing ranking
+policy; generated, expressive, online and Japanese candidates are unhandled. English pinning
+changes dictionary order within the existing mixed/temporary-mode layout, so it does not move
+an English completion ahead of the temporary mode's raw-text entry. Invalid indices are unhandled;
+a failed write returns a handled result with a diagnostic and no commit. Hosts serialize this
+index action against the snapshot they display, just as they do for `select(index)`.
+
+`remove(index)` deletes a visible dictionary phrase without committing text or changing preedit.
+It uses the exact canonical pinyin key (or Wubi/English key), writes a deletion journal entry,
+and refreshes candidates. Automatic learning may be disabled. Single-character non-English
+candidates and non-dictionary sources are protected and return unhandled, as do invalid indices.
+A database or journal failure returns a diagnostic with no commit. The working-dictionary delete
+and journal entry share an attached SQLite transaction, so a statement/commit failure rolls back
+both; this does not promise multi-file power-loss atomicity when SQLite uses WAL. Existing
+quanpin/shuangpin and English deletion callers share this persistence helper. Hosts serialize
+candidate-index actions against their displayed snapshot.
+
 ## Resources and user state
 
 The host first verifies the downloaded bundle using `contracts/assets/product.py` and its
 pinned ZIP digest, extracts it into an immutable resource directory, and supplies that
-content ID to `prepare_runtime_paths`. All directory paths must be absolute.
+content ID to `prepare_runtime_paths`. All directory paths must be absolute. For this
+generation-preparation API, resources, user data and cache must be disjoint directory trees:
+none may equal or contain another, including through resolved symlinks. Invalid roots are
+rejected before creating directories or copying databases. The legacy layout remains available
+through `RuntimePaths::legacy()` for consumers that have not yet migrated.
 
 ```cpp
 #include <metasequoia/session.h>
@@ -117,3 +147,11 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ctest --test-dir build --output-on-failure --timeout 20
 ```
+
+The dictionary-build workflow also runs `dictionary/tests/consumer/run_runtime.py` against
+its complete produced archive. The runner checks the archive digest and clean producer commit,
+extracts into a temporary directory and invokes the same-checkout `runtime_consumer`. This
+exercises public Session queries, learning, generation replay, rollback, cache disposal and
+failed preparation using real dictionary tables, then verifies every immutable resource digest
+again. The generation test reuses the same produced profile to isolate lifecycle behavior;
+it does not replace platform installation or upgrade tests between different product releases.

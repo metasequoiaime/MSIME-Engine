@@ -743,12 +743,10 @@ int ShuangpinDictionary::delete_by_pinyin_and_word(string pinyin, string word)
     if (cuts.empty())
         return ERROR_CODE;
     const std::string normalized = quanpin::join_segments(cuts.front());
-    if (delete_data(quanpin_db_, build_quanpin_sql_for_deleting_canonical_word(normalized, word)) != OK)
-    {
+    if (!user_dictionary::delete_dictionary_candidate(
+            quanpin_db_path_, metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)),
+            user_dictionary::DictionaryKind::Pinyin, normalized, word))
         return ERROR_CODE;
-    }
-    (void)user_dictionary::record_delete(metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)),
-                                         user_dictionary::DictionaryKind::Pinyin, normalized, word);
     reset_cache();
     return OK;
 }
