@@ -11,7 +11,7 @@
 class JapaneseCandidateProvider : public ICandidateProvider
 {
   public:
-    explicit JapaneseCandidateProvider(std::string db_path = {});
+    explicit JapaneseCandidateProvider(std::string db_path = {}, std::string model_path = {});
     ~JapaneseCandidateProvider() override;
 
     JapaneseCandidateProvider(const JapaneseCandidateProvider &) = delete;
@@ -32,6 +32,7 @@ class JapaneseCandidateProvider : public ICandidateProvider
     void close_database();
 
     std::string db_path_;
+    std::string model_path_;
     sqlite3 *db_ = nullptr;
     sqlite3_stmt *query_statement_ = nullptr;
     std::shared_ptr<const japanese::JapaneseSentenceDecoder> sentence_decoder_;

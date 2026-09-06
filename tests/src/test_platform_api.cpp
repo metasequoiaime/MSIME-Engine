@@ -14,7 +14,10 @@ static_assert(std::is_same_v<decltype(KeyStroke::modifiers_down), std::uint32_t>
 static_assert(std::is_same_v<decltype(KeyStroke::wch), char16_t>);
 #endif
 
+void test_public_session_interface();
+
 int main()
 {
+    test_public_session_interface();
     return 0;
 }

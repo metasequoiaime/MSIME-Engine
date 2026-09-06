@@ -98,7 +98,8 @@ std::optional<HelpcodeQuery> build_single_helpcode_query(const std::string &raw_
 }
 } // namespace
 
-ShuangpinEngine::ShuangpinEngine(const ShuangpinProfile &profile) : profile_(profile), dictionary_(profile)
+ShuangpinEngine::ShuangpinEngine(const ShuangpinProfile &profile, metasequoia::RuntimePaths paths)
+    : profile_(profile), dictionary_(profile, std::move(paths))
 {
 }
 

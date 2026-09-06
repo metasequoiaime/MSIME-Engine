@@ -1,4 +1,9 @@
 #pragma once
+#include "../common/helpcode_utils.h"
+#include "../core/runtime_paths.h"
+#include "../core/pinyin_decoder.h"
+#include "../core/data_path.h"
+#include "../contracts/assets/assets.h"
 
 #include "../common/cache.h"
 #include "../core/key_event.h"
@@ -60,16 +65,19 @@ class ShuangpinDictionary
 
     std::string search_sentence_from_ime_engine(const std::string &user_pinyin);
 
-    explicit ShuangpinDictionary(const ShuangpinProfile &profile = GetXiaoheShuangpinProfile());
+    explicit ShuangpinDictionary(const ShuangpinProfile &profile = GetXiaoheShuangpinProfile(), metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
     ~ShuangpinDictionary();
 
     const ShuangpinProfile &profile() const { return profile_; }
 
   private:
-    const ShuangpinProfile &profile_;
+    const ShuangpinProfile profile_;
     std::string quanpin_db_path_;
     sqlite3 *quanpin_db_ = nullptr;
     sqlite3_int64 data_version_ = -1;
+    metasequoia::RuntimePaths paths_;
+    metasequoia::PinyinDecoder decoder_;
+    HelpcodeUtils::SharedKeymap helpcodes_;
     std::unordered_map<std::string, sqlite3_stmt *> quanpin_statement_cache_;
     void reset_cache_if_database_changed();
 
@@ -213,6 +221,7 @@ class ShuangpinDictionary
 
     void reset_state();
     void reset_cache();
+    void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table) { helpcodes_ = std::move(table); reset_cache(); }
 };
 
 using DictionaryUlPb = ShuangpinDictionary;

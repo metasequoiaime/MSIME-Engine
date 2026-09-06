@@ -17,7 +17,7 @@ class ShuangpinScheme : public IInputScheme
     void set_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases);
 
   private:
-    const ShuangpinProfile &profile_;
+    const ShuangpinProfile profile_;
     std::string raw_input_;
     std::vector<KeyStroke> key_strokes_;
 };

@@ -11,7 +11,7 @@ class ImeSession
 {
   public:
     explicit ImeSession(SchemeType scheme_type = SchemeType::Shuangpin,
-                        const ShuangpinProfile &shuangpin_profile = GetXiaoheShuangpinProfile());
+                        const ShuangpinProfile &shuangpin_profile = GetXiaoheShuangpinProfile(), metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
 
     void handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down = 0, ImeCharacter wch = 0);
     void switch_scheme(SchemeType scheme_type);
@@ -38,13 +38,15 @@ class ImeSession
     const std::vector<WordItem> &get_candidates() const;
     bool expand_initial_candidates();
 
+    void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table) { provider_registry_.set_helpcode_keymap(std::move(table)); refresh_candidates(); }
+
   private:
     void refresh_candidates();
     std::unique_ptr<IInputScheme> create_scheme(SchemeType scheme_type) const;
 
   private:
     ProviderRegistry provider_registry_;
-    const ShuangpinProfile &shuangpin_profile_;
+    const ShuangpinProfile shuangpin_profile_;
     std::unique_ptr<IInputScheme> scheme_;
     CompositionState state_;
     bool enable_shuangpin_helpcode_ = false;

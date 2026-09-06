@@ -34,8 +34,8 @@ void ApplyShuangpinHelpcodeSegmentation(QueryRequest &request, const ShuangpinPr
 }
 } // namespace
 
-ImeSession::ImeSession(SchemeType scheme_type, const ShuangpinProfile &shuangpin_profile)
-    : provider_registry_(shuangpin_profile), shuangpin_profile_(shuangpin_profile), scheme_(create_scheme(scheme_type))
+ImeSession::ImeSession(SchemeType scheme_type, const ShuangpinProfile &shuangpin_profile, metasequoia::RuntimePaths paths)
+    : provider_registry_(shuangpin_profile, std::move(paths)), shuangpin_profile_(shuangpin_profile), scheme_(create_scheme(scheme_type))
 {
 }
 

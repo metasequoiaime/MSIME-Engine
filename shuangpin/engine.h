@@ -9,7 +9,7 @@
 class ShuangpinEngine
 {
   public:
-    explicit ShuangpinEngine(const ShuangpinProfile &profile = GetXiaoheShuangpinProfile());
+    explicit ShuangpinEngine(const ShuangpinProfile &profile = GetXiaoheShuangpinProfile(), metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
     std::vector<WordItem> query(const QueryRequest &request);
     bool expand_initial_candidates(const QueryRequest &request, std::vector<WordItem> &candidates);
     std::optional<WordItem> find_candidate(const std::string &key, const std::string &value);
@@ -23,7 +23,9 @@ class ShuangpinEngine
     std::string search_sentence_from_ime_engine(const std::string &user_pinyin);
     void reset_cache();
 
+    void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table) { dictionary_.set_helpcode_keymap(std::move(table)); }
+
   private:
-    const ShuangpinProfile &profile_;
+    const ShuangpinProfile profile_;
     ShuangpinDictionary dictionary_;
 };

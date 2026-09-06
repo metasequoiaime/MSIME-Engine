@@ -156,7 +156,7 @@ std::string ResolveQuanpinCloudCacheKey(const QueryRequest &request)
 void InputSession::handle_engine_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch)
 {
     engine_.handle_key(vk, modifiers_down, wch);
-    ++online_generation_;
+    online_requests_.invalidate();
     update_mixed_candidates();
 }
 
@@ -331,7 +331,7 @@ int InputSession::store_user_phrase_from_canonical_pinyin(std::string pinyin, st
     // dictionary.  Do not feed a complete quanpin key back through the active
     // shuangpin profile a second time.
     if (!canonical_phrase_engine_)
-        canonical_phrase_engine_ = std::make_unique<QuanpinEngine>();
+        canonical_phrase_engine_ = std::make_unique<QuanpinEngine>(paths_);
     return canonical_phrase_engine_->create_word_from_canonical_pinyin(std::move(pinyin), std::move(word));
 }
 
@@ -404,7 +404,7 @@ InputSession::SelectionTransition InputSession::advance_composition_after_select
                 std::string cased_rest = base.raw_input_with_cases.substr(rest_start, rest_end - rest_start);
                 remove_consumed_leading_separators(normalized_rest, cased_rest);
                 engine_.replace_shuangpin_raw_input(normalized_rest, cased_rest);
-                ++online_generation_;
+                online_requests_.invalidate();
                 update_mixed_candidates();
             }
         }
@@ -429,7 +429,7 @@ InputSession::SelectionTransition InputSession::advance_composition_after_select
                 std::string cased_rest = rest_pinyin_sequence_with_cases;
                 remove_consumed_leading_separators(normalized_rest, cased_rest);
                 engine_.replace_shuangpin_raw_input(normalized_rest, cased_rest);
-                ++online_generation_;
+                online_requests_.invalidate();
                 update_mixed_candidates();
             }
         }
@@ -462,7 +462,7 @@ InputSession::SelectionTransition InputSession::advance_composition_after_select
         std::string rest_raw_input_with_cases = raw_input_with_cases_without_helpcodes.substr(consumed_raw_length);
         remove_consumed_leading_separators(rest_raw_input, rest_raw_input_with_cases);
         engine_.replace_quanpin_raw_input(rest_raw_input, rest_raw_input_with_cases);
-        ++online_generation_;
+        online_requests_.invalidate();
         update_mixed_candidates();
         transition.current_segmentation = get_pinyin_segmentation();
         transition.current_segmentation_with_cases = get_pinyin_segmentation_with_cases();
@@ -606,7 +606,7 @@ void InputSession::apply_pending_sequence()
         break;
     }
     clear_pending_sequence();
-    ++online_generation_;
+    online_requests_.invalidate();
     update_mixed_candidates();
 }
 } // namespace metasequoia

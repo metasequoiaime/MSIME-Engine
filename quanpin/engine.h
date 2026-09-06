@@ -1,4 +1,5 @@
 #pragma once
+#include "../common/helpcode_utils.h"
 
 #include "../core/query_request.h"
 #include "../core/word_item.h"
@@ -10,7 +11,7 @@
 class QuanpinEngine
 {
   public:
-    QuanpinEngine();
+    explicit QuanpinEngine(metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
     ~QuanpinEngine();
 
     std::vector<WordItem> query(const QueryRequest &request);
@@ -29,7 +30,9 @@ class QuanpinEngine
     std::string search_sentence_from_ime_engine(const std::string &user_pinyin);
     void reset_state();
     void reset_cache();
+    void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table) { helpcodes_ = std::move(table); reset_cache(); }
 
   private:
     QuanpinDictionary dictionary_;
+    HelpcodeUtils::SharedKeymap helpcodes_;
 };

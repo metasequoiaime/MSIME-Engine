@@ -3,7 +3,11 @@
 #include "../japanese/romaji_converter.h"
 #include "../quanpin/quanpin_query.h"
 #include <algorithm>
-#include <future>
+#include <mutex>
+#include <iterator>
+#include <unordered_map>
+#include "../core/data_path.h"
+#include "../contracts/assets/assets.h"
 #include <unordered_set>
 #include <utility>
 
@@ -13,23 +17,18 @@ constexpr int kNoMutation = 0;
 
 using SharedDecoder = std::shared_ptr<const japanese::JapaneseSentenceDecoder>;
 
-const std::shared_future<SharedDecoder> &SharedSentenceDecoder()
+SharedDecoder SharedSentenceDecoder(const std::string &path)
 {
-    // The sentence model is immutable. Start loading it as soon as the provider registry
-    // is created, then share the result between all input sessions in this server process.
-    // A query arriving before completion waits for this one task instead of loading another copy.
-    static const auto future = std::async(std::launch::async, []() -> SharedDecoder {
-                                   try
-                                   {
-                                       auto decoder = std::make_shared<japanese::JapaneseSentenceDecoder>();
-                                       return decoder->ready() ? std::move(decoder) : nullptr;
-                                   }
-                                   catch (...)
-                                   {
-                                       return nullptr;
-                                   }
-                               }).share();
-    return future;
+    static std::mutex mutex;
+    static std::unordered_map<std::string, std::weak_ptr<const japanese::JapaneseSentenceDecoder>> models;
+    std::lock_guard lock(mutex);
+    for (auto it = models.begin(); it != models.end();)
+        it = it->second.expired() ? models.erase(it) : std::next(it);
+    auto &entry = models[path];
+    if (auto existing = entry.lock()) return existing;
+    auto model = std::make_shared<const japanese::JapaneseSentenceDecoder>(path);
+    if (model->ready()) entry = model;
+    return model;
 }
 
 void AppendUnique(std::vector<WordItem> &items, std::unordered_set<std::string> &seen,
@@ -56,10 +55,10 @@ std::string EscapeLikePrefix(const std::string &code)
 }
 } // namespace
 
-JapaneseCandidateProvider::JapaneseCandidateProvider(std::string db_path)
-    : db_path_(db_path.empty() ? quanpin::get_default_db_path() : std::move(db_path))
+JapaneseCandidateProvider::JapaneseCandidateProvider(std::string db_path, std::string model_path)
+    : db_path_(db_path.empty() ? quanpin::get_default_db_path() : std::move(db_path)),
+      model_path_(model_path.empty() ? metasequoia::path_to_utf8(metasequoia::data_file_path(metasequoia::assets::japanese_model)) : std::move(model_path))
 {
-    (void)SharedSentenceDecoder();
 }
 
 JapaneseCandidateProvider::~JapaneseCandidateProvider()
@@ -88,7 +87,7 @@ std::vector<WordItem> JapaneseCandidateProvider::query(const QueryRequest &reque
                      CandidateSource::Generated);
     }
 
-    if (!sentence_decoder_) sentence_decoder_ = SharedSentenceDecoder().get();
+    if (!sentence_decoder_) sentence_decoder_ = SharedSentenceDecoder(model_path_);
     if (sentence_decoder_ && sentence_decoder_->ready())
     {
         const auto pending_kana = japanese::KanaForRomajiPrefix(conversion.pending);

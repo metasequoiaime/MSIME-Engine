@@ -9,7 +9,7 @@
 class ProviderRegistry
 {
   public:
-    explicit ProviderRegistry(const ShuangpinProfile &shuangpin_profile = GetXiaoheShuangpinProfile());
+    explicit ProviderRegistry(const ShuangpinProfile &shuangpin_profile = GetXiaoheShuangpinProfile(), metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
     ICandidateProvider &resolve(SchemeType scheme_type);
     std::optional<WordItem> find_candidate(SchemeType scheme_type, const std::string &key,
                                            const std::string &value);
@@ -22,6 +22,8 @@ class ProviderRegistry
                                 CandidateSource source);
     int cache_dynamic_candidate_for_request(const QueryRequest &request, const std::string &word,
                                             CandidateSource source);
+
+    void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table) { pinyin_provider_.set_helpcode_keymap(std::move(table)); }
 
   private:
     PinyinCandidateProvider pinyin_provider_;

@@ -1,3 +1,4 @@
+#include "../contracts/assets/assets.h"
 #include "quick_phrase_query.h"
 
 #include "../core/data_path.h"
@@ -52,7 +53,7 @@ QuickPhraseQueryResult query_failure(const char *diagnostic)
 
 QuickPhraseQueryResult query_quick_phrases(const std::string &prefix, int limit)
 {
-    return query_quick_phrases(prefix, data_file_path("msime.db"), limit);
+    return query_quick_phrases(prefix, data_file_path(metasequoia::assets::main_dictionary), limit);
 }
 
 QuickPhraseQueryResult query_quick_phrases(const std::string &prefix,

@@ -10,7 +10,7 @@
 class EnglishDictionary
 {
   public:
-    explicit EnglishDictionary(std::string db_path, bool initialize_schema = true);
+    explicit EnglishDictionary(std::string db_path, bool initialize_schema = true, std::string translations_path = {});
     ~EnglishDictionary();
 
     EnglishDictionary(const EnglishDictionary &) = delete;
@@ -28,6 +28,7 @@ class EnglishDictionary
     bool ensure_query_statement();
     bool ensure_gloss_statements();
     void load_custom_translations();
+    std::string translations_path_;
     void close_database();
 
   private:

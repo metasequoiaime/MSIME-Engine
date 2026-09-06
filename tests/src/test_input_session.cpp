@@ -572,7 +572,7 @@ int run_test()
 
         metasequoia::InputSession quanpin_helpcode(SchemeType::Quanpin);
         quanpin_helpcode.set_quanpin_helpcode_enabled(true);
-        require(metasequoia::InputSession::select_helpcode_schema("lantian"),
+        require(quanpin_helpcode.set_helpcode_schema("lantian"),
                 "The Lantian helpcode fixture was not selected.");
         type(quanpin_helpcode, "nihaoC");
         require(!quanpin_helpcode.candidates().empty() && quanpin_helpcode.candidates().front().word == "拟好",

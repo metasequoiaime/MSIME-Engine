@@ -1,3 +1,4 @@
+#include "../contracts/assets/assets.h"
 #include "emoji_query.h"
 
 #include "../core/data_path.h"
@@ -67,7 +68,7 @@ LocalQueryResult query_failure(const char *diagnostic)
 LocalQueryResult query_emoji(const std::string &code, SchemeType scheme, int limit,
                              const ShuangpinProfile &profile)
 {
-    return query_emoji(code, scheme, data_file_path("others.db"), limit, profile);
+    return query_emoji(code, scheme, data_file_path(metasequoia::assets::other_dictionary), limit, profile);
 }
 
 LocalQueryResult query_emoji(const std::string &code, SchemeType scheme,

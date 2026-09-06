@@ -1,3 +1,4 @@
+#include "../contracts/assets/assets.h"
 #include "../contracts/dictionary/format.h"
 #include "quanpin_query.h"
 
@@ -1037,7 +1038,7 @@ std::string segments_to_jianpin(const Segments &segments)
 
 std::string get_default_db_path()
 {
-    return metasequoia::path_to_utf8(shuangpin::get_data_file_path("msime.db"));
+    return metasequoia::path_to_utf8(shuangpin::get_data_file_path(metasequoia::assets::main_dictionary));
 }
 
 void warm_up(sqlite3 *db, std::unordered_map<std::string, sqlite3_stmt *> &statement_cache)
