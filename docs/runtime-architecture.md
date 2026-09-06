@@ -32,6 +32,9 @@ the leading-candidate behavior. Snapshots include `dedicated_english` even with 
 so hosts need not maintain a second mode flag. `set_helpcode_enabled` applies to both pinyin
 schemes; a host with separate persisted preferences applies the selected flag on scheme change.
 
+For the Microsoft shuangpin profile, `character(';')` routes the ing final through the
+decoder's existing position validation. Other profiles leave this character unhandled.
+
 `pin(index)` promotes a currently visible dictionary candidate without selecting it or changing
 preedit. It persists through the session's user journal and working dictionaries, then refreshes
 the snapshot. Explicit pinning works even when automatic learning is disabled. Pinyin (including

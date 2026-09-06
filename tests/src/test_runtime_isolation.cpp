@@ -106,6 +106,31 @@ void test_runtime_isolation()
     const auto original = bytes(resource_a / assets::main_dictionary);
     const auto paths_a = prepare_runtime_paths(resource_a, root / "user-a", root / "cache-a", "v1");
     const auto paths_b = prepare_runtime_paths(resource_b, root / "user-b", root / "cache-b", "v1");
+    {
+        SessionOptions options;
+        options.paths = paths_a;
+        options.scheme = SchemeType::Shuangpin;
+        options.shuangpin_profile = GetMicrosoftShuangpinProfile();
+        options.learning = false;
+        Session session(options);
+        require(!session.character(';').handled, "Microsoft semicolon started a syllable");
+        session.character('n');
+        const auto ing = session.character(';');
+        require(ing.handled && !ing.commit && session.snapshot().preedit == "n;",
+                "Public Session rejected Microsoft ing final");
+        const auto query = session.online_query();
+        require(query && query->query_text == "ning", "Microsoft ing lost its canonical query");
+        require(!session.character(';').handled && session.snapshot().preedit == "n;",
+                "Microsoft semicolon accepted outside the final position");
+        session.command(Command::Backspace);
+        require(session.snapshot().preedit == "n", "Microsoft final could not be erased");
+        session.command(Command::Cancel);
+        options.shuangpin_profile = GetXiaoheShuangpinProfile();
+        Session xiaohe(options);
+        xiaohe.character('n');
+        require(!xiaohe.character(';').handled && xiaohe.snapshot().preedit == "n",
+                "Microsoft semicolon leaked to Xiaohe");
+    }
     require(paths_a.resources != paths_a.dictionaries && paths_a.cache != paths_a.dictionaries,
             "Mutable dictionaries must live separately from resources and cache");
     {
