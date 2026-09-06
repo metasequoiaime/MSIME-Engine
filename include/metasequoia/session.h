@@ -51,6 +51,9 @@ public:
     KeyResult punctuation(char value);
     KeyResult select(std::size_t index);
     KeyResult select_edge(std::size_t index, CandidateEdge edge);
+    // Explicit user action: promote a dictionary candidate without committing input.
+    // Invalid/unsupported candidates are unhandled; persistence failures carry a diagnostic.
+    KeyResult pin(std::size_t index);
     KeyResult finish();
     // Finish the whole composition, starting with the host-highlighted candidate.
     // Remaining segments use their leading candidate; an invalid index commits raw input.
