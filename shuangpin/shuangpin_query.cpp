@@ -14,21 +14,6 @@ std::string segment_chunk(const std::string &chunk, const ShuangpinProfile &prof
 {
     return chunk.empty() ? std::string{} : ShuangpinUtil::pinyin_segmentation(chunk, profile);
 }
-
-size_t raw_length_for_effective_prefix(const std::string &raw_input, size_t effective_length)
-{
-    size_t raw_length = 0;
-    size_t effective_count = 0;
-    while (raw_length < raw_input.size() && effective_count < effective_length)
-    {
-        if (raw_input[raw_length] != '\'')
-        {
-            ++effective_count;
-        }
-        ++raw_length;
-    }
-    return raw_length;
-}
 }
 
 std::string segment_input(const std::string &raw_input, const ShuangpinProfile &profile)
@@ -89,6 +74,48 @@ std::string normalize_input(const std::string &raw_input, const ShuangpinProfile
 size_t effective_input_length(const std::string &raw_input)
 {
     return remove_manual_delimiters(raw_input).size();
+}
+
+size_t raw_length_for_effective_prefix(const std::string &raw_input, size_t effective_length)
+{
+    size_t raw_length = 0;
+    size_t effective_count = 0;
+    while (raw_length < raw_input.size() && effective_count < effective_length)
+    {
+        if (raw_input[raw_length] != '\'')
+        {
+            ++effective_count;
+        }
+        ++raw_length;
+    }
+    return raw_length;
+}
+
+std::string trim_trailing_letters_preserve_delimiters(const std::string &raw_input, size_t letter_count)
+{
+    if (letter_count == 0 || raw_input.empty())
+    {
+        return raw_input;
+    }
+
+    size_t remaining = letter_count;
+    size_t pos = raw_input.size();
+    while (pos > 0)
+    {
+        --pos;
+        if (raw_input[pos] == '\'')
+        {
+            continue;
+        }
+
+        --remaining;
+        if (remaining == 0)
+        {
+            return raw_input.substr(0, pos);
+        }
+    }
+
+    return {};
 }
 
 size_t detect_active_double_helpcode_length(const std::string &raw_input,

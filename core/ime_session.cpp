@@ -17,12 +17,15 @@ void ApplyShuangpinHelpcodeSegmentation(QueryRequest &request, const ShuangpinPr
     }
 
     const size_t helpcode_length = 2;
-    const std::string base_raw_input = request.raw_input.substr(0, request.raw_input.size() - helpcode_length);
+    // The detector locates the help codes in delimiter-stripped space, so the split has to be made there too: slicing the last raw bytes would push a pinyin letter into the base and a manual delimiter into the help codes.
+    const std::string base_raw_input =
+        shuangpin::trim_trailing_letters_preserve_delimiters(request.raw_input, helpcode_length);
     const std::string base_raw_input_with_cases =
-        request.raw_input_with_cases.substr(0, request.raw_input_with_cases.size() - helpcode_length);
+        shuangpin::trim_trailing_letters_preserve_delimiters(request.raw_input_with_cases, helpcode_length);
     const std::string base_segmentation = shuangpin::segment_input(base_raw_input, profile);
+    const std::string effective_input_with_cases = shuangpin::remove_manual_delimiters(request.raw_input_with_cases);
     const std::string help_codes =
-        request.raw_input_with_cases.substr(request.raw_input_with_cases.size() - helpcode_length);
+        effective_input_with_cases.substr(effective_input_with_cases.size() - helpcode_length);
 
     request.raw_segmentation =
         shuangpin::apply_segmentation_cases(base_segmentation, base_raw_input_with_cases) + "'" + help_codes;
