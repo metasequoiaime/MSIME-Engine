@@ -125,11 +125,134 @@ void test_runtime_isolation()
         session.command(Command::Backspace);
         require(session.snapshot().preedit == "n", "Microsoft final could not be erased");
         session.command(Command::Cancel);
+        type(session, "ni'n");
+        require(session.character(';').handled && session.snapshot().preedit == "ni'n;",
+                "Microsoft final after a manual separator was rejected");
+        session.command(Command::MoveLeft);
+        session.command(Command::DeleteForward);
+        // Leave a suffix so the replacement exercises the middle-edit path.
+        session.command(Command::MoveEnd);
+        type(session, "ni");
+        session.command(Command::MoveLeft);
+        session.command(Command::MoveLeft);
+        require(session.character(';').handled && session.snapshot().editing_text == "ni'n;ni",
+                "Microsoft ing could not be inserted before a suffix");
+        session.command(Command::Cancel);
+        type(session, "ni'");
+        require(!session.character(';').handled && session.snapshot().preedit == "ni'",
+                "Microsoft separator was counted as a syllable initial");
         options.shuangpin_profile = GetXiaoheShuangpinProfile();
         Session xiaohe(options);
         xiaohe.character('n');
         require(!xiaohe.character(';').handled && xiaohe.snapshot().preedit == "n",
                 "Microsoft semicolon leaked to Xiaohe");
+    }
+    {
+        SessionOptions options;
+        options.paths = paths_a;
+        options.learning = false;
+        Session session(options), other(options);
+        require(!session.command(Command::MoveLeft).handled, "Empty caret movement consumed host input");
+        type(session, "ni");
+        type(other, "ni");
+        const auto query = session.online_query();
+        require(query.has_value(), "Missing pre-edit online request");
+        session.command(Command::MoveHome);
+        require(session.snapshot().caret_position == 0 && other.snapshot().caret_position == 2,
+                "Caret movement leaked between sessions");
+        require(session.online_query()->generation == query->generation,
+                "Caret-only movement invalidated unchanged candidates");
+        session.command(Command::Backspace);
+        require(session.snapshot().editing_text == "ni", "Home backspace removed input");
+        session.command(Command::DeleteForward);
+        require(session.snapshot().editing_text == "i", "Forward delete removed the wrong character");
+        session.character('n');
+        require(session.snapshot().editing_text == "ni" && session.snapshot().caret_position == 1 &&
+                session.snapshot().candidates.front().word == "你", "Middle insertion did not refresh candidates");
+        require(!session.apply_online_candidate(*query, "旧响应", CandidateSource::CloudSuggestion),
+                "Editing back to the same text accepted an old online response");
+        session.character('\'');
+        session.character('\'');
+        require(session.snapshot().editing_text == "n'i", "Duplicate separator was inserted at caret");
+        session.command(Command::Backspace);
+        session.command(Command::MoveEnd);
+        session.command(Command::DeleteForward);
+        require(session.snapshot().editing_text == "ni" && session.snapshot().caret_position == 2,
+                "End forward delete changed input");
+        session.command(Command::MoveHome);
+        require(session.select(0).commit == "你" && session.snapshot().caret_position == 0,
+                "Selection did not clear caret with composition");
+        type(session, "ni");
+        require(session.snapshot().caret_position == 2, "New composition inherited the old caret");
+    }
+    for (const char marker : {'Y', 'J', 'E', 'M', 'K', 'U', 'R'})
+    {
+        SessionOptions options;
+        options.paths = paths_a;
+        options.learning = false;
+        Session session(options);
+        session.character(marker, true);
+        const std::string payload = marker == 'U' ? "41" : "ka";
+        type(session, payload);
+        session.command(Command::MoveHome);
+        require(session.snapshot().caret_position == 1, "Local-mode caret crossed its marker");
+        session.command(Command::Backspace);
+        session.command(Command::DeleteForward);
+        session.character(payload.front());
+        require(session.snapshot().editing_text == std::string(1, marker) + payload &&
+                session.snapshot().caret_position == 2, "Local-mode middle edit lost its source text");
+        session.command(Command::Cancel);
+        require(session.snapshot().editing_text.empty() && session.snapshot().caret_position == 0,
+                "Cancel retained local-mode editing state");
+    }
+    for (const auto scheme : {SchemeType::Shuangpin, SchemeType::Wubi, SchemeType::JapaneseRomaji})
+    {
+        SessionOptions options;
+        options.paths = paths_a;
+        options.scheme = scheme;
+        options.learning = false;
+        Session session(options);
+        type(session, "ka");
+        session.command(Command::MoveLeft);
+        session.command(Command::Backspace);
+        session.character('k');
+        require(session.snapshot().editing_text == "ka" && session.snapshot().caret_position == 1,
+                "Scheme edit used rendered text instead of raw source");
+        session.switch_scheme(SchemeType::Quanpin);
+        require(session.snapshot().caret_position == 0, "Scheme change retained the old caret");
+    }
+    {
+        SessionOptions options;
+        options.paths = paths_a;
+        Session session(options);
+        session.set_dedicated_english(true);
+        type(session, "ello");
+        session.command(Command::MoveHome);
+        session.character('H');
+        require(session.snapshot().editing_text == "Hello" && session.snapshot().caret_position == 1 &&
+                session.snapshot().candidates.front().word == "hello", "English middle edit lost case or candidates");
+    }
+    {
+        execute(paths_a.dictionary(assets::main_dictionary),
+                "CREATE TABLE tbl_1_h(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                "INSERT INTO tbl_1_h VALUES('hao','h','好',10000);");
+        SessionOptions options;
+        options.paths = paths_a;
+        options.learning = false;
+        Session session(options);
+        type(session, "nihao");
+        const auto view = session.snapshot();
+        const auto prefix = std::find_if(view.candidates.begin(), view.candidates.end(),
+                                        [](const auto &word) { return word.word == "你"; });
+        require(prefix != view.candidates.end(), "Missing partial-selection fixture");
+        session.command(Command::MoveHome);
+        const auto selected = session.select(static_cast<std::size_t>(prefix - view.candidates.begin()));
+        require(selected.commit == "你" && session.snapshot().editing_text == "hao" &&
+                session.snapshot().caret_position == 3, "Partial selection retained the old caret");
+        session.command(Command::MoveHome);
+        session.command(Command::DeleteForward);
+        session.character('h');
+        require(session.finish().commit == "好", "Editing the remainder lost the selected prefix boundary");
     }
     require(paths_a.resources != paths_a.dictionaries && paths_a.cache != paths_a.dictionaries,
             "Mutable dictionaries must live separately from resources and cache");

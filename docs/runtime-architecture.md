@@ -35,6 +35,17 @@ schemes; a host with separate persisted preferences applies the selected flag on
 For the Microsoft shuangpin profile, `character(';')` routes the ing final through the
 decoder's existing position validation. Other profiles leave this character unhandled.
 
+`MoveLeft`, `MoveRight`, `MoveHome`, `MoveEnd` and `DeleteForward` are composition
+commands. `character` inserts at the session-owned caret; `Backspace` erases before it.
+Snapshots append `editing_text` (the ASCII source input, preserving case) and
+`caret_position` (its byte offset). These are distinct from rendered preedit, notably
+for Japanese romaji conversion. Hosts render the snapshot instead of rewriting raw input.
+Movement alone preserves candidate/request identity; mutations invalidate online requests
+even when subsequent edits restore identical spelling. Selection places the caret at the
+end of any unconsumed suffix; cancel and scheme changes reset it. Local-mode markers
+remain protected from middle editing; backspace on a marker-only composition still cancels.
+Empty-composition movement is unhandled so normal host navigation can proceed.
+
 `pin(index)` promotes a currently visible dictionary candidate without selecting it or changing
 preedit. It persists through the session's user journal and working dictionaries, then refreshes
 the snapshot. Explicit pinning works even when automatic learning is disabled. Pinyin (including

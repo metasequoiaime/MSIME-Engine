@@ -57,7 +57,8 @@ SessionSnapshot Session::snapshot() const
 {
     const auto &session = impl_->session;
     return {session.scheme(), session.local_input_mode(), session.preedit(), session.raw_segmentation(),
-            session.normalized_segmentation(), session.candidates(), session.dedicated_english_mode()};
+            session.normalized_segmentation(), session.candidates(), session.dedicated_english_mode(),
+            session.editing_text(), session.caret_position()};
 }
 std::optional<OnlineQuery> Session::online_query() const { return impl_->session.online_query(); }
 bool Session::apply_online_candidate(const OnlineQuery &query, std::string candidate, CandidateSource source)
