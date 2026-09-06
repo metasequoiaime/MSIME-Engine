@@ -81,4 +81,4 @@ const char *PunctuationPolicy::translate(char character)
 
     return punctuation;
 }
-}
+} // namespace metasequoia

@@ -44,18 +44,15 @@ using Statement = std::unique_ptr<sqlite3_stmt, StatementCloser>;
 
 bool valid_code(const std::string &code)
 {
-    return !code.empty() &&
-           std::all_of(code.begin(), code.end(), [](unsigned char character) {
-               return (character >= 'a' && character <= 'z') ||
-                      (character >= 'A' && character <= 'Z') || character == '\'';
-           });
+    return !code.empty() && std::all_of(code.begin(), code.end(), [](unsigned char character) {
+        return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') || character == '\'';
+    });
 }
 
 std::string lower_ascii(std::string text)
 {
-    std::transform(text.begin(), text.end(), text.begin(), [](unsigned char character) {
-        return static_cast<char>(std::tolower(character));
-    });
+    std::transform(text.begin(), text.end(), text.begin(),
+                   [](unsigned char character) { return static_cast<char>(std::tolower(character)); });
     return text;
 }
 
@@ -65,15 +62,13 @@ LocalQueryResult query_failure(const char *diagnostic)
 }
 } // namespace
 
-LocalQueryResult query_emoji(const std::string &code, SchemeType scheme, int limit,
-                             const ShuangpinProfile &profile)
+LocalQueryResult query_emoji(const std::string &code, SchemeType scheme, int limit, const ShuangpinProfile &profile)
 {
     return query_emoji(code, scheme, data_file_path(metasequoia::assets::other_dictionary), limit, profile);
 }
 
-LocalQueryResult query_emoji(const std::string &code, SchemeType scheme,
-                             const std::filesystem::path &database_path, int limit,
-                             const ShuangpinProfile &profile)
+LocalQueryResult query_emoji(const std::string &code, SchemeType scheme, const std::filesystem::path &database_path,
+                             int limit, const ShuangpinProfile &profile)
 {
     if (!valid_code(code) || limit <= 0)
     {
@@ -115,9 +110,8 @@ LocalQueryResult query_emoji(const std::string &code, SchemeType scheme,
     };
     std::vector<Entry> entries;
     std::unordered_set<std::string> seen;
-    constexpr const char *kSql =
-        "SELECT emoji,sort_order FROM emoji_pinyin WHERE key>=?1 AND key<?2 "
-        "ORDER BY sort_order LIMIT ?3";
+    constexpr const char *kSql = "SELECT emoji,sort_order FROM emoji_pinyin WHERE key>=?1 AND key<?2 "
+                                 "ORDER BY sort_order LIMIT ?3";
     for (const std::string &prefix : prefixes)
     {
         sqlite3_stmt *raw_statement = nullptr;
@@ -150,16 +144,15 @@ LocalQueryResult query_emoji(const std::string &code, SchemeType scheme,
         }
     }
 
-    std::stable_sort(entries.begin(), entries.end(), [](const Entry &left, const Entry &right) {
-        return left.sort_order < right.sort_order;
-    });
+    std::stable_sort(entries.begin(), entries.end(),
+                     [](const Entry &left, const Entry &right) { return left.sort_order < right.sort_order; });
     const std::size_t count = std::min(static_cast<std::size_t>(limit), entries.size());
     LocalQueryResult result;
     result.candidates.reserve(count);
     for (std::size_t index = 0; index < count; ++index)
     {
-        result.candidates.emplace_back(lower, entries[index].text,
-                                       static_cast<std::int64_t>(count - index), CandidateSource::Emoji);
+        result.candidates.emplace_back(lower, entries[index].text, static_cast<std::int64_t>(count - index),
+                                       CandidateSource::Emoji);
     }
     return result;
 }

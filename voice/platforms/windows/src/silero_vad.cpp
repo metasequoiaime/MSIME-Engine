@@ -235,7 +235,9 @@ float SileroVad::infer_prob(const float *frame_samples)
     for (int i = 0; i < cfg_.frame_size; ++i)
     {
         processed_frame[i] = frame_samples[i] - avg;
-        sum_sq += processed_frame[i] * processed_frame[i];
+        // Widen before squaring: float * float is evaluated at float precision and only then converted,
+        // which throws away the accuracy the double accumulator exists to keep.
+        sum_sq += static_cast<double>(processed_frame[i]) * static_cast<double>(processed_frame[i]);
     }
     float rms = (float)std::sqrt(sum_sq / cfg_.frame_size);
 

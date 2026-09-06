@@ -7,7 +7,8 @@
 class PinyinCandidateProvider : public ICandidateProvider
 {
   public:
-    explicit PinyinCandidateProvider(const ShuangpinProfile &shuangpin_profile = GetXiaoheShuangpinProfile(), metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
+    explicit PinyinCandidateProvider(const ShuangpinProfile &shuangpin_profile = GetXiaoheShuangpinProfile(),
+                                     metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
     std::vector<WordItem> query(const QueryRequest &request) override;
     std::optional<WordItem> find_candidate(SchemeType scheme, const std::string &key,
                                            const std::string &value) override;
@@ -21,7 +22,11 @@ class PinyinCandidateProvider : public ICandidateProvider
     int cache_dynamic_candidate_for_request(const QueryRequest &request, const std::string &word,
                                             CandidateSource source) override;
 
-    void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table) { quanpin_engine_.set_helpcode_keymap(table); shuangpin_engine_.set_helpcode_keymap(std::move(table)); }
+    void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table)
+    {
+        quanpin_engine_.set_helpcode_keymap(table);
+        shuangpin_engine_.set_helpcode_keymap(std::move(table));
+    }
 
   private:
     const ShuangpinProfile shuangpin_profile_;

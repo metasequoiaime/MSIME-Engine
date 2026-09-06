@@ -3,7 +3,8 @@
 #include "../shuangpin/shuangpin_query.h"
 #include "../shuangpin/shuangpin_utils.h"
 
-PinyinCandidateProvider::PinyinCandidateProvider(const ShuangpinProfile &shuangpin_profile, metasequoia::RuntimePaths paths)
+PinyinCandidateProvider::PinyinCandidateProvider(const ShuangpinProfile &shuangpin_profile,
+                                                 metasequoia::RuntimePaths paths)
     : shuangpin_profile_(shuangpin_profile), quanpin_engine_(paths), shuangpin_engine_(shuangpin_profile, paths)
 {
 }
@@ -28,8 +29,7 @@ std::vector<WordItem> PinyinCandidateProvider::query(const QueryRequest &request
     return {};
 }
 
-bool PinyinCandidateProvider::expand_initial_candidates(const QueryRequest &request,
-                                                        std::vector<WordItem> &candidates)
+bool PinyinCandidateProvider::expand_initial_candidates(const QueryRequest &request, std::vector<WordItem> &candidates)
 {
     if (request.scheme == SchemeType::Shuangpin)
     {
@@ -85,16 +85,14 @@ int PinyinCandidateProvider::cache_dynamic_candidate(SchemeType scheme, const st
     return quanpin_engine_.insert_word_to_series_cache(pinyin, word, source);
 }
 
-std::optional<WordItem> PinyinCandidateProvider::find_candidate(
-    SchemeType scheme, const std::string &key, const std::string &value)
+std::optional<WordItem> PinyinCandidateProvider::find_candidate(SchemeType scheme, const std::string &key,
+                                                                const std::string &value)
 {
-    return scheme == SchemeType::Shuangpin
-        ? shuangpin_engine_.find_candidate(key, value)
-        : quanpin_engine_.find_candidate(key, value);
+    return scheme == SchemeType::Shuangpin ? shuangpin_engine_.find_candidate(key, value)
+                                           : quanpin_engine_.find_candidate(key, value);
 }
 
-int PinyinCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequest &request,
-                                                                 const std::string &word,
+int PinyinCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequest &request, const std::string &word,
                                                                  CandidateSource source)
 {
     if (request.scheme == SchemeType::Quanpin)

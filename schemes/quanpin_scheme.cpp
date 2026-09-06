@@ -84,12 +84,12 @@ QueryRequest QuanpinScheme::build_request() const
     request.raw_input.reserve(raw_input_.size());
     for (const char ch : raw_input_)
     {
-        request.raw_input.push_back(
-            ch == '\'' ? ch : static_cast<char>(std::tolower(static_cast<unsigned char>(ch))));
+        request.raw_input.push_back(ch == '\'' ? ch : static_cast<char>(std::tolower(static_cast<unsigned char>(ch))));
     }
     request.key_strokes = key_strokes_;
 
-    const size_t helpcode_length = quanpin::detect_active_helpcode_length(request.raw_input, request.raw_input_with_cases);
+    const size_t helpcode_length =
+        quanpin::detect_active_helpcode_length(request.raw_input, request.raw_input_with_cases);
     std::string normalized_source = quanpin::strip_active_helpcodes(request.raw_input, request.raw_input_with_cases);
 
     request.normalized_input.reserve(normalized_source.size());
@@ -135,8 +135,8 @@ QueryRequest QuanpinScheme::build_request() const
     if (helpcode_length > 0)
     {
         request.raw_segmentation += "'";
-        request.raw_segmentation += request.raw_input_with_cases.substr(request.raw_input_with_cases.size() - helpcode_length,
-                                                                        helpcode_length);
+        request.raw_segmentation +=
+            request.raw_input_with_cases.substr(request.raw_input_with_cases.size() - helpcode_length, helpcode_length);
     }
     request.segmentation = request.normalized_segmentation;
 

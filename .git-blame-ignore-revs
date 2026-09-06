@@ -1,0 +1,5 @@
+# Bulk reformats. `git blame --ignore-revs-file .git-blame-ignore-revs` skips these, and
+# `git config blame.ignoreRevsFile .git-blame-ignore-revs` makes it the default for this checkout.
+
+# style: 用 .clang-format 重排自有 C++ 源码
+354c46695353c1e4741e5becf7ea3ffe5570b6a3

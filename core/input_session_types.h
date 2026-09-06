@@ -109,4 +109,4 @@ struct OnlineQuery
     std::uint64_t session_id = 0;
 };
 
-}
+} // namespace metasequoia

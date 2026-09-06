@@ -42,7 +42,7 @@ struct SessionSnapshot
 // No SQLite, provider registry, raw key codes or mutable composition internals are exposed.
 class Session
 {
-public:
+  public:
     explicit Session(SessionOptions options);
     ~Session();
     Session(const Session &) = delete;
@@ -75,8 +75,8 @@ public:
     std::optional<OnlineQuery> online_query() const;
     bool apply_online_candidate(const OnlineQuery &query, std::string candidate, CandidateSource source);
 
-private:
+  private:
     class Impl;
     std::unique_ptr<Impl> impl_;
 };
-}
+} // namespace metasequoia

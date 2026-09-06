@@ -29,7 +29,8 @@ struct MatrixNode
 
 void KeepBest(std::vector<MatrixNode> &row, size_t limit)
 {
-    if (row.size() <= limit) return;
+    if (row.size() <= limit)
+        return;
     std::partial_sort(row.begin(), row.begin() + static_cast<std::ptrdiff_t>(limit), row.end(),
                       [](const MatrixNode &a, const MatrixNode &b) { return a.cost < b.cost; });
     row.resize(limit);
@@ -38,14 +39,18 @@ void KeepBest(std::vector<MatrixNode> &row, size_t limit)
 void AppendUnique(std::vector<japanese::SentenceCandidate> &out, std::unordered_set<std::string> &seen,
                   std::string text, std::int64_t cost, size_t limit)
 {
-    if (text.empty() || out.size() >= limit) return;
-    if (seen.insert(text).second) out.push_back({std::move(text), cost});
+    if (text.empty() || out.size() >= limit)
+        return;
+    if (seen.insert(text).second)
+        out.push_back({std::move(text), cost});
 }
 } // namespace
 
 namespace japanese
 {
-JapaneseMatrixSearch::JapaneseMatrixSearch(const JapaneseSentenceDecoder &decoder) : decoder_(decoder) {}
+JapaneseMatrixSearch::JapaneseMatrixSearch(const JapaneseSentenceDecoder &decoder) : decoder_(decoder)
+{
+}
 
 std::vector<SentenceCandidate> JapaneseMatrixSearch::Search(std::string_view romaji, size_t limit) const
 {
@@ -61,7 +66,8 @@ std::vector<SentenceCandidate> JapaneseMatrixSearch::SearchConverted(const Romaj
 std::vector<SentenceCandidate> JapaneseMatrixSearch::SearchReading(const std::string &reading,
                                                                    const std::string &pending, size_t limit) const
 {
-    if (!decoder_.ready() || limit == 0) return {};
+    if (!decoder_.ready() || limit == 0)
+        return {};
     const auto pending_kana = KanaForRomajiPrefix(pending);
     if (reading.empty())
     {
@@ -72,7 +78,8 @@ std::vector<SentenceCandidate> JapaneseMatrixSearch::SearchReading(const std::st
             for (const auto &lemma : decoder_.PrefixLemmas(kana, 24))
             {
                 AppendUnique(result, seen, lemma.surface, lemma.word_cost, limit);
-                if (result.size() == limit) return result;
+                if (result.size() == limit)
+                    return result;
             }
         }
         return result;
@@ -85,7 +92,8 @@ std::vector<SentenceCandidate> JapaneseMatrixSearch::SearchReading(const std::st
 
     for (size_t start_mora = 0; start_mora < mora_count; ++start_mora)
     {
-        if (rows[start_mora].empty()) continue;
+        if (rows[start_mora].empty())
+            continue;
         const size_t start_byte = boundaries[start_mora];
         const size_t max_end = (std::min)(mora_count, start_mora + kMaxLemmaMora);
         for (size_t end_mora = start_mora + 1; end_mora <= max_end; ++end_mora)
@@ -95,10 +103,10 @@ std::vector<SentenceCandidate> JapaneseMatrixSearch::SearchReading(const std::st
             {
                 for (const auto &previous : rows[start_mora])
                 {
-                    rows[end_mora].push_back({previous.text + lemma.surface,
-                                              previous.cost + lemma.word_cost +
-                                                  decoder_.ConnectionCost(previous.right_id, lemma.left_id),
-                                              lemma.right_id});
+                    rows[end_mora].push_back(
+                        {previous.text + lemma.surface,
+                         previous.cost + lemma.word_cost + decoder_.ConnectionCost(previous.right_id, lemma.left_id),
+                         lemma.right_id});
                 }
             }
         }
@@ -117,8 +125,7 @@ std::vector<SentenceCandidate> JapaneseMatrixSearch::SearchReading(const std::st
     auto finals = rows[mora_count];
     for (auto &node : finals)
         node.cost += decoder_.ConnectionCost(node.right_id, 0);
-    std::sort(finals.begin(), finals.end(),
-              [](const MatrixNode &a, const MatrixNode &b) { return a.cost < b.cost; });
+    std::sort(finals.begin(), finals.end(), [](const MatrixNode &a, const MatrixNode &b) { return a.cost < b.cost; });
     if (!finals.empty())
         AppendUnique(result, seen, finals.front().text, finals.front().cost, limit);
 
@@ -143,7 +150,8 @@ std::vector<SentenceCandidate> JapaneseMatrixSearch::SearchReading(const std::st
         for (const auto &lemma : decoder_.ExactLemmas(key, 16))
         {
             AppendUnique(result, seen, lemma.surface, lemma.word_cost, limit);
-            if (result.size() == limit) break;
+            if (result.size() == limit)
+                break;
         }
         --lemma_mora;
     }

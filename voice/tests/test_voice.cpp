@@ -9,33 +9,47 @@
 #include <limits>
 #include <thread>
 using namespace metasequoia::voice;
-void require(bool ok, const char* message) { if (!ok) throw std::runtime_error(message); }
-template<class F> void fails(F action) {
+void require(bool ok, const char *message)
+{
+    if (!ok)
+        throw std::runtime_error(message);
+}
+template <class F> void fails(F action)
+{
     bool failed = false;
-    try { action(); } catch (const VoiceError&) { failed = true; }
+    try
+    {
+        action();
+    }
+    catch (const VoiceError &)
+    {
+        failed = true;
+    }
     require(failed, "Expected VoiceError");
 }
-int main(int argc, char** argv) {
-    try {
-        if (argc == 1) {
+int main(int argc, char **argv)
+{
+    try
+    {
+        if (argc == 1)
+        {
             const std::string binary = std::string("RIFF\0binary", 11) + "----MetasequoiaVoice0";
             const auto upload = make_transcription_request(binary, "fixture-model", "zh");
             const auto boundary = upload.content_type.substr(upload.content_type.find("boundary=") + 9);
             require(binary.find(boundary) == std::string::npos, "Multipart boundary collides with audio");
             require(upload.body.find(binary) != std::string::npos, "Binary audio must retain NUL bytes");
             require(upload.body.find("name=\"language\"\r\n\r\nzh") != std::string::npos, "Explicit recognition language");
-            require(make_transcription_request(binary, "model").body.find("name=\"language\"") == std::string::npos,
-                    "Omit language for providers that reject it");
+            require(make_transcription_request(binary, "model").body.find("name=\"language\"") == std::string::npos, "Omit language for providers that reject it");
             fails([] { make_transcription_request({}, "model"); });
             fails([] { make_transcription_request("audio", {}); });
             fails([] { make_transcription_request(std::string(maximum_encoded_audio_bytes + 1, 'x'), "model"); });
-            for (const auto* response : {R"({"text":"水杉"})", R"({"transcription":"水杉"})", R"({"result":{"text":"水杉"}})"})
+            for (const auto *response : {R"({"text":"水杉"})", R"({"transcription":"水杉"})", R"({"result":{"text":"水杉"}})"})
                 require(parse_transcription(response) == "水杉", "Platform transcription response variants");
-            for (const auto* response : {"invalid", "[]", R"({"text":42})", R"({"text":"","result":null})"})
+            for (const auto *response : {"invalid", "[]", R"({"text":42})", R"({"text":"","result":null})"})
                 fails([&] { parse_transcription(response); });
             fails([] { parse_transcription(std::string(1024 * 1024 + 1, 'x')); });
             require(parse_polished_text(R"({"choices":[{"message":{"content":"水杉"}}]})") == "水杉", "Polish response");
-            for (const auto* response : {"{}", R"({"choices":[]})", R"({"choices":[{"message":{"content":null}}]})", R"({"choices":[{"message":{"content":""}}]})"})
+            for (const auto *response : {"{}", R"({"choices":[]})", R"({"choices":[{"message":{"content":null}}]})", R"({"choices":[{"message":{"content":""}}]})"})
                 fails([&] { parse_polished_text(response); });
             const auto polish_body = make_polish_request("model", "prompt", "quoted \"line\"\ntext");
             require(polish_body.find("quoted \\\"line\\\"\\ntext") != std::string::npos, "Polish JSON escaping");
@@ -47,8 +61,7 @@ int main(int argc, char** argv) {
             fails([] { WavWriter::create_wav({0}, 48000); });
             fails([] { WavWriter::create_wav(std::vector<float>(maximum_samples + 1)); });
             const std::vector<float> longer_clip(maximum_samples + sample_rate / 2, 0.125f);
-            require(WavWriter::create_wav(longer_clip, sample_rate, longer_clip.size()).size() ==
-                        longer_clip.size() * 2 + 44, "Host upload budget preserves padding and longer clips");
+            require(WavWriter::create_wav(longer_clip, sample_rate, longer_clip.size()).size() == longer_clip.size() * 2 + 44, "Host upload budget preserves padding and longer clips");
             fails([] { WavWriter::create_wav({0, 0}, sample_rate, 1); });
             VadSegmenter vad;
             require(!vad.process(nullptr, 0), "Empty VAD block");
@@ -64,29 +77,38 @@ int main(int argc, char** argv) {
             return 0;
         }
         const std::string base = argv[1];
-        auto options = [&](const std::string& path) { return RequestOptions{base + path, "fixture-model", "fixture-token", 3000, {}}; };
+        auto options = [&](const std::string &path) { return RequestOptions{base + path, "fixture-model", "fixture-token", 3000, {}}; };
         const std::vector<float> pcm(160, 0.125f);
         std::cerr << "HTTP: transcription and error cases\n";
         CloudSttWorker asr(options("/asr"));
         require(asr.recognize(pcm) == "水杉 voice", "ASR UTF-8");
         require(asr.recognize({}).empty(), "Empty audio needs no network");
-        for (const auto* path : {"/denied", "/invalid", "/missing", "/oversize", "/redirect"}) {
+        for (const auto *path : {"/denied", "/invalid", "/missing", "/oversize", "/redirect"})
+        {
             CloudSttWorker invalid(options(path));
             fails([&] { invalid.recognize(pcm); });
         }
         std::cerr << "HTTP: timeout and cancellation\n";
-        auto timeout = options("/slow"); timeout.timeout_ms = 50;
-        CloudSttWorker slow(timeout); fails([&] { slow.recognize(pcm); });
-        auto cancelled = options("/asr"); cancelled.cancelled = std::make_shared<std::atomic_bool>(true);
-        CloudSttWorker stopped(cancelled); fails([&] { stopped.recognize(pcm); });
-        auto during = options("/slow"); during.cancelled = std::make_shared<std::atomic_bool>(false);
+        auto timeout = options("/slow");
+        timeout.timeout_ms = 50;
+        CloudSttWorker slow(timeout);
+        fails([&] { slow.recognize(pcm); });
+        auto cancelled = options("/asr");
+        cancelled.cancelled = std::make_shared<std::atomic_bool>(true);
+        CloudSttWorker stopped(cancelled);
+        fails([&] { stopped.recognize(pcm); });
+        auto during = options("/slow");
+        during.cancelled = std::make_shared<std::atomic_bool>(false);
         CloudSttWorker cancelling(during);
         auto pending = std::async(std::launch::async, [&] { fails([&] { cancelling.recognize(pcm); }); });
-        std::this_thread::sleep_for(std::chrono::milliseconds(50)); during.cancelled->store(true); pending.get();
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        during.cancelled->store(true);
+        pending.get();
         std::cerr << "HTTP: polish and fallback\n";
         TextPolisher polish(options("/polish"), "Clean transcription only");
         require(polish.polish("嗯 水杉") == "水杉", "Polished text");
-        for (const auto* path : {"/denied", "/invalid", "/missing"}) {
+        for (const auto *path : {"/denied", "/invalid", "/missing"})
+        {
             TextPolisher fallback(options(path), "prompt");
             require(fallback.polish("原始文本") == "原始文本", "Preserve original on error");
         }
@@ -95,13 +117,21 @@ int main(int argc, char** argv) {
         // An independently destroyed provider must not tear down another provider's CURL runtime.
         std::cerr << "HTTP: concurrent provider lifetimes\n";
         std::vector<std::future<void>> workers;
-        for (int i = 0; i < 4; ++i) workers.push_back(std::async(std::launch::async, [&] {
-            for (int n = 0; n < 5; ++n) {
-                CloudSttWorker temporary(options("/asr"));
-                require(temporary.recognize(pcm) == "水杉 voice", "Independent provider lifetime");
-            }
-        }));
-        for (auto& worker : workers) worker.get();
+        for (int i = 0; i < 4; ++i)
+            workers.push_back(std::async(std::launch::async, [&] {
+                for (int n = 0; n < 5; ++n)
+                {
+                    CloudSttWorker temporary(options("/asr"));
+                    require(temporary.recognize(pcm) == "水杉 voice", "Independent provider lifetime");
+                }
+            }));
+        for (auto &worker : workers)
+            worker.get();
         require(asr.recognize(pcm) == "水杉 voice", "Original provider still works");
-    } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
+    }
+    catch (const std::exception &error)
+    {
+        std::cerr << error.what() << '\n';
+        return 1;
+    }
 }

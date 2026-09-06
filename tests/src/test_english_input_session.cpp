@@ -122,9 +122,8 @@ int main()
     prepare_main_database(english_mode_directory, true);
     {
         Database database(english_mode_directory / "english.db");
-        database.execute(
-            "CREATE TABLE english_words(word TEXT COLLATE BINARY NOT NULL,display TEXT NOT NULL,"
-            "weight INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(word,display)) WITHOUT ROWID");
+        database.execute("CREATE TABLE english_words(word TEXT COLLATE BINARY NOT NULL,display TEXT NOT NULL,"
+                         "weight INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(word,display)) WITHOUT ROWID");
         database.execute("CREATE TABLE en_zh_glosses(english TEXT PRIMARY KEY,chinese_gloss TEXT NOT NULL)");
         database.execute("CREATE TABLE zh_en_glosses(chinese TEXT PRIMARY KEY,english_gloss TEXT NOT NULL)");
         database.execute("INSERT INTO english_words VALUES('ni','Ni',300)");
@@ -142,27 +141,22 @@ int main()
     metasequoia::InputSession mixed(SchemeType::Quanpin);
     require(mixed.set_english_input_options(mixed_options), "Valid mixed-English options were rejected.");
     type(mixed, "ni");
-    require(mixed.candidates().size() == 5 && mixed.candidates()[0].word == "你" &&
-                mixed.candidates()[1].word == "Ni" &&
-                mixed.candidates()[1].source == CandidateSource::EnglishDictionary &&
-                mixed.candidates()[2].word == "倪" && mixed.candidates()[3].word == "Ninja" &&
-                mixed.candidates()[4].word == "Nimbus",
-            "Mixed English candidates did not occupy the Windows-compatible slot after the leading Chinese candidate.");
+    require(
+        mixed.candidates().size() == 5 && mixed.candidates()[0].word == "你" && mixed.candidates()[1].word == "Ni" &&
+            mixed.candidates()[1].source == CandidateSource::EnglishDictionary && mixed.candidates()[2].word == "倪" &&
+            mixed.candidates()[3].word == "Ninja" && mixed.candidates()[4].word == "Nimbus",
+        "Mixed English candidates did not occupy the Windows-compatible slot after the leading Chinese candidate.");
 
     metasequoia::InputSession threshold(SchemeType::Quanpin);
     mixed_options.minimum_prefix = 3;
     require(threshold.set_english_input_options(mixed_options), "A valid English minimum prefix was rejected.");
     type(threshold, "ni");
     require(std::none_of(threshold.candidates().begin(), threshold.candidates().end(),
-                         [](const WordItem &item) {
-                             return item.source == CandidateSource::EnglishDictionary;
-                         }),
+                         [](const WordItem &item) { return item.source == CandidateSource::EnglishDictionary; }),
             "Mixed English candidates appeared below the configured minimum prefix.");
     require(threshold.handle_character('n').handled &&
                 std::any_of(threshold.candidates().begin(), threshold.candidates().end(),
-                            [](const WordItem &item) {
-                                return item.source == CandidateSource::EnglishDictionary;
-                            }),
+                            [](const WordItem &item) { return item.source == CandidateSource::EnglishDictionary; }),
             "Mixed English candidates did not appear at the configured minimum prefix.");
     mixed_options.minimum_prefix = 0;
     require(!threshold.set_english_input_options(mixed_options), "An invalid English minimum prefix was accepted.");
@@ -178,9 +172,7 @@ int main()
     require(dedicated.preedit() == "HE" && dedicated.candidates().size() == 2 &&
                 dedicated.candidates()[0].word == "Hello" && dedicated.candidates()[1].word == "Help" &&
                 std::all_of(dedicated.candidates().begin(), dedicated.candidates().end(),
-                            [](const WordItem &item) {
-                                return item.source == CandidateSource::EnglishDictionary;
-                            }),
+                            [](const WordItem &item) { return item.source == CandidateSource::EnglishDictionary; }),
             "Dedicated English mode did not expose English-only prefix candidates.");
     const auto selected = dedicated.select_candidate(1);
     require(selected.handled && selected.commit == "Help" && dedicated.dedicated_english_mode() &&
@@ -197,45 +189,41 @@ int main()
             "Raw Enter did not commit and retain dedicated English mode.");
     {
         Database database(english_mode_directory / "english.db");
-        require(database.query_integer(
-                    "SELECT COUNT(*) FROM english_words WHERE word='codex' AND display='Codex'") == 1,
+        require(database.query_integer("SELECT COUNT(*) FROM english_words WHERE word='codex' AND display='Codex'") ==
+                    1,
                 "Raw Enter did not learn the dedicated English word.");
     }
     {
         Database database(english_mode_directory / "msime_user.db");
-        require(database.query_integer(
-                    "SELECT COUNT(*) FROM user_dictionary_operations WHERE dictionary='english' "
-                    "AND key='codex' AND value='Codex' AND operation='upsert'") == 1,
+        require(database.query_integer("SELECT COUNT(*) FROM user_dictionary_operations WHERE dictionary='english' "
+                                       "AND key='codex' AND value='Codex' AND operation='upsert'") == 1,
                 "Learned dedicated English was not journaled for upgrade replay.");
     }
     {
-        // A busy user dictionary must not leave english.db carrying a weight that no journal row can replay: the boost would be reverted at the next dictionary upgrade even though the dictionary already showed it.
+        // A busy user dictionary must not leave english.db carrying a weight that no journal row can replay: the boost
+        // would be reverted at the next dictionary upgrade even though the dictionary already showed it.
         const std::string english_db = metasequoia::path_to_utf8(english_mode_directory / "english.db");
         const std::string user_db = user_dictionary::default_user_db_path();
-        const std::vector<WordItem> ranked{
-            WordItem("ninja", "Ninja", 200, CandidateSource::EnglishDictionary),
-            WordItem("nimbus", "Nimbus", 100, CandidateSource::EnglishDictionary)};
+        const std::vector<WordItem> ranked{WordItem("ninja", "Ninja", 200, CandidateSource::EnglishDictionary),
+                                           WordItem("nimbus", "Nimbus", 100, CandidateSource::EnglishDictionary)};
         sqlite3 *blocker = nullptr;
         require(sqlite3_open(user_db.c_str(), &blocker) == SQLITE_OK &&
                     sqlite3_exec(blocker, "BEGIN IMMEDIATE", nullptr, nullptr, nullptr) == SQLITE_OK,
                 "Failed to hold a write lock on the user dictionary database.");
         bool ranking_changed = true;
         const bool blocked = user_dictionary::adjust_english_candidate_ranking(
-            english_db, user_db, "english:ni", ranked, "nimbus", "Nimbus", "promote", 1, 1, true,
-            &ranking_changed);
+            english_db, user_db, "english:ni", ranked, "nimbus", "Nimbus", "promote", 1, 1, true, &ranking_changed);
         sqlite3_exec(blocker, "ROLLBACK", nullptr, nullptr, nullptr);
         sqlite3_close(blocker);
-        require(!blocked && !ranking_changed,
-                "A locked user dictionary reported a persisted English ranking.");
+        require(!blocked && !ranking_changed, "A locked user dictionary reported a persisted English ranking.");
         {
             Database database(english_mode_directory / "english.db");
             require(database.query_integer("SELECT weight FROM english_words WHERE word='nimbus' AND "
                                            "display='Nimbus'") == 100,
                     "An unjournaled English ranking was written into the English dictionary.");
         }
-        require(user_dictionary::adjust_english_candidate_ranking(
-                    english_db, user_db, "english:ni", ranked, "nimbus", "Nimbus", "promote", 1, 1, true,
-                    &ranking_changed) &&
+        require(user_dictionary::adjust_english_candidate_ranking(english_db, user_db, "english:ni", ranked, "nimbus",
+                                                                  "Nimbus", "promote", 1, 1, true, &ranking_changed) &&
                     ranking_changed,
                 "English ranking was not persisted once the user dictionary was writable.");
         {
@@ -246,9 +234,8 @@ int main()
         }
         {
             Database database(english_mode_directory / "msime_user.db");
-            require(database.query_integer(
-                        "SELECT weight FROM user_dictionary_operations WHERE dictionary='english' "
-                        "AND key='nimbus' AND value='Nimbus' AND operation='upsert'") == 1200,
+            require(database.query_integer("SELECT weight FROM user_dictionary_operations WHERE dictionary='english' "
+                                           "AND key='nimbus' AND value='Nimbus' AND operation='upsert'") == 1200,
                     "English ranking was not journaled for upgrade replay.");
         }
     }
@@ -268,9 +255,7 @@ int main()
     type(corrupt, "ni");
     require(!corrupt.candidates().empty() && corrupt.candidates().front().word == "你" &&
                 std::none_of(corrupt.candidates().begin(), corrupt.candidates().end(),
-                             [](const WordItem &item) {
-                                 return item.source == CandidateSource::EnglishDictionary;
-                             }),
+                             [](const WordItem &item) { return item.source == CandidateSource::EnglishDictionary; }),
             "An English database failure suppressed local Chinese candidates.");
 
     const std::filesystem::path missing_directory = root / "english-missing";

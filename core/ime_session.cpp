@@ -17,7 +17,8 @@ void ApplyShuangpinHelpcodeSegmentation(QueryRequest &request, const ShuangpinPr
     }
 
     const size_t helpcode_length = 2;
-    // The detector locates the help codes in delimiter-stripped space, so the split has to be made there too: slicing the last raw bytes would push a pinyin letter into the base and a manual delimiter into the help codes.
+    // The detector locates the help codes in delimiter-stripped space, so the split has to be made there too: slicing
+    // the last raw bytes would push a pinyin letter into the base and a manual delimiter into the help codes.
     const std::string base_raw_input =
         shuangpin::trim_trailing_letters_preserve_delimiters(request.raw_input, helpcode_length);
     const std::string base_raw_input_with_cases =
@@ -34,8 +35,10 @@ void ApplyShuangpinHelpcodeSegmentation(QueryRequest &request, const ShuangpinPr
 }
 } // namespace
 
-ImeSession::ImeSession(SchemeType scheme_type, const ShuangpinProfile &shuangpin_profile, metasequoia::RuntimePaths paths)
-    : provider_registry_(shuangpin_profile, std::move(paths)), shuangpin_profile_(shuangpin_profile), scheme_(create_scheme(scheme_type))
+ImeSession::ImeSession(SchemeType scheme_type, const ShuangpinProfile &shuangpin_profile,
+                       metasequoia::RuntimePaths paths)
+    : provider_registry_(shuangpin_profile, std::move(paths)), shuangpin_profile_(shuangpin_profile),
+      scheme_(create_scheme(scheme_type))
 {
 }
 

@@ -110,40 +110,37 @@ void prepare_frequency_fixture(const std::filesystem::path &directory)
 {
     std::filesystem::create_directories(directory);
     Database database(directory / "msime.db");
-    database.execute(
-        "BEGIN;"
-        "CREATE TABLE tbl_1_n(key TEXT, jp TEXT, value TEXT, weight INTEGER);"
-        "INSERT INTO tbl_1_n VALUES('ni', 'n', '甲', 100);"
-        "INSERT INTO tbl_1_n VALUES('ni', 'n', '乙', 90);"
-        "INSERT INTO tbl_1_n VALUES('ni', 'n', '丙', 80);"
-        "INSERT INTO tbl_1_n VALUES('ni', 'n', '丁', 70);"
-        "INSERT INTO tbl_1_n VALUES('ni', 'n', '戊', 60);"
-        "INSERT INTO tbl_1_n VALUES('ni', 'n', '己', 50);"
-        "COMMIT;");
+    database.execute("BEGIN;"
+                     "CREATE TABLE tbl_1_n(key TEXT, jp TEXT, value TEXT, weight INTEGER);"
+                     "INSERT INTO tbl_1_n VALUES('ni', 'n', '甲', 100);"
+                     "INSERT INTO tbl_1_n VALUES('ni', 'n', '乙', 90);"
+                     "INSERT INTO tbl_1_n VALUES('ni', 'n', '丙', 80);"
+                     "INSERT INTO tbl_1_n VALUES('ni', 'n', '丁', 70);"
+                     "INSERT INTO tbl_1_n VALUES('ni', 'n', '戊', 60);"
+                     "INSERT INTO tbl_1_n VALUES('ni', 'n', '己', 50);"
+                     "COMMIT;");
 }
 
 void prepare_shuangpin_frequency_fixture(const std::filesystem::path &directory)
 {
     std::filesystem::create_directories(directory);
     Database database(directory / "msime.db");
-    database.execute(
-        "BEGIN;"
-        "CREATE TABLE tbl_2_n(key TEXT, jp TEXT, value TEXT, weight INTEGER);"
-        "INSERT INTO tbl_2_n VALUES('ni''hao', 'nh', '你好', 100);"
-        "INSERT INTO tbl_2_n VALUES('ni''hao', 'nh', '拟好', 50);"
-        "COMMIT;");
+    database.execute("BEGIN;"
+                     "CREATE TABLE tbl_2_n(key TEXT, jp TEXT, value TEXT, weight INTEGER);"
+                     "INSERT INTO tbl_2_n VALUES('ni''hao', 'nh', '你好', 100);"
+                     "INSERT INTO tbl_2_n VALUES('ni''hao', 'nh', '拟好', 50);"
+                     "COMMIT;");
 }
 
 void prepare_wubi_frequency_fixture(const std::filesystem::path &directory)
 {
     std::filesystem::create_directories(directory);
     Database database(directory / "msime.db");
-    database.execute(
-        "BEGIN;"
-        "CREATE TABLE wubi86(key TEXT, value TEXT, weight INTEGER);"
-        "INSERT INTO wubi86 VALUES('aaaa', '工', 100);"
-        "INSERT INTO wubi86 VALUES('aaaa', '或', 50);"
-        "COMMIT;");
+    database.execute("BEGIN;"
+                     "CREATE TABLE wubi86(key TEXT, value TEXT, weight INTEGER);"
+                     "INSERT INTO wubi86 VALUES('aaaa', '工', 100);"
+                     "INSERT INTO wubi86 VALUES('aaaa', '或', 50);"
+                     "COMMIT;");
 }
 
 std::size_t candidate_index(const metasequoia::InputSession &session, const std::string &word)
@@ -169,9 +166,7 @@ bool same_candidate_words(const metasequoia::InputSession &left, const metasequo
         return false;
     }
     return std::equal(left.candidates().begin(), left.candidates().end(), right.candidates().begin(),
-                      [](const auto &left_item, const auto &right_item) {
-                          return left_item.word == right_item.word;
-                      });
+                      [](const auto &left_item, const auto &right_item) { return left_item.word == right_item.word; });
 }
 } // namespace
 
@@ -494,44 +489,42 @@ int run_test()
                 "Selecting a candidate did not promote it for the next matching input.");
 
         type(session, "nihao");
-        const auto first_bmp = session.select_candidate_edge(candidate_index(session, "拟好"),
-                                                              metasequoia::CandidateEdge::FirstHan);
+        const auto first_bmp =
+            session.select_candidate_edge(candidate_index(session, "拟好"), metasequoia::CandidateEdge::FirstHan);
         require(first_bmp.handled && first_bmp.commit == "拟" && !session.has_composition(),
                 "FirstHan did not commit the first BMP Han character and reset the composition.");
 
         type(session, "nihao");
-        const auto last_bmp = session.select_candidate_edge(candidate_index(session, "拟好"),
-                                                             metasequoia::CandidateEdge::LastHan);
+        const auto last_bmp =
+            session.select_candidate_edge(candidate_index(session, "拟好"), metasequoia::CandidateEdge::LastHan);
         require(last_bmp.handled && last_bmp.commit == "好" && !session.has_composition(),
                 "LastHan did not commit the last BMP Han character and reset the composition.");
 
         type(session, "nihao");
-        const auto first_supplementary = session.select_candidate_edge(
-            candidate_index(session, "𠀀方案𠮷"), metasequoia::CandidateEdge::FirstHan);
+        const auto first_supplementary =
+            session.select_candidate_edge(candidate_index(session, "𠀀方案𠮷"), metasequoia::CandidateEdge::FirstHan);
         require(first_supplementary.handled && first_supplementary.commit == "𠀀" && !session.has_composition(),
                 "FirstHan split a supplementary-plane Han character.");
 
         type(session, "nihao");
-        const auto last_supplementary = session.select_candidate_edge(
-            candidate_index(session, "𠀀方案𠮷"), metasequoia::CandidateEdge::LastHan);
+        const auto last_supplementary =
+            session.select_candidate_edge(candidate_index(session, "𠀀方案𠮷"), metasequoia::CandidateEdge::LastHan);
         require(last_supplementary.handled && last_supplementary.commit == "𠮷" && !session.has_composition(),
                 "LastHan split a supplementary-plane Han character.");
 
         type(session, "nihao");
-        const auto first_mixed = session.select_candidate_edge(candidate_index(session, "C语言 2"),
-                                                                metasequoia::CandidateEdge::FirstHan);
-        require(first_mixed.handled && first_mixed.commit == "语",
-                "FirstHan did not skip a non-Han candidate prefix.");
+        const auto first_mixed =
+            session.select_candidate_edge(candidate_index(session, "C语言 2"), metasequoia::CandidateEdge::FirstHan);
+        require(first_mixed.handled && first_mixed.commit == "语", "FirstHan did not skip a non-Han candidate prefix.");
 
         type(session, "nihao");
-        const auto last_mixed = session.select_candidate_edge(candidate_index(session, "C语言 2"),
-                                                               metasequoia::CandidateEdge::LastHan);
-        require(last_mixed.handled && last_mixed.commit == "言",
-                "LastHan did not skip a non-Han candidate suffix.");
+        const auto last_mixed =
+            session.select_candidate_edge(candidate_index(session, "C语言 2"), metasequoia::CandidateEdge::LastHan);
+        require(last_mixed.handled && last_mixed.commit == "言", "LastHan did not skip a non-Han candidate suffix.");
 
         type(session, "nihao");
-        const auto no_han = session.select_candidate_edge(candidate_index(session, "GitHub"),
-                                                           metasequoia::CandidateEdge::FirstHan);
+        const auto no_han =
+            session.select_candidate_edge(candidate_index(session, "GitHub"), metasequoia::CandidateEdge::FirstHan);
         require(!no_han.handled && session.has_composition(),
                 "A candidate without Han characters was consumed by edge selection.");
         session.handle_command(metasequoia::Command::Cancel);
@@ -558,8 +551,8 @@ int run_test()
                 "Switching without a composition did not update the active scheme.");
         session.switch_scheme(SchemeType::Quanpin);
 
-        const std::vector<std::string> supported_helpcode_schemas{
-            "lantian", "ziranma", "shouyou2_0", "shouyouplus", "xiaohe"};
+        const std::vector<std::string> supported_helpcode_schemas{"lantian", "ziranma", "shouyou2_0", "shouyouplus",
+                                                                  "xiaohe"};
         for (const std::string &schema : supported_helpcode_schemas)
         {
             require(metasequoia::InputSession::is_supported_helpcode_schema(schema) &&
@@ -572,8 +565,7 @@ int run_test()
 
         metasequoia::InputSession quanpin_helpcode(SchemeType::Quanpin);
         quanpin_helpcode.set_quanpin_helpcode_enabled(true);
-        require(quanpin_helpcode.set_helpcode_schema("lantian"),
-                "The Lantian helpcode fixture was not selected.");
+        require(quanpin_helpcode.set_helpcode_schema("lantian"), "The Lantian helpcode fixture was not selected.");
         type(quanpin_helpcode, "nihaoC");
         require(!quanpin_helpcode.candidates().empty() && quanpin_helpcode.candidates().front().word == "拟好",
                 "Quanpin helpcode did not reorder candidates after a complete spelling.");
@@ -584,8 +576,7 @@ int run_test()
         require(!quanpin_without_helpcode.helpcode_enabled(),
                 "Disabling Quanpin helpcode was not reflected by the session.");
         type(quanpin_without_helpcode, "nih");
-        require(!quanpin_without_helpcode.handle_character('C').handled &&
-                    quanpin_without_helpcode.preedit() == "nih",
+        require(!quanpin_without_helpcode.handle_character('C').handled && quanpin_without_helpcode.preedit() == "nih",
                 "A setter-disabled Quanpin helpcode key was swallowed.");
         require(same_candidate_words(quanpin_helpcode, quanpin_without_helpcode),
                 "Quanpin helpcode changed candidates after an incomplete base spelling.");
@@ -595,8 +586,7 @@ int run_test()
         type(shuangpin_helpcode, "nihcc");
         require(shuangpin_helpcode.raw_segmentation() == "ni'hc'c" &&
                     shuangpin_helpcode.normalized_segmentation() == "ni'hao'c" &&
-                    !shuangpin_helpcode.candidates().empty() &&
-                    shuangpin_helpcode.candidates().front().word == "拟好",
+                    !shuangpin_helpcode.candidates().empty() && shuangpin_helpcode.candidates().front().word == "拟好",
                 "Shuangpin helpcode or exposed segmentation did not match the complete base spelling.");
 
         metasequoia::InputSession shuangpin_delimited_helpcode(SchemeType::Shuangpin);
@@ -650,8 +640,7 @@ int run_test()
         set_data_directory(directory);
 
         metasequoia::InputSession learning_session(SchemeType::Quanpin);
-        require(learning_session.set_frequency_adjustment(
-                    {frequency_case.mode, 1, frequency_case.linear_step}),
+        require(learning_session.set_frequency_adjustment({frequency_case.mode, 1, frequency_case.linear_step}),
                 "A supported frequency adjustment configuration was rejected.");
         type(learning_session, "ni");
         const auto learned = learning_session.select_candidate(std::string("己"));
@@ -752,9 +741,8 @@ int run_test()
     user_dictionary::close_default_user_database();
     {
         Database user_database(partial_write_directory / "msime_user.db");
-        user_database.execute(
-            "CREATE TRIGGER reject_frequency_journal BEFORE INSERT ON user_dictionary_operations "
-            "BEGIN SELECT RAISE(FAIL, 'injected journal failure'); END");
+        user_database.execute("CREATE TRIGGER reject_frequency_journal BEFORE INSERT ON user_dictionary_operations "
+                              "BEGIN SELECT RAISE(FAIL, 'injected journal failure'); END");
     }
     metasequoia::InputSession partial_write_session(SchemeType::Quanpin);
     require(partial_write_session.set_frequency_adjustment({metasequoia::FrequencyAdjustmentMode::Pin, 1, 1}),
@@ -798,8 +786,7 @@ int run_test()
             "Unicode mode accepted or forwarded a non-hexadecimal character.");
     for (const char character : std::string("4e00"))
     {
-        require(unicode_session.handle_character(character).handled,
-                "Unicode mode rejected a hexadecimal character.");
+        require(unicode_session.handle_character(character).handled, "Unicode mode rejected a hexadecimal character.");
     }
     require(unicode_session.preedit() == "U4e00" && unicode_session.candidates().size() == 1 &&
                 unicode_session.candidates().front().word == "一" &&
@@ -873,9 +860,8 @@ int run_test()
             "Switching schemes did not clear Unicode mode.");
 
     metasequoia::InputSession date_time_session(SchemeType::Quanpin);
-    date_time_session.set_local_date_time_provider([] {
-        return metasequoia::local_modes::LocalDateTime{2026, 8, 9, 0, 14, 30, 0};
-    });
+    date_time_session.set_local_date_time_provider(
+        [] { return metasequoia::local_modes::LocalDateTime{2026, 8, 9, 0, 14, 30, 0}; });
     require(date_time_session.handle_character('T', true).handled &&
                 date_time_session.local_input_mode() == metasequoia::LocalInputMode::DateTime &&
                 date_time_session.preedit() == "T" && date_time_session.candidates().empty(),
@@ -895,8 +881,7 @@ int run_test()
     type(date_time_session, "r");
     require(date_time_session.candidates().empty(), "An incomplete date keyword produced candidates.");
     const std::string incomplete_date_preedit = date_time_session.preedit();
-    require(date_time_session.handle_character('1').handled &&
-                date_time_session.preedit() == incomplete_date_preedit,
+    require(date_time_session.handle_character('1').handled && date_time_session.preedit() == incomplete_date_preedit,
             "Invalid date/time input leaked into normal composition or changed preedit.");
     require(date_time_session.handle_command(metasequoia::Command::Cancel).handled &&
                 date_time_session.local_input_mode() == metasequoia::LocalInputMode::None,
@@ -948,8 +933,7 @@ int run_test()
     require(quick_phrase_session.handle_character('K', true).handled,
             "Quick-phrase mode could not be re-entered for invalid-input coverage.");
     const std::string quick_phrase_prefix = quick_phrase_session.preedit();
-    require(quick_phrase_session.handle_character('1').handled &&
-                quick_phrase_session.preedit() == quick_phrase_prefix,
+    require(quick_phrase_session.handle_character('1').handled && quick_phrase_session.preedit() == quick_phrase_prefix,
             "Invalid quick-phrase input leaked into normal composition or changed preedit.");
     require(quick_phrase_session.handle_command(metasequoia::Command::Backspace).handled &&
                 quick_phrase_session.local_input_mode() == metasequoia::LocalInputMode::None,
@@ -959,8 +943,7 @@ int run_test()
     disabled_quick_phrase_options.quick_phrase = false;
     metasequoia::InputSession disabled_quick_phrase(SchemeType::Quanpin);
     disabled_quick_phrase.set_local_mode_options(disabled_quick_phrase_options);
-    require(!disabled_quick_phrase.handle_character('K', true).handled &&
-                !disabled_quick_phrase.has_composition() &&
+    require(!disabled_quick_phrase.handle_character('K', true).handled && !disabled_quick_phrase.has_composition() &&
                 disabled_quick_phrase.local_input_mode() == metasequoia::LocalInputMode::None,
             "A disabled quick-phrase shortcut swallowed Shift+K.");
 
@@ -1035,8 +1018,7 @@ int run_test()
                 kaomoji_session.local_input_mode() == metasequoia::LocalInputMode::Kaomoji,
             "Shift+M did not enter kaomoji mode in Shuangpin.");
     type(kaomoji_session, "hx");
-    require(kaomoji_session.candidates().size() == 1 &&
-                kaomoji_session.candidates().front().word == "(*/ω＼*)" &&
+    require(kaomoji_session.candidates().size() == 1 && kaomoji_session.candidates().front().word == "(*/ω＼*)" &&
                 kaomoji_session.candidates().front().source == CandidateSource::Kaomoji,
             "Kaomoji mode did not expose its Shuangpin-expanded candidate.");
     const auto kaomoji_commit = kaomoji_session.select_candidate(0);

@@ -30,7 +30,10 @@ class JapaneseSentenceDecoder
 {
   public:
     explicit JapaneseSentenceDecoder(std::string model_path = {});
-    bool ready() const { return ready_; }
+    bool ready() const
+    {
+        return ready_;
+    }
     std::vector<SentenceCandidate> Decode(const std::string &reading, size_t limit = 8) const;
     std::vector<JapaneseLemma> ExactLemmas(const std::string &reading, size_t limit = 32) const;
     std::vector<JapaneseLemma> PrefixLemmas(const std::string &reading_prefix, size_t limit = 32) const;
@@ -59,13 +62,10 @@ class JapaneseSentenceDecoder
     std::string_view Surface(const Token &token) const;
     size_t LowerBoundReading(std::string_view reading) const;
     bool TokenCheaper(std::uint32_t a, std::uint32_t b) const;
-    void KeepBestToken(std::vector<std::uint32_t> &best, std::uint32_t token_id,
-                       size_t limit) const;
+    void KeepBestToken(std::vector<std::uint32_t> &best, std::uint32_t token_id, size_t limit) const;
     void SortTokenIds(std::vector<std::uint32_t> &token_ids) const;
-    std::vector<JapaneseLemma> MakeLemmas(const std::vector<std::uint32_t> &token_ids,
-                                          size_t limit) const;
-    std::vector<JapaneseLemma> BestLemmas(const std::vector<std::uint32_t> &token_ids,
-                                         size_t limit) const;
+    std::vector<JapaneseLemma> MakeLemmas(const std::vector<std::uint32_t> &token_ids, size_t limit) const;
+    std::vector<JapaneseLemma> BestLemmas(const std::vector<std::uint32_t> &token_ids, size_t limit) const;
 
     bool ready_ = false;
     std::uint32_t connection_size_ = 0;

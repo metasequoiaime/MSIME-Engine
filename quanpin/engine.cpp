@@ -3,8 +3,11 @@
 #include "quanpin_query.h"
 #include "quanpin_utils.h"
 
-QuanpinEngine::QuanpinEngine(metasequoia::RuntimePaths paths) : dictionary_({}, paths),
-    helpcodes_(HelpcodeUtils::load_helpcode_keymap(paths.resources, HelpcodeUtils::selected_helpcode_schema())) {}
+QuanpinEngine::QuanpinEngine(metasequoia::RuntimePaths paths)
+    : dictionary_({}, paths),
+      helpcodes_(HelpcodeUtils::load_helpcode_keymap(paths.resources, HelpcodeUtils::selected_helpcode_schema()))
+{
+}
 
 QuanpinEngine::~QuanpinEngine() = default;
 
