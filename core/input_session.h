@@ -259,6 +259,7 @@ class InputSession
     void update_dedicated_english_candidates();
     EnglishDictionary &english_dictionary();
     void reset_composition();
+    void discard_abandoned_phrase_progress();
     std::optional<std::string> learn_candidate(std::size_t index);
 
     CreatingWordProgress immediate_phrase_progress_;

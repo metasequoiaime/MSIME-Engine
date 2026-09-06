@@ -15,33 +15,6 @@ struct HelpcodeQuery
     std::string help_codes;
 };
 
-std::string trim_trailing_letters_preserve_delimiters(const std::string &raw_input, size_t letter_count)
-{
-    if (letter_count == 0 || raw_input.empty())
-    {
-        return raw_input;
-    }
-
-    size_t remaining = letter_count;
-    size_t pos = raw_input.size();
-    while (pos > 0)
-    {
-        --pos;
-        if (raw_input[pos] == '\'')
-        {
-            continue;
-        }
-
-        --remaining;
-        if (remaining == 0)
-        {
-            return raw_input.substr(0, pos);
-        }
-    }
-
-    return {};
-}
-
 bool has_manual_delimiters(const std::string &raw_input)
 {
     return raw_input.find('\'') != std::string::npos;
@@ -90,7 +63,7 @@ std::optional<HelpcodeQuery> build_full_helpcode_query(const std::string &raw_in
     }
 
     HelpcodeQuery query;
-    query.base_raw_input = trim_trailing_letters_preserve_delimiters(raw_input, 2);
+    query.base_raw_input = shuangpin::trim_trailing_letters_preserve_delimiters(raw_input, 2);
     query.base_pure_input = shuangpin::remove_manual_delimiters(query.base_raw_input);
     query.base_segmentation = shuangpin::segment_input(query.base_raw_input, profile);
     query.help_codes =
@@ -108,7 +81,7 @@ std::optional<HelpcodeQuery> build_single_helpcode_query(const std::string &raw_
     }
 
     HelpcodeQuery query;
-    query.base_raw_input = trim_trailing_letters_preserve_delimiters(raw_input, 1);
+    query.base_raw_input = shuangpin::trim_trailing_letters_preserve_delimiters(raw_input, 1);
     query.base_pure_input = shuangpin::remove_manual_delimiters(query.base_raw_input);
     query.base_segmentation = shuangpin::segment_input(query.base_raw_input, profile);
     if (has_manual_delimiters(raw_input) && !segmented_parts_are_all_two_chars(query.base_segmentation))

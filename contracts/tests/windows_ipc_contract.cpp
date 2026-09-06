@@ -1,6 +1,7 @@
 #include "../ipc_negotiation.h"
 #include "../voice_composition_pipe.h"
 
+#include <algorithm>
 #include <array>
 #include <cstring>
 #include <iostream>
@@ -70,5 +71,21 @@ int main()
     auto incomplete = frames;
     incomplete.erase(incomplete.begin());
     CHECK(FanyImeVoiceCompositionPipe::AssembleFrames(incomplete).empty());
+    // A middle frame legally carries flags 0, so an unterminated packet must be rejected on the chunk, not accepted because data[0] happens to be a NUL.
+    std::array<wchar_t, FanyImeVoiceCompositionPipe::kPacketChars> packet{};
+    packet.fill(L'x');
+    packet[0] = 0; // middle frame
+    packet[1] = 7; // generation
+    CHECK(!FanyImeVoiceCompositionPipe::ParseFrame(packet.data()).valid);
+    packet[FanyImeVoiceCompositionPipe::kPacketChars - 1] = 0;
+    const auto middle = FanyImeVoiceCompositionPipe::ParseFrame(packet.data());
+    CHECK(middle.valid && !middle.first && !middle.last && middle.generation == 7);
+    CHECK(middle.chunk == std::wstring(FanyImeVoiceCompositionPipe::kMaxChunkChars, L'x'));
+    const auto blank = FanyImeVoiceCompositionPipe::EncodeSnapshot(std::wstring(), 7);
+    CHECK(blank.size() == 1);
+    std::array<wchar_t, FanyImeVoiceCompositionPipe::kPacketChars> header{};
+    std::copy(blank[0].begin(), blank[0].end(), header.begin());
+    const auto empty = FanyImeVoiceCompositionPipe::ParseFrame(header.data());
+    CHECK(empty.valid && empty.first && empty.last && empty.chunk.empty());
     std::cout << "Windows IPC layout, negotiation, upgrade and voice contracts passed\n";
 }

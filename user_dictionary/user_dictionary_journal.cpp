@@ -495,6 +495,10 @@ bool adjust_english_candidate_ranking(const std::string &english_db_path, const 
 
     UserDatabase user_db(user_db_path);
     if (!user_db) return false;
+    auto journal = prepare_upsert_journal(user_db.get());
+    if (!journal) return false;
+    if (!execute_sql(user_db.get(), "BEGIN IMMEDIATE")) return false;
+    const auto rollback_user = [&]() { (void)execute_sql(user_db.get(), "ROLLBACK"); };
     trigger_count = (std::max)(1, (std::min)(10, trigger_count));
     if (!force_top)
     {
@@ -504,16 +508,34 @@ bool adjust_english_candidate_ranking(const std::string &english_db_path, const 
             " RETURNING selection_count");
         if (!counter || !bind_text(counter.get(),1,context_key) || !bind_text(counter.get(),2,entry_key) ||
             !bind_text(counter.get(),3,value) || sqlite3_step(counter.get()) != SQLITE_ROW)
+        {
+            rollback_user();
             return false;
-        if (sqlite3_column_int(counter.get(),0) < trigger_count) return true;
+        }
+        if (sqlite3_column_int(counter.get(),0) < trigger_count)
+        {
+            counter.reset();
+            const bool committed = execute_sql(user_db.get(), "COMMIT");
+            if (!committed) rollback_user();
+            return committed;
+        }
     }
 
     const auto selected = std::find_if(ordered_candidates.begin(), ordered_candidates.end(), [&](const WordItem &item) {
         return item.source == CandidateSource::EnglishDictionary && item.pinyin == entry_key && item.word == value;
     });
-    if (selected == ordered_candidates.end()) return false;
+    if (selected == ordered_candidates.end())
+    {
+        rollback_user();
+        return false;
+    }
     const size_t rank = static_cast<size_t>(selected - ordered_candidates.begin());
-    if (rank == 0) return true;
+    if (rank == 0)
+    {
+        const bool committed = execute_sql(user_db.get(), "COMMIT");
+        if (!committed) rollback_user();
+        return committed;
+    }
     size_t target = 0;
     if (!force_top && mode == "halve") target = rank / 2;
     else if (!force_top && mode == "linear")
@@ -528,21 +550,33 @@ bool adjust_english_candidate_ranking(const std::string &english_db_path, const 
         : ordered_candidates[target - 1].weight + 1;
 
     auto english_db = open_database(english_db_path, SQLITE_OPEN_READWRITE);
-    auto journal = prepare_upsert_journal(user_db.get());
     auto update = english_db ? prepare(english_db.get(),
         "UPDATE english_words SET weight=?1 WHERE word=?2 AND display=?3") : Stmt{};
-    const bool ok = update && sqlite3_bind_int64(update.get(),1,new_weight) == SQLITE_OK &&
-        bind_text(update.get(),2,entry_key) && bind_text(update.get(),3,value) &&
-        sqlite3_step(update.get()) == SQLITE_DONE && sqlite3_changes(english_db.get()) > 0 && journal &&
-        write_upsert_journal(journal.get(), DictionaryKind::English, entry_key, value, new_weight, value);
-    if (ok)
+    auto existing = english_db ? prepare(english_db.get(),
+        "SELECT 1 FROM english_words WHERE word=?1 AND display=?2") : Stmt{};
+    // Journal the new weight before english.db carries it. The journal upsert is idempotent and replay reapplies it, so a journal row one step ahead of the dictionary is recoverable, while a boosted weight that never reached the journal is silently reverted at the next dictionary upgrade. The row must already exist, otherwise replay would insert a word the user never learned.
+    if (!update || !existing || !bind_text(existing.get(),1,entry_key) || !bind_text(existing.get(),2,value) ||
+        sqlite3_step(existing.get()) != SQLITE_ROW ||
+        !write_upsert_journal(journal.get(), DictionaryKind::English, entry_key, value, new_weight, value))
     {
-        if (ranking_changed) *ranking_changed = true;
-        auto reset = prepare(user_db.get(),
-            "DELETE FROM candidate_selection_state WHERE context_key=?1 AND entry_key=?2 AND value=?3");
-        if (reset) { bind_text(reset.get(),1,context_key); bind_text(reset.get(),2,entry_key);
-                     bind_text(reset.get(),3,value); sqlite3_step(reset.get()); }
+        rollback_user();
+        return false;
     }
+    existing.reset();
+    auto reset = prepare(user_db.get(),
+        "DELETE FROM candidate_selection_state WHERE context_key=?1 AND entry_key=?2 AND value=?3");
+    const bool reset_ok = reset && bind_text(reset.get(),1,context_key) && bind_text(reset.get(),2,entry_key) &&
+        bind_text(reset.get(),3,value) && sqlite3_step(reset.get()) == SQLITE_DONE;
+    reset.reset();
+    if (!reset_ok || !execute_sql(user_db.get(), "COMMIT"))
+    {
+        rollback_user();
+        return false;
+    }
+    const bool ok = sqlite3_bind_int64(update.get(),1,new_weight) == SQLITE_OK &&
+        bind_text(update.get(),2,entry_key) && bind_text(update.get(),3,value) &&
+        sqlite3_step(update.get()) == SQLITE_DONE && sqlite3_changes(english_db.get()) > 0;
+    if (ok && ranking_changed) *ranking_changed = true;
     return ok;
 }
 

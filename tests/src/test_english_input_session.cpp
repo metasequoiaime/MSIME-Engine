@@ -1,5 +1,6 @@
 #include "../../core/data_path.h"
 #include "../../core/input_session.h"
+#include "../../user_dictionary/user_dictionary_journal.h"
 #include "test_directory_cleanup.h"
 
 #include <sqlite3.h>
@@ -11,6 +12,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace
 {
@@ -205,6 +207,50 @@ int main()
                     "SELECT COUNT(*) FROM user_dictionary_operations WHERE dictionary='english' "
                     "AND key='codex' AND value='Codex' AND operation='upsert'") == 1,
                 "Learned dedicated English was not journaled for upgrade replay.");
+    }
+    {
+        // A busy user dictionary must not leave english.db carrying a weight that no journal row can replay: the boost would be reverted at the next dictionary upgrade even though the dictionary already showed it.
+        const std::string english_db = metasequoia::path_to_utf8(english_mode_directory / "english.db");
+        const std::string user_db = user_dictionary::default_user_db_path();
+        const std::vector<WordItem> ranked{
+            WordItem("ninja", "Ninja", 200, CandidateSource::EnglishDictionary),
+            WordItem("nimbus", "Nimbus", 100, CandidateSource::EnglishDictionary)};
+        sqlite3 *blocker = nullptr;
+        require(sqlite3_open(user_db.c_str(), &blocker) == SQLITE_OK &&
+                    sqlite3_exec(blocker, "BEGIN IMMEDIATE", nullptr, nullptr, nullptr) == SQLITE_OK,
+                "Failed to hold a write lock on the user dictionary database.");
+        bool ranking_changed = true;
+        const bool blocked = user_dictionary::adjust_english_candidate_ranking(
+            english_db, user_db, "english:ni", ranked, "nimbus", "Nimbus", "promote", 1, 1, true,
+            &ranking_changed);
+        sqlite3_exec(blocker, "ROLLBACK", nullptr, nullptr, nullptr);
+        sqlite3_close(blocker);
+        require(!blocked && !ranking_changed,
+                "A locked user dictionary reported a persisted English ranking.");
+        {
+            Database database(english_mode_directory / "english.db");
+            require(database.query_integer("SELECT weight FROM english_words WHERE word='nimbus' AND "
+                                           "display='Nimbus'") == 100,
+                    "An unjournaled English ranking was written into the English dictionary.");
+        }
+        require(user_dictionary::adjust_english_candidate_ranking(
+                    english_db, user_db, "english:ni", ranked, "nimbus", "Nimbus", "promote", 1, 1, true,
+                    &ranking_changed) &&
+                    ranking_changed,
+                "English ranking was not persisted once the user dictionary was writable.");
+        {
+            Database database(english_mode_directory / "english.db");
+            require(database.query_integer("SELECT weight FROM english_words WHERE word='nimbus' AND "
+                                           "display='Nimbus'") == 1200,
+                    "English ranking did not lift the selected candidate above the candidate list.");
+        }
+        {
+            Database database(english_mode_directory / "msime_user.db");
+            require(database.query_integer(
+                        "SELECT weight FROM user_dictionary_operations WHERE dictionary='english' "
+                        "AND key='nimbus' AND value='Nimbus' AND operation='upsert'") == 1200,
+                    "English ranking was not journaled for upgrade replay.");
+        }
     }
     dedicated.set_dedicated_english_mode(false);
     require(!dedicated.dedicated_english_mode() && !dedicated.has_composition(),

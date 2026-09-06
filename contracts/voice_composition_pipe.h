@@ -35,16 +35,17 @@ inline Frame ParseFrame(const wchar_t *data, std::size_t n = kPacketChars)
     {
         return frame;
     }
-    bool hasTerminator = false;
-    for (std::size_t i = 0; i < n; ++i)
+    // The terminator has to sit inside the chunk: a middle frame legally carries flags 0, so a scan starting at the header would accept data[0] as the terminator and let the chunk read run past the packet.
+    std::size_t terminatorIndex = n;
+    for (std::size_t i = kHeaderChars; i < n; ++i)
     {
         if (data[i] == L'\0')
         {
-            hasTerminator = true;
+            terminatorIndex = i;
             break;
         }
     }
-    if (!hasTerminator)
+    if (terminatorIndex == n)
     {
         return frame;
     }
@@ -57,7 +58,7 @@ inline Frame ParseFrame(const wchar_t *data, std::size_t n = kPacketChars)
     frame.first = (flags & kFlagFirst) != 0;
     frame.last = (flags & kFlagLast) != 0;
     frame.generation = data[1];
-    frame.chunk.assign(data + kHeaderChars);
+    frame.chunk.assign(data + kHeaderChars, terminatorIndex - kHeaderChars);
     return frame;
 }
 
