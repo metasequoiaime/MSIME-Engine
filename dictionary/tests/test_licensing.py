@@ -158,5 +158,52 @@ class Verification(unittest.TestCase):
             self.assertGreater(lower, 0, table)
 
 
+class Manifest(unittest.TestCase):
+    """A published dictionary release has to be distinguishable from a complete local build after
+    the fact. Without this field, "only redistributable data ships" rests on remembering which
+    command produced the assets."""
+
+    def write(self, complete: bool) -> dict:
+        """Actually run write_manifest and read back what it produced."""
+        import importlib
+        import tempfile
+        saved = os.environ.pop(ENV_FLAG, None)
+        if complete:
+            os.environ[ENV_FLAG] = '1'
+        try:
+            import licensing as licensing_module
+            importlib.reload(licensing_module)
+            import build_profile
+            importlib.reload(build_profile)
+            with tempfile.TemporaryDirectory() as directory:
+                output = Path(directory)
+                (output / 'msime.db').write_bytes(b'not a real database')
+                return build_profile.write_manifest(output, 'mobile', ['msime.db'])
+        finally:
+            os.environ.pop(ENV_FLAG, None)
+            if saved is not None:
+                os.environ[ENV_FLAG] = saved
+
+    def test_a_redistributable_build_names_what_it_left_out(self):
+        block = self.write(False)['licensing']
+        self.assertFalse(block['includes_unlicensed_inputs'])
+        self.assertEqual(block['excluded_inputs'], sorted(UNLICENSED_INPUTS))
+
+    def test_a_complete_build_says_so_and_excludes_nothing(self):
+        block = self.write(True)['licensing']
+        self.assertTrue(block['includes_unlicensed_inputs'])
+        self.assertEqual(block['excluded_inputs'], [])
+
+    def test_the_rest_of_the_manifest_is_unchanged(self):
+        # The three platform repositories verify this manifest with their own pinned copy of
+        # contracts/dictionary/product.py, which reads specific keys and ignores the rest. The new
+        # block must be additive, not a reshuffle.
+        manifest = self.write(False)
+        for key in ('manifest_version', 'profile', 'format_version', 'engine_compatibility',
+                    'source', 'files'):
+            self.assertIn(key, manifest, key)
+        self.assertEqual(manifest['manifest_version'], 1)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -13,6 +13,7 @@ import sys
 import tempfile
 
 import build_all
+import licensing
 from profiles.compact import compact_dictionary
 from dictionary_format import FORMAT, verify_product
 
@@ -60,6 +61,14 @@ def write_manifest(output: Path, profile: str, names: list[str], source_database
         'mozc_revision': build_all.MOZC_REVISION if profile == 'desktop' else None,
         'features': ['pinyin', 'wubi', 'quick_phrases', 'english', 'emoji', 'kaomoji', 'symbols', 'japanese']
                     if profile == 'desktop' else ['pinyin'],
+        # Whether this build read inputs that carry no redistribution grant (see dictionary/licensing.py
+        # and NOTICE.md). Without it a published release cannot be told apart from a complete local
+        # build after the fact, and "only redistributable data ships" would rest on remembering which
+        # command produced the assets. Consumers ignore unknown manifest keys, so this is additive.
+        'licensing': {
+            'includes_unlicensed_inputs': licensing.include_unlicensed(),
+            'excluded_inputs': [] if licensing.include_unlicensed() else sorted(licensing.UNLICENSED_INPUTS),
+        },
         'files': {name: {'sha256': digest(output / name), 'size': (output / name).stat().st_size} for name in names},
     }
     if source_database:
