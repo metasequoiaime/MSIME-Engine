@@ -2,7 +2,7 @@
 
 VoiceInput 已并入 MSIME-Engine。公共 API、构建选项与平台接入见 [公共模块说明](README.md)。公共处理、录音与本地 Whisper 分别由 `MetasequoiaIme::Voice`、`MetasequoiaIme::VoiceCapture`、`MetasequoiaIme::VoiceWhisper` 提供，平台按需链接。
 
-- Windows 输入法的语音宿主位于 [MSIME-Windows/server](https://github.com/metasequoiaime/MSIME-Windows/tree/main/server)。
+- Windows 输入法的语音宿主位于 [MSIME-Windows/server](https://github.com/metasequoiaime/MSIME-Windows/tree/develop/server)。
 - macOS 输入法已有实际接入，使用方法见 [macOS 语音指南](https://github.com/metasequoiaime/MSIME-Docs/blob/main/guides/macos-voice.md)。iOS 键盘尚无语音入口。
 - 原独立 Windows 工具保留在 `platforms/windows/`；当前构建命令、配置和快捷键见 [独立工具说明](platforms/windows/README.md)。它使用云识别，公共库的可选 Whisper 能力不会因旧配置中的 `local_whisper` 值自动启用。
 

@@ -3,8 +3,8 @@
 [English README](README.en.md)
 
 <!-- badges:start -->
-[![CI](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/ci.yml?branch=main&label=CI)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/ci.yml)
-[![CodeQL](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/codeql.yml?branch=main&label=CodeQL)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/codeql.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/ci.yml?branch=develop&label=CI)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/ci.yml)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/metasequoiaime/MSIME-Engine/codeql.yml?branch=develop&label=CodeQL)](https://github.com/metasequoiaime/MSIME-Engine/actions/workflows/codeql.yml)
 [![Release](https://img.shields.io/github/v/release/metasequoiaime/MSIME-Engine?include_prereleases&label=release)](https://github.com/metasequoiaime/MSIME-Engine/releases)
 [![Downloads](https://img.shields.io/github/downloads/metasequoiaime/MSIME-Engine/total?label=downloads)](https://github.com/metasequoiaime/MSIME-Engine/releases)
 [![License](https://img.shields.io/github/license/metasequoiaime/MSIME-Engine)](LICENSE)
@@ -27,7 +27,7 @@
 
 迁移来源、历史与下游接入顺序见 [合仓说明](docs/consolidation.md)。
 
-General IME engine shared by the Metasequoia IME frontends: [MSIME-Windows](https://github.com/metasequoiaime/MSIME-Windows) (through [its server/ component](https://github.com/metasequoiaime/MSIME-Windows/tree/main/server)), [MSIME-Apple](https://github.com/metasequoiaime/MSIME-Apple) and [MSIME-Linux](https://github.com/metasequoiaime/MSIME-Linux).
+General IME engine shared by the Metasequoia IME frontends: [MSIME-Windows](https://github.com/metasequoiaime/MSIME-Windows) (through [its server/ component](https://github.com/metasequoiaime/MSIME-Windows/tree/develop/server)), [MSIME-Apple](https://github.com/metasequoiaime/MSIME-Apple) and [MSIME-Linux](https://github.com/metasequoiaime/MSIME-Linux).
 
 ## 构建与测试
 
