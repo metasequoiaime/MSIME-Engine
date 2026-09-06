@@ -546,7 +546,7 @@
         </div>
 
         <div class="field">
-          <label for="stt-provider-btn">stt_provider</label>
+          <label for="stt-provider-btn">云端语音识别</label>
           <div class="dropdown" id="stt-provider-dropdown">
             <button id="stt-provider-btn" class="dropdown-toggle" type="button">
               <span class="dropdown-value">cloud_siliconflow</span>
@@ -558,7 +558,6 @@
               </span>
             </button>
             <div class="dropdown-menu">
-              <button class="dropdown-item" type="button" data-value="local_whisper">local_whisper</button>
               <button class="dropdown-item" type="button" data-value="cloud_siliconflow">cloud_siliconflow</button>
             </div>
             <input id="stt-provider" type="hidden" value="cloud_siliconflow" />
@@ -599,7 +598,7 @@
         <br>
         <div class="about-link-row">
           <span class="about-link-label">GitHub:</span>
-          <a class="about-link" href="https://github.com/fanlumaster/MetasequoiaVoiceInput" target="_blank"
+          <a class="about-link" href="https://github.com/metasequoiaime/MSIME-Engine/tree/main/voice" target="_blank"
             rel="noopener noreferrer">MetasequoiaVoiceInput ↗</a>
         </div>
         <div class="about-link-row">
@@ -669,7 +668,7 @@
           language: typeof settings.language === "string" ? settings.language : defaultConfig.settings.language,
           polish_text: typeof settings.polish_text === "boolean" ? settings.polish_text : defaultConfig.settings.polish_text,
           notification_sound: typeof settings.notification_sound === "boolean" ? settings.notification_sound : defaultConfig.settings.notification_sound,
-          stt_provider: typeof settings.stt_provider === "string" ? settings.stt_provider : defaultConfig.settings.stt_provider
+          stt_provider: defaultConfig.settings.stt_provider
         }
       };
     }

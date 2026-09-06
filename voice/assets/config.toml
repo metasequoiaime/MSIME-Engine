@@ -24,5 +24,5 @@ language = "zh-cn"
 notification_sound = true
 # 上屏前是否要先进行文本润色
 polish_text = false
-# 可以选择的值有：local_whisper, cloud_siliconflow
+# 此独立工具使用云端识别：cloud_siliconflow
 stt_provider = "cloud_siliconflow"

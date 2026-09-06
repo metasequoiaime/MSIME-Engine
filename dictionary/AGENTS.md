@@ -63,7 +63,7 @@ python build_profile.py --profile desktop --verify
 
 工作目录为 `dictionary/`，公共入口也可从 Engine 根调用 `build_profile.py`。
 
-根 `.github/workflows/build-dictionaries.yml` 每次 push 和 PR 都跑完整构建加校验。手动触发 `Build dictionaries` 并勾选 `publish` 时，会把产物和 `SHA256SUMS.txt` 发成 `dict-YYYY.MM.DD` 的 release（发布仓库为 MSIME-Engine），供 MSIME-Windows 的安装包发布流程下载并校验。
+根 `.github/workflows/build-dictionaries.yml` 每次 main push 和 PR 都跑完整构建加校验。手动触发 `Build dictionaries` 并勾选 `publish` 时，会把产物和 `SHA256SUMS.txt` 发成 `dict-vMAJOR.MINOR.PATCH` 的 release（发布仓库为 MSIME-Engine），供 MSIME-Windows 的安装包发布流程下载并校验。
 
 **词库改了要先发一个新的 `dict-*` release，Windows 端的下一个安装包版本才会带上。** 只合进 main 不发 release 的话，用户拿到的还是旧词库。
 
