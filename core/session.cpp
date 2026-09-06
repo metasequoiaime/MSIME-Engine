@@ -37,6 +37,7 @@ KeyResult Session::candidate_key(char value) { return impl_->session.handle_cand
 KeyResult Session::punctuation(char value) { return impl_->session.handle_punctuation(value); }
 KeyResult Session::select(std::size_t index) { return impl_->session.select_candidate(index); }
 KeyResult Session::select_edge(std::size_t index, CandidateEdge edge) { return impl_->session.select_candidate_edge(index, edge); }
+KeyResult Session::pin(std::size_t index) { return impl_->session.pin_candidate(index); }
 KeyResult Session::finish() { return finish(0); }
 KeyResult Session::finish(std::size_t first_index) { return impl_->session.finish_composition(first_index); }
 void Session::switch_scheme(SchemeType scheme) { impl_->session.switch_scheme(scheme); }

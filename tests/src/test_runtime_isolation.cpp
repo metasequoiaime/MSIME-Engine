@@ -190,6 +190,112 @@ void test_runtime_isolation()
         require(has(a, "甲") && !has(a, "乙"), "Japanese session A used another model");
         require(has(b, "乙") && !has(b, "甲"), "Japanese session B reused the first model");
     }
+    // Explicit pinning must use the selected canonical key, preserve input, and survive replay.
+    const auto pin_resources = root / "pin-resources";
+    make_resources(pin_resources, "你");
+    execute(pin_resources / assets::main_dictionary,
+        "CREATE TABLE tbl_2_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+        "INSERT INTO tbl_2_n VALUES('ni''hao','nh','你好',10000),('ni''hao','nh','拟好',9000);"
+        "CREATE TABLE wubi86(key TEXT,value TEXT,weight INTEGER);"
+        "INSERT INTO wubi86 VALUES('wq','你好',10000),('wq','拟好',9000);");
+    execute(pin_resources / assets::english_dictionary,
+        "INSERT INTO english_words(word,display,weight) VALUES('help','help',5);");
+    const auto pin_main_bytes = bytes(pin_resources / assets::main_dictionary);
+    const auto pin_english_bytes = bytes(pin_resources / assets::english_dictionary);
+    const auto pin_word = [&](Session &session, const std::string &word) {
+        const auto before = session.snapshot();
+        const auto selected = std::find_if(before.candidates.begin(), before.candidates.end(),
+            [&](const auto &item) { return item.word == word; });
+        require(selected != before.candidates.end(), "No candidate for explicit pinning");
+        const auto result = session.pin(static_cast<std::size_t>(selected - before.candidates.begin()));
+        require(result.handled && !result.commit && !result.diagnostic, "Explicit pin failed or committed text");
+        require(session.snapshot().preedit == before.preedit, "Pin changed the composition");
+        const auto after = session.snapshot();
+        const auto first = std::find_if(after.candidates.begin(), after.candidates.end(),
+            [&](const auto &item) { return item.source == selected->source; });
+        require(first != after.candidates.end() && first->word == word,
+                "Pin did not refresh dictionary candidate order");
+        require(!session.pin(before.candidates.size() + 100).handled, "Invalid pin index was accepted");
+    };
+    for (const auto scheme : {SchemeType::Quanpin, SchemeType::Shuangpin, SchemeType::Wubi})
+    {
+        const auto suffix = std::to_string(static_cast<int>(scheme));
+        const auto user = root / ("pin-user-" + suffix);
+        const auto cache = root / ("pin-cache-" + suffix);
+        SessionOptions options;
+        options.paths = prepare_runtime_paths(pin_resources, user, cache, "v1");
+        options.scheme = scheme;
+        options.learning = false;
+        const std::string input = scheme == SchemeType::Quanpin ? "nihao" :
+            (scheme == SchemeType::Shuangpin ? "nihc" : "wq");
+        {
+            Session session(options);
+            require(!session.pin(0).handled, "Empty session accepted pin");
+            type(session, input);
+            pin_word(session, "拟好");
+            require(session.finish().commit == "拟好", "Pin interfered with later selection");
+        }
+        options.paths = prepare_runtime_paths(pin_resources, user, cache, "v2");
+        Session replayed(options);
+        type(replayed, input);
+        require(replayed.snapshot().candidates.front().word == "拟好", "Pin did not survive generation replay");
+    }
+    for (const bool temporary : {false, true})
+    {
+        SessionOptions options;
+        const std::string suffix = temporary ? "temporary" : "dedicated";
+        const auto user = root / ("pin-english-user-" + suffix);
+        const auto cache = root / ("pin-english-cache-" + suffix);
+        options.paths = prepare_runtime_paths(pin_resources, user, cache, "v1");
+        options.learning = false;
+        {
+            Session session(options);
+            if (temporary) session.character('Y', true);
+            else session.set_dedicated_english(true);
+            type(session, "he");
+            pin_word(session, "help");
+        }
+        options.paths = prepare_runtime_paths(pin_resources, user, cache, "v2");
+        Session replayed(options);
+        replayed.set_dedicated_english(true);
+        type(replayed, "he");
+        require(replayed.snapshot().candidates.front().word == "help", "English pin did not survive replay");
+        replayed.command(Command::Cancel);
+        type(replayed, "zzzz");
+        require(!replayed.pin(0).handled, "Generated candidate accepted dictionary pinning");
+    }
+    {
+        SessionOptions options;
+        options.paths = prepare_runtime_paths(pin_resources, root / "pin-mixed-user", root / "pin-mixed-cache", "v1");
+        options.learning = false;
+        options.english.mixed_candidates = true;
+        Session mixed(options);
+        type(mixed, "he");
+        pin_word(mixed, "help");
+    }
+    {
+        SessionOptions options;
+        options.paths = prepare_runtime_paths(pin_resources, root / "pin-failed-user", root / "pin-failed-cache", "v1");
+        options.learning = false;
+        // A directory in place of the journal is a portable, deterministic write failure.
+        std::filesystem::remove(options.paths.user(assets::user_journal));
+        std::filesystem::create_directory(options.paths.user(assets::user_journal));
+        Session session(options);
+        type(session, "nihao");
+        const auto before = session.snapshot();
+        const auto selected = std::find_if(before.candidates.begin(), before.candidates.end(),
+            [](const auto &item) { return item.word == "拟好"; });
+        require(selected != before.candidates.end(), "No candidate for failed pin test");
+        const auto result = session.pin(static_cast<std::size_t>(selected - before.candidates.begin()));
+        require(result.handled && !result.commit && result.diagnostic.has_value(),
+                "Failed pin was reported as success or committed text");
+        require(session.snapshot().preedit == before.preedit &&
+                session.snapshot().candidates.front().word == before.candidates.front().word,
+                "Failed pin changed input or candidate order");
+    }
+    require(bytes(pin_resources / assets::main_dictionary) == pin_main_bytes &&
+            bytes(pin_resources / assets::english_dictionary) == pin_english_bytes,
+            "Explicit pinning modified immutable resources");
     // Query/learning changes affect only the user working copy and journal; replay retains them.
     {
         QuanpinDictionary dictionary({}, paths_a);

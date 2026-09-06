@@ -32,6 +32,16 @@ the leading-candidate behavior. Snapshots include `dedicated_english` even with 
 so hosts need not maintain a second mode flag. `set_helpcode_enabled` applies to both pinyin
 schemes; a host with separate persisted preferences applies the selected flag on scheme change.
 
+`pin(index)` promotes a currently visible dictionary candidate without selecting it or changing
+preedit. It persists through the session's user journal and working dictionaries, then refreshes
+the snapshot. Explicit pinning works even when automatic learning is disabled. Pinyin (including
+shuangpin canonical keys), Wubi and English dictionary candidates use their existing ranking
+policy; generated, expressive, online and Japanese candidates are unhandled. English pinning
+changes dictionary order within the existing mixed/temporary-mode layout, so it does not move
+an English completion ahead of the temporary mode's raw-text entry. Invalid indices are unhandled;
+a failed write returns a handled result with a diagnostic and no commit. Hosts serialize this
+index action against the snapshot they display, just as they do for `select(index)`.
+
 ## Resources and user state
 
 The host first verifies the downloaded bundle using `contracts/assets/product.py` and its
