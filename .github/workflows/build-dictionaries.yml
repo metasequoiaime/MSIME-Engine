@@ -94,6 +94,11 @@ jobs:
         run: |
           out/consumer-build/dictionary_consumer "$PWD/out/desktop" desktop
           out/consumer-build/dictionary_consumer "$PWD/out/mobile" mobile
+      - name: Consume the verified runtime bundle across user-data generations
+        run: |
+          bundle_sha=$(cut -d ' ' -f 1 ../build/assets/engine-assets-desktop.zip.sha256)
+          python tests/consumer/run_runtime.py ../build/assets/engine-assets-desktop.zip out/consumer-build/runtime_consumer \
+            --sha256 "$bundle_sha" --source-commit "$(git rev-parse HEAD)"
       - name: Summarize
         run: |
           {

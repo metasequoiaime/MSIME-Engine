@@ -127,3 +127,11 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ctest --test-dir build --output-on-failure --timeout 20
 ```
+
+The dictionary-build workflow also runs `dictionary/tests/consumer/run_runtime.py` against
+its complete produced archive. The runner checks the archive digest and clean producer commit,
+extracts into a temporary directory and invokes the same-checkout `runtime_consumer`. This
+exercises public Session queries, learning, generation replay, rollback, cache disposal and
+failed preparation using real dictionary tables, then verifies every immutable resource digest
+again. The generation test reuses the same produced profile to isolate lifecycle behavior;
+it does not replace platform installation or upgrade tests between different product releases.
