@@ -311,7 +311,9 @@ int main()
                 double sum_sq = 0.0;
                 for (size_t i = 0; i < count; ++i)
                 {
-                    sum_sq += data[i] * data[i];
+                    // Widen before squaring. float * float is evaluated at float precision and only then
+                    // converted, which throws away the accuracy the double accumulator exists to keep.
+                    sum_sq += static_cast<double>(data[i]) * static_cast<double>(data[i]);
                 }
                 const float rms = count > 0 ? static_cast<float>(std::sqrt(sum_sq / static_cast<double>(count))) : 0.0f;
                 wave_overlay.set_input_level(std::min(1.0f, rms * 8.0f));
@@ -345,7 +347,9 @@ int main()
                 double sum_sq = 0.0;
                 for (size_t i = 0; i < count; ++i)
                 {
-                    sum_sq += data[i] * data[i];
+                    // Widen before squaring. float * float is evaluated at float precision and only then
+                    // converted, which throws away the accuracy the double accumulator exists to keep.
+                    sum_sq += static_cast<double>(data[i]) * static_cast<double>(data[i]);
                 }
                 const float rms = count > 0 ? static_cast<float>(std::sqrt(sum_sq / static_cast<double>(count))) : 0.0f;
                 wave_overlay.set_input_level(std::min(1.0f, rms * 8.0f));

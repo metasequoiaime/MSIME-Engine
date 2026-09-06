@@ -62,10 +62,10 @@ ctest --test-dir build -C Release --output-on-failure --timeout 20
 
 `tests/CMakeLists.txt` 是一个**独立的 Windows-only 工程**，产出 `imetest`，源文件是 `tests/src/test_pinyin.cpp`。它**不被根 `CMakeLists.txt` 引入**，所以 CI 不构建也不运行它——`test_pinyin.cpp` 里的用例在 CI 中不会执行，往那个文件加测试不会被自动跑到。
 
-它还要求本机装有 Boost 且路径与 `tests/CMakeLists.txt` 里写死的 `Boost_ROOT` 一致，并使用 MSVC 专有编译选项。
+它还要求本机装有 Boost，并使用 MSVC 专有编译选项。Boost 的位置按 `-DBoost_ROOT=...` → 环境变量 `Boost_ROOT` / `BOOST_ROOT` → scoop 默认布局（`%USERPROFILE%\scoop\apps\boost\current`）的顺序解析，vcpkg 走 `VCPKG_ROOT`，都不需要改文件。
 
 ```powershell
-python .\tests\scripts\prepare_env.py
+python .\tests\scripts\prepare_env.py  # 只生成 .clangd，供编辑器补全用；构建本身不需要它
 cd .\tests\
 .\scripts\llaunch.ps1
 ```

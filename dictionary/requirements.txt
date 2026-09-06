@@ -1,3 +1,9 @@
 # Everything the shipping dictionary build needs. Pinned so a rebuild of the same commit produces
 # the same databases; the CI workflow installs exactly this file.
-pypinyin==0.55.0
+#
+# Hashes are what make that promise real: a version pin alone still trusts whatever the index serves
+# under that name today. pip switches to hash-checking mode as soon as one requirement carries a
+# hash, so every requirement added here needs its own --hash lines.
+pypinyin==0.55.0 \
+    --hash=sha256:d53b1e8ad2cdb815fb2cb604ed3123372f5a28c6f447571244aca36fc62a286f \
+    --hash=sha256:b5711b3a0c6f76e67408ec6b2e3c4987a3a806b7c528076e7c7b86fcf0eaa66b
