@@ -99,7 +99,9 @@ SessionSnapshot Session::snapshot() const
             session.raw_segmentation(),
             session.normalized_segmentation(),
             session.candidates(),
-            session.dedicated_english_mode()};
+            session.dedicated_english_mode(),
+            session.editing_text(),
+            session.caret_position()};
 }
 std::optional<OnlineQuery> Session::online_query() const
 {
