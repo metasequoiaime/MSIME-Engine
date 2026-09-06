@@ -94,13 +94,14 @@ struct OnlineQuery
 {
     SchemeType scheme = SchemeType::Quanpin;
     std::uint64_t generation = 0;
-    std::uint64_t session_id = 0;
     std::string identity;
     std::string query_text;
     std::string cache_key;
     std::vector<std::string> pinyin_segments;
     bool cloud_eligible = false;
     bool ai_eligible = false;
+    // Appended to retain source compatibility with older aggregate initializers.
+    std::uint64_t session_id = 0;
 };
 
 }
