@@ -52,7 +52,7 @@ python build_all.py --only quanpin wubi       # 只跑指定 stage
 python build_all.py --skip english-glosses    # 跳过指定 stage
 ```
 
-`tools/verify_dictionaries.py` 校验每张发布表存在且行数不低于下限，用来拦住「stage 跑成功但表是空的」这种情况。GitHub Actions 的 `Build dictionaries` workflow 每次 push 和 PR 都会跑完整构建加校验；手动触发并勾选 `publish` 时，会把四个产物和校验和发布成一个 `dict-YYYY.MM.DD` 的 release，供 `MSIME-Windows` 的安装包发布流程下载。
+`tools/verify_dictionaries.py` 校验每张发布表存在且行数不低于下限，用来拦住「stage 跑成功但表是空的」这种情况。GitHub Actions 的 `Build dictionaries` workflow 每次 main push 和 PR 都会跑完整构建加校验；手动触发并勾选 `publish` 时，会把四个产物和校验和发布成一个 `dict-vMAJOR.MINOR.PATCH` 的 release，供 `MSIME-Windows` 的安装包发布流程下载。
 
 ## 说明
 
