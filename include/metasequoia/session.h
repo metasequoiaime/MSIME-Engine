@@ -60,6 +60,9 @@ public:
     // Remove a dictionary phrase without committing; single-character non-English
     // candidates are protected. Invalid/unsupported selections are unhandled.
     KeyResult remove(std::size_t index);
+    // Fix a dictionary candidate to slot 1..5 in this input context, or clear it.
+    KeyResult fix_position(std::size_t index, int position);
+    KeyResult clear_position(std::size_t index);
     KeyResult finish();
     // Finish the whole composition, starting with the host-highlighted candidate.
     // Remaining segments use their leading candidate; an invalid index commits raw input.

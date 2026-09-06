@@ -19,6 +19,7 @@ public:
             throw std::invalid_argument("Invalid session options");
         session.set_local_mode_options(options.local_modes);
         session.set_mixed_expressive_options(options.expressive);
+        session.enable_fixed_positions();
     }
     InputSession session;
 };
@@ -39,6 +40,12 @@ KeyResult Session::select(std::size_t index) { return impl_->session.select_cand
 KeyResult Session::select_edge(std::size_t index, CandidateEdge edge) { return impl_->session.select_candidate_edge(index, edge); }
 KeyResult Session::pin(std::size_t index) { return impl_->session.pin_candidate(index); }
 KeyResult Session::remove(std::size_t index) { return impl_->session.remove_candidate(index); }
+KeyResult Session::fix_position(std::size_t index, int position)
+{
+    if (position < 1 || position > 5) return {};
+    return impl_->session.set_candidate_position(index, position);
+}
+KeyResult Session::clear_position(std::size_t index) { return impl_->session.set_candidate_position(index, 0); }
 KeyResult Session::finish() { return finish(0); }
 KeyResult Session::finish(std::size_t first_index) { return impl_->session.finish_composition(first_index); }
 void Session::switch_scheme(SchemeType scheme) { impl_->session.switch_scheme(scheme); }
