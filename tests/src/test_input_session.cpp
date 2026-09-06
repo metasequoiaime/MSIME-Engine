@@ -232,6 +232,19 @@ int run_test()
             (void)portable.select_candidate(candidate_index(portable, "西"));
             require(portable.handle_command(metasequoia::Command::Cancel).handled && !portable.has_composition(),
                     "Cancel did not clear an incomplete portable phrase.");
+
+            type(portable, "xi'te'le");
+            (void)portable.select_candidate(candidate_index(portable, "西"));
+            while (portable.has_composition())
+            {
+                require(portable.handle_command(metasequoia::Command::Backspace).handled,
+                        "Backspace did not consume the abandoned portable composition.");
+            }
+            type(portable, "nihao");
+            require(portable.select_candidate(candidate_index(portable, "你好")).commit == "你好",
+                    "The composition following an abandoned phrase could not be committed.");
+            require(database.query_integer("SELECT COUNT(*) FROM tbl_3_x WHERE value='西你好'") == 0,
+                    "A phrase abandoned by Backspace was learned together with the next composition.");
         }
         {
             metasequoia::InputSession unlearned(SchemeType::Quanpin, true, false, true, false);
@@ -585,6 +598,13 @@ int run_test()
                     !shuangpin_helpcode.candidates().empty() &&
                     shuangpin_helpcode.candidates().front().word == "拟好",
                 "Shuangpin helpcode or exposed segmentation did not match the complete base spelling.");
+
+        metasequoia::InputSession shuangpin_delimited_helpcode(SchemeType::Shuangpin);
+        shuangpin_delimited_helpcode.set_shuangpin_helpcode_enabled(true);
+        type(shuangpin_delimited_helpcode, "nihcAB'");
+        require(shuangpin_delimited_helpcode.raw_segmentation() == "ni'hc'AB" &&
+                    shuangpin_delimited_helpcode.normalized_segmentation() == "ni'hao'AB",
+                "A manual delimiter next to the Shuangpin help codes leaked into the exposed segmentation.");
 
         metasequoia::InputSession shuangpin_without_helpcode(SchemeType::Shuangpin);
         shuangpin_without_helpcode.set_shuangpin_helpcode_enabled(false);

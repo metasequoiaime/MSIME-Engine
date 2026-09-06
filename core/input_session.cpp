@@ -328,6 +328,7 @@ KeyResult InputSession::handle_command(Command command)
         }
         engine_.handle_key(ImeKey::Backspace);
         update_mixed_candidates();
+        discard_abandoned_phrase_progress();
         ++online_generation_;
         return {true, std::nullopt, std::nullopt};
     case Command::CommitCandidate:
@@ -745,6 +746,7 @@ KeyResult InputSession::commit(std::size_t index)
         if (transition.continues_composition)
         {
             immediate_phrase_progress_ = std::move(progress);
+            discard_abandoned_phrase_progress();
             return {true, std::move(text), std::move(diagnostic)};
         }
         if (!immediate_phrase_progress_.word.empty() && progress.can_store && candidate_learning_enabled_ &&
@@ -1066,6 +1068,15 @@ void InputSession::reset_composition()
     if (original_scheme.has_value() && engine_.current_scheme_type() != *original_scheme)
     {
         engine_.switch_scheme(*original_scheme);
+    }
+}
+
+// The phrase assembled across segmented selections only means anything while its composition stays alive. Every path that empties the preedit without going through reset_composition() - backspacing the remaining pinyin away, or a continuing selection whose leftover input collapses to nothing - abandons that phrase, so it has to be dropped here instead of being concatenated with the next composition's selections and stored as a phrase nobody typed.
+void InputSession::discard_abandoned_phrase_progress()
+{
+    if (!has_composition())
+    {
+        immediate_phrase_progress_ = {};
     }
 }
 
