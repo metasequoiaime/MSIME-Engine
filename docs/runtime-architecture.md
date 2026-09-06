@@ -26,6 +26,12 @@ frontends can migrate independently after the producer commit merges; this chang
 move their locks to an unmerged producer. Do not expand the compatibility interface for
 new platform features when they can use editing intents and snapshots.
 
+Desktop hosts may call `finish(highlighted_index)` to commit the highlighted first candidate
+and all remaining segments through Engine's existing composition policy. `finish()` retains
+the leading-candidate behavior. Snapshots include `dedicated_english` even with empty preedit,
+so hosts need not maintain a second mode flag. `set_helpcode_enabled` applies to both pinyin
+schemes; a host with separate persisted preferences applies the selected flag on scheme change.
+
 ## Resources and user state
 
 The host first verifies the downloaded bundle using `contracts/assets/product.py` and its

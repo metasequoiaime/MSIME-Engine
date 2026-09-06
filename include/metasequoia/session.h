@@ -31,6 +31,7 @@ struct SessionSnapshot
     std::string raw_segmentation;
     std::string normalized_segmentation;
     std::vector<WordItem> candidates;
+    bool dedicated_english = false;
 };
 
 // Stable platform entry point. One host serializes calls to its session; distinct sessions
@@ -51,8 +52,15 @@ public:
     KeyResult select(std::size_t index);
     KeyResult select_edge(std::size_t index, CandidateEdge edge);
     KeyResult finish();
+    // Finish the whole composition, starting with the host-highlighted candidate.
+    // Remaining segments use their leading candidate; an invalid index commits raw input.
+    KeyResult finish(std::size_t first_index);
     void switch_scheme(SchemeType scheme);
+    static bool is_supported_helpcode_schema(const std::string &schema);
     bool set_helpcode_schema(const std::string &schema);
+    // Apply the same enable flag to quanpin and shuangpin, as SessionOptions::helpcode does.
+    // Hosts with per-scheme preferences apply the selected preference after switching.
+    void set_helpcode_enabled(bool enabled);
     void set_dedicated_english(bool enabled);
     SessionSnapshot snapshot() const;
     std::optional<OnlineQuery> online_query() const;

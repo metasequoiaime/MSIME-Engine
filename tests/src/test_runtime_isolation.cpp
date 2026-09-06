@@ -122,6 +122,37 @@ void test_runtime_isolation()
         require(a.snapshot().candidates.front().word == "你短语", "Local mode ignored runtime paths");
     }
     {
+        SessionOptions options; options.paths = paths_a; options.learning = false;
+        Session session(options);
+        type(session, "ni'ni");
+        const auto view = session.snapshot();
+        const auto selected = std::find_if(view.candidates.begin(), view.candidates.end(),
+            [](const auto &item) { return item.word == "拟"; });
+        require(selected != view.candidates.end(), "No alternate first-segment candidate");
+        require(session.finish(static_cast<std::size_t>(selected - view.candidates.begin())).commit == "拟你",
+                "Finishing ignored the highlight or dropped the remaining segment");
+        require(session.snapshot().preedit.empty(), "Finishing left an active composition");
+        require(!session.finish().handled, "Finishing an empty session consumed input");
+        type(session, "ni");
+        require(session.finish(9999).commit == "ni", "Invalid highlight did not preserve raw input");
+
+        session.set_helpcode_enabled(false);
+        type(session, "ni");
+        require(!session.character('C').handled, "Disabled helpcode still consumed uppercase input");
+        session.set_helpcode_enabled(true);
+        require(session.character('C').handled && session.snapshot().candidates.front().word == "拟",
+                "Re-enabling helpcode did not update this composition");
+        session.command(Command::Cancel);
+        session.set_dedicated_english(true);
+        require(session.snapshot().dedicated_english, "Empty dedicated English mode was lost in the snapshot");
+        type(session, "hel");
+        require(session.snapshot().dedicated_english && session.snapshot().preedit == "hel",
+                "Dedicated English state was not represented in the snapshot");
+        session.set_dedicated_english(false);
+        require(!session.snapshot().dedicated_english && session.snapshot().preedit.empty(),
+                "Leaving dedicated English left stale snapshot state");
+    }
+    {
         SessionOptions options_a; options_a.paths = paths_a; options_a.scheme = SchemeType::JapaneseRomaji;
         SessionOptions options_b; options_b.paths = paths_b; options_b.scheme = SchemeType::JapaneseRomaji;
         Session a(options_a), b(options_b);
