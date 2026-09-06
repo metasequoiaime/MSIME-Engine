@@ -17,7 +17,7 @@ ctest --test-dir build --output-on-failure --timeout 20
 
 根 `CMakeLists.txt` 会编译 `googlepinyinime-rev/src/share/` 下的源码并把 `utfcpp/source` 加为 include 目录，两个目录都是 submodule。CI 的三个 job 都用 `submodules: recursive` 检出，所以这一步在本地容易被漏掉：目录为空时配置阶段就会失败。
 
-CI 在 `ubuntu-24.04`、`macos-15`、`windows-2025` 三个平台跑这套，共 14 个 ctest 目标。依赖 CMake 3.25+、Boost、fmt、spdlog、SQLite3，各平台的安装命令见 `.github/workflows/ci.yml`。
+CI 在 `ubuntu-24.04`、`macos-15`、`windows-2025` 三个平台跑这套，共 15 个 ctest 目标。依赖 CMake 3.25+、Boost、fmt、spdlog、SQLite3，各平台的安装命令见 `.github/workflows/ci.yml`。
 
 **改了引擎就要跑 ctest。** 本仓是三个平台共用的，只在一个平台上想当然很容易漏。
 

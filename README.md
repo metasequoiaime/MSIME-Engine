@@ -67,7 +67,7 @@ cmake --build build --config Release --parallel
 ctest --test-dir build -C Release --output-on-failure --timeout 20
 ```
 
-`ctest` 默认跑 13 个测试目标：`segmentation_contract`、`windows_ipc_contract`、`platform_api`、`data_path`、`engine_smoke`、`input_session`、`frequency_input_session`、`english_input_session`、`mixed_expressive_input_session`、`jianpin_input_session`、`temporary_input_session`、`local_modes`、`online_input_session`。
+`ctest` 默认跑 15 个根工程测试目标：`segmentation_contract`、`windows_ipc_contract`、`punctuation_contract`、`platform_api`、`data_path`、`candidate_removal`、`engine_smoke`、`input_session`、`frequency_input_session`、`english_input_session`、`mixed_expressive_input_session`、`jianpin_input_session`、`temporary_input_session`、`local_modes`、`online_input_session`。Voice 目标在启用 Voice 的独立构建中另行注册。
 
 ## tests/ 下那套独立工程
 

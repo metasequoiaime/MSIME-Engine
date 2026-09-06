@@ -37,7 +37,7 @@ ctest --test-dir build --output-on-failure --timeout 20
 
 On Windows, pass `-DCMAKE_TOOLCHAIN_FILE` for vcpkg; on macOS, `-DCMAKE_PREFIX_PATH="$(brew --prefix)"`. The Chinese README has the exact per-platform invocations.
 
-`ctest` runs 13 targets covering segmentation, the IPC contract, sessions and the local query modes. `tests/` additionally holds a separate Windows-only project that CI does **not** build — add new tests to the targets registered in the root `CMakeLists.txt` so they actually run.
+`ctest` runs 15 root targets covering segmentation, the IPC and punctuation contracts, candidate removal, sessions and the local query modes. Voice targets are registered separately when the optional Voice build is enabled. `tests/` additionally holds a separate Windows-only project that CI does **not** build — add new tests to the targets registered in the root `CMakeLists.txt` so they actually run.
 
 ## Contract rules
 
