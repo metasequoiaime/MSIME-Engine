@@ -186,12 +186,39 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generateSeries( //
 
         const std::string quanpin_segmentation =
             ShuangpinUtil::convert_seg_shuangpin_to_seg_complete_pinyin(pinyin_segmentation, profile_);
-        const quanpin::WordLatticeOptions lattice_options;
+        // Prefer one local Google-Pinyin whole-sentence result, followed by
+        // only the best dictionary-lattice path.  Multiple lattice paths tend
+        // to crowd out useful candidates with near-duplicate sentences.
+        std::string google_sentence;
+        if (quanpin::split_segments(quanpin_segmentation).size() >= 3 &&
+            quanpin_segmentation.find('\'') != std::string::npos)
+        {
+            google_sentence = search_sentence_from_ime_engine(quanpin_segmentation);
+            const bool duplicate = std::any_of(candidate_list.begin(), candidate_list.end(),
+                                               [&](const WordItem &item) { return item.word == google_sentence; });
+            if (!google_sentence.empty() && !duplicate)
+                candidate_list.insert(candidate_list.begin(),
+                                      WordItem(_pinyin_sequence, google_sentence, 1, CandidateSource::Fallback));
+        }
+        quanpin::WordLatticeOptions lattice_options;
+        lattice_options.nbest = 1;
         quanpin::merge_lattice_candidates(candidate_list, quanpin::split_segments(quanpin_segmentation),
                                           quanpin::make_lattice_db_lookup(quanpin_db_, quanpin_statement_cache_,
                                                                           quanpin::QuerySource::Shuangpin,
                                                                           lattice_options.span_limit),
                                           pinyin_sequence, lattice_options);
+        if (!google_sentence.empty())
+        {
+            const auto google = std::find_if(candidate_list.begin(), candidate_list.end(), [&](const WordItem &item) {
+                return item.word == google_sentence && item.source == CandidateSource::Fallback;
+            });
+            if (google != candidate_list.end() && google != candidate_list.begin())
+            {
+                WordItem preferred = std::move(*google);
+                candidate_list.erase(google);
+                candidate_list.insert(candidate_list.begin(), std::move(preferred));
+            }
+        }
 
         /* 缓存起来 */
         _cached_buffer_series.insert(effective_cache_key, candidate_list);
