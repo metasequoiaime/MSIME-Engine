@@ -36,7 +36,11 @@ schemes; a host with separate persisted preferences applies the selected flag on
 
 The host first verifies the downloaded bundle using `contracts/assets/product.py` and its
 pinned ZIP digest, extracts it into an immutable resource directory, and supplies that
-content ID to `prepare_runtime_paths`. All directory paths must be absolute.
+content ID to `prepare_runtime_paths`. All directory paths must be absolute. For this
+generation-preparation API, resources, user data and cache must be disjoint directory trees:
+none may equal or contain another, including through resolved symlinks. Invalid roots are
+rejected before creating directories or copying databases. The legacy layout remains available
+through `RuntimePaths::legacy()` for consumers that have not yet migrated.
 
 ```cpp
 #include <metasequoia/session.h>

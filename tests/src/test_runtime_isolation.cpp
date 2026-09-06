@@ -78,6 +78,31 @@ void test_runtime_isolation()
     make_resources(resource_b, "妮");
     make_japanese_model(resource_a / assets::japanese_model, "甲");
     make_japanese_model(resource_b / assets::japanese_model, "乙");
+    const auto reject_overlap = [&](const std::filesystem::path &resources,
+                                    const std::filesystem::path &user, const std::filesystem::path &cache) {
+        bool rejected = false;
+        try { (void)prepare_runtime_paths(resources, user, cache, "overlap"); }
+        catch (const std::invalid_argument &) { rejected = true; }
+        require(rejected, "Overlapping runtime roots were accepted");
+        require(!std::filesystem::exists(user / "dictionaries/overlap"),
+                "Rejected runtime roots still published a generation");
+    };
+    reject_overlap(resource_a, root / "same-user-cache", root / "same-user-cache");
+    reject_overlap(resource_a, root / "cache-parent/user", root / "cache-parent");
+    reject_overlap(resource_a, root / "user-parent", root / "user-parent/cache");
+    reject_overlap(resource_a, resource_a / "user", root / "separate-cache");
+    reject_overlap(resource_a, root / "separate-user", resource_a / "cache");
+    reject_overlap(resource_a, root, root / "separate-cache");
+    require(!std::filesystem::exists(root / "same-user-cache") &&
+            !std::filesystem::exists(root / "cache-parent") &&
+            !std::filesystem::exists(resource_a / "user") &&
+            !std::filesystem::exists(resource_a / "cache"),
+            "Path validation created directories before rejecting overlap");
+#ifndef _WIN32
+    const auto resource_alias = root / "resource-alias";
+    std::filesystem::create_directory_symlink(resource_a, resource_alias);
+    reject_overlap(resource_a, root / "alias-user", resource_alias / "cache");
+#endif
     const auto original = bytes(resource_a / assets::main_dictionary);
     const auto paths_a = prepare_runtime_paths(resource_a, root / "user-a", root / "cache-a", "v1");
     const auto paths_b = prepare_runtime_paths(resource_b, root / "user-b", root / "cache-b", "v1");
@@ -171,6 +196,14 @@ void test_runtime_isolation()
         require(dictionary.create_word_from_canonical_pinyin("ni", "伱") == 0, "User insertion failed");
     }
     require(bytes(resource_a / assets::main_dictionary) == original, "Learning modified immutable source");
+    std::ofstream(paths_a.cache / "disposable") << "cache fixture";
+    std::filesystem::remove_all(paths_a.cache);
+    require(std::filesystem::is_regular_file(paths_a.user(assets::user_journal)),
+            "Clearing cache removed the user journal");
+    {
+        QuanpinDictionary dictionary({}, paths_a);
+        require(dictionary.find_candidate("ni", "伱").has_value(), "Clearing cache removed learned vocabulary");
+    }
     const auto paths_v2 = prepare_runtime_paths(resource_a, paths_a.user_data, paths_a.cache, "v2");
     {
         QuanpinDictionary dictionary({}, paths_v2);
