@@ -57,7 +57,22 @@
 - `en/oaldpe_words.txt` 提取自商业词典。词典本体 `en/oaldpe.mdx` 曾经也在本仓中，现已移除——构建只需要提取好的词形列表，不需要词典本体。需要重新生成词表时，自备 `.mdx` 并作为参数传给 `makecikudb/englishdb/extract_oaldpe_headwords.py`。**注意移除只影响当前版本，该文件仍留在 git 历史中。**改写历史会让所有 fork、clone 以及下游 `product-lock.json` 里锁定的 commit 全部失效，因此暂不改写；是否改写单独决策。
 - 辅助码规则参考自小鹤形码，权利归方案作者。
 
-需要说明的是，本节列出的未决条目并不妨碍产品当前正在分发这些数据。上面三个前端每次发版都会打包 `msime.db`。这是已知的状态，不是疏忽：在条目澄清前，请不要假定本仓库的数据可以自由再分发，也不要把现有的分发行为当作已获授权的证据。
+### 构建默认不再包含这些条目
+
+上面这些条目现在**默认不进入构建产物**。判定写在 [`licensing.py`](licensing.py) 里，`build_all.py` 每次运行都会打印它排除了什么、为什么排除、以及换用了什么替代输入：
+
+| 排除的输入 | 替代 | 后果 |
+| --- | --- | --- |
+| `cn/BaseDictAllV1Part1.txt`、`Part2.txt` | `cn/BaseDictIceV1.txt`（rime-ice，GPL-3.0） | 中文词库召回下降；rime-ice 是合并前的子集，构建不会失败 |
+| `cn/SingleCharWhitelist.txt` | 无 | 不做过滤，`SingleCharsAllV1.txt` 里的单字全部收入 |
+| `en/oaldpe_words.txt` | 无 | 英文词表只来自 `BaseDictIceEn.txt` |
+| `rime-jp_sela` | 无 | `japanese-lexicon` 阶段整段跳过，`msime.db` 不含该表 |
+
+想构建完整词库（本地开发、评估召回率）用 `--include-unlicensed`，或设环境变量 `MSIME_DICT_INCLUDE_UNLICENSED=1`。**这样构建出来的产物不要附到 release 上。**
+
+拿到上游的书面再分发许可之后，把对应条目从 `licensing.py` 的 `UNLICENSED_INPUTS` 里移出，并在同一次改动里更新本文件。
+
+这一节此前写的是「未决条目并不妨碍产品当前正在分发这些数据」。那句话如实记录了当时的状态，但那个状态本身就是风险所在——它是所有发行版渠道的硬门槛，也是唯一一条可能导致已发布产物被要求下架的问题。现在默认构建只包含本项目有权再分发的数据，未决条目仍然要跟上游谈，但发版风险不再取决于谈判进度。
 
 ## 本项目自建部分
 

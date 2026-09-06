@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -36,6 +37,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(REPO_ROOT))
+from licensing import (ENV_FLAG, FALLBACKS, describe_exclusions, include_unlicensed,
+                       is_excluded)  # noqa: E402
+
 OUT_DIR = REPO_ROOT / "out"
 REFERENCE_ROOT = REPO_ROOT.parent / "ReferenceProjects"
 
@@ -234,8 +239,22 @@ def run(command: list[str], cwd: Path | None = None) -> None:
         raise BuildError(f"command failed with exit code {completed.returncode}: {printable}")
 
 
+def required_paths(stage: Stage) -> list[str]:
+    """The stage's inputs after licensing exclusions, so a redistributable build does not demand a
+    file it has been told not to read, and does demand the licensed substitute it reads instead."""
+    required: list[str] = []
+    for path in stage.needs_paths:
+        if not is_excluded(path):
+            required.append(path)
+            continue
+        fallback = FALLBACKS.get(path)
+        if fallback and fallback not in required:
+            required.append(fallback)
+    return required
+
+
 def missing_inputs(stage: Stage, reference_root: Path) -> list[str]:
-    missing = [path for path in stage.needs_paths if not (REPO_ROOT / path).exists()]
+    missing = [path for path in required_paths(stage) if not (REPO_ROOT / path).exists()]
     if stage.needs_reference and not (reference_root / stage.needs_reference).is_dir():
         missing.append(f"{reference_root / stage.needs_reference} (use --fetch-references)")
     return missing
@@ -288,6 +307,14 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--clean", action="store_true", help="delete out/ before building")
     parser.add_argument(
+        "--include-unlicensed",
+        action="store_true",
+        help=(
+            "also build the inputs that have no redistribution grant (see NOTICE.md and "
+            "licensing.py). Useful locally; not a build to attach to a release."
+        ),
+    )
+    parser.add_argument(
         "--require-all",
         action="store_true",
         help="fail instead of skipping when a stage is missing its inputs",
@@ -310,6 +337,16 @@ def main() -> int:
             print(f"{stage.name:<{width}}  {stage.description}{suffix}")
         return 0
 
+    if args.include_unlicensed:
+        os.environ[ENV_FLAG] = "1"
+    # Every stage script reads the same flag out of the environment, so a stage run directly rather
+    # than through this driver makes the same choice.
+    if include_unlicensed():
+        print("[licensing] including inputs with no redistribution grant; do not release this build")
+    else:
+        for line in describe_exclusions():
+            print(f"[licensing] {line}")
+
     if args.clean and OUT_DIR.exists():
         print(f"[clean] removing {OUT_DIR}")
         shutil.rmtree(OUT_DIR)
@@ -323,6 +360,8 @@ def main() -> int:
         for stage in STAGES
         if (args.only is None or stage.name in args.only) and stage.name not in args.skip
     ]
+    excluded_stages = [stage.name for stage in selected if is_excluded(stage.needs_reference or "")]
+    selected = [stage for stage in selected if not is_excluded(stage.needs_reference or "")]
 
     skipped: list[tuple[str, list[str]]] = []
     completed: list[tuple[str, float]] = []
@@ -350,6 +389,8 @@ def main() -> int:
         print(f"built    {name} ({elapsed:.1f}s)")
     for name, missing in skipped:
         print(f"skipped  {name}: missing {', '.join(missing)}")
+    for name in excluded_stages:
+        print(f"skipped  {name}: input has no redistribution grant (--include-unlicensed overrides)")
     for name in SHIPPING_ARTIFACTS:
         path = OUT_DIR / name
         if path.is_file():
