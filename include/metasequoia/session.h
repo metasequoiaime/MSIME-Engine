@@ -32,6 +32,9 @@ struct SessionSnapshot
     std::string normalized_segmentation;
     std::vector<WordItem> candidates;
     bool dedicated_english = false;
+    // ASCII source text and offset, separate from rendered preedit (e.g. Japanese kana).
+    std::string editing_text;
+    std::size_t caret_position = 0;
 };
 
 // Stable platform entry point. One host serializes calls to its session; distinct sessions

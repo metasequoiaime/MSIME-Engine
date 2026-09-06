@@ -586,6 +586,7 @@ void InputSession::clear_pending_sequence()
 
 void InputSession::apply_pending_sequence()
 {
+    caret_.reset();
     const std::string raw_input = has_pending_pinyin_sequence_ ? pending_pinyin_sequence_ : request().raw_input;
     const std::string raw_input_with_cases =
         has_pending_pinyin_sequence_with_cases_ ? pending_pinyin_sequence_with_cases_ : raw_input;

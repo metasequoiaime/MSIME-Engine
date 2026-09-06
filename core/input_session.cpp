@@ -74,6 +74,8 @@ InputSession::InputSession(SchemeType scheme_type, const ShuangpinProfile &shuan
 
 KeyResult InputSession::handle_character(char character, bool shift_only)
 {
+    if (caret_position() < editing_text().size()) return insert_at_caret(character);
+    caret_.reset();
     if (dedicated_english_mode_)
     {
         const bool ascii_letter = (character >= 'a' && character <= 'z') ||
@@ -224,7 +226,15 @@ KeyResult InputSession::handle_command(Command command)
 
     switch (command)
     {
+    case Command::MoveLeft:
+    case Command::MoveRight:
+    case Command::MoveHome:
+    case Command::MoveEnd:
+    case Command::DeleteForward:
+        return edit_at_caret(command);
     case Command::Backspace:
+        if (caret_position() < editing_text().size()) return edit_at_caret(command);
+        caret_.reset();
         if (dedicated_english_mode_)
         {
             dedicated_english_preedit_.pop_back();
@@ -654,6 +664,7 @@ bool InputSession::candidate_learning_enabled() const
 
 KeyResult InputSession::commit(std::size_t index)
 {
+    caret_.reset();
     std::optional<std::string> text;
     std::optional<WordItem> selected;
     if (index < candidates().size())
@@ -811,6 +822,7 @@ void InputSession::update_dedicated_english_candidates()
 
 void InputSession::reset_composition()
 {
+    caret_.reset();
     immediate_phrase_progress_ = {};
     clear_pending_sequence();
     online_requests_.invalidate();

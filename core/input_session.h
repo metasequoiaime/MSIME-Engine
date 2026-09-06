@@ -86,6 +86,8 @@ class InputSession
 
     bool has_composition() const;
     const std::string &preedit() const;
+    std::string editing_text() const;
+    std::size_t caret_position() const;
     const std::string &raw_segmentation() const;
     const std::string &normalized_segmentation() const;
     const std::vector<WordItem> &candidates() const;
@@ -173,6 +175,10 @@ class InputSession
 
     KeyResult commit(std::size_t index);
     KeyResult handle_local_character(char character);
+    KeyResult insert_at_caret(char character);
+    KeyResult edit_at_caret(Command command);
+    KeyResult replace_editing_text(std::string text, std::size_t caret);
+    std::optional<std::size_t> caret_;
     std::optional<std::string> update_local_candidates();
     void update_mixed_candidates();
     void update_dedicated_english_candidates();

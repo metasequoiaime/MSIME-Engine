@@ -37,6 +37,7 @@ set(METASEQUOIA_IME_ENGINE_SOURCES
     core/ime_session.cpp
     core/input_session.cpp
     core/input_session_composition.cpp
+    core/input_session_editing.cpp
     core/input_session_candidates.cpp
     english/english_dictionary.cpp
     japanese/japanese_matrix_search.cpp
