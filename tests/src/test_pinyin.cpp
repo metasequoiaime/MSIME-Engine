@@ -131,9 +131,9 @@ void print_candidates(const std::vector<WordItem> &result)
         }
         catch (const std::exception &ex)
         {
-            throw std::runtime_error(fmt::format(
-                "Failed to print candidate #{}; word bytes=[{}], code bytes=[{}], error={}",
-                index, hex_dump(word), hex_dump(code), ex.what()));
+            throw std::runtime_error(
+                fmt::format("Failed to print candidate #{}; word bytes=[{}], code bytes=[{}], error={}", index,
+                            hex_dump(word), hex_dump(code), ex.what()));
         }
     }
 }
@@ -340,23 +340,17 @@ void test_shuangpin_dictionary_create_pin_delete()
            "Overriding the data root must not touch the process environment.");
 
     sqlite3 *probe_db = nullptr;
-    const std::string probe_db_path =
-        local_appdata.local_appdata() + "\\metasequoiaime\\msime.db";
+    const std::string probe_db_path = local_appdata.local_appdata() + "\\metasequoiaime\\msime.db";
     expect(sqlite3_open(probe_db_path.c_str(), &probe_db) == SQLITE_OK,
            fmt::format("Failed to open probe db '{}'.", probe_db_path));
     char *probe_error = nullptr;
     expect(sqlite3_exec(probe_db,
-                        "insert into tbl_2_c (key, jp, value, weight) values ('ce''li', 'cl', '测棂', 10000);",
-                        nullptr,
-                        nullptr,
-                        &probe_error) == SQLITE_OK,
+                        "insert into tbl_2_c (key, jp, value, weight) values ('ce''li', 'cl', '测棂', 10000);", nullptr,
+                        nullptr, &probe_error) == SQLITE_OK,
            fmt::format("Expected probe insert to succeed, got '{}'.", probe_error == nullptr ? "" : probe_error));
     sqlite3_free(probe_error);
     probe_error = nullptr;
-    expect(sqlite3_exec(probe_db,
-                        "delete from tbl_2_c where key = 'ce''li' and value = '测棂';",
-                        nullptr,
-                        nullptr,
+    expect(sqlite3_exec(probe_db, "delete from tbl_2_c where key = 'ce''li' and value = '测棂';", nullptr, nullptr,
                         &probe_error) == SQLITE_OK,
            fmt::format("Expected probe delete to succeed, got '{}'.", probe_error == nullptr ? "" : probe_error));
     sqlite3_free(probe_error);
@@ -477,13 +471,11 @@ void test_quanpin_single_letter_jianpin_ranking()
 
     // The server keys a selection by its canonical pinyin, so entry_key is 'you'
     // while context_key stays 'y'.
-    const std::string entry_key =
-        selected->canonical_pinyin.empty() ? selected->pinyin : selected->canonical_pinyin;
+    const std::string entry_key = selected->canonical_pinyin.empty() ? selected->pinyin : selected->canonical_pinyin;
     bool ranking_changed = false;
-    expect(user_dictionary::adjust_candidate_ranking(
-               local_appdata.local_appdata() + "\\metasequoiaime\\msime.db",
-               user_dictionary::default_user_db_path(), "y", before, entry_key, "有", "promote", 1, 1, true,
-               &ranking_changed),
+    expect(user_dictionary::adjust_candidate_ranking(local_appdata.local_appdata() + "\\metasequoiaime\\msime.db",
+                                                     user_dictionary::default_user_db_path(), "y", before, entry_key,
+                                                     "有", "promote", 1, 1, true, &ranking_changed),
            "Expected the single-letter ranking adjustment to succeed.");
     expect(ranking_changed, "Expected the single-letter ranking adjustment to write a weight.");
 
@@ -560,8 +552,8 @@ void test_word_lattice()
         table["gao'tan"] = {{"gao'tan", "高谈", 20000}};
         table["tan'gang"] = {{"tan'gang", "碳钢", 16000}};
         table["nie'zi"] = {{"nie'zi", "镊子", 18000}};
-        const auto paths = quanpin::decode_word_lattice({"gao", "tan", "gang", "nie", "zi"},
-                                                       make_table_lattice_lookup(table));
+        const auto paths =
+            quanpin::decode_word_lattice({"gao", "tan", "gang", "nie", "zi"}, make_table_lattice_lookup(table));
         expect(!paths.empty() && paths.front().sentence == "高碳钢镊子",
                fmt::format("Expected 高碳钢镊子, got '{}'", paths.empty() ? "" : paths.front().sentence));
     }
@@ -607,8 +599,8 @@ void test_word_lattice()
         table["ji"] = {{"ji", "圾", 4000}};
         table["xing'neng"] = {{"xing'neng", "性能", 15000}};
         table["la'ji"] = {{"la'ji", "垃圾", 14000}};
-        const auto paths = quanpin::decode_word_lattice({"xing", "neng", "hen", "la", "ji"},
-                                                       make_table_lattice_lookup(table));
+        const auto paths =
+            quanpin::decode_word_lattice({"xing", "neng", "hen", "la", "ji"}, make_table_lattice_lookup(table));
         expect(!paths.empty() && paths.front().sentence.find("很垃圾") != std::string::npos &&
                    paths.front().sentence.find("狠垃圾") == std::string::npos,
                fmt::format("Expected 很垃圾 over 狠垃圾, got '{}'", paths.empty() ? "" : paths.front().sentence));
@@ -641,11 +633,10 @@ void test_word_lattice()
 void test_quanpin_order_corrections()
 {
     const std::vector<std::pair<std::string, std::string>> cases = {
-        {"laing", "liang"}, {"haung", "huang"}, {"bain", "bian"}, {"daun", "duan"},
-        {"laio", "liao"},  {"mihng", "ming"},   {"ahng", "hang"}, {"behng", "beng"},
-        {"agn", "ang"},    {"zagn", "zang"},    {"egn", "eng"},   {"zhegn", "zheng"},
-        {"jv", "ju"},      {"wojv", "wo'ju"},   {"wo'jv", "wo'ju"},
-        {"woxainxin", "wo'xian'xin"},
+        {"laing", "liang"}, {"haung", "huang"}, {"bain", "bian"},   {"daun", "duan"},
+        {"laio", "liao"},   {"mihng", "ming"},  {"ahng", "hang"},   {"behng", "beng"},
+        {"agn", "ang"},     {"zagn", "zang"},   {"egn", "eng"},     {"zhegn", "zheng"},
+        {"jv", "ju"},       {"wojv", "wo'ju"},  {"wo'jv", "wo'ju"}, {"woxainxin", "wo'xian'xin"},
     };
 
     for (const auto &[typed, expected] : cases)
@@ -660,18 +651,15 @@ void test_quanpin_order_corrections()
     const auto ambiguous = quanpin::cut_pinyin_by_mode("cehng", "correction");
     expect(ambiguous.size() >= 2, "Expected cehng to retain both valid interpretations.");
     expect(quanpin::join_segments(ambiguous.front()) == "cheng", "Expected cheng to be the primary interpretation.");
-    expect(std::any_of(ambiguous.begin(), ambiguous.end(), [](const quanpin::Segments &segments) {
-               return quanpin::join_segments(segments) == "ceng";
-           }),
+    expect(std::any_of(ambiguous.begin(), ambiguous.end(),
+                       [](const quanpin::Segments &segments) { return quanpin::join_segments(segments) == "ceng"; }),
            "Expected ceng to remain available as an alternative interpretation.");
 
     const auto ambiguous_ahng = quanpin::cut_pinyin_by_mode("ahng", "correction");
     expect(ambiguous_ahng.size() >= 2, "Expected ahng to retain both valid interpretations.");
-    expect(quanpin::join_segments(ambiguous_ahng.front()) == "hang",
-           "Expected hang to be the primary interpretation.");
-    expect(std::any_of(ambiguous_ahng.begin(), ambiguous_ahng.end(), [](const quanpin::Segments &segments) {
-               return quanpin::join_segments(segments) == "ang";
-           }),
+    expect(quanpin::join_segments(ambiguous_ahng.front()) == "hang", "Expected hang to be the primary interpretation.");
+    expect(std::any_of(ambiguous_ahng.begin(), ambiguous_ahng.end(),
+                       [](const quanpin::Segments &segments) { return quanpin::join_segments(segments) == "ang"; }),
            "Expected ang to remain available as an alternative interpretation.");
 }
 

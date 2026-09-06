@@ -16,7 +16,10 @@ struct DecoderService
     std::filesystem::path user_dictionary;
     bool ready = false;
     std::size_t clients = 0;
-    ~DecoderService() { ime_pinyin::im_close_decoder(); }
+    ~DecoderService()
+    {
+        ime_pinyin::im_close_decoder();
+    }
 };
 
 DecoderService &service()
@@ -24,7 +27,7 @@ DecoderService &service()
     static DecoderService instance;
     return instance;
 }
-}
+} // namespace
 
 PinyinDecoder::PinyinDecoder(std::filesystem::path model, std::filesystem::path user_dictionary)
     : model_(std::move(model)), user_dictionary_(std::move(user_dictionary))
@@ -49,7 +52,8 @@ PinyinDecoder::~PinyinDecoder()
 
 std::string PinyinDecoder::sentence(const std::string &pinyin) const
 {
-    if (pinyin.empty() || pinyin.size() > 128 || model_.empty() || user_dictionary_.empty()) return {};
+    if (pinyin.empty() || pinyin.size() > 128 || model_.empty() || user_dictionary_.empty())
+        return {};
     auto &decoder = service();
     std::lock_guard lock(decoder.mutex);
     if (decoder.model != model_ || decoder.user_dictionary != user_dictionary_)
@@ -62,23 +66,27 @@ std::string PinyinDecoder::sentence(const std::string &pinyin) const
             cache.put_cache(id, nullptr, 0);
         decoder.model = model_;
         decoder.user_dictionary = user_dictionary_;
-        decoder.ready = ime_pinyin::im_open_decoder(path_to_utf8(model_).c_str(),
-                                                   path_to_utf8(user_dictionary_).c_str());
-        if (!decoder.ready) return {};
+        decoder.ready =
+            ime_pinyin::im_open_decoder(path_to_utf8(model_).c_str(), path_to_utf8(user_dictionary_).c_str());
+        if (!decoder.ready)
+            return {};
         ime_pinyin::im_set_max_lens(128, 64);
     }
-    if (!decoder.ready) return {};
+    if (!decoder.ready)
+        return {};
     ime_pinyin::im_reset_search();
     const auto count = ime_pinyin::im_search(pinyin.data(), pinyin.size());
     for (std::size_t i = 0; i < count; ++i)
     {
         ime_pinyin::char16 buffer[256] = {};
-        if (!ime_pinyin::im_get_candidate(i, buffer, 255)) continue;
+        if (!ime_pinyin::im_get_candidate(i, buffer, 255))
+            continue;
         std::size_t length = 0;
-        while (length < 255 && buffer[length] != 0) ++length;
+        while (length < 255 && buffer[length] != 0)
+            ++length;
         if (length)
             return utf8::utf16to8(std::u16string(reinterpret_cast<const char16_t *>(buffer), length));
     }
     return {};
 }
-}
+} // namespace metasequoia

@@ -4,7 +4,8 @@
 #include <deque>
 #include <cstddef>
 #include "stt_service.h"
-namespace metasequoia::voice {
+namespace metasequoia::voice
+{
 
 class VadSegmenter
 {
@@ -22,4 +23,4 @@ class VadSegmenter
     static constexpr size_t PRE_ROLL_MS = 200;
     static constexpr size_t SAMPLE_RATE = 16000;
 };
-}
+} // namespace metasequoia::voice

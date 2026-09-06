@@ -6,18 +6,17 @@
 #include <limits>
 #include "stt_service.h"
 
-namespace metasequoia::voice {
+namespace metasequoia::voice
+{
 
 class WavWriter
 {
   public:
     // The PCM recognizer uses the default 60-second budget. Hosts encoding longer
     // bounded uploads can specify their own limit without copying this encoder.
-    static std::vector<uint8_t> create_wav(const std::vector<float> &pcm_data, int sample_rate = 16000,
-                                         std::size_t sample_limit = maximum_samples)
+    static std::vector<uint8_t> create_wav(const std::vector<float> &pcm_data, int sample_rate = 16000, std::size_t sample_limit = maximum_samples)
     {
-        if (sample_rate != metasequoia::voice::sample_rate || pcm_data.size() > sample_limit ||
-            pcm_data.size() > ((std::numeric_limits<uint32_t>::max)() - 36u) / 2u)
+        if (sample_rate != metasequoia::voice::sample_rate || pcm_data.size() > sample_limit || pcm_data.size() > ((std::numeric_limits<uint32_t>::max)() - 36u) / 2u)
             throw VoiceError("Expected mono 16 kHz audio within the selected WAV sample limit");
         std::vector<uint8_t> wav_data;
 
@@ -26,7 +25,8 @@ class WavWriter
         pcm16.reserve(pcm_data.size());
         for (float s : pcm_data)
         {
-            if (!std::isfinite(s)) throw VoiceError("Audio contains a non-finite sample");
+            if (!std::isfinite(s))
+                throw VoiceError("Audio contains a non-finite sample");
             // Clip
             if (s > 1.0f)
                 s = 1.0f;
@@ -58,7 +58,8 @@ class WavWriter
         write_u32(wav_data, data_size);
 
         // Append PCM data
-        for (int16_t sample : pcm16) write_u16(wav_data, static_cast<uint16_t>(sample));
+        for (int16_t sample : pcm16)
+            write_u16(wav_data, static_cast<uint16_t>(sample));
 
         return wav_data;
     }

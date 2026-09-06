@@ -17,6 +17,11 @@ enum class Command
     CommitCandidate,
     CommitRaw,
     Cancel,
+    MoveLeft,
+    MoveRight,
+    MoveHome,
+    MoveEnd,
+    DeleteForward,
 };
 
 // Outcome of one dispatched key or selection. `handled` tells the frontend whether to swallow the
@@ -104,4 +109,4 @@ struct OnlineQuery
     std::uint64_t session_id = 0;
 };
 
-}
+} // namespace metasequoia

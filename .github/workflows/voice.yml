@@ -16,6 +16,10 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      # The VAD model is committed rather than downloaded, and it is run as inference inside the IME process. Pin it to the digest recorded in voice/assets/models/README.md so a swap has to be a deliberate, reviewed change to both.
+      - name: Verify the committed VAD model
+        if: runner.os == 'Linux'
+        run: echo "1a153a22f4509e292a94e67d6f9b85e8deb25b4988682b7e174c65279d8788e3  voice/assets/models/silero_vad.onnx" | sha256sum --check --strict -
       - name: Initialize capture dependency
         run: git submodule update --init voice/third_party/miniaudio
       - name: Install Linux dependencies

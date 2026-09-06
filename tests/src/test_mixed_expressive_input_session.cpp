@@ -58,8 +58,7 @@ void type(metasequoia::InputSession &session, const std::string &text)
 {
     for (const char character : text)
     {
-        require(session.handle_character(character).handled,
-                "A mixed-expression test character was not handled.");
+        require(session.handle_character(character).handled, "A mixed-expression test character was not handled.");
     }
 }
 
@@ -79,49 +78,44 @@ void prepare_main_database(const std::filesystem::path &directory)
 {
     std::filesystem::create_directories(directory);
     Database database(directory / "msime.db");
-    database.execute(
-        "BEGIN;"
-        "CREATE TABLE tbl_1_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
-        "INSERT INTO tbl_1_n VALUES('ni','n','你',200);"
-        "INSERT INTO tbl_1_n VALUES('ni','n','倪',100);"
-        "COMMIT;");
+    database.execute("BEGIN;"
+                     "CREATE TABLE tbl_1_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                     "INSERT INTO tbl_1_n VALUES('ni','n','你',200);"
+                     "INSERT INTO tbl_1_n VALUES('ni','n','倪',100);"
+                     "COMMIT;");
 }
 
 void prepare_english_database(const std::filesystem::path &directory)
 {
     Database database(directory / "english.db");
-    database.execute(
-        "BEGIN;"
-        "CREATE TABLE english_words(word TEXT COLLATE BINARY NOT NULL,display TEXT NOT NULL,"
-        "weight INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(word,display)) WITHOUT ROWID;"
-        "CREATE TABLE en_zh_glosses(english TEXT PRIMARY KEY,chinese_gloss TEXT NOT NULL);"
-        "CREATE TABLE zh_en_glosses(chinese TEXT PRIMARY KEY,english_gloss TEXT NOT NULL);"
-        "INSERT INTO english_words VALUES('ni','Ni',300);"
-        "INSERT INTO english_words VALUES('ninja','Ninja',200);"
-        "INSERT INTO english_words VALUES('ni','倪',100);"
-        "COMMIT;");
+    database.execute("BEGIN;"
+                     "CREATE TABLE english_words(word TEXT COLLATE BINARY NOT NULL,display TEXT NOT NULL,"
+                     "weight INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(word,display)) WITHOUT ROWID;"
+                     "CREATE TABLE en_zh_glosses(english TEXT PRIMARY KEY,chinese_gloss TEXT NOT NULL);"
+                     "CREATE TABLE zh_en_glosses(chinese TEXT PRIMARY KEY,english_gloss TEXT NOT NULL);"
+                     "INSERT INTO english_words VALUES('ni','Ni',300);"
+                     "INSERT INTO english_words VALUES('ninja','Ninja',200);"
+                     "INSERT INTO english_words VALUES('ni','倪',100);"
+                     "COMMIT;");
 }
 
-void prepare_others_database(const std::filesystem::path &directory, bool emoji_table = true,
-                             bool kaomoji_table = true)
+void prepare_others_database(const std::filesystem::path &directory, bool emoji_table = true, bool kaomoji_table = true)
 {
     Database database(directory / "others.db");
     database.execute("BEGIN");
     if (emoji_table)
     {
-        database.execute(
-            "CREATE TABLE emoji_pinyin(key TEXT,emoji TEXT,sort_order INTEGER);"
-            "INSERT INTO emoji_pinyin VALUES('ni','Ni',0);"
-            "INSERT INTO emoji_pinyin VALUES('ni','😀',1);"
-            "INSERT INTO emoji_pinyin VALUES('ni','😁',2);");
+        database.execute("CREATE TABLE emoji_pinyin(key TEXT,emoji TEXT,sort_order INTEGER);"
+                         "INSERT INTO emoji_pinyin VALUES('ni','Ni',0);"
+                         "INSERT INTO emoji_pinyin VALUES('ni','😀',1);"
+                         "INSERT INTO emoji_pinyin VALUES('ni','😁',2);");
     }
     if (kaomoji_table)
     {
-        database.execute(
-            "CREATE TABLE kaomoji(pinyin TEXT,jianpin TEXT,kaomoji TEXT,sort_order INTEGER);"
-            "INSERT INTO kaomoji VALUES('ni','n','😀',0);"
-            "INSERT INTO kaomoji VALUES('ni','n','(^_^)',1);"
-            "INSERT INTO kaomoji VALUES('ni','n','(T_T)',2);");
+        database.execute("CREATE TABLE kaomoji(pinyin TEXT,jianpin TEXT,kaomoji TEXT,sort_order INTEGER);"
+                         "INSERT INTO kaomoji VALUES('ni','n','😀',0);"
+                         "INSERT INTO kaomoji VALUES('ni','n','(^_^)',1);"
+                         "INSERT INTO kaomoji VALUES('ni','n','(T_T)',2);");
     }
     database.execute("COMMIT");
 }
@@ -166,8 +160,7 @@ int main()
     require(mixed.set_english_input_options(english_options), "Valid mixed-English options were rejected.");
     mixed.set_mixed_expressive_options(expressive_options);
     type(mixed, "ni");
-    const std::vector<std::string> expected_words{
-        "你", "Ni", "😀", "(^_^)", "倪", "Ninja", "😁", "(T_T)"};
+    const std::vector<std::string> expected_words{"你", "Ni", "😀", "(^_^)", "倪", "Ninja", "😁", "(T_T)"};
     require(mixed.candidates().size() == expected_words.size(),
             "Mixed candidate deduplication produced the wrong candidate count.");
     for (std::size_t index = 0; index < expected_words.size(); ++index)
@@ -175,15 +168,11 @@ int main()
         require(mixed.candidates()[index].word == expected_words[index],
                 "Mixed candidates did not keep the Windows-compatible stable ordering.");
     }
-    require(sources(mixed) ==
-                std::vector<CandidateSource>{CandidateSource::Database,
-                                             CandidateSource::EnglishDictionary,
-                                             CandidateSource::Emoji,
-                                             CandidateSource::Kaomoji,
-                                             CandidateSource::Database,
-                                             CandidateSource::EnglishDictionary,
-                                             CandidateSource::Emoji,
-                                             CandidateSource::Kaomoji},
+    require(sources(mixed) == std::vector<CandidateSource>{CandidateSource::Database,
+                                                           CandidateSource::EnglishDictionary, CandidateSource::Emoji,
+                                                           CandidateSource::Kaomoji, CandidateSource::Database,
+                                                           CandidateSource::EnglishDictionary, CandidateSource::Emoji,
+                                                           CandidateSource::Kaomoji},
             "Mixed candidate sources did not retain their priority groups.");
 
     metasequoia::InputSession below_threshold(SchemeType::Quanpin);
@@ -268,8 +257,7 @@ int main()
     dedicated.set_mixed_expressive_options(expressive_options);
     dedicated.set_dedicated_english_mode(true);
     type(dedicated, "ni");
-    require(!has_source(dedicated, CandidateSource::Emoji) &&
-                !has_source(dedicated, CandidateSource::Kaomoji),
+    require(!has_source(dedicated, CandidateSource::Emoji) && !has_source(dedicated, CandidateSource::Kaomoji),
             "Dedicated English mode leaked mixed expressive candidates.");
 
     user_dictionary::close_default_user_database();
@@ -277,13 +265,11 @@ int main()
     require(mixed_learning.set_english_input_options(english_options),
             "Valid mixed-English options were rejected for local frequency learning.");
     mixed_learning.set_mixed_expressive_options(expressive_options);
-    require(mixed_learning.set_frequency_adjustment(
-                {metasequoia::FrequencyAdjustmentMode::Promote, 1, 1}),
+    require(mixed_learning.set_frequency_adjustment({metasequoia::FrequencyAdjustmentMode::Promote, 1, 1}),
             "A valid mixed-candidate frequency configuration was rejected.");
     type(mixed_learning, "ni");
     const auto learned_local = mixed_learning.select_candidate(std::string("倪"));
-    require(learned_local.handled && learned_local.commit == "倪" &&
-                !learned_local.diagnostic.has_value(),
+    require(learned_local.handled && learned_local.commit == "倪" && !learned_local.diagnostic.has_value(),
             "Mixed candidates prevented a local Chinese candidate from being selected.");
     metasequoia::InputSession reopened_learning(SchemeType::Quanpin);
     type(reopened_learning, "ni");

@@ -55,32 +55,20 @@ void warm_up(sqlite3 *db, std::unordered_map<std::string, sqlite3_stmt *> &state
 std::vector<KeyedQueryItem> query_initial(sqlite3 *db, const std::string &prefix, int limit);
 QueryResult query_words(const std::string &pinyin, const std::string &db_path, const std::string &mode = "greedy",
                         int limit = 8);
-QueryResult query_segments(const Segments &segments,
-                           const std::string &db_path,
-                           int limit = 8,
+QueryResult query_segments(const Segments &segments, const std::string &db_path, int limit = 8,
                            QuerySource source = QuerySource::Quanpin);
 std::vector<QueryItem> query_words_flat(const std::string &pinyin, const std::string &db_path,
                                         const std::string &mode = "greedy", int limit = 8);
-std::vector<QueryItem> query_segments_flat(const Segments &segments,
-                                           const std::string &db_path,
-                                           int limit = 8,
+std::vector<QueryItem> query_segments_flat(const Segments &segments, const std::string &db_path, int limit = 8,
                                            QuerySource source = QuerySource::Quanpin);
-std::vector<QueryItem> query_segments_flat(const Segments &segments,
-                                           sqlite3 *db,
+std::vector<QueryItem> query_segments_flat(const Segments &segments, sqlite3 *db,
                                            std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
-                                           int limit = 8,
-                                           QuerySource source = QuerySource::Quanpin);
-std::vector<KeyedQueryItem> query_segments_keyed_flat(
-    const Segments &segments,
-    const std::string &db_path,
-    int limit = 8,
-    QuerySource source = QuerySource::Quanpin);
-std::vector<KeyedQueryItem> query_segments_keyed_flat(
-    const Segments &segments,
-    sqlite3 *db,
-    std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
-    int limit = 8,
-    QuerySource source = QuerySource::Quanpin);
+                                           int limit = 8, QuerySource source = QuerySource::Quanpin);
+std::vector<KeyedQueryItem> query_segments_keyed_flat(const Segments &segments, const std::string &db_path,
+                                                      int limit = 8, QuerySource source = QuerySource::Quanpin);
+std::vector<KeyedQueryItem> query_segments_keyed_flat(const Segments &segments, sqlite3 *db,
+                                                      std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
+                                                      int limit = 8, QuerySource source = QuerySource::Quanpin);
 std::vector<KeyedQueryItem> query_exact_segmentations_keyed_flat(
     const std::vector<Segments> &segmentations, sqlite3 *db,
     std::unordered_map<std::string, sqlite3_stmt *> &statement_cache, int limit = 128);

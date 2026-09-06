@@ -9,10 +9,10 @@
 class ProviderRegistry
 {
   public:
-    explicit ProviderRegistry(const ShuangpinProfile &shuangpin_profile = GetXiaoheShuangpinProfile(), metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
+    explicit ProviderRegistry(const ShuangpinProfile &shuangpin_profile = GetXiaoheShuangpinProfile(),
+                              metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
     ICandidateProvider &resolve(SchemeType scheme_type);
-    std::optional<WordItem> find_candidate(SchemeType scheme_type, const std::string &key,
-                                           const std::string &value);
+    std::optional<WordItem> find_candidate(SchemeType scheme_type, const std::string &key, const std::string &value);
     bool expand_initial_candidates(const QueryRequest &request, std::vector<WordItem> &candidates);
     void reset_cache(SchemeType scheme_type);
     int create_word(SchemeType scheme_type, std::string pinyin, std::string word);
@@ -23,7 +23,10 @@ class ProviderRegistry
     int cache_dynamic_candidate_for_request(const QueryRequest &request, const std::string &word,
                                             CandidateSource source);
 
-    void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table) { pinyin_provider_.set_helpcode_keymap(std::move(table)); }
+    void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table)
+    {
+        pinyin_provider_.set_helpcode_keymap(std::move(table));
+    }
 
   private:
     PinyinCandidateProvider pinyin_provider_;

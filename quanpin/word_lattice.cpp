@@ -248,8 +248,7 @@ void merge_lattice_candidates(std::vector<WordItem> &candidates, const Segments 
         return;
 
     size_t insert_at = 0;
-    while (insert_at < candidates.size() &&
-           covers_all_syllables(candidates[insert_at], syllables.size()) &&
+    while (insert_at < candidates.size() && covers_all_syllables(candidates[insert_at], syllables.size()) &&
            (candidates[insert_at].source == CandidateSource::Database ||
             candidates[insert_at].source == CandidateSource::UserDatabase))
         ++insert_at;

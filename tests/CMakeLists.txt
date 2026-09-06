@@ -19,7 +19,16 @@ add_definitions(
 add_compile_options(/Zc:__cplusplus)
 
 # Boost
-set(Boost_ROOT "C:/Users/SonnyCalcr/scoop/apps/boost/current")
+# Resolve Boost without pinning one developer's machine: an explicit -DBoost_ROOT wins, then Boost_ROOT/BOOST_ROOT from the environment, and only then the scoop layout this project has historically assumed. Leaving all three unset lets find_package fall back to its own search instead of failing on a path that exists nowhere.
+if(NOT DEFINED Boost_ROOT)
+    if(DEFINED ENV{Boost_ROOT})
+        set(Boost_ROOT "$ENV{Boost_ROOT}")
+    elseif(DEFINED ENV{BOOST_ROOT})
+        set(Boost_ROOT "$ENV{BOOST_ROOT}")
+    elseif(DEFINED ENV{USERPROFILE} AND EXISTS "$ENV{USERPROFILE}/scoop/apps/boost/current")
+        set(Boost_ROOT "$ENV{USERPROFILE}/scoop/apps/boost/current")
+    endif()
+endif()
 set (Boost_USE_STATIC_LIBS ON)
 find_package(Boost REQUIRED COMPONENTS locale)
 include_directories(${Boost_INCLUDE_DIRS})

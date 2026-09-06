@@ -25,15 +25,16 @@ SharedDecoder SharedSentenceDecoder(const std::string &path)
     for (auto it = models.begin(); it != models.end();)
         it = it->second.expired() ? models.erase(it) : std::next(it);
     auto &entry = models[path];
-    if (auto existing = entry.lock()) return existing;
+    if (auto existing = entry.lock())
+        return existing;
     auto model = std::make_shared<const japanese::JapaneseSentenceDecoder>(path);
-    if (model->ready()) entry = model;
+    if (model->ready())
+        entry = model;
     return model;
 }
 
-void AppendUnique(std::vector<WordItem> &items, std::unordered_set<std::string> &seen,
-                  const std::string &code, const std::string &value, std::int64_t weight,
-                  CandidateSource source = CandidateSource::Database)
+void AppendUnique(std::vector<WordItem> &items, std::unordered_set<std::string> &seen, const std::string &code,
+                  const std::string &value, std::int64_t weight, CandidateSource source = CandidateSource::Database)
 {
     if (!value.empty() && seen.insert(value).second)
     {
@@ -47,7 +48,8 @@ std::string EscapeLikePrefix(const std::string &code)
     escaped.reserve(code.size() + 1);
     for (const char ch : code)
     {
-        if (ch == '%' || ch == '_' || ch == '#') escaped.push_back('#');
+        if (ch == '%' || ch == '_' || ch == '#')
+            escaped.push_back('#');
         escaped.push_back(ch);
     }
     escaped.push_back('%');
@@ -57,7 +59,9 @@ std::string EscapeLikePrefix(const std::string &code)
 
 JapaneseCandidateProvider::JapaneseCandidateProvider(std::string db_path, std::string model_path)
     : db_path_(db_path.empty() ? quanpin::get_default_db_path() : std::move(db_path)),
-      model_path_(model_path.empty() ? metasequoia::path_to_utf8(metasequoia::data_file_path(metasequoia::assets::japanese_model)) : std::move(model_path))
+      model_path_(model_path.empty()
+                      ? metasequoia::path_to_utf8(metasequoia::data_file_path(metasequoia::assets::japanese_model))
+                      : std::move(model_path))
 {
 }
 
@@ -82,12 +86,12 @@ std::vector<WordItem> JapaneseCandidateProvider::query(const QueryRequest &reque
     {
         AppendUnique(candidates, seen, request.raw_input_with_cases, conversion.hiragana, 1000000,
                      CandidateSource::Generated);
-        AppendUnique(candidates, seen, request.raw_input_with_cases,
-                     japanese::HiraganaToKatakana(conversion.hiragana), 999999,
-                     CandidateSource::Generated);
+        AppendUnique(candidates, seen, request.raw_input_with_cases, japanese::HiraganaToKatakana(conversion.hiragana),
+                     999999, CandidateSource::Generated);
     }
 
-    if (!sentence_decoder_) sentence_decoder_ = SharedSentenceDecoder(model_path_);
+    if (!sentence_decoder_)
+        sentence_decoder_ = SharedSentenceDecoder(model_path_);
     if (sentence_decoder_ && sentence_decoder_->ready())
     {
         const auto pending_kana = japanese::KanaForRomajiPrefix(conversion.pending);
@@ -109,14 +113,14 @@ std::vector<WordItem> JapaneseCandidateProvider::query(const QueryRequest &reque
         else if (conversion.pending.empty() && conversion.hiragana.size() >= 6)
         {
             for (const auto &lemma : sentence_decoder_->PrefixLemmas(conversion.hiragana, 16))
-                AppendUnique(candidates, seen, request.raw_input_with_cases, lemma.surface,
-                             980000 - lemma.word_cost, CandidateSource::Database);
+                AppendUnique(candidates, seen, request.raw_input_with_cases, lemma.surface, 980000 - lemma.word_cost,
+                             CandidateSource::Database);
         }
         japanese::JapaneseMatrixSearch search(*sentence_decoder_);
         for (const auto &sentence : search.SearchConverted(conversion, 12))
         {
-            AppendUnique(candidates, seen, request.raw_input_with_cases, sentence.text,
-                         900000 - sentence.cost, CandidateSource::Database);
+            AppendUnique(candidates, seen, request.raw_input_with_cases, sentence.text, 900000 - sentence.cost,
+                         CandidateSource::Database);
         }
     }
 
@@ -145,8 +149,8 @@ std::vector<WordItem> JapaneseCandidateProvider::query(const QueryRequest &reque
     {
         AppendUnique(candidates, seen, request.raw_input_with_cases, conversion.hiragana, 1000000,
                      CandidateSource::Generated);
-        AppendUnique(candidates, seen, request.raw_input_with_cases,
-                     japanese::HiraganaToKatakana(conversion.hiragana), 999999, CandidateSource::Generated);
+        AppendUnique(candidates, seen, request.raw_input_with_cases, japanese::HiraganaToKatakana(conversion.hiragana),
+                     999999, CandidateSource::Generated);
     }
 
     const auto dynamic = dynamic_candidates_.get(request.raw_input);
@@ -165,10 +169,11 @@ std::vector<WordItem> JapaneseCandidateProvider::query(const QueryRequest &reque
     return candidates;
 }
 
-std::optional<WordItem> JapaneseCandidateProvider::find_candidate(
-    SchemeType scheme, const std::string &key, const std::string &value)
+std::optional<WordItem> JapaneseCandidateProvider::find_candidate(SchemeType scheme, const std::string &key,
+                                                                  const std::string &value)
 {
-    if (scheme != SchemeType::JapaneseRomaji || !ensure_query_statement()) return std::nullopt;
+    if (scheme != SchemeType::JapaneseRomaji || !ensure_query_statement())
+        return std::nullopt;
     sqlite3_reset(query_statement_);
     sqlite3_clear_bindings(query_statement_);
     sqlite3_bind_text(query_statement_, 1, key.c_str(), -1, SQLITE_TRANSIENT);
@@ -182,7 +187,8 @@ std::optional<WordItem> JapaneseCandidateProvider::find_candidate(
         const auto *code = reinterpret_cast<const char *>(sqlite3_column_text(query_statement_, 0));
         const auto *candidate = reinterpret_cast<const char *>(sqlite3_column_text(query_statement_, 1));
         if (code && candidate && value == candidate)
-            return WordItem(code, candidate, sqlite3_column_int64(query_statement_, 2), CandidateSource::Database, code);
+            return WordItem(code, candidate, sqlite3_column_int64(query_statement_, 2), CandidateSource::Database,
+                            code);
     }
     return std::nullopt;
 }
@@ -195,9 +201,18 @@ void JapaneseCandidateProvider::reset_cache()
     // SQLite/user-dictionary caches are reset.
 }
 
-int JapaneseCandidateProvider::create_word(SchemeType, std::string, std::string) { return kNoMutation; }
-int JapaneseCandidateProvider::update_weight_by_pinyin_and_word(SchemeType, std::string, std::string) { return kNoMutation; }
-int JapaneseCandidateProvider::delete_by_pinyin_and_word(SchemeType, std::string, std::string) { return kNoMutation; }
+int JapaneseCandidateProvider::create_word(SchemeType, std::string, std::string)
+{
+    return kNoMutation;
+}
+int JapaneseCandidateProvider::update_weight_by_pinyin_and_word(SchemeType, std::string, std::string)
+{
+    return kNoMutation;
+}
+int JapaneseCandidateProvider::delete_by_pinyin_and_word(SchemeType, std::string, std::string)
+{
+    return kNoMutation;
+}
 int JapaneseCandidateProvider::cache_dynamic_candidate(SchemeType scheme, const std::string &code,
                                                        const std::string &word, CandidateSource source)
 {
@@ -207,17 +222,15 @@ int JapaneseCandidateProvider::cache_dynamic_candidate(SchemeType scheme, const 
         return -1;
     }
     auto items = dynamic_candidates_.get(code).value_or(std::vector<WordItem>{});
-    items.erase(std::remove_if(items.begin(), items.end(), [source](const WordItem &item) {
-                    return item.source == source;
-                }),
-                items.end());
+    items.erase(
+        std::remove_if(items.begin(), items.end(), [source](const WordItem &item) { return item.source == source; }),
+        items.end());
     items.emplace_back(code, word, 1, source, code);
     dynamic_candidates_.insert(code, items);
     return kNoMutation;
 }
 
-int JapaneseCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequest &request,
-                                                                   const std::string &word,
+int JapaneseCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequest &request, const std::string &word,
                                                                    CandidateSource source)
 {
     return cache_dynamic_candidate(request.scheme, request.raw_input, word, source);
@@ -225,16 +238,17 @@ int JapaneseCandidateProvider::cache_dynamic_candidate_for_request(const QueryRe
 
 bool JapaneseCandidateProvider::ensure_query_statement()
 {
-    if (query_statement_) return true;
-    if (!db_ && sqlite3_open_v2(db_path_.c_str(), &db_, SQLITE_OPEN_READONLY | SQLITE_OPEN_NOMUTEX, nullptr) != SQLITE_OK)
+    if (query_statement_)
+        return true;
+    if (!db_ &&
+        sqlite3_open_v2(db_path_.c_str(), &db_, SQLITE_OPEN_READONLY | SQLITE_OPEN_NOMUTEX, nullptr) != SQLITE_OK)
     {
         close_database();
         return false;
     }
-    constexpr const char *sql =
-        "SELECT code, value, weight FROM japanese_lexicon "
-        "WHERE code=?1 OR code=?2 OR code LIKE ?3 ESCAPE '#' OR code LIKE ?4 ESCAPE '#' "
-        "ORDER BY weight DESC, rowid ASC LIMIT 64";
+    constexpr const char *sql = "SELECT code, value, weight FROM japanese_lexicon "
+                                "WHERE code=?1 OR code=?2 OR code LIKE ?3 ESCAPE '#' OR code LIKE ?4 ESCAPE '#' "
+                                "ORDER BY weight DESC, rowid ASC LIMIT 64";
     if (sqlite3_prepare_v2(db_, sql, -1, &query_statement_, nullptr) != SQLITE_OK)
     {
         close_database();

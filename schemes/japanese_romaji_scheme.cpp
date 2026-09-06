@@ -21,8 +21,10 @@ void JapaneseRomajiScheme::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_d
 {
     if (vk == ImeKey::Backspace)
     {
-        if (!raw_input_.empty()) raw_input_.pop_back();
-        if (!key_strokes_.empty()) key_strokes_.pop_back();
+        if (!raw_input_.empty())
+            raw_input_.pop_back();
+        if (!key_strokes_.empty())
+            key_strokes_.pop_back();
         return;
     }
     if (vk == ImeKey::Escape || vk == ImeKey::Return)
@@ -36,7 +38,8 @@ void JapaneseRomajiScheme::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_d
         key_strokes_.push_back(KeyStroke{vk, modifiers_down, wch});
         return;
     }
-    if (!IsRomajiKey(vk)) return;
+    if (!IsRomajiKey(vk))
+        return;
 
     key_strokes_.push_back(KeyStroke{vk, modifiers_down, wch});
     if ((wch >= u'a' && wch <= u'z') || (wch >= u'A' && wch <= u'Z'))
@@ -48,9 +51,9 @@ void JapaneseRomajiScheme::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_d
 void JapaneseRomajiScheme::set_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases)
 {
     raw_input_ = raw_input_with_cases.empty() ? raw_input : raw_input_with_cases;
-    raw_input_.erase(std::remove_if(raw_input_.begin(), raw_input_.end(), [](unsigned char ch) {
-                         return !std::isalpha(ch) && ch != '\'';
-                     }), raw_input_.end());
+    raw_input_.erase(std::remove_if(raw_input_.begin(), raw_input_.end(),
+                                    [](unsigned char ch) { return !std::isalpha(ch) && ch != '\''; }),
+                     raw_input_.end());
     key_strokes_.clear();
 }
 

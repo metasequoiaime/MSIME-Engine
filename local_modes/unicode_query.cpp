@@ -55,9 +55,7 @@ std::vector<WordItem> query_unicode(const std::string &hex_part, int limit)
 
     const std::string hex = hex_part.substr(offset);
     if (hex.empty() || hex.size() > 6 ||
-        !std::all_of(hex.begin(), hex.end(), [](unsigned char character) {
-            return is_hex_character(character);
-        }))
+        !std::all_of(hex.begin(), hex.end(), [](unsigned char character) { return is_hex_character(character); }))
     {
         return {};
     }
@@ -84,7 +82,7 @@ std::vector<WordItem> query_unicode(const std::string &hex_part, int limit)
         return {};
     }
 
-    return {WordItem(codepoint_label(codepoint), codepoint_to_utf8(codepoint),
-                     static_cast<std::int64_t>(hex.size()), CandidateSource::Generated)};
+    return {WordItem(codepoint_label(codepoint), codepoint_to_utf8(codepoint), static_cast<std::int64_t>(hex.size()),
+                     CandidateSource::Generated)};
 }
 } // namespace metasequoia::local_modes

@@ -1,10 +1,11 @@
 #include "provider_registry.h"
 #include <stdexcept>
 
-ProviderRegistry::ProviderRegistry(const ShuangpinProfile &shuangpin_profile, metasequoia::RuntimePaths paths) : pinyin_provider_(shuangpin_profile, paths),
-    wubi_provider_(metasequoia::path_to_utf8(paths.dictionary(metasequoia::assets::main_dictionary))),
-    japanese_provider_(metasequoia::path_to_utf8(paths.dictionary(metasequoia::assets::main_dictionary)),
-                       metasequoia::path_to_utf8(paths.resource(metasequoia::assets::japanese_model)))
+ProviderRegistry::ProviderRegistry(const ShuangpinProfile &shuangpin_profile, metasequoia::RuntimePaths paths)
+    : pinyin_provider_(shuangpin_profile, paths),
+      wubi_provider_(metasequoia::path_to_utf8(paths.dictionary(metasequoia::assets::main_dictionary))),
+      japanese_provider_(metasequoia::path_to_utf8(paths.dictionary(metasequoia::assets::main_dictionary)),
+                         metasequoia::path_to_utf8(paths.resource(metasequoia::assets::japanese_model)))
 {
 }
 
@@ -64,14 +65,13 @@ int ProviderRegistry::cache_dynamic_candidate(SchemeType scheme_type, const std:
     return resolve(scheme_type).cache_dynamic_candidate(scheme_type, pinyin, word, source);
 }
 
-std::optional<WordItem> ProviderRegistry::find_candidate(
-    SchemeType scheme_type, const std::string &key, const std::string &value)
+std::optional<WordItem> ProviderRegistry::find_candidate(SchemeType scheme_type, const std::string &key,
+                                                         const std::string &value)
 {
     return resolve(scheme_type).find_candidate(scheme_type, key, value);
 }
 
-bool ProviderRegistry::expand_initial_candidates(const QueryRequest &request,
-                                                 std::vector<WordItem> &candidates)
+bool ProviderRegistry::expand_initial_candidates(const QueryRequest &request, std::vector<WordItem> &candidates)
 {
     return pinyin_provider_.expand_initial_candidates(request, candidates);
 }

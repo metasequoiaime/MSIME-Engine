@@ -12,7 +12,8 @@ namespace
 {
 void require(bool value, const char *message)
 {
-    if (!value) throw std::runtime_error(message);
+    if (!value)
+        throw std::runtime_error(message);
 }
 void add_phrase(const metasequoia::RuntimePaths &paths, const std::string &key, const std::string &word)
 {
@@ -24,11 +25,12 @@ void check_phrase(const metasequoia::RuntimePaths &paths, const std::string &key
     QuanpinDictionary dictionary({}, paths);
     require(dictionary.find_candidate(key, word).has_value(), "Runtime generation lost a learned phrase");
 }
-}
+} // namespace
 
 int main(int argc, char **argv)
 {
-    if (argc != 3) return 2;
+    if (argc != 3)
+        return 2;
     try
     {
         namespace fs = std::filesystem;
@@ -44,7 +46,8 @@ int main(int argc, char **argv)
             options.learning = false;
             options.helpcode = false;
             Session session(options);
-            for (char ch : std::string("nihao")) session.character(ch);
+            for (char ch : std::string("nihao"))
+                session.character(ch);
             const auto view = session.snapshot();
             require(std::any_of(view.candidates.begin(), view.candidates.end(),
                                 [](const auto &item) { return item.word == "你好"; }),
@@ -67,16 +70,24 @@ int main(int argc, char **argv)
         check_phrase(restored, second_key, second_word);
 
         require(user_dictionary::record_upsert(path_to_utf8(restored.user(assets::user_journal)),
-                    user_dictionary::DictionaryKind::Pinyin, "@", "无效词", 10), "Cannot create replay failure fixture");
+                                               user_dictionary::DictionaryKind::Pinyin, "@", "无效词", 10),
+                "Cannot create replay failure fixture");
         bool failed = false;
-        try { (void)prepare_runtime_paths(resources, user, cache, "failed"); }
-        catch (const std::runtime_error &) { failed = true; }
+        try
+        {
+            (void)prepare_runtime_paths(resources, user, cache, "failed");
+        }
+        catch (const std::runtime_error &)
+        {
+            failed = true;
+        }
         require(failed, "Invalid replay published a runtime generation");
         require(!fs::exists(user / "dictionaries/failed") && !fs::exists(user / "dictionaries/failed.incoming"),
                 "Failed preparation retained a generation or staging directory");
         check_phrase(restored, first_key, first_word);
         check_phrase(restored, second_key, second_word);
-        std::cout << "Produced runtime bundle: query, learning, generation replay, rollback, cache disposal and failure recovery passed\n";
+        std::cout << "Produced runtime bundle: query, learning, generation replay, rollback, cache disposal and "
+                     "failure recovery passed\n";
     }
     catch (const std::exception &error)
     {

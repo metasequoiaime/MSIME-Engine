@@ -20,7 +20,5 @@ struct LocalDateTime
 
 LocalDateTime current_local_date_time();
 bool is_date_time_keyword(const std::string &keyword);
-std::vector<WordItem> query_date_time(const std::string &keyword,
-                                      const LocalDateTime *now = nullptr,
-                                      int limit = 17);
+std::vector<WordItem> query_date_time(const std::string &keyword, const LocalDateTime *now = nullptr, int limit = 17);
 } // namespace metasequoia::local_modes

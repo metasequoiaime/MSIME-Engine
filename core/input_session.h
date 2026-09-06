@@ -30,8 +30,7 @@ class InputSession
     // engine configuration and commit policy.
     explicit InputSession(SchemeType scheme_type = SchemeType::Quanpin, bool quanpin_autocorrect_enabled = true,
                           bool helpcode_enabled = true, bool chinese_punctuation_enabled = true,
-                          bool candidate_learning_enabled = true,
-                          RuntimePaths paths = RuntimePaths::legacy());
+                          bool candidate_learning_enabled = true, RuntimePaths paths = RuntimePaths::legacy());
     InputSession(SchemeType scheme_type, const ShuangpinProfile &shuangpin_profile,
                  RuntimePaths paths = RuntimePaths::legacy());
 
@@ -86,6 +85,8 @@ class InputSession
 
     bool has_composition() const;
     const std::string &preedit() const;
+    std::string editing_text() const;
+    std::size_t caret_position() const;
     const std::string &raw_segmentation() const;
     const std::string &normalized_segmentation() const;
     const std::vector<WordItem> &candidates() const;
@@ -156,8 +157,14 @@ class InputSession
                                                        const SelectionTransition &selection_transition) const;
 
     void set_quanpin_autocorrect_enabled(bool enabled);
-    void set_chinese_punctuation_enabled(bool enabled) { chinese_punctuation_enabled_ = enabled; }
-    void set_candidate_learning_enabled(bool enabled) { candidate_learning_enabled_ = enabled; }
+    void set_chinese_punctuation_enabled(bool enabled)
+    {
+        chinese_punctuation_enabled_ = enabled;
+    }
+    void set_candidate_learning_enabled(bool enabled)
+    {
+        candidate_learning_enabled_ = enabled;
+    }
     void set_shuangpin_preedit_uses_raw(bool enabled)
     {
         shuangpin_preedit_uses_raw_ = enabled;
@@ -173,14 +180,18 @@ class InputSession
 
     KeyResult commit(std::size_t index);
     KeyResult handle_local_character(char character);
+    KeyResult insert_at_caret(char character);
+    KeyResult edit_at_caret(Command command);
+    KeyResult replace_editing_text(std::string text, std::size_t caret);
+    std::optional<std::size_t> caret_;
     std::optional<std::string> update_local_candidates();
     void update_mixed_candidates();
     void update_dedicated_english_candidates();
     void reset_composition();
     void discard_abandoned_phrase_progress();
     std::optional<std::string> learn_candidate(std::size_t index);
-    std::optional<std::string> adjust_candidate_frequency(std::size_t index,
-        FrequencyAdjustmentOptions options, bool force_top);
+    std::optional<std::string> adjust_candidate_frequency(std::size_t index, FrequencyAdjustmentOptions options,
+                                                          bool force_top);
 
     CreatingWordProgress immediate_phrase_progress_;
     bool shuangpin_preedit_uses_raw_ = true;

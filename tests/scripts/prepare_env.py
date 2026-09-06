@@ -1,3 +1,13 @@
+"""Generate the machine-specific .clangd for this checkout.
+
+Only .clangd is generated. tests/CMakeLists.txt and tests/CMakePresets.json used to be
+generated from copies under config_files/ as well, which meant every source file added to
+the real build had to be mirrored into a second copy by hand. It stopped being mirrored,
+and running this script would overwrite a working tests/CMakeLists.txt with a stale one
+that no longer listed eleven translation units. Both files now resolve Boost and vcpkg from
+the environment on their own, so there is nothing left to rewrite.
+"""
+
 import os
 
 
@@ -5,8 +15,14 @@ def normpath(path):
     return path.replace("\\", "/")
 
 
-local_app_data_dir = os.environ.get("LOCALAPPDATA")
-home_dir = os.path.expanduser("~")
+def resolve_boost_root(user_home):
+    """Mirror the lookup order in tests/CMakeLists.txt so clangd and CMake agree."""
+    for name in ("Boost_ROOT", "BOOST_ROOT"):
+        value = os.environ.get(name)
+        if value:
+            return normpath(value)
+    return normpath(os.path.join(user_home, "scoop", "apps", "boost", "current"))
+
 
 cur_file_path = os.path.dirname(os.path.abspath(__file__))
 project_root_path = os.path.dirname(os.path.dirname(cur_file_path))
@@ -20,11 +36,8 @@ vcpkg_include = normpath(
     )
 )
 utfcpp_path = normpath(os.path.join(MetasequoiaImeEngine_root, "utfcpp", "source"))
-boost_path = normpath(os.path.join(user_home, "scoop", "apps", "boost", "current"))
+boost_path = resolve_boost_root(user_home)
 
-#
-# project_root/.clangd
-#
 dot_clangd_new_lines = [
     f'      "-I{MetasequoiaImeEngine_root}",\n',
     f'      "-I{vcpkg_include}",\n',
@@ -41,38 +54,4 @@ lines[6:10] = dot_clangd_new_lines
 with open(dot_clangd_output_file, "w", encoding="utf-8") as f:
     f.writelines(lines)
 
-#
-# project_root/tests/CMakeLists.txt
-#
-CMakeLists_new_line = (
-    f'set(Boost_ROOT "{normpath(user_home)}/scoop/apps/boost/current")\n'
-)
-CMakeLists_file = os.path.join(
-    MetasequoiaImeEngine_root, "tests", "scripts", "config_files", "CMakeLists.txt"
-)
-CMakeLists_output_file = os.path.join(MetasequoiaImeEngine_root, "tests", "CMakeLists.txt")
-with open(CMakeLists_file, "r", encoding="utf-8") as f:
-    lines = f.readlines()
-lines[21] = CMakeLists_new_line
-with open(CMakeLists_output_file, "w", encoding="utf-8") as f:
-    f.writelines(lines)
-
-#
-# CMakePresets.json
-#
-CMakePresets_new_line_8 = (
-    f'        "VCPKG_ROOT": "{normpath(user_home)}/scoop/apps/vcpkg/current/"\n'
-)
-CMakePresets_new_line_11 = f'        "CMAKE_TOOLCHAIN_FILE": "{normpath(user_home)}/scoop/apps/vcpkg/current/scripts/buildsystems/vcpkg.cmake",\n'
-CMakePresets_file = os.path.join(
-    MetasequoiaImeEngine_root, "tests", "scripts", "config_files", "CMakePresets.json"
-)
-CMakePresets_file_output_file = os.path.join(
-    MetasequoiaImeEngine_root, "tests", "CMakePresets.json"
-)
-with open(CMakePresets_file, "r", encoding="utf-8") as f:
-    lines = f.readlines()
-lines[8] = CMakePresets_new_line_8
-lines[11] = CMakePresets_new_line_11
-with open(CMakePresets_file_output_file, "w", encoding="utf-8") as f:
-    f.writelines(lines)
+print(f"wrote {dot_clangd_output_file}")

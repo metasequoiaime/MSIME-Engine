@@ -167,16 +167,15 @@ std::vector<Segments> cut_one_piece_with_corrections(const std::string &pinyin)
             return std::lexicographical_compare(lhs.correction_ranks.begin(), lhs.correction_ranks.end(),
                                                 rhs.correction_ranks.begin(), rhs.correction_ranks.end());
         });
-        paths.erase(std::unique(paths.begin(), paths.end(), [](const RankedPath &lhs, const RankedPath &rhs) {
-                        return lhs.segments == rhs.segments;
-                    }),
-                    paths.end());
+        paths.erase(
+            std::unique(paths.begin(), paths.end(),
+                        [](const RankedPath &lhs, const RankedPath &rhs) { return lhs.segments == rhs.segments; }),
+            paths.end());
         if (!paths.empty())
         {
             const size_t minimum_segments = paths.front().segments.size();
-            paths.erase(std::find_if(paths.begin(), paths.end(), [&](const RankedPath &path) {
-                            return path.segments.size() != minimum_segments;
-                        }),
+            paths.erase(std::find_if(paths.begin(), paths.end(),
+                                     [&](const RankedPath &path) { return path.segments.size() != minimum_segments; }),
                         paths.end());
         }
         if (paths.size() > kCorrectionPathLimit)
@@ -334,7 +333,8 @@ bool matches_mixed_segments(const std::string &key, const Segments &segments, Qu
             return false;
         }
 
-        const bool is_strict_shuangpin_initial = source == QuerySource::Shuangpin && is_shuangpin_initial_token(expected);
+        const bool is_strict_shuangpin_initial =
+            source == QuerySource::Shuangpin && is_shuangpin_initial_token(expected);
         if (expected.size() == 1 || is_strict_shuangpin_initial)
         {
             if (source == QuerySource::Shuangpin)
@@ -437,11 +437,8 @@ std::vector<QueryItem> run_query(sqlite3 *db, const std::string &sql, const std:
     return rows;
 }
 
-std::vector<QueryItem> run_query(sqlite3 *db,
-                                 std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
-                                 const std::string &sql,
-                                 const std::string &value,
-                                 int limit)
+std::vector<QueryItem> run_query(sqlite3 *db, std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
+                                 const std::string &sql, const std::string &value, int limit)
 {
     sqlite3_stmt *stmt = nullptr;
     const auto found = statement_cache.find(sql);
@@ -475,11 +472,8 @@ std::vector<QueryItem> run_query(sqlite3 *db,
     return rows;
 }
 
-std::vector<QueryItem> run_query(sqlite3 *db,
-                                 const std::string &sql,
-                                 const std::string &lower_bound,
-                                 const std::string &upper_bound,
-                                 int limit)
+std::vector<QueryItem> run_query(sqlite3 *db, const std::string &sql, const std::string &lower_bound,
+                                 const std::string &upper_bound, int limit)
 {
     sqlite3_stmt *stmt = nullptr;
     if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
@@ -502,11 +496,8 @@ std::vector<QueryItem> run_query(sqlite3 *db,
     return rows;
 }
 
-std::vector<QueryItem> run_query(sqlite3 *db,
-                                 std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
-                                 const std::string &sql,
-                                 const std::string &lower_bound,
-                                 const std::string &upper_bound,
+std::vector<QueryItem> run_query(sqlite3 *db, std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
+                                 const std::string &sql, const std::string &lower_bound, const std::string &upper_bound,
                                  int limit)
 {
     sqlite3_stmt *stmt = nullptr;
@@ -571,9 +562,7 @@ std::vector<KeyedQueryItem> run_keyed_query(sqlite3 *db, const std::string &sql,
 
 std::vector<KeyedQueryItem> run_keyed_query(sqlite3 *db,
                                             std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
-                                            const std::string &sql,
-                                            const std::string &value,
-                                            int limit)
+                                            const std::string &sql, const std::string &value, int limit)
 {
     sqlite3_stmt *stmt = nullptr;
     const auto found = statement_cache.find(sql);
@@ -612,11 +601,8 @@ std::vector<KeyedQueryItem> run_keyed_query(sqlite3 *db,
     return rows;
 }
 
-std::vector<KeyedQueryItem> run_keyed_query(sqlite3 *db,
-                                            const std::string &sql,
-                                            const std::string &lower_bound,
-                                            const std::string &upper_bound,
-                                            int limit)
+std::vector<KeyedQueryItem> run_keyed_query(sqlite3 *db, const std::string &sql, const std::string &lower_bound,
+                                            const std::string &upper_bound, int limit)
 {
     sqlite3_stmt *stmt = nullptr;
     if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
@@ -645,10 +631,8 @@ std::vector<KeyedQueryItem> run_keyed_query(sqlite3 *db,
 
 std::vector<KeyedQueryItem> run_keyed_query(sqlite3 *db,
                                             std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
-                                            const std::string &sql,
-                                            const std::string &lower_bound,
-                                            const std::string &upper_bound,
-                                            int limit)
+                                            const std::string &sql, const std::string &lower_bound,
+                                            const std::string &upper_bound, int limit)
 {
     sqlite3_stmt *stmt = nullptr;
     const auto found = statement_cache.find(sql);
@@ -748,10 +732,8 @@ std::vector<KeyedQueryItem> run_keyed_batch_query(sqlite3 *db,
     return rows;
 }
 
-std::vector<KeyedQueryItem> filter_mixed_jianpin_rows(const std::vector<KeyedQueryItem> &rows,
-                                                      const Segments &segments,
-                                                      int limit,
-                                                      QuerySource source)
+std::vector<KeyedQueryItem> filter_mixed_jianpin_rows(const std::vector<KeyedQueryItem> &rows, const Segments &segments,
+                                                      int limit, QuerySource source)
 {
     std::vector<KeyedQueryItem> matched;
     matched.reserve(static_cast<size_t>(std::min(limit, static_cast<int>(rows.size()))));
@@ -785,16 +767,12 @@ std::vector<QueryItem> without_keys(const std::vector<KeyedQueryItem> &rows)
 void deduplicate_keyed_items_by_value(std::vector<KeyedQueryItem> &items)
 {
     std::unordered_set<std::string> seen;
-    items.erase(std::remove_if(items.begin(), items.end(), [&](const KeyedQueryItem &item) {
-                    return !seen.insert(item.value).second;
-                }),
+    items.erase(std::remove_if(items.begin(), items.end(),
+                               [&](const KeyedQueryItem &item) { return !seen.insert(item.value).second; }),
                 items.end());
 }
 
-std::vector<KeyedQueryItem> query_single_cut_keyed(sqlite3 *db,
-                                                   const Segments &segments,
-                                                   int limit,
-                                                   QuerySource source)
+std::vector<KeyedQueryItem> query_single_cut_keyed(sqlite3 *db, const Segments &segments, int limit, QuerySource source)
 {
     const auto table = build_table_name_impl(segments);
     if (table.empty())
@@ -810,9 +788,8 @@ std::vector<KeyedQueryItem> query_single_cut_keyed(sqlite3 *db,
     const auto key_prefix = key_prefix_pattern.substr(0, key_prefix_pattern.size() - 1);
     const auto key_prefix_upper_bound = build_key_prefix_upper_bound(key_prefix);
 
-    const auto exact_sql =
-        "SELECT \"key\", \"value\", \"weight\" FROM \"" + table +
-        "\" WHERE \"key\" = ? ORDER BY \"weight\" DESC LIMIT ?";
+    const auto exact_sql = "SELECT \"key\", \"value\", \"weight\" FROM \"" + table +
+                           "\" WHERE \"key\" = ? ORDER BY \"weight\" DESC LIMIT ?";
     std::vector<KeyedQueryItem> rows;
     if (can_match_exact_key(segments))
     {
@@ -833,10 +810,10 @@ std::vector<KeyedQueryItem> query_single_cut_keyed(sqlite3 *db,
 
     if (needs_mixed_query)
     {
-        const auto mixed_sql =
-            "SELECT \"key\", \"value\", \"weight\" FROM \"" + table + "\" WHERE \"jp\" = ? ORDER BY \"weight\" DESC LIMIT ?";
-        rows = filter_mixed_jianpin_rows(run_keyed_query(db, mixed_sql, jp, mixed_query_limit), segments, limit,
-                                         source);
+        const auto mixed_sql = "SELECT \"key\", \"value\", \"weight\" FROM \"" + table +
+                               "\" WHERE \"jp\" = ? ORDER BY \"weight\" DESC LIMIT ?";
+        rows =
+            filter_mixed_jianpin_rows(run_keyed_query(db, mixed_sql, jp, mixed_query_limit), segments, limit, source);
         if (!rows.empty())
         {
             return rows;
@@ -848,18 +825,14 @@ std::vector<KeyedQueryItem> query_single_cut_keyed(sqlite3 *db,
         return {};
     }
 
-    const auto jp_sql =
-        "SELECT \"key\", \"value\", \"weight\" FROM \"" + table +
-        "\" WHERE \"jp\" = ? ORDER BY \"weight\" DESC LIMIT ?";
+    const auto jp_sql = "SELECT \"key\", \"value\", \"weight\" FROM \"" + table +
+                        "\" WHERE \"jp\" = ? ORDER BY \"weight\" DESC LIMIT ?";
     return run_keyed_query(db, jp_sql, jp, limit);
 }
 
-std::vector<KeyedQueryItem> query_single_cut_keyed(
-    sqlite3 *db,
-    std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
-    const Segments &segments,
-    int limit,
-    QuerySource source)
+std::vector<KeyedQueryItem> query_single_cut_keyed(sqlite3 *db,
+                                                   std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
+                                                   const Segments &segments, int limit, QuerySource source)
 {
     const auto table = build_table_name_impl(segments);
     if (table.empty())
@@ -875,9 +848,8 @@ std::vector<KeyedQueryItem> query_single_cut_keyed(
     const auto key_prefix = key_prefix_pattern.substr(0, key_prefix_pattern.size() - 1);
     const auto key_prefix_upper_bound = build_key_prefix_upper_bound(key_prefix);
 
-    const auto exact_sql =
-        "SELECT \"key\", \"value\", \"weight\" FROM \"" + table +
-        "\" WHERE \"key\" = ? ORDER BY \"weight\" DESC LIMIT ?";
+    const auto exact_sql = "SELECT \"key\", \"value\", \"weight\" FROM \"" + table +
+                           "\" WHERE \"key\" = ? ORDER BY \"weight\" DESC LIMIT ?";
     std::vector<KeyedQueryItem> rows;
     if (can_match_exact_key(segments))
     {
@@ -898,12 +870,10 @@ std::vector<KeyedQueryItem> query_single_cut_keyed(
 
     if (needs_mixed_query)
     {
-        const auto mixed_sql =
-            "SELECT \"key\", \"value\", \"weight\" FROM \"" + table + "\" WHERE \"jp\" = ? ORDER BY \"weight\" DESC LIMIT ?";
+        const auto mixed_sql = "SELECT \"key\", \"value\", \"weight\" FROM \"" + table +
+                               "\" WHERE \"jp\" = ? ORDER BY \"weight\" DESC LIMIT ?";
         rows = filter_mixed_jianpin_rows(run_keyed_query(db, statement_cache, mixed_sql, jp, mixed_query_limit),
-                                         segments,
-                                         limit,
-                                         source);
+                                         segments, limit, source);
         if (!rows.empty())
         {
             return rows;
@@ -915,9 +885,8 @@ std::vector<KeyedQueryItem> query_single_cut_keyed(
         return {};
     }
 
-    const auto jp_sql =
-        "SELECT \"key\", \"value\", \"weight\" FROM \"" + table +
-        "\" WHERE \"jp\" = ? ORDER BY \"weight\" DESC LIMIT ?";
+    const auto jp_sql = "SELECT \"key\", \"value\", \"weight\" FROM \"" + table +
+                        "\" WHERE \"jp\" = ? ORDER BY \"weight\" DESC LIMIT ?";
     return run_keyed_query(db, statement_cache, jp_sql, jp, limit);
 }
 
@@ -926,11 +895,8 @@ std::vector<QueryItem> query_single_cut(sqlite3 *db, const Segments &segments, i
     return without_keys(query_single_cut_keyed(db, segments, limit, source));
 }
 
-std::vector<QueryItem> query_single_cut(sqlite3 *db,
-                                        std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
-                                        const Segments &segments,
-                                        int limit,
-                                        QuerySource source)
+std::vector<QueryItem> query_single_cut(sqlite3 *db, std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
+                                        const Segments &segments, int limit, QuerySource source)
 {
     return without_keys(query_single_cut_keyed(db, statement_cache, segments, limit, source));
 }
@@ -1082,9 +1048,8 @@ std::vector<KeyedQueryItem> query_initial(sqlite3 *db, const std::string &prefix
     {
         const auto *key = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0));
         const auto *value = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-        rows.push_back(KeyedQueryItem{key == nullptr ? "" : key,
-                                      value == nullptr ? "" : value,
-                                      sqlite3_column_int64(stmt, 2)});
+        rows.push_back(
+            KeyedQueryItem{key == nullptr ? "" : key, value == nullptr ? "" : value, sqlite3_column_int64(stmt, 2)});
     }
     sqlite3_finalize(stmt);
     return rows;
@@ -1147,9 +1112,8 @@ std::vector<QueryItem> query_words_flat(const std::string &pinyin, const std::st
         }
     }
 
-    std::sort(items.begin(), items.end(), [](const QueryItem &lhs, const QueryItem &rhs) {
-        return lhs.second > rhs.second;
-    });
+    std::sort(items.begin(), items.end(),
+              [](const QueryItem &lhs, const QueryItem &rhs) { return lhs.second > rhs.second; });
 
     if (static_cast<int>(items.size()) > limit)
     {
@@ -1175,9 +1139,8 @@ std::vector<QueryItem> query_segments_flat(const Segments &segments, const std::
         }
     }
 
-    std::sort(items.begin(), items.end(), [](const QueryItem &lhs, const QueryItem &rhs) {
-        return lhs.second > rhs.second;
-    });
+    std::sort(items.begin(), items.end(),
+              [](const QueryItem &lhs, const QueryItem &rhs) { return lhs.second > rhs.second; });
 
     if (static_cast<int>(items.size()) > limit)
     {
@@ -1186,10 +1149,8 @@ std::vector<QueryItem> query_segments_flat(const Segments &segments, const std::
     return items;
 }
 
-std::vector<QueryItem> query_segments_flat(const Segments &segments,
-                                           sqlite3 *db,
-                                           std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
-                                           int limit,
+std::vector<QueryItem> query_segments_flat(const Segments &segments, sqlite3 *db,
+                                           std::unordered_map<std::string, sqlite3_stmt *> &statement_cache, int limit,
                                            QuerySource source)
 {
     if (db == nullptr || segments.empty())
@@ -1207,9 +1168,8 @@ std::vector<QueryItem> query_segments_flat(const Segments &segments,
         }
     }
 
-    std::sort(items.begin(), items.end(), [](const QueryItem &lhs, const QueryItem &rhs) {
-        return lhs.second > rhs.second;
-    });
+    std::sort(items.begin(), items.end(),
+              [](const QueryItem &lhs, const QueryItem &rhs) { return lhs.second > rhs.second; });
 
     if (static_cast<int>(items.size()) > limit)
     {
@@ -1218,9 +1178,7 @@ std::vector<QueryItem> query_segments_flat(const Segments &segments,
     return items;
 }
 
-std::vector<KeyedQueryItem> query_segments_keyed_flat(const Segments &segments,
-                                                      const std::string &db_path,
-                                                      int limit,
+std::vector<KeyedQueryItem> query_segments_keyed_flat(const Segments &segments, const std::string &db_path, int limit,
                                                       QuerySource source)
 {
     if (segments.empty())
@@ -1236,9 +1194,8 @@ std::vector<KeyedQueryItem> query_segments_keyed_flat(const Segments &segments,
 
     auto items = query_single_cut_keyed(db.get(), segments, limit, source);
     deduplicate_keyed_items_by_value(items);
-    std::sort(items.begin(), items.end(), [](const KeyedQueryItem &lhs, const KeyedQueryItem &rhs) {
-        return lhs.weight > rhs.weight;
-    });
+    std::sort(items.begin(), items.end(),
+              [](const KeyedQueryItem &lhs, const KeyedQueryItem &rhs) { return lhs.weight > rhs.weight; });
     if (static_cast<int>(items.size()) > limit)
     {
         items.resize(static_cast<size_t>(limit));
@@ -1246,12 +1203,9 @@ std::vector<KeyedQueryItem> query_segments_keyed_flat(const Segments &segments,
     return items;
 }
 
-std::vector<KeyedQueryItem> query_segments_keyed_flat(
-    const Segments &segments,
-    sqlite3 *db,
-    std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
-    int limit,
-    QuerySource source)
+std::vector<KeyedQueryItem> query_segments_keyed_flat(const Segments &segments, sqlite3 *db,
+                                                      std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
+                                                      int limit, QuerySource source)
 {
     if (db == nullptr || segments.empty())
     {
@@ -1260,9 +1214,8 @@ std::vector<KeyedQueryItem> query_segments_keyed_flat(
 
     auto items = query_single_cut_keyed(db, statement_cache, segments, limit, source);
     deduplicate_keyed_items_by_value(items);
-    std::sort(items.begin(), items.end(), [](const KeyedQueryItem &lhs, const KeyedQueryItem &rhs) {
-        return lhs.weight > rhs.weight;
-    });
+    std::sort(items.begin(), items.end(),
+              [](const KeyedQueryItem &lhs, const KeyedQueryItem &rhs) { return lhs.weight > rhs.weight; });
     if (static_cast<int>(items.size()) > limit)
     {
         items.resize(static_cast<size_t>(limit));
