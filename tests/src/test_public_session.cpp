@@ -8,7 +8,14 @@
 void test_public_session_interface()
 {
     bool rejected = false;
-    try { metasequoia::Session session(metasequoia::SessionOptions{}); }
-    catch (const std::invalid_argument &) { rejected = true; }
-    if (!rejected) throw std::runtime_error("Public session accepted unspecified runtime paths");
+    try
+    {
+        metasequoia::Session session(metasequoia::SessionOptions{});
+    }
+    catch (const std::invalid_argument &)
+    {
+        rejected = true;
+    }
+    if (!rejected)
+        throw std::runtime_error("Public session accepted unspecified runtime paths");
 }

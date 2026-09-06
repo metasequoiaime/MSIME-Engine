@@ -65,8 +65,7 @@ void type(metasequoia::InputSession &session, const std::string &text)
 {
     for (const char character : text)
     {
-        require(session.handle_character(character).handled,
-                "A super-jianpin test character was not handled.");
+        require(session.handle_character(character).handled, "A super-jianpin test character was not handled.");
     }
 }
 
@@ -86,23 +85,22 @@ void prepare_database(const std::filesystem::path &directory)
 {
     std::filesystem::create_directories(directory);
     Database database(directory / "msime.db");
-    database.execute(
-        "BEGIN;"
-        "CREATE TABLE tbl_1_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
-        "INSERT INTO tbl_1_n VALUES('ni','n','你',300);"
-        "INSERT INTO tbl_1_n VALUES('na','n','拿',200);"
-        "CREATE TABLE tbl_2_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
-        "INSERT INTO tbl_2_n VALUES('ni''hao','nh','你好',300);"
-        "INSERT INTO tbl_2_n VALUES('ni''hao','nh','拟好',200);"
-        "INSERT INTO tbl_2_n VALUES('na''han','nh','呐喊',100);"
-        "INSERT INTO tbl_2_n VALUES('ni''shuo','ns','你说',290);"
-        "INSERT INTO tbl_2_n VALUES('ni''si','ns','你思',280);"
-        "INSERT INTO tbl_2_n VALUES('ni''u','nu','你屋',100);"
-        "CREATE TABLE tbl_2_a(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
-        "INSERT INTO tbl_2_a VALUES('ai''ni','an','爱你',250);"
-        "CREATE TABLE tbl_2_z(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
-        "INSERT INTO tbl_2_z VALUES('zhi''chi','zc','知耻',240);"
-        "COMMIT;");
+    database.execute("BEGIN;"
+                     "CREATE TABLE tbl_1_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                     "INSERT INTO tbl_1_n VALUES('ni','n','你',300);"
+                     "INSERT INTO tbl_1_n VALUES('na','n','拿',200);"
+                     "CREATE TABLE tbl_2_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                     "INSERT INTO tbl_2_n VALUES('ni''hao','nh','你好',300);"
+                     "INSERT INTO tbl_2_n VALUES('ni''hao','nh','拟好',200);"
+                     "INSERT INTO tbl_2_n VALUES('na''han','nh','呐喊',100);"
+                     "INSERT INTO tbl_2_n VALUES('ni''shuo','ns','你说',290);"
+                     "INSERT INTO tbl_2_n VALUES('ni''si','ns','你思',280);"
+                     "INSERT INTO tbl_2_n VALUES('ni''u','nu','你屋',100);"
+                     "CREATE TABLE tbl_2_a(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                     "INSERT INTO tbl_2_a VALUES('ai''ni','an','爱你',250);"
+                     "CREATE TABLE tbl_2_z(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                     "INSERT INTO tbl_2_z VALUES('zhi''chi','zc','知耻',240);"
+                     "COMMIT;");
 }
 
 void write_file(const std::filesystem::path &path, const std::string &contents)
@@ -119,82 +117,75 @@ void write_file(const std::filesystem::path &path, const std::string &contents)
 int main()
 {
     const auto suffix = std::to_string(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-    const std::filesystem::path root =
-        std::filesystem::temp_directory_path() / ("metasequoia-jianpin-" + suffix);
+    const std::filesystem::path root = std::filesystem::temp_directory_path() / ("metasequoia-jianpin-" + suffix);
     metasequoia::test::ScopedDataDirectoryCleanup cleanup(root);
     const std::filesystem::path complete = root / "complete";
     prepare_database(complete);
 
-    const auto quanpin = metasequoia::local_modes::query_jianpin(
-        "nh", SchemeType::Quanpin, complete / "msime.db", 50);
+    const auto quanpin = metasequoia::local_modes::query_jianpin("nh", SchemeType::Quanpin, complete / "msime.db", 50);
     require(!quanpin.diagnostic.has_value() && contains(quanpin.candidates, "你好") &&
                 contains(quanpin.candidates, "呐喊"),
             "Quanpin super-jianpin did not match two-initial candidates.");
     require(std::all_of(quanpin.candidates.begin(), quanpin.candidates.end(),
                         [](const WordItem &candidate) {
-                            return candidate.source == CandidateSource::Database &&
-                                   !candidate.canonical_pinyin.empty();
+                            return candidate.source == CandidateSource::Database && !candidate.canonical_pinyin.empty();
                         }),
             "Super-jianpin candidates did not retain database source and canonical keys.");
-    const auto uppercase = metasequoia::local_modes::query_jianpin(
-        "NH", SchemeType::Quanpin, complete / "msime.db", 1);
+    const auto uppercase = metasequoia::local_modes::query_jianpin("NH", SchemeType::Quanpin, complete / "msime.db", 1);
     require(uppercase.candidates.size() == 1 && uppercase.candidates.front().word == "你好",
             "Super-jianpin did not normalize case or honor the result limit.");
-    const auto two_initials = metasequoia::local_modes::query_jianpin(
-        "an", SchemeType::Quanpin, complete / "msime.db", 50);
+    const auto two_initials =
+        metasequoia::local_modes::query_jianpin("an", SchemeType::Quanpin, complete / "msime.db", 50);
     require(contains(two_initials.candidates, "爱你") && !contains(two_initials.candidates, "安"),
             "Super-jianpin treated multiple letters as one full syllable.");
-    require(metasequoia::local_modes::query_jianpin(
-                "n'", SchemeType::Quanpin, complete / "msime.db", 50).candidates.empty(),
+    require(metasequoia::local_modes::query_jianpin("n'", SchemeType::Quanpin, complete / "msime.db", 50)
+                .candidates.empty(),
             "Super-jianpin accepted non-letter input.");
 
-    require(metasequoia::local_modes::jianpin_ranking_context(
-                "nh", SchemeType::Quanpin) == "n'h" &&
-                metasequoia::local_modes::jianpin_ranking_context(
-                    "nu", SchemeType::Shuangpin, GetXiaoheShuangpinProfile()) == "n'sh" &&
-                metasequoia::local_modes::jianpin_ranking_context(
-                    "ns", SchemeType::Shuangpin, GetXiaoheShuangpinProfile()) == "n's" &&
-                metasequoia::local_modes::jianpin_ranking_context(
-                    "vi", SchemeType::Shuangpin, GetXiaoheShuangpinProfile()) == "zh'ch" &&
-                metasequoia::local_modes::jianpin_ranking_context(
-                    "ne", SchemeType::Shuangpin, GetShoudaoShuangpinProfile()) == "n'sh" &&
-                metasequoia::local_modes::jianpin_ranking_context(
-                    "nu", SchemeType::Shuangpin, GetShoudaoShuangpinProfile()) == "n'u" &&
-                metasequoia::local_modes::jianpin_ranking_context(
-                    "nu", SchemeType::Shuangpin, GetZiranmaShuangpinProfile()) == "n'sh" &&
-                metasequoia::local_modes::jianpin_ranking_context(
-                    "nu", SchemeType::Shuangpin, GetMicrosoftShuangpinProfile()) == "n'sh",
+    require(metasequoia::local_modes::jianpin_ranking_context("nh", SchemeType::Quanpin) == "n'h" &&
+                metasequoia::local_modes::jianpin_ranking_context("nu", SchemeType::Shuangpin,
+                                                                  GetXiaoheShuangpinProfile()) == "n'sh" &&
+                metasequoia::local_modes::jianpin_ranking_context("ns", SchemeType::Shuangpin,
+                                                                  GetXiaoheShuangpinProfile()) == "n's" &&
+                metasequoia::local_modes::jianpin_ranking_context("vi", SchemeType::Shuangpin,
+                                                                  GetXiaoheShuangpinProfile()) == "zh'ch" &&
+                metasequoia::local_modes::jianpin_ranking_context("ne", SchemeType::Shuangpin,
+                                                                  GetShoudaoShuangpinProfile()) == "n'sh" &&
+                metasequoia::local_modes::jianpin_ranking_context("nu", SchemeType::Shuangpin,
+                                                                  GetShoudaoShuangpinProfile()) == "n'u" &&
+                metasequoia::local_modes::jianpin_ranking_context("nu", SchemeType::Shuangpin,
+                                                                  GetZiranmaShuangpinProfile()) == "n'sh" &&
+                metasequoia::local_modes::jianpin_ranking_context("nu", SchemeType::Shuangpin,
+                                                                  GetMicrosoftShuangpinProfile()) == "n'sh",
             "Super-jianpin did not decode the supported Shuangpin initial maps.");
-    const auto xiaohe_nu = metasequoia::local_modes::query_jianpin(
-        "nu", SchemeType::Shuangpin, complete / "msime.db", 50, GetXiaoheShuangpinProfile());
-    const auto xiaohe_ns = metasequoia::local_modes::query_jianpin(
-        "ns", SchemeType::Shuangpin, complete / "msime.db", 50, GetXiaoheShuangpinProfile());
-    const auto shoudao_ne = metasequoia::local_modes::query_jianpin(
-        "ne", SchemeType::Shuangpin, complete / "msime.db", 50, GetShoudaoShuangpinProfile());
+    const auto xiaohe_nu = metasequoia::local_modes::query_jianpin("nu", SchemeType::Shuangpin, complete / "msime.db",
+                                                                   50, GetXiaoheShuangpinProfile());
+    const auto xiaohe_ns = metasequoia::local_modes::query_jianpin("ns", SchemeType::Shuangpin, complete / "msime.db",
+                                                                   50, GetXiaoheShuangpinProfile());
+    const auto shoudao_ne = metasequoia::local_modes::query_jianpin("ne", SchemeType::Shuangpin, complete / "msime.db",
+                                                                    50, GetShoudaoShuangpinProfile());
     require(contains(xiaohe_nu.candidates, "你说") && !contains(xiaohe_nu.candidates, "你思") &&
                 contains(xiaohe_ns.candidates, "你思") && !contains(xiaohe_ns.candidates, "你说") &&
                 contains(shoudao_ne.candidates, "你说"),
             "Ambiguous Shuangpin super-jianpin inputs were not distinguished by canonical initials.");
 
     const std::filesystem::path missing = root / "missing" / "msime.db";
-    const auto missing_result = metasequoia::local_modes::query_jianpin(
-        "nh", SchemeType::Quanpin, missing, 50);
+    const auto missing_result = metasequoia::local_modes::query_jianpin("nh", SchemeType::Quanpin, missing, 50);
     require(missing_result.candidates.empty() && missing_result.diagnostic.has_value() &&
                 !std::filesystem::exists(missing),
             "A missing super-jianpin database was created or not diagnosed.");
     const std::filesystem::path corrupt = root / "corrupt" / "msime.db";
     std::filesystem::create_directories(corrupt.parent_path());
     write_file(corrupt, "not a sqlite database");
-    const auto corrupt_result = metasequoia::local_modes::query_jianpin(
-        "nh", SchemeType::Quanpin, corrupt, 50);
+    const auto corrupt_result = metasequoia::local_modes::query_jianpin("nh", SchemeType::Quanpin, corrupt, 50);
     require(corrupt_result.candidates.empty() && corrupt_result.diagnostic.has_value(),
             "A corrupt super-jianpin database was not isolated.");
 
     set_data_directory(complete);
     metasequoia::InputSession session(SchemeType::Quanpin);
     require(session.handle_character('J', true).handled &&
-                session.local_input_mode() == metasequoia::LocalInputMode::SuperJianpin &&
-                session.preedit() == "J" && session.candidates().empty(),
+                session.local_input_mode() == metasequoia::LocalInputMode::SuperJianpin && session.preedit() == "J" &&
+                session.candidates().empty(),
             "Shift+J did not enter an empty super-jianpin composition.");
     type(session, "nh");
     require(session.preedit() == "Jnh" && contains(session.candidates(), "你好"),
@@ -222,8 +213,7 @@ int main()
 
     user_dictionary::close_default_user_database();
     metasequoia::InputSession learning(SchemeType::Quanpin);
-    require(learning.set_frequency_adjustment(
-                {metasequoia::FrequencyAdjustmentMode::Pin, 1, 1}),
+    require(learning.set_frequency_adjustment({metasequoia::FrequencyAdjustmentMode::Pin, 1, 1}),
             "A valid super-jianpin frequency configuration was rejected.");
     require(learning.handle_character('J', true).handled, "Super-jianpin learning mode did not start.");
     type(learning, "nh");

@@ -9,15 +9,15 @@ namespace metasequoia
 // candidate pointers or incremental search state between requests.
 class PinyinDecoder
 {
-public:
+  public:
     PinyinDecoder(std::filesystem::path model, std::filesystem::path user_dictionary);
     ~PinyinDecoder();
     PinyinDecoder(const PinyinDecoder &) = delete;
     PinyinDecoder &operator=(const PinyinDecoder &) = delete;
     std::string sentence(const std::string &pinyin) const;
 
-private:
+  private:
     std::filesystem::path model_;
     std::filesystem::path user_dictionary_;
 };
-}
+} // namespace metasequoia

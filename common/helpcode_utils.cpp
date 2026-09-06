@@ -26,10 +26,8 @@ std::string default_schema = "lantian";
 bool is_han_code_point(std::uint32_t code_point)
 {
     return code_point == 0x3007 || (code_point >= 0x3400 && code_point <= 0x4DBF) ||
-           (code_point >= 0x4E00 && code_point <= 0x9FFF) ||
-           (code_point >= 0xF900 && code_point <= 0xFAFF) ||
-           (code_point >= 0x20000 && code_point <= 0x2FA1F) ||
-           (code_point >= 0x30000 && code_point <= 0x323AF);
+           (code_point >= 0x4E00 && code_point <= 0x9FFF) || (code_point >= 0xF900 && code_point <= 0xFAFF) ||
+           (code_point >= 0x20000 && code_point <= 0x2FA1F) || (code_point >= 0x30000 && code_point <= 0x323AF);
 }
 
 } // namespace
@@ -39,17 +37,20 @@ namespace HelpcodeUtils
 SharedKeymap load_helpcode_keymap(const std::filesystem::path &resources, const std::string &schema)
 {
     const auto found = std::find_if(metasequoia::assets::helpcodes.begin(), metasequoia::assets::helpcodes.end(),
-        [&](const auto &entry) { return entry.schema == schema; });
-    if (found == metasequoia::assets::helpcodes.end()) throw std::invalid_argument("Unknown helpcode schema");
+                                    [&](const auto &entry) { return entry.schema == schema; });
+    if (found == metasequoia::assets::helpcodes.end())
+        throw std::invalid_argument("Unknown helpcode schema");
     auto result = std::make_shared<Keymap>();
     std::ifstream input(resources / found->path);
     std::string line;
     while (std::getline(input, line))
     {
         const auto pos = line.find('=');
-        if (pos == std::string::npos || pos == 0) continue;
+        if (pos == std::string::npos || pos == 0)
+            continue;
         const auto code = line.substr(pos + 1, 2);
-        if (code.empty() || !std::all_of(code.begin(), code.end(), [](char ch) { return ch >= 'a' && ch <= 'z'; })) continue;
+        if (code.empty() || !std::all_of(code.begin(), code.end(), [](char ch) { return ch >= 'a' && ch <= 'z'; }))
+            continue;
         (*result)[line.substr(0, pos)] = code;
     }
     return result;
@@ -196,9 +197,8 @@ std::string compute_helpcodes(const std::string &words, bool uppercase_all, cons
     {
         if (uppercase_all)
         {
-            std::transform(helpcodes.begin(), helpcodes.end(), helpcodes.begin(), [](unsigned char ch) {
-                return static_cast<char>(std::toupper(ch));
-            });
+            std::transform(helpcodes.begin(), helpcodes.end(), helpcodes.begin(),
+                           [](unsigned char ch) { return static_cast<char>(std::toupper(ch)); });
         }
         else if (helpcodes.size() >= 2)
         {
@@ -237,7 +237,8 @@ bool is_quanpin_double_help_mode(const std::string &pinyin_with_cases)
     return help_code_1 >= 'A' && help_code_1 <= 'Z' && help_code_2 >= 'A' && help_code_2 <= 'Z';
 }
 
-SingleHelpcodeMatch match_single_helpcode(const std::string &word, const std::string &help_code, const Keymap *configured_keymap)
+SingleHelpcodeMatch match_single_helpcode(const std::string &word, const std::string &help_code,
+                                          const Keymap *configured_keymap)
 {
     if (word.empty() || help_code.size() != 1)
     {
@@ -256,8 +257,8 @@ SingleHelpcodeMatch match_single_helpcode(const std::string &word, const std::st
         const bool matches_first = found->second[0] == help_code[0];
         const bool matches_last = found->second.size() > 1 && found->second[1] == help_code[0];
         return matches_first && matches_last ? SingleHelpcodeMatch::Both
-             : matches_first                 ? SingleHelpcodeMatch::First
-             : matches_last                  ? SingleHelpcodeMatch::Last
+               : matches_first               ? SingleHelpcodeMatch::First
+               : matches_last                ? SingleHelpcodeMatch::Last
                                              : SingleHelpcodeMatch::None;
     }
 
@@ -266,8 +267,8 @@ SingleHelpcodeMatch match_single_helpcode(const std::string &word, const std::st
     const bool matches_first = first != keymap.end() && first->second[0] == help_code[0];
     const bool matches_last = last != keymap.end() && last->second[0] == help_code[0];
     return matches_first && matches_last ? SingleHelpcodeMatch::Both
-         : matches_first                 ? SingleHelpcodeMatch::First
-         : matches_last                  ? SingleHelpcodeMatch::Last
+           : matches_first               ? SingleHelpcodeMatch::First
+           : matches_last                ? SingleHelpcodeMatch::Last
                                          : SingleHelpcodeMatch::None;
 }
 
@@ -296,12 +297,13 @@ bool matches_double_helpcodes(const std::string &word, const std::string &help_c
 bool is_supported_helpcode_schema(const std::string &schema)
 {
     return std::any_of(metasequoia::assets::helpcodes.begin(), metasequoia::assets::helpcodes.end(),
-        [&](const auto &entry) { return entry.schema == schema; });
+                       [&](const auto &entry) { return entry.schema == schema; });
 }
 
 bool select_helpcode_schema(const std::string &schema)
 {
-    if (!is_supported_helpcode_schema(schema)) return false;
+    if (!is_supported_helpcode_schema(schema))
+        return false;
     std::lock_guard lock(schema_mutex);
     default_schema = schema;
     return true;

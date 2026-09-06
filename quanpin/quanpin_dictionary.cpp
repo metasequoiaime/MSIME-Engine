@@ -25,8 +25,6 @@ bool is_alpha_vk(ImeKeyCode vk)
     return vk >= 'A' && vk <= 'Z';
 }
 
-
-
 std::string remove_delimiters(const std::string &segmented)
 {
     std::string normalized = segmented;
@@ -65,15 +63,13 @@ SeriesQueryResolution resolve_series_query(const std::string &raw_input, const s
                                            const quanpin::Segments &segments, bool enable_autocorrect)
 {
     SeriesQueryResolution result;
-    result.corrected_input =
-        enable_autocorrect && !segments.empty() && raw_input.find('\'') == std::string::npos &&
-        !quanpin::has_only_complete_pinyin_segments(segments) &&
-        !(result.corrected_segments = quanpin::autocorrect_cut(raw_input)).empty();
+    result.corrected_input = enable_autocorrect && !segments.empty() && raw_input.find('\'') == std::string::npos &&
+                             !quanpin::has_only_complete_pinyin_segments(segments) &&
+                             !(result.corrected_segments = quanpin::autocorrect_cut(raw_input)).empty();
     result.segmentation =
         result.corrected_input
             ? quanpin::join_segments(result.corrected_segments)
-            : (segmentation.empty() ? (segments.empty() ? raw_input : quanpin::join_segments(segments))
-                                    : segmentation);
+            : (segmentation.empty() ? (segments.empty() ? raw_input : quanpin::join_segments(segments)) : segmentation);
     result.cache_key = (result.corrected_input ? "C:" : "") + series_cache_key(raw_input, result.segmentation);
     return result;
 }
@@ -92,9 +88,11 @@ std::string escape_sql_text(std::string text)
 } // namespace
 
 QuanpinDictionary::QuanpinDictionary(std::string db_path, metasequoia::RuntimePaths paths)
-    : cache_(128), series_cache_(128), segmentation_cache_(128),
-      paths_(std::move(paths)), decoder_(paths_.resource(metasequoia::assets::pinyin_model), paths_.user(metasequoia::assets::pinyin_user_dictionary)),
-      db_path_(db_path.empty() ? metasequoia::path_to_utf8(paths_.dictionary(metasequoia::assets::main_dictionary)) : std::move(db_path))
+    : cache_(128), series_cache_(128), segmentation_cache_(128), paths_(std::move(paths)),
+      decoder_(paths_.resource(metasequoia::assets::pinyin_model),
+               paths_.user(metasequoia::assets::pinyin_user_dictionary)),
+      db_path_(db_path.empty() ? metasequoia::path_to_utf8(paths_.dictionary(metasequoia::assets::main_dictionary))
+                               : std::move(db_path))
 {
 
     const int exit = sqlite3_open(db_path_.c_str(), &db_);
@@ -184,7 +182,7 @@ std::vector<WordItem> QuanpinDictionary::query(const std::string &raw_input, con
         quanpin::has_only_complete_pinyin_segments(segments))
     {
         const auto complete_paths = quanpin::enumerate_complete_segmentations(quanpin::build_syllable_graph(raw_input),
-                                                                               kSyllableGraphPathLimit);
+                                                                              kSyllableGraphPathLimit);
         for (const auto &candidate : complete_paths)
         {
             append_alternative(candidate);
@@ -304,11 +302,11 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
     if (quanpin::has_only_complete_pinyin_segments(segments))
     {
         const quanpin::WordLatticeOptions lattice_options;
-        quanpin::merge_lattice_candidates(
-            result, segments,
-            quanpin::make_lattice_db_lookup(db_, statement_cache_, quanpin::QuerySource::Quanpin,
-                                            lattice_options.span_limit),
-            segmentation.empty() ? raw_input : segmentation, lattice_options);
+        quanpin::merge_lattice_candidates(result, segments,
+                                          quanpin::make_lattice_db_lookup(db_, statement_cache_,
+                                                                          quanpin::QuerySource::Quanpin,
+                                                                          lattice_options.span_limit),
+                                          segmentation.empty() ? raw_input : segmentation, lattice_options);
     }
 
     if (result.size() < kSparsePinyinFallbackThreshold)
@@ -647,7 +645,8 @@ int QuanpinDictionary::update_weight_by_pinyin_and_word(std::string pinyin, std:
     {
         return ERROR_CODE;
     }
-    (void)user_dictionary::record_pinyin_upsert_from_database(db_path_, normalized, word, metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)));
+    (void)user_dictionary::record_pinyin_upsert_from_database(
+        db_path_, normalized, word, metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)));
     reset_cache();
     return OK;
 }
@@ -683,9 +682,9 @@ int QuanpinDictionary::insert_word_to_series_cache(const std::string &pinyin, co
     return insert_word_to_series_cache_key(cache_key, pinyin, word, source);
 }
 
-int QuanpinDictionary::insert_word_to_series_cache(const std::string &raw_input,
-                                                   const std::string &segmentation, bool enable_autocorrect,
-                                                   const std::string &word, CandidateSource source)
+int QuanpinDictionary::insert_word_to_series_cache(const std::string &raw_input, const std::string &segmentation,
+                                                   bool enable_autocorrect, const std::string &word,
+                                                   CandidateSource source)
 {
     if (raw_input.empty() || word.empty())
     {
@@ -726,9 +725,8 @@ int QuanpinDictionary::insert_word_to_series_cache_key(const std::string &cache_
 
     if (source == CandidateSource::CloudSuggestion)
     {
-        const auto ai = std::find_if(list.begin(), list.end(), [](const WordItem &item) {
-            return item.source == CandidateSource::AiSuggestion;
-        });
+        const auto ai = std::find_if(list.begin(), list.end(),
+                                     [](const WordItem &item) { return item.source == CandidateSource::AiSuggestion; });
         if (ai != list.end())
         {
             WordItem ai_item = std::move(*ai);

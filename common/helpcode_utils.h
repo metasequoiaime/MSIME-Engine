@@ -34,12 +34,14 @@ enum class SingleHelpcodeMatch
     Both,
 };
 
-SingleHelpcodeMatch match_single_helpcode(const std::string &word, const std::string &help_code, const Keymap *keymap = nullptr);
+SingleHelpcodeMatch match_single_helpcode(const std::string &word, const std::string &help_code,
+                                          const Keymap *keymap = nullptr);
 bool matches_double_helpcodes(const std::string &word, const std::string &help_codes, const Keymap *keymap = nullptr);
 
 template <typename TWordItem>
 std::vector<TWordItem> reorder_candidates_with_single_helpcode(const std::vector<TWordItem> &candidate_list,
-                                                               const std::string &help_code, const Keymap *keymap = nullptr)
+                                                               const std::string &help_code,
+                                                               const Keymap *keymap = nullptr)
 {
     if (help_code.size() != 1)
     {
@@ -78,7 +80,8 @@ std::vector<TWordItem> reorder_candidates_with_single_helpcode(const std::vector
 
 template <typename TWordItem>
 std::vector<TWordItem> filter_candidates_with_double_helpcodes(const std::vector<TWordItem> &candidate_list,
-                                                               const std::string &help_codes, const Keymap *keymap = nullptr)
+                                                               const std::string &help_codes,
+                                                               const Keymap *keymap = nullptr)
 {
     std::vector<TWordItem> filtered_list;
     if (help_codes.size() != 2)

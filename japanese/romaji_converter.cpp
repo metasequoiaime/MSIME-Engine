@@ -11,39 +11,34 @@ namespace
 const std::unordered_map<std::string, std::string> &RomajiTable()
 {
     static const std::unordered_map<std::string, std::string> table = {
-        {"a", "あ"},   {"i", "い"},   {"u", "う"},   {"e", "え"},   {"o", "お"},
-        {"ka", "か"},  {"ki", "き"},  {"ku", "く"},  {"ke", "け"},  {"ko", "こ"},
-        {"ga", "が"},  {"gi", "ぎ"},  {"gu", "ぐ"},  {"ge", "げ"},  {"go", "ご"},
-        {"sa", "さ"},  {"shi", "し"}, {"si", "し"},  {"su", "す"},  {"se", "せ"},
-        {"so", "そ"},  {"za", "ざ"},  {"ji", "じ"},  {"zi", "じ"},  {"zu", "ず"},
-        {"ze", "ぜ"},  {"zo", "ぞ"},  {"ta", "た"},  {"chi", "ち"}, {"ti", "ち"},
-        {"tsu", "つ"}, {"tu", "つ"},  {"te", "て"},  {"to", "と"},  {"da", "だ"},
-        {"di", "ぢ"},  {"du", "づ"},  {"de", "で"},  {"do", "ど"},  {"na", "な"},
-        {"ni", "に"},  {"nu", "ぬ"},  {"ne", "ね"},  {"no", "の"},  {"ha", "は"},
-        {"hi", "ひ"},  {"fu", "ふ"},  {"hu", "ふ"},  {"he", "へ"},  {"ho", "ほ"},
-        {"ba", "ば"},  {"bi", "び"},  {"bu", "ぶ"},  {"be", "べ"},  {"bo", "ぼ"},
-        {"pa", "ぱ"},  {"pi", "ぴ"},  {"pu", "ぷ"},  {"pe", "ぺ"},  {"po", "ぽ"},
-        {"ma", "ま"},  {"mi", "み"},  {"mu", "む"},  {"me", "め"},  {"mo", "も"},
-        {"ya", "や"},  {"yu", "ゆ"},  {"yo", "よ"},  {"ra", "ら"},  {"ri", "り"},
-        {"ru", "る"},  {"re", "れ"},  {"ro", "ろ"},  {"wa", "わ"},  {"wo", "を"},
-        {"nn", "ん"},  {"kya", "きゃ"}, {"kyu", "きゅ"}, {"kyo", "きょ"}, {"gya", "ぎゃ"},
-        {"gyu", "ぎゅ"}, {"gyo", "ぎょ"}, {"sha", "しゃ"}, {"shu", "しゅ"}, {"sho", "しょ"},
-        {"sya", "しゃ"}, {"syu", "しゅ"}, {"syo", "しょ"}, {"ja", "じゃ"},  {"ju", "じゅ"},
-        {"jo", "じょ"},  {"jya", "じゃ"}, {"jyu", "じゅ"}, {"jyo", "じょ"}, {"cha", "ちゃ"},
-        {"chu", "ちゅ"}, {"cho", "ちょ"}, {"cya", "ちゃ"}, {"cyu", "ちゅ"}, {"cyo", "ちょ"},
-        {"tya", "ちゃ"}, {"tyu", "ちゅ"}, {"tyo", "ちょ"}, {"nya", "にゃ"}, {"nyu", "にゅ"},
-        {"nyo", "にょ"}, {"hya", "ひゃ"}, {"hyu", "ひゅ"}, {"hyo", "ひょ"}, {"bya", "びゃ"},
-        {"byu", "びゅ"}, {"byo", "びょ"}, {"pya", "ぴゃ"}, {"pyu", "ぴゅ"}, {"pyo", "ぴょ"},
-        {"mya", "みゃ"}, {"myu", "みゅ"}, {"myo", "みょ"}, {"rya", "りゃ"}, {"ryu", "りゅ"},
-        {"ryo", "りょ"}, {"fa", "ふぁ"},  {"fi", "ふぃ"},  {"fe", "ふぇ"},  {"fo", "ふぉ"},
-        {"va", "ゔぁ"},  {"vi", "ゔぃ"},  {"vu", "ゔ"},   {"ve", "ゔぇ"},  {"vo", "ゔぉ"},
-        {"wi", "うぃ"},  {"we", "うぇ"},  {"she", "しぇ"}, {"je", "じぇ"},  {"che", "ちぇ"},
-        {"tsa", "つぁ"}, {"tsi", "つぃ"}, {"tse", "つぇ"}, {"tso", "つぉ"}, {"thi", "てぃ"},
-        {"dhi", "でぃ"}, {"twu", "とぅ"}, {"dwu", "どぅ"}, {"kwa", "くぁ"}, {"gwa", "ぐぁ"},
-        {"xa", "ぁ"},   {"xi", "ぃ"},   {"xu", "ぅ"},   {"xe", "ぇ"},   {"xo", "ぉ"},
-        {"la", "ぁ"},   {"li", "ぃ"},   {"lu", "ぅ"},   {"le", "ぇ"},   {"lo", "ぉ"},
-        {"xya", "ゃ"},  {"xyu", "ゅ"},  {"xyo", "ょ"},  {"lya", "ゃ"},  {"lyu", "ゅ"},
-        {"lyo", "ょ"},  {"xtsu", "っ"}, {"ltsu", "っ"}, {"xwa", "ゎ"},  {"-", "ー"},
+        {"a", "あ"},     {"i", "い"},     {"u", "う"},     {"e", "え"},     {"o", "お"},     {"ka", "か"},
+        {"ki", "き"},    {"ku", "く"},    {"ke", "け"},    {"ko", "こ"},    {"ga", "が"},    {"gi", "ぎ"},
+        {"gu", "ぐ"},    {"ge", "げ"},    {"go", "ご"},    {"sa", "さ"},    {"shi", "し"},   {"si", "し"},
+        {"su", "す"},    {"se", "せ"},    {"so", "そ"},    {"za", "ざ"},    {"ji", "じ"},    {"zi", "じ"},
+        {"zu", "ず"},    {"ze", "ぜ"},    {"zo", "ぞ"},    {"ta", "た"},    {"chi", "ち"},   {"ti", "ち"},
+        {"tsu", "つ"},   {"tu", "つ"},    {"te", "て"},    {"to", "と"},    {"da", "だ"},    {"di", "ぢ"},
+        {"du", "づ"},    {"de", "で"},    {"do", "ど"},    {"na", "な"},    {"ni", "に"},    {"nu", "ぬ"},
+        {"ne", "ね"},    {"no", "の"},    {"ha", "は"},    {"hi", "ひ"},    {"fu", "ふ"},    {"hu", "ふ"},
+        {"he", "へ"},    {"ho", "ほ"},    {"ba", "ば"},    {"bi", "び"},    {"bu", "ぶ"},    {"be", "べ"},
+        {"bo", "ぼ"},    {"pa", "ぱ"},    {"pi", "ぴ"},    {"pu", "ぷ"},    {"pe", "ぺ"},    {"po", "ぽ"},
+        {"ma", "ま"},    {"mi", "み"},    {"mu", "む"},    {"me", "め"},    {"mo", "も"},    {"ya", "や"},
+        {"yu", "ゆ"},    {"yo", "よ"},    {"ra", "ら"},    {"ri", "り"},    {"ru", "る"},    {"re", "れ"},
+        {"ro", "ろ"},    {"wa", "わ"},    {"wo", "を"},    {"nn", "ん"},    {"kya", "きゃ"}, {"kyu", "きゅ"},
+        {"kyo", "きょ"}, {"gya", "ぎゃ"}, {"gyu", "ぎゅ"}, {"gyo", "ぎょ"}, {"sha", "しゃ"}, {"shu", "しゅ"},
+        {"sho", "しょ"}, {"sya", "しゃ"}, {"syu", "しゅ"}, {"syo", "しょ"}, {"ja", "じゃ"},  {"ju", "じゅ"},
+        {"jo", "じょ"},  {"jya", "じゃ"}, {"jyu", "じゅ"}, {"jyo", "じょ"}, {"cha", "ちゃ"}, {"chu", "ちゅ"},
+        {"cho", "ちょ"}, {"cya", "ちゃ"}, {"cyu", "ちゅ"}, {"cyo", "ちょ"}, {"tya", "ちゃ"}, {"tyu", "ちゅ"},
+        {"tyo", "ちょ"}, {"nya", "にゃ"}, {"nyu", "にゅ"}, {"nyo", "にょ"}, {"hya", "ひゃ"}, {"hyu", "ひゅ"},
+        {"hyo", "ひょ"}, {"bya", "びゃ"}, {"byu", "びゅ"}, {"byo", "びょ"}, {"pya", "ぴゃ"}, {"pyu", "ぴゅ"},
+        {"pyo", "ぴょ"}, {"mya", "みゃ"}, {"myu", "みゅ"}, {"myo", "みょ"}, {"rya", "りゃ"}, {"ryu", "りゅ"},
+        {"ryo", "りょ"}, {"fa", "ふぁ"},  {"fi", "ふぃ"},  {"fe", "ふぇ"},  {"fo", "ふぉ"},  {"va", "ゔぁ"},
+        {"vi", "ゔぃ"},  {"vu", "ゔ"},    {"ve", "ゔぇ"},  {"vo", "ゔぉ"},  {"wi", "うぃ"},  {"we", "うぇ"},
+        {"she", "しぇ"}, {"je", "じぇ"},  {"che", "ちぇ"}, {"tsa", "つぁ"}, {"tsi", "つぃ"}, {"tse", "つぇ"},
+        {"tso", "つぉ"}, {"thi", "てぃ"}, {"dhi", "でぃ"}, {"twu", "とぅ"}, {"dwu", "どぅ"}, {"kwa", "くぁ"},
+        {"gwa", "ぐぁ"}, {"xa", "ぁ"},    {"xi", "ぃ"},    {"xu", "ぅ"},    {"xe", "ぇ"},    {"xo", "ぉ"},
+        {"la", "ぁ"},    {"li", "ぃ"},    {"lu", "ぅ"},    {"le", "ぇ"},    {"lo", "ぉ"},    {"xya", "ゃ"},
+        {"xyu", "ゅ"},   {"xyo", "ょ"},   {"lya", "ゃ"},   {"lyu", "ゅ"},   {"lyo", "ょ"},   {"xtsu", "っ"},
+        {"ltsu", "っ"},  {"xwa", "ゎ"},   {"-", "ー"},
     };
     return table;
 }
@@ -137,7 +132,8 @@ std::string HiraganaToKatakana(std::string_view hiragana)
 
 bool IsSingleKanaConversion(const RomajiConversion &conversion)
 {
-    if (!conversion.complete || conversion.hiragana.empty()) return false;
+    if (!conversion.complete || conversion.hiragana.empty())
+        return false;
     const auto codepoints = utf8::utf8to32(conversion.hiragana);
     return codepoints.size() == 1 && codepoints.front() >= U'ぁ' && codepoints.front() <= U'ゖ';
 }
@@ -150,14 +146,14 @@ const std::vector<std::pair<std::string, std::string>> &KanaToRomajiTable()
         for (const auto &entry : RomajiTable())
             entries.emplace_back(entry.second, entry.first);
         std::sort(entries.begin(), entries.end(), [](const auto &a, const auto &b) {
-            if (a.first.size() != b.first.size()) return a.first.size() > b.first.size();
+            if (a.first.size() != b.first.size())
+                return a.first.size() > b.first.size();
             return a.second.size() > b.second.size();
         });
         std::vector<std::pair<std::string, std::string>> unique;
         for (const auto &entry : entries)
         {
-            if (std::none_of(unique.begin(), unique.end(),
-                             [&](const auto &seen) { return seen.first == entry.first; }))
+            if (std::none_of(unique.begin(), unique.end(), [&](const auto &seen) { return seen.first == entry.first; }))
                 unique.push_back(entry);
         }
         return unique;
@@ -227,7 +223,8 @@ std::string HiraganaToRomaji(std::string_view kana)
 
 std::vector<std::string> KanaForRomajiPrefix(std::string_view pending)
 {
-    if (pending.empty()) return {};
+    if (pending.empty())
+        return {};
     std::string prefix(pending);
     std::transform(prefix.begin(), prefix.end(), prefix.begin(),
                    [](unsigned char ch) { return static_cast<char>(std::tolower(ch)); });
@@ -235,8 +232,7 @@ std::vector<std::string> KanaForRomajiPrefix(std::string_view pending)
     std::vector<std::string> kana;
     for (const auto &entry : RomajiTable())
     {
-        if (entry.first.size() >= prefix.size() &&
-            entry.first.compare(0, prefix.size(), prefix) == 0)
+        if (entry.first.size() >= prefix.size() && entry.first.compare(0, prefix.size(), prefix) == 0)
         {
             kana.push_back(entry.second);
         }

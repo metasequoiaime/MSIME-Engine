@@ -47,9 +47,8 @@ class Database
     bool containsUserDictionaryOperation(const std::string &value)
     {
         sqlite3_stmt *statement = nullptr;
-        if (sqlite3_prepare_v2(database_,
-                               "SELECT 1 FROM user_dictionary_operations WHERE value=?1 LIMIT 1",
-                               -1, &statement, nullptr) != SQLITE_OK)
+        if (sqlite3_prepare_v2(database_, "SELECT 1 FROM user_dictionary_operations WHERE value=?1 LIMIT 1", -1,
+                               &statement, nullptr) != SQLITE_OK)
         {
             throw std::runtime_error("Failed to query the user dictionary journal.");
         }
@@ -86,7 +85,8 @@ int run_test()
     }
 
     const auto unique_suffix = std::to_string(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-    const std::filesystem::path data_directory = std::filesystem::temp_directory_path() / std::filesystem::u8path("metasequoia-engine-词库-" + unique_suffix);
+    const std::filesystem::path data_directory =
+        std::filesystem::temp_directory_path() / std::filesystem::u8path("metasequoia-engine-词库-" + unique_suffix);
     metasequoia::test::ScopedDataDirectoryCleanup cleanup(data_directory);
     std::filesystem::create_directories(data_directory);
 #ifdef _WIN32
@@ -115,7 +115,8 @@ int run_test()
             throw std::runtime_error("Quanpin preedit does not contain the typed input.");
         }
         const auto &candidates = session.get_candidates();
-        if (std::none_of(candidates.begin(), candidates.end(), [](const WordItem &item) { return item.word == "你好"; }))
+        if (std::none_of(candidates.begin(), candidates.end(),
+                         [](const WordItem &item) { return item.word == "你好"; }))
         {
             throw std::runtime_error("Quanpin did not return the candidate stored in the dictionary.");
         }
@@ -151,10 +152,8 @@ int run_test()
     {
         Database previous(previous_user_database);
         Database current(user_database);
-        if (!previous.containsUserDictionaryOperation("首次") ||
-            previous.containsUserDictionaryOperation("重开") ||
-            !current.containsUserDictionaryOperation("重开") ||
-            current.containsUserDictionaryOperation("首次"))
+        if (!previous.containsUserDictionaryOperation("首次") || previous.containsUserDictionaryOperation("重开") ||
+            !current.containsUserDictionaryOperation("重开") || current.containsUserDictionaryOperation("首次"))
         {
             throw std::runtime_error("The reopened default user dictionary wrote through the stale handle.");
         }
@@ -166,16 +165,15 @@ int run_test()
         throw std::runtime_error("Failed to record the English replay fixture.");
     }
     user_dictionary::close_default_user_database();
-    const auto successful_replay = user_dictionary::replay(
-        metasequoia::path_to_utf8(user_database), metasequoia::path_to_utf8(data_directory / "msime.db"),
-        metasequoia::path_to_utf8(english_database));
+    const auto successful_replay = user_dictionary::replay(metasequoia::path_to_utf8(user_database),
+                                                           metasequoia::path_to_utf8(data_directory / "msime.db"),
+                                                           metasequoia::path_to_utf8(english_database));
     if (!successful_replay.error.empty() || successful_replay.applied != 2)
     {
-        throw std::runtime_error(
-            "Replay did not apply the Pinyin and attached English operations: error=" +
-            successful_replay.error + ", applied=" + std::to_string(successful_replay.applied) +
-            ", failed=" + std::to_string(successful_replay.failed) +
-            ", skipped=" + std::to_string(successful_replay.skipped));
+        throw std::runtime_error("Replay did not apply the Pinyin and attached English operations: error=" +
+                                 successful_replay.error + ", applied=" + std::to_string(successful_replay.applied) +
+                                 ", failed=" + std::to_string(successful_replay.failed) +
+                                 ", skipped=" + std::to_string(successful_replay.skipped));
     }
     {
         Database english(english_database);
@@ -193,10 +191,9 @@ int run_test()
     {
         Database locked_main(data_directory / "msime.db");
         locked_main.execute("BEGIN EXCLUSIVE");
-        const auto locked_replay = user_dictionary::replay(
-            metasequoia::path_to_utf8(empty_user_database),
-            metasequoia::path_to_utf8(data_directory / "msime.db"),
-            metasequoia::path_to_utf8(english_database));
+        const auto locked_replay = user_dictionary::replay(metasequoia::path_to_utf8(empty_user_database),
+                                                           metasequoia::path_to_utf8(data_directory / "msime.db"),
+                                                           metasequoia::path_to_utf8(english_database));
         locked_main.execute("ROLLBACK");
         if (locked_replay.error.empty())
         {
@@ -207,17 +204,15 @@ int run_test()
     const std::filesystem::path unreadable_user_database = data_directory / "msime_user.unreadable.db";
     {
         Database unreadable_journal(unreadable_user_database);
-        unreadable_journal.execute(
-            "CREATE VIEW user_dictionary_operations AS "
-            "SELECT 'pinyin' AS dictionary,'ni' AS key,'你' AS value,'upsert' AS operation,"
-            "100 AS weight,'' AS display,1 AS updated_at "
-            "UNION ALL "
-            "SELECT 'pinyin','bad',value,'upsert',1,'',2 FROM json_each('not-json')");
+        unreadable_journal.execute("CREATE VIEW user_dictionary_operations AS "
+                                   "SELECT 'pinyin' AS dictionary,'ni' AS key,'你' AS value,'upsert' AS operation,"
+                                   "100 AS weight,'' AS display,1 AS updated_at "
+                                   "UNION ALL "
+                                   "SELECT 'pinyin','bad',value,'upsert',1,'',2 FROM json_each('not-json')");
     }
-    const auto unreadable_replay = user_dictionary::replay(
-        metasequoia::path_to_utf8(unreadable_user_database),
-        metasequoia::path_to_utf8(data_directory / "msime.db"),
-        metasequoia::path_to_utf8(english_database));
+    const auto unreadable_replay = user_dictionary::replay(metasequoia::path_to_utf8(unreadable_user_database),
+                                                           metasequoia::path_to_utf8(data_directory / "msime.db"),
+                                                           metasequoia::path_to_utf8(english_database));
     if (unreadable_replay.error.empty())
     {
         throw std::runtime_error("Replay reported success after the journal cursor failed.");

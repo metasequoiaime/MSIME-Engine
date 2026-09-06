@@ -15,15 +15,21 @@
 namespace
 {
 using namespace metasequoia;
-void require(bool value, const char *message) { if (!value) throw std::runtime_error(message); }
+void require(bool value, const char *message)
+{
+    if (!value)
+        throw std::runtime_error(message);
+}
 void execute(const std::filesystem::path &path, const std::string &sql)
 {
     sqlite3 *db = nullptr;
-    if (sqlite3_open(path_to_utf8(path).c_str(), &db) != SQLITE_OK) throw std::runtime_error("fixture open failed");
+    if (sqlite3_open(path_to_utf8(path).c_str(), &db) != SQLITE_OK)
+        throw std::runtime_error("fixture open failed");
     const int result = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, nullptr);
     const std::string error = sqlite3_errmsg(db);
     sqlite3_close(db);
-    if (result != SQLITE_OK) throw std::runtime_error(error);
+    if (result != SQLITE_OK)
+        throw std::runtime_error(error);
 }
 std::string bytes(const std::filesystem::path &path)
 {
@@ -35,42 +41,59 @@ void make_japanese_model(const std::filesystem::path &path, const std::string &s
     // One-token MSJPDT1 fixture, with explicit little-endian fields rather than native packing.
     std::ofstream output(path, std::ios::binary);
     const auto integer = [&](std::uint64_t value, int width) {
-        for (int i = 0; i < width; ++i) output.put(static_cast<char>((value >> (i * 8)) & 255));
+        for (int i = 0; i < width; ++i)
+            output.put(static_cast<char>((value >> (i * 8)) & 255));
     };
     const std::string reading = "かな";
     output.write("MSJPDT1", 8);
-    integer(1, 4); integer(1, 4); integer(1, 4); integer(0, 4);
-    integer(56, 8); integer(76, 8); integer(78, 8); integer(reading.size() + surface.size(), 8);
-    integer(0, 4); integer(reading.size(), 2); integer(reading.size(), 4); integer(surface.size(), 2);
-    integer(0, 2); integer(0, 2); integer(1, 4);
+    integer(1, 4);
+    integer(1, 4);
+    integer(1, 4);
+    integer(0, 4);
+    integer(56, 8);
+    integer(76, 8);
+    integer(78, 8);
+    integer(reading.size() + surface.size(), 8);
+    integer(0, 4);
+    integer(reading.size(), 2);
+    integer(reading.size(), 4);
+    integer(surface.size(), 2);
+    integer(0, 2);
+    integer(0, 2);
+    integer(1, 4);
     integer(0, 2);
     output << reading << surface;
 }
 void make_resources(const std::filesystem::path &path, const std::string &word)
 {
     std::filesystem::create_directories(path / "helpcodes");
-    execute(path / assets::main_dictionary,
-        "CREATE TABLE tbl_1_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
-        "INSERT INTO tbl_1_n VALUES('ni','n','" + word + "',10000),('ni','n','拟',9000);"
-        "CREATE TABLE quick_parases(key TEXT,value TEXT,weight INTEGER);"
-        "INSERT INTO quick_parases VALUES('x','" + word + "短语',10);");
-    require(EnglishDictionary::ensure_schema(path_to_utf8(path / assets::english_dictionary)), "English fixture failed");
-    execute(path / assets::english_dictionary, "INSERT INTO english_words(word,display,weight) VALUES('hello','hello',10);");
+    execute(path / assets::main_dictionary, "CREATE TABLE tbl_1_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                                            "INSERT INTO tbl_1_n VALUES('ni','n','" +
+                                                word +
+                                                "',10000),('ni','n','拟',9000);"
+                                                "CREATE TABLE quick_parases(key TEXT,value TEXT,weight INTEGER);"
+                                                "INSERT INTO quick_parases VALUES('x','" +
+                                                word + "短语',10);");
+    require(EnglishDictionary::ensure_schema(path_to_utf8(path / assets::english_dictionary)),
+            "English fixture failed");
+    execute(path / assets::english_dictionary,
+            "INSERT INTO english_words(word,display,weight) VALUES('hello','hello',10);");
     std::ofstream(path / assets::translations) << "hello\t" << word << "翻译\n";
     std::ofstream(path / assets::helpcode_lantian) << word << "=aa\n拟=cc\n";
     std::ofstream(path / assets::helpcode_xiaohe) << word << "=cc\n拟=aa\n";
 }
 void type(Session &session, const std::string &input)
 {
-    for (char ch : input) session.character(ch);
+    for (char ch : input)
+        session.character(ch);
 }
-}
+} // namespace
 
 void test_runtime_isolation()
 {
     using namespace metasequoia;
     const auto root = std::filesystem::temp_directory_path() /
-        ("msime-runtime-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+                      ("msime-runtime-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     test::ScopedDataDirectoryCleanup cleanup(root);
     const auto resource_a = root / std::filesystem::u8path("资源甲");
     const auto resource_b = root / std::filesystem::u8path("资源乙");
@@ -84,10 +107,15 @@ void test_runtime_isolation()
     require(paths_a.resources != paths_a.dictionaries && paths_a.cache != paths_a.dictionaries,
             "Mutable dictionaries must live separately from resources and cache");
     {
-        SessionOptions options_a; options_a.paths = paths_a; options_a.learning = false;
-        SessionOptions options_b; options_b.paths = paths_b; options_b.learning = false;
+        SessionOptions options_a;
+        options_a.paths = paths_a;
+        options_a.learning = false;
+        SessionOptions options_b;
+        options_b.paths = paths_b;
+        options_b.learning = false;
         Session a(options_a), b(options_b);
-        type(a, "ni"); type(b, "ni");
+        type(a, "ni");
+        type(b, "ni");
         require(a.snapshot().candidates.front().word == "你", "Session A used another resource directory");
         require(b.snapshot().candidates.front().word == "妮", "Session B used another resource directory");
         const auto query_a = a.online_query();
@@ -96,9 +124,11 @@ void test_runtime_isolation()
                 "Another session's online response was accepted");
         require(a.apply_online_candidate(*query_a, "本会话建议", CandidateSource::CloudSuggestion),
                 "Own online response was rejected");
-        a.command(Command::Cancel); b.command(Command::Cancel);
+        a.command(Command::Cancel);
+        b.command(Command::Cancel);
         require(a.set_helpcode_schema("lantian") && b.set_helpcode_schema("xiaohe"), "Cannot select helpcodes");
-        type(a, "niC"); type(b, "niC");
+        type(a, "niC");
+        type(b, "niC");
         require(a.snapshot().candidates.front().word == "拟", "Session A helpcode changed with B");
         require(b.snapshot().candidates.front().word == "妮", "Session B helpcode was not isolated");
         require(a.punctuation('"').commit == "拟“", "Punctuation did not flush composition");
@@ -116,20 +146,27 @@ void test_runtime_isolation()
         };
         auto first_session = std::async(std::launch::async, run_session, std::ref(a), "你");
         auto second_session = std::async(std::launch::async, run_session, std::ref(b), "妮");
-        first_session.get(); second_session.get();
+        first_session.get();
+        second_session.get();
         a.command(Command::Cancel);
-        a.character('K', true); a.character('x');
+        a.character('K', true);
+        a.character('x');
         require(a.snapshot().candidates.front().word == "你短语", "Local mode ignored runtime paths");
     }
     {
-        SessionOptions options_a; options_a.paths = paths_a; options_a.scheme = SchemeType::JapaneseRomaji;
-        SessionOptions options_b; options_b.paths = paths_b; options_b.scheme = SchemeType::JapaneseRomaji;
+        SessionOptions options_a;
+        options_a.paths = paths_a;
+        options_a.scheme = SchemeType::JapaneseRomaji;
+        SessionOptions options_b;
+        options_b.paths = paths_b;
+        options_b.scheme = SchemeType::JapaneseRomaji;
         Session a(options_a), b(options_b);
-        type(a, "kana"); type(b, "kana");
+        type(a, "kana");
+        type(b, "kana");
         const auto has = [](const Session &session, const std::string &word) {
             const auto snapshot = session.snapshot();
             return std::any_of(snapshot.candidates.begin(), snapshot.candidates.end(),
-                [&](const auto &candidate) { return candidate.word == word; });
+                               [&](const auto &candidate) { return candidate.word == word; });
         };
         require(has(a, "甲") && !has(a, "乙"), "Japanese session A used another model");
         require(has(b, "乙") && !has(b, "甲"), "Japanese session B reused the first model");
@@ -159,12 +196,20 @@ void test_runtime_isolation()
     }
     const auto before_failure = bytes(paths_v2.dictionary(assets::main_dictionary));
     require(user_dictionary::record_upsert(path_to_utf8(paths_a.user(assets::user_journal)),
-            user_dictionary::DictionaryKind::Pinyin, "@", "无效词", 10), "Cannot write failure fixture");
+                                           user_dictionary::DictionaryKind::Pinyin, "@", "无效词", 10),
+            "Cannot write failure fixture");
     bool rejected = false;
-    try { (void)prepare_runtime_paths(resource_a, paths_a.user_data, paths_a.cache, "v3"); }
-    catch (const std::runtime_error &) { rejected = true; }
+    try
+    {
+        (void)prepare_runtime_paths(resource_a, paths_a.user_data, paths_a.cache, "v3");
+    }
+    catch (const std::runtime_error &)
+    {
+        rejected = true;
+    }
     require(rejected, "Invalid replay did not reject generation");
-    require(bytes(paths_v2.dictionary(assets::main_dictionary)) == before_failure, "Failed replay replaced working data");
+    require(bytes(paths_v2.dictionary(assets::main_dictionary)) == before_failure,
+            "Failed replay replaced working data");
     require(!std::filesystem::exists(paths_a.user_data / "dictionaries/v3"), "Failed generation was published");
     require(!std::filesystem::exists(paths_a.user_data / "dictionaries/v3.incoming"), "Failed staging was retained");
 
@@ -188,6 +233,7 @@ void test_runtime_isolation()
         };
         auto first = std::async(std::launch::async, run, std::cref(decoder_a), "nihao", expected_a);
         auto second = std::async(std::launch::async, run, std::cref(decoder_b), "zhongguo", expected_b);
-        first.get(); second.get();
+        first.get();
+        second.get();
     }
 }

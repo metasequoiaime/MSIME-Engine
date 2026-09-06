@@ -2,7 +2,8 @@
 #pragma once
 #include <array>
 #include <string_view>
-namespace metasequoia::assets {
+namespace metasequoia::assets
+{
 inline constexpr int contract_version = 1;
 inline constexpr char main_dictionary[] = "msime.db";
 inline constexpr char english_dictionary[] = "english.db";
@@ -24,7 +25,11 @@ inline constexpr char notice_16[] = "licenses/Engine-NOTICE.md";
 inline constexpr char notice_17[] = "licenses/Engine-LICENSE";
 inline constexpr char user_journal[] = "msime_user.db";
 inline constexpr char pinyin_user_dictionary[] = "user_dict.dat";
-struct Helpcode { std::string_view schema; const char *path; };
+struct Helpcode
+{
+    std::string_view schema;
+    const char *path;
+};
 inline constexpr std::array<Helpcode, 5> helpcodes = {{
     {"lantian", helpcode_lantian},
     {"ziranma", helpcode_ziranma},

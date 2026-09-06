@@ -23,7 +23,8 @@ void test_runtime_isolation();
 
 int main()
 {
-    const std::filesystem::path expected = std::filesystem::temp_directory_path() / std::filesystem::u8path("metasequoia-ime-词库");
+    const std::filesystem::path expected =
+        std::filesystem::temp_directory_path() / std::filesystem::u8path("metasequoia-ime-词库");
     set_data_directory(expected);
     if (metasequoia::data_directory() != expected)
     {
@@ -33,7 +34,8 @@ int main()
     {
         throw std::runtime_error("The data file path was not joined with the platform separator.");
     }
-    if (metasequoia::path_to_utf8(metasequoia::data_file_path(std::filesystem::u8path("词库.db"))) != metasequoia::path_to_utf8(expected / std::filesystem::u8path("词库.db")))
+    if (metasequoia::path_to_utf8(metasequoia::data_file_path(std::filesystem::u8path("词库.db"))) !=
+        metasequoia::path_to_utf8(expected / std::filesystem::u8path("词库.db")))
     {
         throw std::runtime_error("The data file path was not preserved as UTF-8.");
     }

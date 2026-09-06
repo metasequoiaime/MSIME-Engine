@@ -23,8 +23,6 @@ struct RuntimePaths
 // The host verifies the published bundle and supplies its immutable content ID. Quiesce all
 // sessions and user-data writers during preparation/switching. New generations are staged,
 // replayed and renamed as a directory; failure never replaces a working generation.
-RuntimePaths prepare_runtime_paths(const std::filesystem::path &resources,
-                                   const std::filesystem::path &user_data,
-                                   const std::filesystem::path &cache,
-                                   const std::string &content_id);
-}
+RuntimePaths prepare_runtime_paths(const std::filesystem::path &resources, const std::filesystem::path &user_data,
+                                   const std::filesystem::path &cache, const std::string &content_id);
+} // namespace metasequoia

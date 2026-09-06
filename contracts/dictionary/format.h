@@ -10,9 +10,9 @@ inline constexpr std::size_t maximum_numbered_syllables = 7;
 inline constexpr char initials[] = "abcdefghjklmnopqrstwxyz";
 inline std::string quanpin_table(std::size_t syllables, char initial)
 {
-    if (syllables == 0 || initial < 'a' || initial > 'z') return {};
-    return std::string("tbl_") +
-           (syllables <= maximum_numbered_syllables ? std::to_string(syllables) : "others") +
+    if (syllables == 0 || initial < 'a' || initial > 'z')
+        return {};
+    return std::string("tbl_") + (syllables <= maximum_numbered_syllables ? std::to_string(syllables) : "others") +
            "_" + initial;
 }
 } // namespace metasequoia::dictionary_format

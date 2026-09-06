@@ -30,8 +30,7 @@ class InputSession
     // engine configuration and commit policy.
     explicit InputSession(SchemeType scheme_type = SchemeType::Quanpin, bool quanpin_autocorrect_enabled = true,
                           bool helpcode_enabled = true, bool chinese_punctuation_enabled = true,
-                          bool candidate_learning_enabled = true,
-                          RuntimePaths paths = RuntimePaths::legacy());
+                          bool candidate_learning_enabled = true, RuntimePaths paths = RuntimePaths::legacy());
     InputSession(SchemeType scheme_type, const ShuangpinProfile &shuangpin_profile,
                  RuntimePaths paths = RuntimePaths::legacy());
 
@@ -154,8 +153,14 @@ class InputSession
                                                        const SelectionTransition &selection_transition) const;
 
     void set_quanpin_autocorrect_enabled(bool enabled);
-    void set_chinese_punctuation_enabled(bool enabled) { chinese_punctuation_enabled_ = enabled; }
-    void set_candidate_learning_enabled(bool enabled) { candidate_learning_enabled_ = enabled; }
+    void set_chinese_punctuation_enabled(bool enabled)
+    {
+        chinese_punctuation_enabled_ = enabled;
+    }
+    void set_candidate_learning_enabled(bool enabled)
+    {
+        candidate_learning_enabled_ = enabled;
+    }
     void set_shuangpin_preedit_uses_raw(bool enabled)
     {
         shuangpin_preedit_uses_raw_ = enabled;

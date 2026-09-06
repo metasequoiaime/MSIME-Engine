@@ -20,7 +20,8 @@ class QuanpinDictionary
     static const int OK = 0;
     static const int ERROR_CODE = -1;
 
-    explicit QuanpinDictionary(std::string db_path = {}, metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
+    explicit QuanpinDictionary(std::string db_path = {},
+                               metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
     ~QuanpinDictionary();
 
     std::vector<WordItem> query(const std::string &raw_input, const std::string &segmentation = "",
@@ -105,7 +106,6 @@ class QuanpinDictionary
     metasequoia::PinyinDecoder decoder_;
     std::unordered_map<std::string, sqlite3_stmt *> statement_cache_;
     std::string db_path_;
-
 
     std::string pinyin_sequence_;
     std::string pinyin_segmentation_;

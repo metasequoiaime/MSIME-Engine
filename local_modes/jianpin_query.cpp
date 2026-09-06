@@ -72,16 +72,14 @@ std::string decode_shuangpin_initial(char code, const ShuangpinProfile &profile)
     return mapped_key;
 }
 
-quanpin::Segments expand_code(const std::string &normalized, SchemeType scheme,
-                              const ShuangpinProfile &profile)
+quanpin::Segments expand_code(const std::string &normalized, SchemeType scheme, const ShuangpinProfile &profile)
 {
     quanpin::Segments segments;
     segments.reserve(normalized.size());
     for (const char character : normalized)
     {
-        segments.push_back(scheme == SchemeType::Shuangpin ?
-                               decode_shuangpin_initial(character, profile) :
-                               std::string(1, character));
+        segments.push_back(scheme == SchemeType::Shuangpin ? decode_shuangpin_initial(character, profile)
+                                                           : std::string(1, character));
     }
     return segments;
 }
@@ -148,23 +146,19 @@ LocalQueryResult query_failure(const char *diagnostic)
 }
 } // namespace
 
-std::string jianpin_ranking_context(const std::string &code, SchemeType scheme,
-                                    const ShuangpinProfile &profile)
+std::string jianpin_ranking_context(const std::string &code, SchemeType scheme, const ShuangpinProfile &profile)
 {
     const std::string normalized = normalize_code(code);
-    return normalized.empty() ? std::string{} :
-                                quanpin::join_segments(expand_code(normalized, scheme, profile));
+    return normalized.empty() ? std::string{} : quanpin::join_segments(expand_code(normalized, scheme, profile));
 }
 
-LocalQueryResult query_jianpin(const std::string &code, SchemeType scheme, int limit,
-                               const ShuangpinProfile &profile)
+LocalQueryResult query_jianpin(const std::string &code, SchemeType scheme, int limit, const ShuangpinProfile &profile)
 {
     return query_jianpin(code, scheme, data_file_path(metasequoia::assets::main_dictionary), limit, profile);
 }
 
-LocalQueryResult query_jianpin(const std::string &code, SchemeType scheme,
-                               const std::filesystem::path &database_path, int limit,
-                               const ShuangpinProfile &profile)
+LocalQueryResult query_jianpin(const std::string &code, SchemeType scheme, const std::filesystem::path &database_path,
+                               int limit, const ShuangpinProfile &profile)
 {
     if (limit <= 0)
     {
@@ -184,9 +178,8 @@ LocalQueryResult query_jianpin(const std::string &code, SchemeType scheme,
     }
 
     sqlite3 *raw_database = nullptr;
-    if (database_path.empty() ||
-        sqlite3_open_v2(path_to_utf8(database_path).c_str(), &raw_database,
-                        SQLITE_OPEN_READONLY | SQLITE_OPEN_FULLMUTEX, nullptr) != SQLITE_OK)
+    if (database_path.empty() || sqlite3_open_v2(path_to_utf8(database_path).c_str(), &raw_database,
+                                                 SQLITE_OPEN_READONLY | SQLITE_OPEN_FULLMUTEX, nullptr) != SQLITE_OK)
     {
         if (raw_database != nullptr)
         {
@@ -199,8 +192,8 @@ LocalQueryResult query_jianpin(const std::string &code, SchemeType scheme,
 
     const std::string jianpin = quanpin::segments_to_jianpin(segments);
     const bool filter_initials = scheme == SchemeType::Shuangpin;
-    const std::string sql = "SELECT \"key\",\"value\",\"weight\" FROM \"" + table +
-                            "\" WHERE \"jp\"=?1 ORDER BY \"weight\" DESC LIMIT ?2";
+    const std::string sql =
+        "SELECT \"key\",\"value\",\"weight\" FROM \"" + table + "\" WHERE \"jp\"=?1 ORDER BY \"weight\" DESC LIMIT ?2";
     sqlite3_stmt *raw_statement = nullptr;
     if (sqlite3_prepare_v2(database.get(), sql.c_str(), -1, &raw_statement, nullptr) != SQLITE_OK)
     {
@@ -229,8 +222,7 @@ LocalQueryResult query_jianpin(const std::string &code, SchemeType scheme,
         {
             continue;
         }
-        result.candidates.emplace_back(matched_code, value,
-                                       sqlite3_column_int64(statement.get(), 2),
+        result.candidates.emplace_back(matched_code, value, sqlite3_column_int64(statement.get(), 2),
                                        CandidateSource::Database, canonical);
         if (static_cast<int>(result.candidates.size()) >= limit)
         {

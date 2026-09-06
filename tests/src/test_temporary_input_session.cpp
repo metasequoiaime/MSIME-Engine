@@ -24,7 +24,10 @@ class Database
         }
     }
 
-    ~Database() { sqlite3_close(database_); }
+    ~Database()
+    {
+        sqlite3_close(database_);
+    }
 
     void execute(const char *sql)
     {
@@ -59,8 +62,7 @@ void type(metasequoia::InputSession &session, const std::string &text)
 {
     for (const char character : text)
     {
-        require(session.handle_character(character).handled,
-                "A temporary-mode test character was not handled.");
+        require(session.handle_character(character).handled, "A temporary-mode test character was not handled.");
     }
 }
 } // namespace
@@ -68,8 +70,7 @@ void type(metasequoia::InputSession &session, const std::string &text)
 int main()
 {
     const auto suffix = std::to_string(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-    const auto data_directory =
-        std::filesystem::temp_directory_path() / ("metasequoia-temporary-mode-" + suffix);
+    const auto data_directory = std::filesystem::temp_directory_path() / ("metasequoia-temporary-mode-" + suffix);
     metasequoia::test::ScopedDataDirectoryCleanup cleanup(data_directory);
     std::filesystem::create_directories(data_directory);
 #ifdef _WIN32
@@ -83,14 +84,13 @@ int main()
     {
         Database main_database(data_directory / "msime.db");
         Database english_database(data_directory / "english.db");
-        english_database.execute(
-            "CREATE TABLE english_words(word TEXT COLLATE BINARY NOT NULL,display TEXT NOT NULL,"
-            "weight INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(word,display)) WITHOUT ROWID;"
-            "CREATE TABLE en_zh_glosses(english TEXT PRIMARY KEY,chinese_gloss TEXT NOT NULL);"
-            "CREATE TABLE zh_en_glosses(chinese TEXT PRIMARY KEY,english_gloss TEXT NOT NULL);"
-            "INSERT INTO english_words VALUES('he','HE',110);"
-            "INSERT INTO english_words VALUES('hello','Hello',100);"
-            "INSERT INTO english_words VALUES('help','Help',90);");
+        english_database.execute("CREATE TABLE english_words(word TEXT COLLATE BINARY NOT NULL,display TEXT NOT NULL,"
+                                 "weight INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(word,display)) WITHOUT ROWID;"
+                                 "CREATE TABLE en_zh_glosses(english TEXT PRIMARY KEY,chinese_gloss TEXT NOT NULL);"
+                                 "CREATE TABLE zh_en_glosses(chinese TEXT PRIMARY KEY,english_gloss TEXT NOT NULL);"
+                                 "INSERT INTO english_words VALUES('he','HE',110);"
+                                 "INSERT INTO english_words VALUES('hello','Hello',100);"
+                                 "INSERT INTO english_words VALUES('help','Help',90);");
     }
 
     metasequoia::InputSession english(SchemeType::Quanpin);
@@ -105,8 +105,7 @@ int main()
     require(english.handle_character('Y', true).handled,
             "Temporary English could not restart after engine punctuation.");
     type(english, "he");
-    require(english.preedit() == "Yhe" && english.candidates().size() == 3 &&
-                english.candidates()[0].word == "he" &&
+    require(english.preedit() == "Yhe" && english.candidates().size() == 3 && english.candidates()[0].word == "he" &&
                 english.candidates()[0].source == CandidateSource::Generated &&
                 english.candidates()[1].word == "Hello" && english.candidates()[2].word == "Help" &&
                 std::none_of(english.candidates().begin() + 1, english.candidates().end(),
@@ -122,8 +121,7 @@ int main()
                 english.handle_command(metasequoia::Command::Backspace).handled &&
                 english.local_input_mode() == metasequoia::LocalInputMode::None,
             "Backspace on a bare Y prefix did not leave temporary English mode.");
-    require(english.handle_character('Y', true).handled,
-            "Temporary English could not start for a bare-prefix commit.");
+    require(english.handle_character('Y', true).handled, "Temporary English could not start for a bare-prefix commit.");
     const auto bare_english_commit = english.handle_command(metasequoia::Command::CommitCandidate);
     require(bare_english_commit.handled && !bare_english_commit.commit.has_value() &&
                 english.local_input_mode() == metasequoia::LocalInputMode::None,
@@ -149,8 +147,7 @@ int main()
             "Enter committed the display-only Y prefix with temporary English raw input.");
 
     metasequoia::InputSession english_frequency(SchemeType::Quanpin);
-    require(english_frequency.set_frequency_adjustment(
-                {metasequoia::FrequencyAdjustmentMode::Promote, 1, 1}),
+    require(english_frequency.set_frequency_adjustment({metasequoia::FrequencyAdjustmentMode::Promote, 1, 1}),
             "A valid temporary-English frequency configuration was rejected.");
     require(english_frequency.handle_character('Y', true).handled,
             "Temporary English could not start for frequency learning.");
@@ -161,10 +158,8 @@ int main()
     require(english_reopened.handle_character('Y', true).handled,
             "Temporary English could not reopen after frequency learning.");
     type(english_reopened, "he");
-    require(english_reopened.candidates().size() == 3 &&
-                english_reopened.candidates()[0].word == "he" &&
-                english_reopened.candidates()[1].word == "Help" &&
-                english_reopened.candidates()[2].word == "Hello",
+    require(english_reopened.candidates().size() == 3 && english_reopened.candidates()[0].word == "he" &&
+                english_reopened.candidates()[1].word == "Help" && english_reopened.candidates()[2].word == "Hello",
             "Temporary English frequency learning included the fixed raw candidate in ranking.");
 
     metasequoia::InputSession japanese(SchemeType::Quanpin);
@@ -207,8 +202,7 @@ int main()
             "Flushing a bare local-mode prefix produced a spurious client insertion.");
     require(japanese.handle_character('R', true).handled, "Temporary Japanese could not be re-entered.");
     type(japanese, "ka");
-    require(japanese.handle_command(metasequoia::Command::Cancel).handled &&
-                japanese.scheme() == SchemeType::Quanpin &&
+    require(japanese.handle_command(metasequoia::Command::Cancel).handled && japanese.scheme() == SchemeType::Quanpin &&
                 japanese.local_input_mode() == metasequoia::LocalInputMode::None,
             "Cancel did not restore the original scheme from temporary Japanese.");
     require(japanese.handle_character('R', true).handled, "Temporary Japanese could not start before a scheme switch.");
@@ -228,8 +222,7 @@ int main()
             "Enter committed the display-only R prefix or failed to restore Quanpin.");
 
     metasequoia::InputSession shuangpin_japanese(SchemeType::Shuangpin);
-    require(shuangpin_japanese.handle_character('R', true).handled,
-            "Temporary Japanese did not start from Shuangpin.");
+    require(shuangpin_japanese.handle_character('R', true).handled, "Temporary Japanese did not start from Shuangpin.");
     type(shuangpin_japanese, "ka");
     require(shuangpin_japanese.select_candidate(std::string("か")).commit == "か" &&
                 shuangpin_japanese.scheme() == SchemeType::Shuangpin,

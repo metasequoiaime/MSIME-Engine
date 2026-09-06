@@ -35,7 +35,8 @@ inline Frame ParseFrame(const wchar_t *data, std::size_t n = kPacketChars)
     {
         return frame;
     }
-    // The terminator has to sit inside the chunk: a middle frame legally carries flags 0, so a scan starting at the header would accept data[0] as the terminator and let the chunk read run past the packet.
+    // The terminator has to sit inside the chunk: a middle frame legally carries flags 0, so a scan starting at the
+    // header would accept data[0] as the terminator and let the chunk read run past the packet.
     std::size_t terminatorIndex = n;
     for (std::size_t i = kHeaderChars; i < n; ++i)
     {

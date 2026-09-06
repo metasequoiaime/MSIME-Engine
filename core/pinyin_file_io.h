@@ -17,5 +17,5 @@ inline int open(const char *path, int flags)
 {
     return _wopen(std::filesystem::u8path(path).c_str(), flags);
 }
-}
+} // namespace ime_pinyin
 #endif

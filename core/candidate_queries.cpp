@@ -13,8 +13,9 @@
 namespace metasequoia
 {
 local_modes::LocalQueryResult CandidateQueries::local(LocalInputMode mode, const std::string &preedit,
-    SchemeType scheme, const std::function<local_modes::LocalDateTime()> &clock,
-    const std::vector<WordItem> &engine_candidates)
+                                                      SchemeType scheme,
+                                                      const std::function<local_modes::LocalDateTime()> &clock,
+                                                      const std::vector<WordItem> &engine_candidates)
 {
     local_modes::LocalQueryResult result;
 
@@ -23,49 +24,42 @@ local_modes::LocalQueryResult CandidateQueries::local(LocalInputMode mode, const
     case LocalInputMode::Unicode:
         result.candidates = local_modes::query_unicode(preedit.substr(1));
         return result;
-    case LocalInputMode::DateTime:
-    {
-        const local_modes::LocalDateTime now = clock ?
-            clock() : local_modes::current_local_date_time();
+    case LocalInputMode::DateTime: {
+        const local_modes::LocalDateTime now = clock ? clock() : local_modes::current_local_date_time();
         result.candidates = local_modes::query_date_time(preedit.substr(1), &now);
         return result;
     }
-    case LocalInputMode::QuickPhrase:
-    {
+    case LocalInputMode::QuickPhrase: {
         local_modes::QuickPhraseQueryResult query =
             local_modes::query_quick_phrases(preedit.substr(1), paths_.dictionary(assets::main_dictionary));
         result.candidates = std::move(query.candidates);
         result.diagnostic = std::move(query.diagnostic);
         return result;
     }
-    case LocalInputMode::Emoji:
-    {
+    case LocalInputMode::Emoji: {
         local_modes::LocalQueryResult query = local_modes::query_emoji(
             preedit.substr(1), scheme, paths_.resource(assets::other_dictionary), 10, shuangpin_profile_);
         result.candidates = std::move(query.candidates);
         result.diagnostic = std::move(query.diagnostic);
         return result;
     }
-    case LocalInputMode::Kaomoji:
-    {
+    case LocalInputMode::Kaomoji: {
         local_modes::LocalQueryResult query = local_modes::query_kaomoji(
             preedit.substr(1), scheme, paths_.resource(assets::other_dictionary), 10, shuangpin_profile_);
         result.candidates = std::move(query.candidates);
         result.diagnostic = std::move(query.diagnostic);
         return result;
     }
-    case LocalInputMode::SuperJianpin:
-    {
+    case LocalInputMode::SuperJianpin: {
         const std::string code = preedit.substr(1);
         const int limit = code.size() == 1 ? 24 : 100;
-        local_modes::LocalQueryResult query =
-            local_modes::query_jianpin(code, scheme, paths_.dictionary(assets::main_dictionary), limit, shuangpin_profile_);
+        local_modes::LocalQueryResult query = local_modes::query_jianpin(
+            code, scheme, paths_.dictionary(assets::main_dictionary), limit, shuangpin_profile_);
         result.candidates = std::move(query.candidates);
         result.diagnostic = std::move(query.diagnostic);
         return result;
     }
-    case LocalInputMode::TemporaryEnglish:
-    {
+    case LocalInputMode::TemporaryEnglish: {
         const std::string raw = preedit.substr(1);
         result.candidates.clear();
         if (raw.empty())
@@ -74,23 +68,23 @@ local_modes::LocalQueryResult CandidateQueries::local(LocalInputMode mode, const
         }
         result.candidates.emplace_back("", raw, 0, CandidateSource::Generated);
         std::string prefix = raw;
-        std::transform(prefix.begin(), prefix.end(), prefix.begin(), [](unsigned char character) {
-            return static_cast<char>(std::tolower(character));
-        });
+        std::transform(prefix.begin(), prefix.end(), prefix.begin(),
+                       [](unsigned char character) { return static_cast<char>(std::tolower(character)); });
         auto completions = english_dictionary().query_prefix(prefix, 1000);
-        completions.erase(std::remove_if(completions.begin(), completions.end(), [&](const WordItem &candidate) {
-                              if (candidate.word.size() != raw.size())
-                              {
-                                  return false;
-                              }
-                              return std::equal(candidate.word.begin(), candidate.word.end(), raw.begin(),
-                                                [](unsigned char left, unsigned char right) {
-                                                    return std::tolower(left) == std::tolower(right);
-                                                });
-                          }),
+        completions.erase(std::remove_if(completions.begin(), completions.end(),
+                                         [&](const WordItem &candidate) {
+                                             if (candidate.word.size() != raw.size())
+                                             {
+                                                 return false;
+                                             }
+                                             return std::equal(candidate.word.begin(), candidate.word.end(),
+                                                               raw.begin(),
+                                                               [](unsigned char left, unsigned char right) {
+                                                                   return std::tolower(left) == std::tolower(right);
+                                                               });
+                                         }),
                           completions.end());
-        result.candidates.insert(result.candidates.end(),
-                                 std::make_move_iterator(completions.begin()),
+        result.candidates.insert(result.candidates.end(), std::make_move_iterator(completions.begin()),
                                  std::make_move_iterator(completions.end()));
         return result;
     }
@@ -105,8 +99,9 @@ local_modes::LocalQueryResult CandidateQueries::local(LocalInputMode mode, const
 }
 
 std::vector<WordItem> CandidateQueries::mixed(std::vector<WordItem> candidates, const std::string &prefix,
-    SchemeType scheme, EnglishInputOptions english_options, MixedExpressiveOptions expressive_options,
-    bool dedicated_english, LocalInputMode local_mode)
+                                              SchemeType scheme, EnglishInputOptions english_options,
+                                              MixedExpressiveOptions expressive_options, bool dedicated_english,
+                                              LocalInputMode local_mode)
 {
 
     if ((!english_options.mixed_candidates && !expressive_options.emoji_candidates &&
@@ -142,12 +137,9 @@ std::vector<WordItem> CandidateQueries::mixed(std::vector<WordItem> candidates, 
     };
 
     std::vector<WordItem> english_candidates;
-    const bool lower_ascii_prefix =
-        std::all_of(prefix.begin(), prefix.end(), [](unsigned char character) {
-            return character >= 'a' && character <= 'z';
-        });
-    if (english_options.mixed_candidates &&
-        prefix.size() >= english_options.minimum_prefix && lower_ascii_prefix)
+    const bool lower_ascii_prefix = std::all_of(
+        prefix.begin(), prefix.end(), [](unsigned char character) { return character >= 'a' && character <= 'z'; });
+    if (english_options.mixed_candidates && prefix.size() >= english_options.minimum_prefix && lower_ascii_prefix)
     {
         english_candidates = collect_unique(english_dictionary().query_prefix(prefix, 5));
     }
@@ -156,14 +148,16 @@ std::vector<WordItem> CandidateQueries::mixed(std::vector<WordItem> candidates, 
     if (expressive_options.emoji_candidates && prefix.size() >= 2)
     {
         emoji_candidates = collect_unique(
-            local_modes::query_emoji(prefix, scheme, paths_.resource(assets::other_dictionary), 3, shuangpin_profile_).candidates);
+            local_modes::query_emoji(prefix, scheme, paths_.resource(assets::other_dictionary), 3, shuangpin_profile_)
+                .candidates);
     }
 
     std::vector<WordItem> kaomoji_candidates;
     if (expressive_options.kaomoji_candidates && prefix.size() >= 2)
     {
         kaomoji_candidates = collect_unique(
-            local_modes::query_kaomoji(prefix, scheme, paths_.resource(assets::other_dictionary), 3, shuangpin_profile_).candidates);
+            local_modes::query_kaomoji(prefix, scheme, paths_.resource(assets::other_dictionary), 3, shuangpin_profile_)
+                .candidates);
     }
 
     std::size_t priority_slot = std::min<std::size_t>(1, candidates.size());
@@ -184,8 +178,7 @@ std::vector<WordItem> CandidateQueries::mixed(std::vector<WordItem> candidates, 
         {
             return;
         }
-        candidates.insert(candidates.begin() + static_cast<std::ptrdiff_t>(priority_slot),
-                                 std::move(source.front()));
+        candidates.insert(candidates.begin() + static_cast<std::ptrdiff_t>(priority_slot), std::move(source.front()));
         source.erase(source.begin());
         ++priority_slot;
     };
@@ -195,9 +188,8 @@ std::vector<WordItem> CandidateQueries::mixed(std::vector<WordItem> candidates, 
 
     for (auto *source : {&english_candidates, &emoji_candidates, &kaomoji_candidates})
     {
-        candidates.insert(candidates.end(),
-                                 std::make_move_iterator(source->begin()),
-                                 std::make_move_iterator(source->end()));
+        candidates.insert(candidates.end(), std::make_move_iterator(source->begin()),
+                          std::make_move_iterator(source->end()));
     }
     return candidates;
 }
@@ -206,10 +198,11 @@ EnglishDictionary &CandidateQueries::english_dictionary()
 {
     if (!english_dictionary_)
     {
-        english_dictionary_ = std::make_unique<EnglishDictionary>(
-            path_to_utf8(paths_.dictionary(assets::english_dictionary)), false, path_to_utf8(paths_.resource(assets::translations)));
+        english_dictionary_ =
+            std::make_unique<EnglishDictionary>(path_to_utf8(paths_.dictionary(assets::english_dictionary)), false,
+                                                path_to_utf8(paths_.resource(assets::translations)));
     }
     return *english_dictionary_;
 }
 
-}
+} // namespace metasequoia

@@ -39,10 +39,9 @@ class JapaneseMatrixSearch
     explicit JapaneseMatrixSearch(const JapaneseSentenceDecoder &decoder);
 
     std::vector<SentenceCandidate> Search(std::string_view romaji, size_t limit = 16) const;
-    std::vector<SentenceCandidate> SearchConverted(const RomajiConversion &conversion,
-                                                   size_t limit = 16) const;
-    std::vector<SentenceCandidate> SearchReading(const std::string &reading,
-                                                 const std::string &pending, size_t limit = 16) const;
+    std::vector<SentenceCandidate> SearchConverted(const RomajiConversion &conversion, size_t limit = 16) const;
+    std::vector<SentenceCandidate> SearchReading(const std::string &reading, const std::string &pending,
+                                                 size_t limit = 16) const;
 
   private:
     const JapaneseSentenceDecoder &decoder_;

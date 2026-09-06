@@ -62,15 +62,13 @@ LocalDateTime sample_time()
 }
 
 template <std::size_t Size>
-void require_words(const std::vector<WordItem> &actual,
-                   const std::array<const char *, Size> &expected,
+void require_words(const std::vector<WordItem> &actual, const std::array<const char *, Size> &expected,
                    const char *message)
 {
     require(actual.size() == expected.size(), message);
     for (std::size_t index = 0; index < expected.size(); ++index)
     {
-        require(actual[index].word == expected[index] &&
-                    actual[index].source == CandidateSource::Generated &&
+        require(actual[index].word == expected[index] && actual[index].source == CandidateSource::Generated &&
                     actual[index].weight == static_cast<std::int64_t>(expected.size() - index),
                 message);
     }
@@ -81,10 +79,23 @@ int main()
 {
     const LocalDateTime now = sample_time();
     const std::array<const char *, 17> expected_dates = {
-        "2026年8月9日", "2026-08-09", "2026/08/09", "2026.08.09", "20260809",
-        "26年8月9日", "8月9日", "08-09", "0809", "2026年8月9日 星期日", "8月9日 周日",
-        "2026-08-09 Sun", "2026-08-09 14:30", "8月9日 14:30", "二〇二六年八月九日",
-        "贰零贰陆年捌月零玖日", "丙午年六月二十七日",
+        "2026年8月9日",
+        "2026-08-09",
+        "2026/08/09",
+        "2026.08.09",
+        "20260809",
+        "26年8月9日",
+        "8月9日",
+        "08-09",
+        "0809",
+        "2026年8月9日 星期日",
+        "8月9日 周日",
+        "2026-08-09 Sun",
+        "2026-08-09 14:30",
+        "8月9日 14:30",
+        "二〇二六年八月九日",
+        "贰零贰陆年捌月零玖日",
+        "丙午年六月二十七日",
     };
     for (const char *keyword : std::array<const char *, 3>{"rq", "riqi", "date"})
     {
@@ -93,9 +104,19 @@ int main()
     }
 
     const std::array<const char *, 13> expected_times = {
-        "14:30", "14:30:00", "1430", "143000", "下午2:30", "下午2点30分", "下午两点半",
-        "2:30 PM", "2:30pm", "02:30:00 PM", "2026-08-09 14:30:00",
-        "2026年8月9日 14:30", "8月9日 下午2:30",
+        "14:30",
+        "14:30:00",
+        "1430",
+        "143000",
+        "下午2:30",
+        "下午2点30分",
+        "下午两点半",
+        "2:30 PM",
+        "2:30pm",
+        "02:30:00 PM",
+        "2026-08-09 14:30:00",
+        "2026年8月9日 14:30",
+        "8月9日 下午2:30",
     };
     for (const char *keyword : std::array<const char *, 3>{"sj", "shijian", "time"})
     {
@@ -139,17 +160,14 @@ int main()
         database.execute("INSERT INTO quick_parases VALUES('b','outside prefix',100)");
     }
 
-    const auto quick_phrases =
-        metasequoia::local_modes::query_quick_phrases("a", quick_phrase_database, 10);
+    const auto quick_phrases = metasequoia::local_modes::query_quick_phrases("a", quick_phrase_database, 10);
     require(!quick_phrases.diagnostic.has_value() && quick_phrases.candidates.size() == 3 &&
-                quick_phrases.candidates[0].pinyin == "ab" &&
-                quick_phrases.candidates[0].word == "highest weight" &&
+                quick_phrases.candidates[0].pinyin == "ab" && quick_phrases.candidates[0].word == "highest weight" &&
                 quick_phrases.candidates[1].pinyin == "aa" && quick_phrases.candidates[1].word == "tie a" &&
                 quick_phrases.candidates[2].word == "tie b" &&
                 quick_phrases.candidates[0].source == CandidateSource::QuickPhrase,
             "Quick-phrase prefix ordering diverged from Windows.");
-    const auto limited_quick_phrases =
-        metasequoia::local_modes::query_quick_phrases("a", quick_phrase_database, 2);
+    const auto limited_quick_phrases = metasequoia::local_modes::query_quick_phrases("a", quick_phrase_database, 2);
     require(!limited_quick_phrases.diagnostic.has_value() && limited_quick_phrases.candidates.size() == 2,
             "Quick-phrase query did not honor its limit.");
     require(metasequoia::local_modes::query_quick_phrases("", quick_phrase_database, 10).candidates.empty() &&
@@ -158,8 +176,8 @@ int main()
                 metasequoia::local_modes::query_quick_phrases("a", quick_phrase_database, 0).candidates.empty(),
             "Quick-phrase query accepted an invalid prefix or limit.");
 
-    const auto missing_quick_phrases = metasequoia::local_modes::query_quick_phrases(
-        "secret", quick_phrase_directory / "private-missing.db", 10);
+    const auto missing_quick_phrases =
+        metasequoia::local_modes::query_quick_phrases("secret", quick_phrase_directory / "private-missing.db", 10);
     require(missing_quick_phrases.candidates.empty() && missing_quick_phrases.diagnostic.has_value() &&
                 missing_quick_phrases.diagnostic->find("secret") == std::string::npos &&
                 missing_quick_phrases.diagnostic->find("private-missing") == std::string::npos,
@@ -170,8 +188,7 @@ int main()
         std::ofstream stream(corrupt_database, std::ios::binary);
         stream << "not a sqlite database";
     }
-    const auto corrupt_quick_phrases =
-        metasequoia::local_modes::query_quick_phrases("secret", corrupt_database, 10);
+    const auto corrupt_quick_phrases = metasequoia::local_modes::query_quick_phrases("secret", corrupt_database, 10);
     require(corrupt_quick_phrases.candidates.empty() && corrupt_quick_phrases.diagnostic.has_value() &&
                 corrupt_quick_phrases.diagnostic->find("secret") == std::string::npos &&
                 corrupt_quick_phrases.diagnostic->find("private-corrupt") == std::string::npos,
@@ -195,52 +212,50 @@ int main()
         database.execute("INSERT INTO kaomoji VALUES('kind','','single prefix',50)");
     }
 
-    const auto emoji = metasequoia::local_modes::query_emoji(
-        "XIAOLIAN", SchemeType::Quanpin, others_database, 10);
-    require(!emoji.diagnostic.has_value() && emoji.candidates.size() == 2 &&
-                emoji.candidates[0].word == "😀" && emoji.candidates[1].word == "😄" &&
-                emoji.candidates[0].pinyin == "xiaolian" &&
+    const auto emoji = metasequoia::local_modes::query_emoji("XIAOLIAN", SchemeType::Quanpin, others_database, 10);
+    require(!emoji.diagnostic.has_value() && emoji.candidates.size() == 2 && emoji.candidates[0].word == "😀" &&
+                emoji.candidates[1].word == "😄" && emoji.candidates[0].pinyin == "xiaolian" &&
                 emoji.candidates[0].source == CandidateSource::Emoji,
             "Emoji lookup did not normalize, order, or deduplicate full-pinyin matches.");
-    require(metasequoia::local_modes::query_emoji("xl", SchemeType::Quanpin, others_database, 10)
-                    .candidates.front().word == "😀" &&
-                metasequoia::local_modes::query_emoji("laugh", SchemeType::Quanpin, others_database, 10)
-                    .candidates.front().word == "😀",
-            "Emoji lookup did not support jianpin and English keywords.");
-    const auto shuangpin_emoji = metasequoia::local_modes::query_emoji(
-        "xnlm", SchemeType::Shuangpin, others_database, 10);
+    require(
+        metasequoia::local_modes::query_emoji("xl", SchemeType::Quanpin, others_database, 10).candidates.front().word ==
+                "😀" &&
+            metasequoia::local_modes::query_emoji("laugh", SchemeType::Quanpin, others_database, 10)
+                    .candidates.front()
+                    .word == "😀",
+        "Emoji lookup did not support jianpin and English keywords.");
+    const auto shuangpin_emoji =
+        metasequoia::local_modes::query_emoji("xnlm", SchemeType::Shuangpin, others_database, 10);
     require(shuangpin_emoji.candidates.size() == 3 && shuangpin_emoji.candidates[0].word == "😀" &&
                 shuangpin_emoji.candidates[1].word == "😄" &&
                 shuangpin_emoji.candidates[2].word == "raw shuangpin match",
             "Emoji lookup did not merge raw and Xiaohe-shuangpin prefixes in catalog order.");
-    require(metasequoia::local_modes::query_emoji("xiaolian", SchemeType::Quanpin, others_database, 1)
-                    .candidates.size() == 1 &&
-                metasequoia::local_modes::query_emoji("", SchemeType::Quanpin, others_database, 10)
-                    .candidates.empty() &&
-                metasequoia::local_modes::query_emoji("bad1", SchemeType::Quanpin, others_database, 10)
-                    .candidates.empty() &&
-                metasequoia::local_modes::query_emoji("x", SchemeType::Quanpin, others_database, 0)
-                    .candidates.empty(),
-            "Emoji lookup did not honor its validation and limit rules.");
+    require(
+        metasequoia::local_modes::query_emoji("xiaolian", SchemeType::Quanpin, others_database, 1).candidates.size() ==
+                1 &&
+            metasequoia::local_modes::query_emoji("", SchemeType::Quanpin, others_database, 10).candidates.empty() &&
+            metasequoia::local_modes::query_emoji("bad1", SchemeType::Quanpin, others_database, 10)
+                .candidates.empty() &&
+            metasequoia::local_modes::query_emoji("x", SchemeType::Quanpin, others_database, 0).candidates.empty(),
+        "Emoji lookup did not honor its validation and limit rules.");
 
-    const auto kaomoji = metasequoia::local_modes::query_kaomoji(
-        "HAIXIU", SchemeType::Quanpin, others_database, 10);
+    const auto kaomoji = metasequoia::local_modes::query_kaomoji("HAIXIU", SchemeType::Quanpin, others_database, 10);
     require(!kaomoji.diagnostic.has_value() && kaomoji.candidates.size() == 2 &&
                 kaomoji.candidates[0].word == "(*/ω＼*)" && kaomoji.candidates[1].word == "(^_^)" &&
-                kaomoji.candidates[0].pinyin == "haixiu" &&
-                kaomoji.candidates[0].source == CandidateSource::Kaomoji,
+                kaomoji.candidates[0].pinyin == "haixiu" && kaomoji.candidates[0].source == CandidateSource::Kaomoji,
             "Kaomoji lookup did not normalize, order, or deduplicate full-pinyin matches.");
-    require(metasequoia::local_modes::query_kaomoji("hx", SchemeType::Quanpin, others_database, 10)
-                    .candidates.front().word == "(*/ω＼*)" &&
-                metasequoia::local_modes::query_kaomoji("kiss", SchemeType::Quanpin, others_database, 10)
-                    .candidates.front().word == "( ˘ ³˘)♥" &&
-                !metasequoia::local_modes::query_kaomoji("k", SchemeType::Quanpin, others_database, 10)
-                     .candidates.empty(),
-            "Kaomoji lookup did not support jianpin, English, and single-letter prefixes.");
-    const auto shuangpin_kaomoji = metasequoia::local_modes::query_kaomoji(
-        "hx", SchemeType::Shuangpin, others_database, 10);
-    require(shuangpin_kaomoji.candidates.size() == 2 &&
-                shuangpin_kaomoji.candidates.front().word == "(*/ω＼*)",
+    require(
+        metasequoia::local_modes::query_kaomoji("hx", SchemeType::Quanpin, others_database, 10)
+                    .candidates.front()
+                    .word == "(*/ω＼*)" &&
+            metasequoia::local_modes::query_kaomoji("kiss", SchemeType::Quanpin, others_database, 10)
+                    .candidates.front()
+                    .word == "( ˘ ³˘)♥" &&
+            !metasequoia::local_modes::query_kaomoji("k", SchemeType::Quanpin, others_database, 10).candidates.empty(),
+        "Kaomoji lookup did not support jianpin, English, and single-letter prefixes.");
+    const auto shuangpin_kaomoji =
+        metasequoia::local_modes::query_kaomoji("hx", SchemeType::Shuangpin, others_database, 10);
+    require(shuangpin_kaomoji.candidates.size() == 2 && shuangpin_kaomoji.candidates.front().word == "(*/ω＼*)",
             "Kaomoji lookup did not expand Xiaohe shuangpin or deduplicate merged matches.");
 
     const auto missing_emoji = metasequoia::local_modes::query_emoji(
@@ -249,8 +264,8 @@ int main()
                 missing_emoji.diagnostic->find("privatecode") == std::string::npos &&
                 missing_emoji.diagnostic->find("private-others-missing") == std::string::npos,
             "A missing Emoji database lacked a privacy-safe diagnostic.");
-    const auto corrupt_kaomoji = metasequoia::local_modes::query_kaomoji(
-        "privatecode", SchemeType::Quanpin, corrupt_database, 10);
+    const auto corrupt_kaomoji =
+        metasequoia::local_modes::query_kaomoji("privatecode", SchemeType::Quanpin, corrupt_database, 10);
     require(corrupt_kaomoji.candidates.empty() && corrupt_kaomoji.diagnostic.has_value() &&
                 corrupt_kaomoji.diagnostic->find("privatecode") == std::string::npos &&
                 corrupt_kaomoji.diagnostic->find("private-corrupt") == std::string::npos,

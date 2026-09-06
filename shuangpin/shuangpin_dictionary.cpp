@@ -44,10 +44,11 @@ std::string escape_sql_text(std::string text)
 } // namespace
 
 ShuangpinDictionary::ShuangpinDictionary(const ShuangpinProfile &profile, metasequoia::RuntimePaths paths)
-    : profile_(profile), paths_(std::move(paths)),
-      decoder_(paths_.resource(metasequoia::assets::pinyin_model), paths_.user(metasequoia::assets::pinyin_user_dictionary)),
-      helpcodes_(HelpcodeUtils::load_helpcode_keymap(paths_.resources, HelpcodeUtils::selected_helpcode_schema())), _kb_input_sequence(100), _cached_buffer(128), _cached_buffer_sgl(128),
-      _cached_buffer_sgl_reversed(128), _cached_buffer_dbl(128), _cached_buffer_series(128)
+    : profile_(profile), paths_(std::move(paths)), decoder_(paths_.resource(metasequoia::assets::pinyin_model),
+                                                            paths_.user(metasequoia::assets::pinyin_user_dictionary)),
+      helpcodes_(HelpcodeUtils::load_helpcode_keymap(paths_.resources, HelpcodeUtils::selected_helpcode_schema())),
+      _kb_input_sequence(100), _cached_buffer(128), _cached_buffer_sgl(128), _cached_buffer_sgl_reversed(128),
+      _cached_buffer_dbl(128), _cached_buffer_series(128)
 {
     // 最多可以输出 64 个汉字，拼音最多可以接受 128 个字符
 
@@ -186,11 +187,11 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generateSeries( //
         const std::string quanpin_segmentation =
             ShuangpinUtil::convert_seg_shuangpin_to_seg_complete_pinyin(pinyin_segmentation, profile_);
         const quanpin::WordLatticeOptions lattice_options;
-        quanpin::merge_lattice_candidates(
-            candidate_list, quanpin::split_segments(quanpin_segmentation),
-            quanpin::make_lattice_db_lookup(quanpin_db_, quanpin_statement_cache_, quanpin::QuerySource::Shuangpin,
-                                            lattice_options.span_limit),
-            pinyin_sequence, lattice_options);
+        quanpin::merge_lattice_candidates(candidate_list, quanpin::split_segments(quanpin_segmentation),
+                                          quanpin::make_lattice_db_lookup(quanpin_db_, quanpin_statement_cache_,
+                                                                          quanpin::QuerySource::Shuangpin,
+                                                                          lattice_options.span_limit),
+                                          pinyin_sequence, lattice_options);
 
         /* 缓存起来 */
         _cached_buffer_series.insert(effective_cache_key, candidate_list);
@@ -320,13 +321,11 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generate_with_helpcod
 )
 {
     vector<WordItem> candidate_list;
-    const bool reversed_single_helpcode =
-        help_codes.size() == 1 && help_codes[0] >= 'A' && help_codes[0] <= 'Z';
+    const bool reversed_single_helpcode = help_codes.size() == 1 && help_codes[0] >= 'A' && help_codes[0] <= 'Z';
     // Check cache first
     if (help_codes.size() == 1)
     {
-        auto &single_helpcode_cache =
-            reversed_single_helpcode ? _cached_buffer_sgl_reversed : _cached_buffer_sgl;
+        auto &single_helpcode_cache = reversed_single_helpcode ? _cached_buffer_sgl_reversed : _cached_buffer_sgl;
         if (const auto cached = single_helpcode_cache.get(pinyin_sequence))
         {
             reset_cache_if_database_changed();
@@ -359,8 +358,7 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generate_with_helpcod
             help_codes,              //
             pinyin_sequence          //
         );
-        auto &single_helpcode_cache =
-            reversed_single_helpcode ? _cached_buffer_sgl_reversed : _cached_buffer_sgl;
+        auto &single_helpcode_cache = reversed_single_helpcode ? _cached_buffer_sgl_reversed : _cached_buffer_sgl;
         single_helpcode_cache.insert(pinyin_sequence, result_list);
     }
     else if (help_codes.size() == 2)
@@ -579,8 +577,7 @@ int ShuangpinDictionary::handleVkCode(ImeKeyCode vk, ImeModifierMask modifiers_d
             { /* 双拼部分是完整的拼音，需要触发辅助码 */
                 _pure_pinyin_sequence = _pinyin_sequence.substr(0, _pinyin_sequence.size() - 1);
                 _pinyin_segmentation = ShuangpinUtil::pinyin_segmentation(_pure_pinyin_sequence, profile_);
-                _pinyin_helpcodes =
-                    _pinyin_sequence_with_cases.substr(_pinyin_sequence_with_cases.size() - 1, 1);
+                _pinyin_helpcodes = _pinyin_sequence_with_cases.substr(_pinyin_sequence_with_cases.size() - 1, 1);
                 _cur_candidate_list = generate_with_helpcodes( //
                     _pure_pinyin_sequence,                     //
                     _pinyin_segmentation,                      //
@@ -722,7 +719,8 @@ int ShuangpinDictionary::update_weight_by_pinyin_and_word(string pinyin, string 
     {
         return ERROR_CODE;
     }
-    (void)user_dictionary::record_pinyin_upsert_from_database(quanpin_db_path_, normalized, word, metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)));
+    (void)user_dictionary::record_pinyin_upsert_from_database(
+        quanpin_db_path_, normalized, word, metasequoia::path_to_utf8(paths_.user(metasequoia::assets::user_journal)));
     reset_cache();
     return OK;
 }
@@ -1049,8 +1047,6 @@ bool ShuangpinDictionary::do_validate(string key, string jp, string value) const
     return pure_key.size() % 2 == 0 && pure_key.size() == han_count * 2;
 }
 
-
-
 string ShuangpinDictionary::search_sentence_from_ime_engine(const string &user_pinyin)
 {
     return decoder_.sentence(user_pinyin);
@@ -1139,9 +1135,8 @@ int ShuangpinDictionary::insert_word_to_cached_buffer_series(const std::string &
 
     if (source == CandidateSource::CloudSuggestion)
     {
-        const auto ai = std::find_if(list.begin(), list.end(), [](const WordItem &item) {
-            return item.source == CandidateSource::AiSuggestion;
-        });
+        const auto ai = std::find_if(list.begin(), list.end(),
+                                     [](const WordItem &item) { return item.source == CandidateSource::AiSuggestion; });
         if (ai != list.end())
         {
             WordItem ai_item = std::move(*ai);

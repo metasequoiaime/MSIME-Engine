@@ -29,7 +29,6 @@ class ShuangpinUtil
     static std::string convert_seg_shuangpin_to_seg_complete_pinyin(
         std::string seg_shangpin, const ShuangpinProfile &profile = GetXiaoheShuangpinProfile());
 
-    static bool IsFullHelpMode(std::string pinyin,
-                               const ShuangpinProfile &profile = GetXiaoheShuangpinProfile());
+    static bool IsFullHelpMode(std::string pinyin, const ShuangpinProfile &profile = GetXiaoheShuangpinProfile());
     static std::string GetFullHelpCodes(std::string pinyin);
 };
