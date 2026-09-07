@@ -1,6 +1,7 @@
 #include "../contracts/assets/assets.h"
 #include "../contracts/dictionary/format.h"
 #include "user_dictionary_journal.h"
+#include <metasequoia/personal_dictionary.h>
 
 #include <sqlite3.h>
 #include <cctype>
@@ -106,24 +107,26 @@ bool write_upsert_journal(sqlite3_stmt *stmt, DictionaryKind kind, const std::st
 
 bool ensure_schema(sqlite3 *db)
 {
-    constexpr const char *sql = "CREATE TABLE IF NOT EXISTS user_dictionary_operations("
-                                "dictionary TEXT NOT NULL,"
-                                "key TEXT NOT NULL,"
-                                "value TEXT NOT NULL,"
-                                "operation TEXT NOT NULL CHECK(operation IN ('upsert','delete')),"
-                                "weight INTEGER NOT NULL DEFAULT 0,"
-                                "display TEXT NOT NULL DEFAULT '',"
-                                "user_inserted INTEGER NOT NULL DEFAULT 0,"
-                                "updated_at INTEGER NOT NULL DEFAULT(unixepoch()),"
-                                "PRIMARY KEY(dictionary,key,value));"
-                                "CREATE TABLE IF NOT EXISTS candidate_selection_state("
-                                "context_key TEXT NOT NULL,entry_key TEXT NOT NULL,value TEXT NOT NULL,"
-                                "selection_count INTEGER NOT NULL DEFAULT 0,"
-                                "PRIMARY KEY(context_key,entry_key,value));"
-                                "CREATE TABLE IF NOT EXISTS fixed_candidate_positions("
-                                "context_key TEXT NOT NULL,entry_key TEXT NOT NULL,value TEXT NOT NULL,"
-                                "position INTEGER NOT NULL CHECK(position BETWEEN 1 AND 5),"
-                                "PRIMARY KEY(context_key,entry_key,value),UNIQUE(context_key,position));";
+    constexpr const char *sql =
+        "CREATE TABLE IF NOT EXISTS user_dictionary_operations("
+        "dictionary TEXT NOT NULL,"
+        "key TEXT NOT NULL,"
+        "value TEXT NOT NULL,"
+        "operation TEXT NOT NULL CHECK(operation IN ('upsert','delete')),"
+        "weight INTEGER NOT NULL DEFAULT 0,"
+        "display TEXT NOT NULL DEFAULT '',"
+        "user_inserted INTEGER NOT NULL DEFAULT 0,"
+        "updated_at INTEGER NOT NULL DEFAULT(unixepoch()),"
+        "PRIMARY KEY(dictionary,key,value));"
+        "CREATE TABLE IF NOT EXISTS personal_dictionary_receipts( request_id TEXT PRIMARY KEY, payload TEXT NOT NULL);"
+        "CREATE TABLE IF NOT EXISTS candidate_selection_state("
+        "context_key TEXT NOT NULL,entry_key TEXT NOT NULL,value TEXT NOT NULL,"
+        "selection_count INTEGER NOT NULL DEFAULT 0,"
+        "PRIMARY KEY(context_key,entry_key,value));"
+        "CREATE TABLE IF NOT EXISTS fixed_candidate_positions("
+        "context_key TEXT NOT NULL,entry_key TEXT NOT NULL,value TEXT NOT NULL,"
+        "position INTEGER NOT NULL CHECK(position BETWEEN 1 AND 5),"
+        "PRIMARY KEY(context_key,entry_key,value),UNIQUE(context_key,position));";
     if (sqlite3_exec(db, sql, nullptr, nullptr, nullptr) != SQLITE_OK)
         return false;
 
@@ -1107,3 +1110,247 @@ ReplayResult replay(const std::string &user_db_path, const std::string &main_db_
     return result;
 }
 } // namespace user_dictionary
+
+namespace metasequoia
+{
+namespace
+{
+user_dictionary::DictionaryKind journal_kind(PersonalDictionaryKind kind)
+{
+    switch (kind)
+    {
+    case PersonalDictionaryKind::Pinyin:
+        return user_dictionary::DictionaryKind::Pinyin;
+    case PersonalDictionaryKind::Wubi:
+        return user_dictionary::DictionaryKind::Wubi;
+    case PersonalDictionaryKind::QuickPhrase:
+        return user_dictionary::DictionaryKind::QuickPhrase;
+    case PersonalDictionaryKind::English:
+        return user_dictionary::DictionaryKind::English;
+    }
+    return user_dictionary::DictionaryKind::Pinyin;
+}
+bool apply_personal_edit(sqlite3 *db, const PersonalDictionaryEntry &entry, bool remove)
+{
+    using namespace user_dictionary;
+    const std::string operation = remove ? "delete" : "upsert";
+    bool applied = false;
+    switch (entry.kind)
+    {
+    case PersonalDictionaryKind::Pinyin:
+        applied = apply_pinyin(db, entry.key, entry.value, operation, entry.weight);
+        break;
+    case PersonalDictionaryKind::Wubi:
+        applied = apply_simple(db, "wubi86", "key", "value", entry.key, entry.value, operation, entry.weight);
+        break;
+    case PersonalDictionaryKind::QuickPhrase:
+        applied = apply_simple(db, "quick_parases", "key", "value", entry.key, entry.value, operation, entry.weight);
+        break;
+    case PersonalDictionaryKind::English:
+        applied = apply_english(db, entry.key, entry.value, operation, entry.weight, entry.value);
+        break;
+    }
+    if (!applied)
+        return false;
+    auto journal = prepare(
+        db, "INSERT INTO "
+            "personal_journal.user_dictionary_operations(dictionary,key,value,operation,weight,display,user_inserted)"
+            " VALUES(?1,?2,?3,?4,?5,?6,1) ON CONFLICT(dictionary,key,value) DO UPDATE SET operation=excluded.operation,"
+            " weight=excluded.weight,display=excluded.display,user_inserted=1,updated_at=unixepoch()");
+    return journal && bind_text(journal.get(), 1, kind_name(journal_kind(entry.kind))) &&
+           bind_text(journal.get(), 2, entry.key) && bind_text(journal.get(), 3, entry.value) &&
+           bind_text(journal.get(), 4, operation) &&
+           sqlite3_bind_int64(journal.get(), 5, remove ? 0 : entry.weight) == SQLITE_OK &&
+           bind_text(journal.get(), 6, entry.kind == PersonalDictionaryKind::English ? entry.value : "") &&
+           sqlite3_step(journal.get()) == SQLITE_DONE;
+}
+} // namespace
+PersonalDictionaryEditResult edit_personal_dictionary(const RuntimePaths &paths,
+                                                      const std::optional<PersonalDictionaryEntry> &previous,
+                                                      const std::optional<PersonalDictionaryEntry> &replacement,
+                                                      const std::string &request_id)
+{
+    using namespace user_dictionary;
+    if (request_id.size() > 128 || !std::all_of(request_id.begin(), request_id.end(), [](unsigned char ch) {
+            return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || ch == '-' ||
+                   ch == '_';
+        }))
+        return {false, "Invalid personal dictionary request ID"};
+    if (!previous && !replacement)
+        return {false, "An entry is required"};
+    std::optional<PersonalDictionaryEntry> old_entry, new_entry;
+    if (previous)
+    {
+        auto checked = validate_personal_dictionary_entry(*previous);
+        if (!checked.entry)
+            return {false, checked.error};
+        old_entry = std::move(checked.entry);
+    }
+    if (replacement)
+    {
+        auto checked = validate_personal_dictionary_entry(*replacement);
+        if (!checked.entry)
+            return {false, checked.error};
+        new_entry = std::move(checked.entry);
+    }
+    try
+    {
+        paths.validate();
+        const auto journal_path = path_to_utf8(paths.user(assets::user_journal));
+        const auto english_path = path_to_utf8(paths.dictionary(assets::english_dictionary));
+        if (!ensure_user_database(journal_path) || !EnglishDictionary::ensure_schema(english_path))
+            return {false, "Cannot prepare personal dictionary storage"};
+        auto db = open_database(path_to_utf8(paths.dictionary(assets::main_dictionary)), SQLITE_OPEN_READWRITE);
+        if (!db)
+            return {false, "Cannot open dictionary"};
+        for (const auto &attachment :
+             {std::make_pair("personal_journal", journal_path), std::make_pair("replay_english", english_path)})
+        {
+            auto attach = prepare(db.get(), std::string("ATTACH DATABASE ?1 AS ") + attachment.first);
+            if (!attach || !bind_text(attach.get(), 1, attachment.second) || sqlite3_step(attach.get()) != SQLITE_DONE)
+                return {false, "Cannot attach personal dictionary storage"};
+        }
+        if (!execute_sql(db.get(), "BEGIN IMMEDIATE"))
+            return {false, "Cannot begin personal dictionary edit"};
+        const auto fail = [&](const char *message) {
+            execute_sql(db.get(), "ROLLBACK");
+            return PersonalDictionaryEditResult{false, message};
+        };
+        std::string payload;
+        const auto append_payload = [&](const std::optional<PersonalDictionaryEntry> &entry) {
+            if (!entry)
+            {
+                payload += "none;";
+                return;
+            }
+            payload += std::to_string(static_cast<int>(entry->kind)) + ";" + std::to_string(entry->weight) + ";";
+            for (const auto &value : {entry->key, entry->value})
+                payload += std::to_string(value.size()) + ":" + value;
+        };
+        if (!request_id.empty())
+        {
+            append_payload(old_entry);
+            append_payload(new_entry);
+            auto receipt = prepare(
+                db.get(), "SELECT payload FROM personal_journal.personal_dictionary_receipts WHERE request_id=?1");
+            if (!receipt || !bind_text(receipt.get(), 1, request_id))
+                return fail("Cannot read edit receipt");
+            const int step = sqlite3_step(receipt.get());
+            if (step == SQLITE_ROW)
+            {
+                const auto *stored = sqlite3_column_text(receipt.get(), 0);
+                const bool same = stored && payload == reinterpret_cast<const char *>(stored);
+                receipt.reset();
+                if (!same)
+                    return fail("Request ID was already used for another edit");
+                if (!execute_sql(db.get(), "COMMIT"))
+                    return fail("Cannot finish edit retry");
+                return {true, {}};
+            }
+            if (step != SQLITE_DONE)
+                return fail("Cannot finish reading edit receipt");
+        }
+        if (old_entry)
+        {
+            auto match = prepare(db.get(), "SELECT 1 FROM personal_journal.user_dictionary_operations"
+                                           " WHERE dictionary=?1 AND key=?2 AND value=?3 AND weight=?4 AND "
+                                           "operation='upsert' AND user_inserted=1");
+            if (!match || !bind_text(match.get(), 1, kind_name(journal_kind(old_entry->kind))) ||
+                !bind_text(match.get(), 2, old_entry->key) || !bind_text(match.get(), 3, old_entry->value) ||
+                sqlite3_bind_int64(match.get(), 4, old_entry->weight) != SQLITE_OK ||
+                sqlite3_step(match.get()) != SQLITE_ROW)
+                return fail("The entry changed; reload it before editing");
+            match.reset();
+            if (!apply_personal_edit(db.get(), *old_entry, true))
+                return fail("Cannot remove previous personal entry");
+        }
+        if (new_entry && !apply_personal_edit(db.get(), *new_entry, false))
+            return fail("Cannot save personal entry");
+        if (!request_id.empty())
+        {
+            auto receipt =
+                prepare(db.get(),
+                        "INSERT INTO personal_journal.personal_dictionary_receipts(request_id,payload) VALUES(?1,?2)");
+            if (!receipt || !bind_text(receipt.get(), 1, request_id) || !bind_text(receipt.get(), 2, payload) ||
+                sqlite3_step(receipt.get()) != SQLITE_DONE)
+                return fail("Cannot save edit receipt");
+        }
+        if (!execute_sql(db.get(), "COMMIT"))
+            return fail("Cannot commit personal dictionary edit");
+        return {true, {}};
+    }
+    catch (const std::exception &)
+    {
+        return {false, "Cannot access personal dictionary storage"};
+    }
+}
+PersonalDictionaryPage personal_dictionary_entries(const RuntimePaths &paths, std::size_t offset, std::size_t limit)
+{
+    using namespace user_dictionary;
+    PersonalDictionaryPage result;
+    if (limit == 0 || limit > 1000 || offset > 1000000)
+    {
+        result.error = "Invalid personal dictionary page";
+        return result;
+    }
+    try
+    {
+        paths.validate();
+        const auto journal_path = paths.user(assets::user_journal);
+        if (!std::filesystem::exists(journal_path))
+            return result;
+        auto db = open_database(path_to_utf8(journal_path), SQLITE_OPEN_READONLY);
+        auto rows =
+            db ? prepare(
+                     db.get(),
+                     "SELECT dictionary,key,value,weight FROM user_dictionary_operations"
+                     " WHERE user_inserted=1 AND operation='upsert' ORDER BY dictionary,key,value LIMIT ?1 OFFSET ?2")
+               : Stmt{};
+        if (!rows || sqlite3_bind_int64(rows.get(), 1, static_cast<sqlite3_int64>(limit + 1)) != SQLITE_OK ||
+            sqlite3_bind_int64(rows.get(), 2, static_cast<sqlite3_int64>(offset)) != SQLITE_OK)
+        {
+            result.error = "Cannot read personal dictionary";
+            return result;
+        }
+        int step;
+        while ((step = sqlite3_step(rows.get())) == SQLITE_ROW)
+        {
+            if (result.entries.size() == limit)
+            {
+                result.has_more = true;
+                break;
+            }
+            auto text = [&](int index) {
+                const auto *value = sqlite3_column_text(rows.get(), index);
+                return value
+                           ? std::string(reinterpret_cast<const char *>(value), sqlite3_column_bytes(rows.get(), index))
+                           : std::string{};
+            };
+            const auto kind = text(0);
+            PersonalDictionaryKind entry_kind;
+            if (kind == "pinyin")
+                entry_kind = PersonalDictionaryKind::Pinyin;
+            else if (kind == "wubi")
+                entry_kind = PersonalDictionaryKind::Wubi;
+            else if (kind == "quick")
+                entry_kind = PersonalDictionaryKind::QuickPhrase;
+            else if (kind == "english")
+                entry_kind = PersonalDictionaryKind::English;
+            else
+                continue;
+            result.entries.push_back({entry_kind, text(1), text(2), sqlite3_column_int64(rows.get(), 3)});
+        }
+        if (step != SQLITE_DONE && !result.has_more)
+        {
+            result.entries.clear();
+            result.error = "Cannot finish reading personal dictionary";
+        }
+    }
+    catch (const std::exception &)
+    {
+        result.entries.clear();
+        result.error = "Cannot access personal dictionary storage";
+    }
+    return result;
+}
+} // namespace metasequoia

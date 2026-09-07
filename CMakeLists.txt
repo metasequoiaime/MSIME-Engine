@@ -69,6 +69,7 @@ set(METASEQUOIA_IME_ENGINE_SOURCES
     shuangpin/shuangpin_query.cpp
     shuangpin/shuangpin_utils.cpp
     user_dictionary/user_dictionary_journal.cpp
+    user_dictionary/personal_dictionary.cpp
     googlepinyinime-rev/src/share/dictbuilder.cpp
     googlepinyinime-rev/src/share/dictlist.cpp
     googlepinyinime-rev/src/share/dicttrie.cpp
@@ -166,6 +167,10 @@ if(BUILD_TESTING)
     target_compile_definitions(test_data_path PRIVATE METASEQUOIA_TEST_PINYIN_MODEL="${CMAKE_CURRENT_SOURCE_DIR}/googlepinyinime-rev/data/dict_pinyin.dat")
     target_link_libraries(test_data_path PRIVATE MetasequoiaIme::Engine)
     add_test(NAME data_path COMMAND test_data_path)
+
+    add_executable(test_personal_dictionary tests/src/test_personal_dictionary.cpp)
+    target_link_libraries(test_personal_dictionary PRIVATE MetasequoiaImeEngine)
+    add_test(NAME personal_dictionary COMMAND test_personal_dictionary)
 
     add_executable(test_candidate_removal tests/src/test_candidate_removal.cpp)
     target_link_libraries(test_candidate_removal PRIVATE MetasequoiaIme::Engine)
