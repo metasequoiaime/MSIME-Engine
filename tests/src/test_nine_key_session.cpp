@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <iostream>
 #include <stdexcept>
+#include "contracts/assets/assets.h"
 
 using namespace metasequoia;
 void require(bool ok, const char *message)
@@ -113,5 +114,67 @@ int main()
     require(session.character('7').diagnostic.has_value() && session.snapshot().editing_text.size() == 32,
             "digit limit did not preserve composition");
     session.command(Command::Cancel);
+    // Learning and explicit management use canonical dictionary keys, never digit strings.
+    type(session, "64");
+    require(session.select(candidate(session, "米")).commit == "米", "disabled learning selection");
+    Session unchanged(options);
+    unchanged.set_nine_key_enabled(true);
+    type(unchanged, "64");
+    require(unchanged.snapshot().candidates.front().word == "你", "disabled learning changed ranking");
+    auto learning_options = options;
+    learning_options.learning = true;
+    learning_options.frequency.mode = FrequencyAdjustmentMode::Promote;
+    Session learner(learning_options);
+    learner.set_nine_key_enabled(true);
+    type(learner, "64");
+    auto learned = learner.select(candidate(learner, "米"));
+    require(learned.commit == "米" && !learned.diagnostic, "learning failed");
+    Session managed(options);
+    managed.set_nine_key_enabled(true);
+    type(managed, "64");
+    require(managed.snapshot().candidates.front().word == "米", "learning did not persist");
+    auto pinned = managed.pin(candidate(managed, "你"));
+    require(pinned.handled && !pinned.commit && !pinned.diagnostic && managed.snapshot().editing_text == "64" &&
+                managed.snapshot().candidates.front().word == "你",
+            "manual pin failed or committed");
+    require(!managed.remove(candidate(managed, "你")).handled, "single character was removed");
+    require(!managed.pin(999).handled && !managed.remove(999).handled && !managed.fix_position(0, 6).handled &&
+                !managed.clear_position(999).handled,
+            "invalid management action handled");
+    require(managed.fix_position(candidate(managed, "米"), 1).handled &&
+                managed.snapshot().candidates.front().word == "米",
+            "fixed position not applied");
+    Session fixed(options);
+    fixed.set_nine_key_enabled(true);
+    type(fixed, "64");
+    require(fixed.snapshot().candidates.front().word == "米", "fixed position not persisted");
+    const auto fixed_view = fixed.snapshot();
+    const auto lock = std::find(fixed_view.nine_key_spellings.begin(), fixed_view.nine_key_spellings.end(), "ni");
+    fixed.choose_nine_key_spelling(lock - fixed_view.nine_key_spellings.begin());
+    require(fixed.snapshot().candidates.front().word == "你", "fixed position escaped spelling constraint");
+    require(managed.clear_position(candidate(managed, "米")).handled &&
+                managed.snapshot().candidates.front().word == "你",
+            "clear fixed position failed");
+    managed.command(Command::Cancel);
+    type(managed, "64426");
+    auto removed = managed.remove(candidate(managed, "你好"));
+    require(removed.handled && !removed.commit && !removed.diagnostic && managed.snapshot().editing_text == "64426",
+            "phrase removal failed or changed composition");
+    Session after_removal(options);
+    after_removal.set_nine_key_enabled(true);
+    type(after_removal, "64426");
+    for (const auto &item : after_removal.snapshot().candidates)
+        require(item.word != "你好", "phrase removal did not persist");
+
+    // A persistence failure must preserve the user's commit and surface a diagnostic.
+    auto failure_options = learning_options;
+    failure_options.paths.user_data = directory / "blocked";
+    std::filesystem::create_directories(failure_options.paths.user_data / assets::user_journal);
+    Session failing(failure_options);
+    failing.set_nine_key_enabled(true);
+    type(failing, "64");
+    auto failed_learning = failing.finish(candidate(failing, "米"));
+    require(failed_learning.commit == "米" && failed_learning.diagnostic && failing.snapshot().preedit.empty(),
+            "failed learning lost commit or diagnostic");
     std::cout << "Nine-key input contract passed\n";
 }

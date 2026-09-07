@@ -1,5 +1,7 @@
 #include "nine_key_session.h"
 #include "../quanpin/quanpin_utils.h"
+#include "../user_dictionary/user_dictionary_journal.h"
+#include "../common/helpcode_utils.h"
 #include <algorithm>
 #include <unordered_set>
 
@@ -7,6 +9,23 @@ namespace metasequoia
 {
 namespace
 {
+const char *frequency_mode_name(FrequencyAdjustmentMode mode)
+{
+    switch (mode)
+    {
+    case FrequencyAdjustmentMode::Disabled:
+        return "disabled";
+    case FrequencyAdjustmentMode::Pin:
+        return "pin";
+    case FrequencyAdjustmentMode::Halve:
+        return "halve";
+    case FrequencyAdjustmentMode::Linear:
+        return "linear";
+    case FrequencyAdjustmentMode::Promote:
+        return "promote";
+    }
+    return "disabled";
+}
 constexpr std::size_t kPathLimit = 48;
 constexpr std::size_t kDigitLimit = 32;
 std::string encode(const std::string &pinyin)
@@ -135,6 +154,7 @@ void NineKeySession::refresh()
                 !starts(locked_key, canonical + "'"))
                 continue;
             candidate.pinyin = digits_.substr(0, std::min(code.size(), digits_.size()));
+            candidate.canonical_pinyin = canonical;
             candidates_.push_back(std::move(candidate));
         }
     }
@@ -149,6 +169,8 @@ void NineKeySession::refresh()
                       candidates_.end());
     if (candidates_.size() > 128)
         candidates_.resize(128);
+    user_dictionary::apply_fixed_positions(path_to_utf8(paths_.user(assets::user_journal)), ranking_context(),
+                                           candidates_, false);
     // Keep the most likely reading visible without requiring a horizontal scroll.
     if (!candidates_.empty())
     {
@@ -178,6 +200,10 @@ KeyResult NineKeySession::select(std::size_t index)
     if (index >= candidates_.size())
         return {};
     const auto selected = candidates_[index];
+    std::optional<std::string> diagnostic;
+    if (learning_ && frequency_.mode != FrequencyAdjustmentMode::Disabled && index != 0 &&
+        selected.fixed_position == 0 && editable(index))
+        diagnostic = adjust_frequency(index, false);
     digits_.erase(0, selected.pinyin.size());
     auto consumed = selected.pinyin.size();
     while (!locked_.empty() && consumed >= locked_.front().size())
@@ -186,13 +212,14 @@ KeyResult NineKeySession::select(std::size_t index)
         locked_.erase(locked_.begin());
     }
     refresh();
-    return {true, selected.word, {}};
+    return {true, selected.word, std::move(diagnostic)};
 }
 KeyResult NineKeySession::finish(std::size_t index)
 {
     if (!active())
         return {};
     std::string commit;
+    std::optional<std::string> diagnostic;
     if (index >= candidates_.size())
         return command(Command::CommitRaw);
     while (active())
@@ -203,12 +230,82 @@ KeyResult NineKeySession::finish(std::size_t index)
             break;
         }
         const auto result = select(index);
+        if (!diagnostic && result.diagnostic)
+            diagnostic = result.diagnostic;
         if (result.commit)
             commit += *result.commit;
         index = 0;
     }
     command(Command::Cancel);
-    return {true, commit, {}};
+    return {true, commit, std::move(diagnostic)};
+}
+
+std::string NineKeySession::ranking_context() const
+{
+    return "nine-key:" + digits_ + ":" + quanpin::join_segments(locked_);
+}
+
+bool NineKeySession::editable(std::size_t index) const
+{
+    if (index >= candidates_.size())
+        return false;
+    const auto &item = candidates_[index];
+    return !item.canonical_pinyin.empty() &&
+           (item.source == CandidateSource::Database || item.source == CandidateSource::UserDatabase);
+}
+
+std::optional<std::string> NineKeySession::adjust_frequency(std::size_t index, bool force_top)
+{
+    const auto &item = candidates_[index];
+    bool changed = false;
+    if (!user_dictionary::adjust_candidate_ranking(
+            path_to_utf8(paths_.dictionary(assets::main_dictionary)), path_to_utf8(paths_.user(assets::user_journal)),
+            ranking_context(), candidates_, item.canonical_pinyin, item.word,
+            force_top ? "pin" : frequency_mode_name(frequency_.mode), frequency_.linear_step, frequency_.trigger_count,
+            force_top, &changed))
+        return "Unable to persist nine-key candidate frequency adjustment.";
+    if (changed && dictionary_)
+        dictionary_->reset_cache();
+    return {};
+}
+
+KeyResult NineKeySession::pin(std::size_t index)
+{
+    if (!editable(index))
+        return {};
+    auto diagnostic = adjust_frequency(index, true);
+    refresh();
+    return {true, {}, std::move(diagnostic)};
+}
+
+KeyResult NineKeySession::remove(std::size_t index)
+{
+    if (!editable(index) || HelpcodeUtils::count_utf8_chars(candidates_[index].word) <= 1)
+        return {};
+    const auto item = candidates_[index];
+    if (!user_dictionary::delete_dictionary_candidate(
+            path_to_utf8(paths_.dictionary(assets::main_dictionary)), path_to_utf8(paths_.user(assets::user_journal)),
+            user_dictionary::DictionaryKind::Pinyin, item.canonical_pinyin, item.word))
+        return {true, {}, "Unable to persist nine-key candidate removal."};
+    dictionary_->reset_cache();
+    refresh();
+    return {true, {}, {}};
+}
+
+KeyResult NineKeySession::set_position(std::size_t index, int position)
+{
+    if (!editable(index) || position < 0 || position > 5)
+        return {};
+    const auto &item = candidates_[index];
+    const auto journal = path_to_utf8(paths_.user(assets::user_journal));
+    const bool saved = position == 0 ? user_dictionary::clear_fixed_position(journal, ranking_context(),
+                                                                             item.canonical_pinyin, item.word)
+                                     : user_dictionary::set_fixed_position(journal, ranking_context(),
+                                                                           item.canonical_pinyin, item.word, position);
+    if (!saved)
+        return {true, {}, "Unable to persist nine-key candidate position."};
+    refresh();
+    return {true, {}, {}};
 }
 KeyResult NineKeySession::command(Command command)
 {

@@ -9,7 +9,8 @@ class Session::Impl
 {
   public:
     explicit Impl(const SessionOptions &options)
-        : session(options.scheme, options.shuangpin_profile, options.paths), nine_key(options.paths)
+        : session(options.scheme, options.shuangpin_profile, options.paths),
+          nine_key(options.paths, options.learning, options.frequency)
     {
         session.set_quanpin_autocorrect_enabled(options.autocorrect);
         session.set_quanpin_helpcode_enabled(options.helpcode);
@@ -93,13 +94,13 @@ KeyResult Session::select_edge(std::size_t index, CandidateEdge edge)
 KeyResult Session::pin(std::size_t index)
 {
     if (impl_->nine_key.active())
-        return {};
+        return impl_->nine_key.pin(index);
     return impl_->session.pin_candidate(index);
 }
 KeyResult Session::remove(std::size_t index)
 {
     if (impl_->nine_key.active())
-        return {};
+        return impl_->nine_key.remove(index);
     return impl_->session.remove_candidate(index);
 }
 KeyResult Session::fix_position(std::size_t index, int position)
@@ -107,13 +108,13 @@ KeyResult Session::fix_position(std::size_t index, int position)
     if (position < 1 || position > 5)
         return {};
     if (impl_->nine_key.active())
-        return {};
+        return impl_->nine_key.set_position(index, position);
     return impl_->session.set_candidate_position(index, position);
 }
 KeyResult Session::clear_position(std::size_t index)
 {
     if (impl_->nine_key.active())
-        return {};
+        return impl_->nine_key.set_position(index, 0);
     return impl_->session.set_candidate_position(index, 0);
 }
 KeyResult Session::finish()
