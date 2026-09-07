@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.4.1...v0.5.0) (2026-09-07)
+
+
+### Features
+
+* **nine-key:** support learning and candidate management ([#70](https://github.com/metasequoiaime/MSIME-Engine/issues/70)) ([f00ab4e](https://github.com/metasequoiaime/MSIME-Engine/commit/f00ab4ea1e701c2e8fb2ba94a3ecc796aacdc2f8))
+
 ## [0.4.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.4.0...v0.4.1) (2026-09-07)
 
 
