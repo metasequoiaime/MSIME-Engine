@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.5.0...v0.6.0) (2026-09-08)
+
+
+### Features
+
+* **dictionary:** expose transactional personal entry editing ([#72](https://github.com/metasequoiaime/MSIME-Engine/issues/72)) ([ec1659c](https://github.com/metasequoiaime/MSIME-Engine/commit/ec1659caf0b9b37706419929c691cdecde575e5a))
+
 ## [0.5.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.4.1...v0.5.0) (2026-09-07)
 
 
