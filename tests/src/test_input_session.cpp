@@ -361,9 +361,12 @@ int run_test()
                     "A v-form umlaut syllable did not query its canonical dictionary key.");
         }
 
-        const std::array<UmlautAliasCase, 6> missing_final_g_cases = {
-            {{"zhonguo", "中国"}, {"zhon'guo", "中国"}, {"zhongguo", "中国"},
-             {"dongua", "冬瓜"}, {"donggua", "冬瓜"}, {"dongan", "东安"}}};
+        const std::array<UmlautAliasCase, 6> missing_final_g_cases = {{{"zhonguo", "中国"},
+                                                                       {"zhon'guo", "中国"},
+                                                                       {"zhongguo", "中国"},
+                                                                       {"dongua", "冬瓜"},
+                                                                       {"donggua", "冬瓜"},
+                                                                       {"dongan", "东安"}}};
         for (const auto &test_case : missing_final_g_cases)
         {
             metasequoia::InputSession corrected;
