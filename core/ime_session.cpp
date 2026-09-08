@@ -217,6 +217,7 @@ void ImeSession::refresh_candidates()
     state_.request.enable_shuangpin_helpcode = enable_shuangpin_helpcode_;
     state_.request.enable_quanpin_helpcode = enable_quanpin_helpcode_;
     state_.request.enable_quanpin_autocorrect = enable_quanpin_autocorrect_;
+    state_.request.fuzzy_pinyin = fuzzy_pinyin_;
     ApplyShuangpinHelpcodeSegmentation(state_.request, shuangpin_profile_);
 
     if (!state_.request.valid)

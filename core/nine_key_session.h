@@ -8,8 +8,9 @@ namespace metasequoia
 class NineKeySession
 {
   public:
-    explicit NineKeySession(RuntimePaths paths, bool learning = false, FrequencyAdjustmentOptions frequency = {})
-        : paths_(std::move(paths)), learning_(learning), frequency_(frequency)
+    explicit NineKeySession(RuntimePaths paths, bool learning = false, FrequencyAdjustmentOptions frequency = {},
+                            FuzzyPinyinOptions fuzzy = {})
+        : paths_(std::move(paths)), learning_(learning), frequency_(frequency), fuzzy_(fuzzy)
     {
     }
     bool active() const
@@ -35,6 +36,7 @@ class NineKeySession
     RuntimePaths paths_;
     bool learning_;
     FrequencyAdjustmentOptions frequency_;
+    FuzzyPinyinOptions fuzzy_;
     std::unique_ptr<QuanpinDictionary> dictionary_;
     std::string digits_;
     std::vector<std::string> locked_;

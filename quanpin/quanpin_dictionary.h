@@ -8,6 +8,7 @@
 #include "../core/key_event.h"
 #include "../core/word_item.h"
 #include "quanpin_query.h"
+#include "../core/fuzzy_pinyin_options.h"
 #include <sqlite3.h>
 #include <string>
 #include <unordered_map>
@@ -25,7 +26,8 @@ class QuanpinDictionary
     ~QuanpinDictionary();
 
     std::vector<WordItem> query(const std::string &raw_input, const std::string &segmentation = "",
-                                bool enable_autocorrect = false);
+                                bool enable_autocorrect = false, metasequoia::FuzzyPinyinOptions fuzzy = {});
+    std::vector<WordItem> fuzzy_candidates(const std::string &segmentation, metasequoia::FuzzyPinyinOptions options);
     bool expand_initial_candidates(const std::string &code, std::vector<WordItem> &candidates);
     std::optional<WordItem> find_candidate(const std::string &key, const std::string &value);
     int handleVkCode(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch = 0);
@@ -60,6 +62,8 @@ class QuanpinDictionary
     }
 
   private:
+    std::vector<WordItem> query_exact(const std::string &raw_input, const std::string &segmentation,
+                                      bool enable_autocorrect);
     std::vector<WordItem> query_series(const std::string &raw_input, const std::string &segmentation,
                                        const quanpin::Segments &segments);
     std::vector<WordItem> query_single_path(const std::string &raw_input, const std::string &segmentation,

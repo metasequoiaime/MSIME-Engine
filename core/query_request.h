@@ -1,6 +1,7 @@
 #pragma once
 
 #include "key_event.h"
+#include "fuzzy_pinyin_options.h"
 #include "scheme_type.h"
 #include <string>
 #include <vector>
@@ -25,5 +26,6 @@ struct QueryRequest
     bool enable_quanpin_helpcode = false;
     bool enable_quanpin_autocorrect = true;
     std::vector<KeyStroke> key_strokes;
+    metasequoia::FuzzyPinyinOptions fuzzy_pinyin;
     bool valid = false;
 };

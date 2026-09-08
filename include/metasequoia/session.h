@@ -3,6 +3,7 @@
 #include "../../core/input_session_types.h"
 #include "../../core/runtime_paths.h"
 #include "../../shuangpin/shuangpin_profile.h"
+#include "../../core/fuzzy_pinyin_options.h"
 #include <memory>
 
 namespace metasequoia
@@ -17,6 +18,7 @@ struct SessionOptions
     bool helpcode = true;
     bool chinese_punctuation = true;
     bool learning = true;
+    FuzzyPinyinOptions fuzzy_pinyin;
     FrequencyAdjustmentOptions frequency;
     LocalModeOptions local_modes;
     EnglishInputOptions english;

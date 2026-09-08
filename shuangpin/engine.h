@@ -1,4 +1,5 @@
 #pragma once
+#include "../quanpin/quanpin_dictionary.h"
 
 #include "../core/query_request.h"
 #include "../core/word_item.h"
@@ -25,10 +26,16 @@ class ShuangpinEngine
 
     void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table)
     {
+        helpcodes_ = table;
         dictionary_.set_helpcode_keymap(std::move(table));
     }
 
   private:
     const ShuangpinProfile profile_;
     ShuangpinDictionary dictionary_;
+    std::unique_ptr<QuanpinDictionary> fuzzy_dictionary_;
+    metasequoia::RuntimePaths paths_;
+    HelpcodeUtils::SharedKeymap helpcodes_;
+    std::vector<WordItem> append_fuzzy(std::vector<WordItem> exact, const std::string &raw_segmentation,
+                                       metasequoia::FuzzyPinyinOptions options, const std::string &helpcodes = "");
 };

@@ -1,3 +1,4 @@
+#include "fuzzy_pinyin.h"
 #include "quanpin_dictionary.h"
 #include "../user_dictionary/user_dictionary_journal.h"
 
@@ -120,8 +121,8 @@ QuanpinDictionary::~QuanpinDictionary()
     }
 }
 
-std::vector<WordItem> QuanpinDictionary::query(const std::string &raw_input, const std::string &segmentation,
-                                               bool enable_autocorrect)
+std::vector<WordItem> QuanpinDictionary::query_exact(const std::string &raw_input, const std::string &segmentation,
+                                                     bool enable_autocorrect)
 {
     if (raw_input.empty())
     {
@@ -1053,4 +1054,52 @@ bool QuanpinDictionary::do_validate(const std::string &key, const std::string &j
     }
 
     return cuts.front().size() == han_count;
+}
+
+std::vector<WordItem> QuanpinDictionary::fuzzy_candidates(const std::string &segmentation,
+                                                          metasequoia::FuzzyPinyinOptions options)
+{
+    std::vector<WordItem> result;
+    if (!options.rules || !db_)
+        return result;
+    reset_cache_if_database_changed();
+    const auto cache_key = "fuzzy:" + std::to_string(options.rules) + ":" + segmentation;
+    if (const auto cached = series_cache_.get(cache_key))
+        return *cached;
+    const auto segments = quanpin::split_segments(segmentation);
+    std::size_t budget = 128;
+    for (std::size_t count = segments.size(); count > 0 && budget > 1; --count)
+    {
+        const quanpin::Segments prefix(segments.begin(), segments.begin() + count);
+        const auto paths = quanpin::fuzzy_segmentations(prefix, options, std::min<std::size_t>(64, budget));
+        if (paths.empty())
+            continue;
+        budget -= paths.size();
+        const auto rows = quanpin::query_exact_segmentations_keyed_flat(paths, db_, statement_cache_, 128);
+        for (const auto &row : rows)
+        {
+            WordItem item(quanpin::join_segments(prefix), row.value, row.weight, CandidateSource::Database, row.key);
+            item.fuzzy = true;
+            result.push_back(std::move(item));
+        }
+    }
+    series_cache_.insert(cache_key, result);
+    return result;
+}
+
+std::vector<WordItem> QuanpinDictionary::query(const std::string &raw_input, const std::string &segmentation,
+                                               bool autocorrect, metasequoia::FuzzyPinyinOptions fuzzy)
+{
+    auto result = query_exact(raw_input, segmentation, autocorrect);
+    if (fuzzy.rules && !raw_input.empty())
+    {
+        // Keep ordinary cache slots free of preference-specific candidates.
+        const auto typed =
+            segmentation.empty() ? quanpin::join_segments(resolve_segments(raw_input, segmentation)) : segmentation;
+        append_unique_words(result, fuzzy_candidates(typed, fuzzy));
+        std::stable_sort(result.begin(), result.end(),
+                         [](const auto &a, const auto &b) { return a.pinyin.size() > b.pinyin.size(); });
+        current_candidate_list_ = result;
+    }
+    return result;
 }

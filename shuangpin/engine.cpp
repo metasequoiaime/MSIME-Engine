@@ -4,6 +4,8 @@
 #include "shuangpin_utils.h"
 
 #include <optional>
+#include <unordered_set>
+#include <algorithm>
 
 namespace
 {
@@ -99,7 +101,7 @@ std::optional<HelpcodeQuery> build_single_helpcode_query(const std::string &raw_
 } // namespace
 
 ShuangpinEngine::ShuangpinEngine(const ShuangpinProfile &profile, metasequoia::RuntimePaths paths)
-    : profile_(profile), dictionary_(profile, std::move(paths))
+    : profile_(profile), dictionary_(profile, paths), paths_(std::move(paths))
 {
 }
 
@@ -131,22 +133,26 @@ std::vector<WordItem> ShuangpinEngine::query(const QueryRequest &request)
         // 双码辅助
         if (const auto full_helpcode = build_full_helpcode_query(raw_input, raw_input_with_cases, profile_))
         {
-            return dictionary_.generate_with_helpcodes(full_helpcode->base_pure_input, full_helpcode->base_segmentation,
-                                                       raw_input, full_helpcode->help_codes);
+            return append_fuzzy(dictionary_.generate_with_helpcodes(full_helpcode->base_pure_input,
+                                                                    full_helpcode->base_segmentation, raw_input,
+                                                                    full_helpcode->help_codes),
+                                full_helpcode->base_segmentation, request.fuzzy_pinyin, full_helpcode->help_codes);
         }
 
         // 单码辅助
         if (const auto single_helpcode = build_single_helpcode_query(raw_input, pure_input_with_cases, profile_))
         {
-            return dictionary_.generate_with_helpcodes(single_helpcode->base_pure_input,
-                                                       single_helpcode->base_segmentation, raw_input,
-                                                       single_helpcode->help_codes);
+            return append_fuzzy(dictionary_.generate_with_helpcodes(single_helpcode->base_pure_input,
+                                                                    single_helpcode->base_segmentation, raw_input,
+                                                                    single_helpcode->help_codes),
+                                single_helpcode->base_segmentation, request.fuzzy_pinyin, single_helpcode->help_codes);
         }
 
         // 不满足辅助码条件，单独查询，比如，cls -> c'ls，也就直接走下面的 query_normal 了
     }
 
-    return query_normal(dictionary_, request, profile_);
+    return append_fuzzy(query_normal(dictionary_, request, profile_), shuangpin::segment_input(raw_input, profile_),
+                        request.fuzzy_pinyin);
 }
 
 bool ShuangpinEngine::expand_initial_candidates(const QueryRequest &request, std::vector<WordItem> &candidates)
@@ -202,4 +208,39 @@ std::string ShuangpinEngine::search_sentence_from_ime_engine(const std::string &
 void ShuangpinEngine::reset_cache()
 {
     dictionary_.reset_cache();
+    if (fuzzy_dictionary_)
+        fuzzy_dictionary_->reset_cache();
+}
+
+std::vector<WordItem> ShuangpinEngine::append_fuzzy(std::vector<WordItem> exact, const std::string &raw_segmentation,
+                                                    metasequoia::FuzzyPinyinOptions options,
+                                                    const std::string &helpcodes)
+{
+    if (!options.rules)
+        return exact;
+    if (!fuzzy_dictionary_)
+        fuzzy_dictionary_ = std::make_unique<QuanpinDictionary>(std::string{}, paths_);
+    const auto typed = quanpin::split_segments(raw_segmentation);
+    auto fuzzy =
+        fuzzy_dictionary_->fuzzy_candidates(shuangpin::to_quanpin_segmentation(raw_segmentation, profile_), options);
+    for (auto &item : fuzzy)
+    {
+        const auto count = quanpin::split_segments(item.pinyin).size();
+        if (count > typed.size())
+            continue;
+        item.pinyin = quanpin::join_segments(quanpin::Segments(typed.begin(), typed.begin() + count));
+    }
+    if (helpcodes.size() == 2)
+        fuzzy = HelpcodeUtils::filter_candidates_with_double_helpcodes(fuzzy, helpcodes, helpcodes_.get());
+    else if (helpcodes.size() == 1)
+        fuzzy = HelpcodeUtils::reorder_candidates_with_single_helpcode(fuzzy, helpcodes, helpcodes_.get());
+    std::unordered_set<std::string> seen;
+    for (const auto &item : exact)
+        seen.insert(item.word);
+    for (auto &item : fuzzy)
+        if (seen.insert(item.word).second)
+            exact.push_back(std::move(item));
+    std::stable_sort(exact.begin(), exact.end(),
+                     [](const auto &a, const auto &b) { return a.pinyin.size() > b.pinyin.size(); });
+    return exact;
 }

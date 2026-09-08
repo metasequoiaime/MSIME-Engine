@@ -142,16 +142,17 @@ void NineKeySession::refresh()
         const auto key = quanpin::join_segments(path);
         if (key.empty() || !queried.insert(key).second)
             continue;
-        for (auto candidate : dictionary_->query(key, key, false))
+        for (auto candidate : dictionary_->query(key, key, false, fuzzy_))
         {
             const auto canonical = candidate.canonical_pinyin.empty() ? candidate.pinyin : candidate.canonical_pinyin;
             if (std::count(canonical.begin(), canonical.end(), '\'') >= static_cast<long>(path.size()))
                 continue;
-            const auto code = encode(canonical);
+            const auto matched = candidate.fuzzy ? candidate.pinyin : canonical;
+            const auto code = encode(matched);
             if (code.empty() || (!starts(code, digits_) && !starts(digits_, code)))
                 continue;
-            if (!locked_key.empty() && canonical != locked_key && !starts(canonical, locked_key + "'") &&
-                !starts(locked_key, canonical + "'"))
+            if (!locked_key.empty() && matched != locked_key && !starts(matched, locked_key + "'") &&
+                !starts(locked_key, matched + "'"))
                 continue;
             candidate.pinyin = digits_.substr(0, std::min(code.size(), digits_.size()));
             candidate.canonical_pinyin = canonical;
@@ -161,6 +162,8 @@ void NineKeySession::refresh()
     std::stable_sort(candidates_.begin(), candidates_.end(), [](const auto &a, const auto &b) {
         if (a.pinyin.size() != b.pinyin.size())
             return a.pinyin.size() > b.pinyin.size();
+        if (a.fuzzy != b.fuzzy)
+            return !a.fuzzy;
         return a.weight > b.weight;
     });
     std::unordered_set<std::string> seen;

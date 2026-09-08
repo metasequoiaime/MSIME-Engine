@@ -182,6 +182,10 @@ if(BUILD_TESTING)
     target_link_libraries(test_candidate_removal PRIVATE MetasequoiaIme::Engine)
     add_test(NAME candidate_removal COMMAND test_candidate_removal)
 
+    add_executable(test_fuzzy_pinyin tests/src/test_fuzzy_pinyin.cpp)
+    target_link_libraries(test_fuzzy_pinyin PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME fuzzy_pinyin COMMAND test_fuzzy_pinyin)
+
     add_executable(test_engine_smoke tests/src/test_engine_smoke.cpp)
     target_link_libraries(test_engine_smoke PRIVATE MetasequoiaIme::Engine)
     add_test(NAME engine_smoke COMMAND test_engine_smoke)

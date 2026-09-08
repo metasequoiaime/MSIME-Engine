@@ -33,6 +33,7 @@ struct WordItem
     std::int64_t weight = 0;
     CandidateSource source = CandidateSource::Database;
     int fixed_position = 0;
+    bool fuzzy = false; // Matched typed code may differ from canonical pronunciation.
 
     WordItem() = default;
     WordItem(std::string pinyin_value, std::string word_value, std::int64_t weight_value,

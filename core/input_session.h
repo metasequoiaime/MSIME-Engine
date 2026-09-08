@@ -159,6 +159,10 @@ class InputSession
                                                        const SelectionTransition &selection_transition) const;
 
     void set_quanpin_autocorrect_enabled(bool enabled);
+    void set_fuzzy_pinyin_options(metasequoia::FuzzyPinyinOptions options)
+    {
+        engine_.set_fuzzy_pinyin_options(options);
+    }
     void set_chinese_punctuation_enabled(bool enabled)
     {
         chinese_punctuation_enabled_ = enabled;
