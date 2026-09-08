@@ -33,4 +33,4 @@ Append opcodes; never change released values or reuse them. An incompatible layo
 
 `tests/windows_ipc_contract.cpp` executes wire-layout/upgrade/framing cases on all Engine CI platforms and both Windows TSF architectures.
 
-`backend/protocol.json` owns the optional common HTTP service API for MSIME-Backend. See [backend protocol and compatibility](backend/README.md).
+`backend/protocol.json` 定义 MSIME-Backend 的可选共通 HTTP 服务 API，详见[后端协议与兼容性](backend/README.md)。

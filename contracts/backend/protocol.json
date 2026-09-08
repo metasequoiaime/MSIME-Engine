@@ -2,7 +2,7 @@
   "version": "1",
   "transport": "HTTPS",
   "authentication": "Authorization: Bearer <device-token>",
-  "credential_ownership": "Upstream credentials and model choices belong to the backend administrator. Clients only carry device tokens.",
+  "credential_ownership": "上游凭据和模型选择由后端管理员管理，客户端只持有设备令牌。",
   "operations": {
     "health": {
       "method": "GET",
@@ -101,7 +101,7 @@
       "authenticated": true,
       "content_type": "multipart/form-data",
       "fields": {
-        "file": "RIFF/WAVE audio bytes",
+        "file": "RIFF/WAVE 音频字节",
         "model": "msime",
         "language": "zh",
         "response_format": "json"
@@ -135,33 +135,33 @@
     }
   },
   "statuses": {
-    "400": "invalid input",
-    "401": "missing or invalid device token",
-    "403": "denied browser origin",
-    "413": "audio upload exceeds bound",
-    "415": "unsupported content type",
-    "429": "device rate limit; Retry-After seconds",
-    "502": "upstream failure; provider body is not exposed",
-    "503": "feature disabled or server busy; busy includes Retry-After seconds",
-    "504": "request deadline exceeded"
+    "400": "输入参数无效",
+    "401": "设备令牌缺失或无效",
+    "403": "浏览器来源未获允许",
+    "413": "音频上传超过大小限制",
+    "415": "不支持的内容类型",
+    "429": "设备请求触发限流；Retry-After 表示等待秒数",
+    "502": "上游请求失败；不暴露供应商响应正文",
+    "503": "功能未启用或服务繁忙；繁忙时提供 Retry-After 等待秒数",
+    "504": "请求超过截止时间"
   },
   "invariants": [
-    "Cloud responses contain only candidate strings; clients merge using Engine online-query identity and generation checks.",
-    "Changing focus, composition, or endpoint cancels pending work. Identical spelling in another composition is not the same request.",
-    "Backend failure never automatically switches destination to a third-party service. Local input remains available.",
-    "Chat is non-streaming text-only. Legacy thinking.type=disabled and enable_thinking=false are accepted but not forwarded.",
-    "Transcription requires valid PCM or IEEE-float RIFF/WAVE with fmt and data chunks. This protocol does not carry Doubao WebSocket frames.",
-    "Unknown request JSON fields are rejected. New client fields require a compatibility review.",
-    "Responses are not cached. User input, audio and credentials are not persisted by the backend.",
-    "iOS keyboard networking additionally requires explicit user opt-in and Full Access. The keyboard does not record audio."
+    "云候选响应只包含候选字符串；客户端结合 Engine 在线查询身份与代次检查进行合并。",
+    "焦点、组合输入或服务地址变化时取消待处理任务；另一轮组合输入中的相同拼写不属于同一请求。",
+    "后端失败时不自动切换到第三方服务，本地输入始终可用。",
+    "聊天仅支持非流式纯文本；兼容接收旧字段 thinking.type=disabled 和 enable_thinking=false，但不向上游转发。",
+    "批量转写要求有效的 PCM 或 IEEE 浮点 RIFF/WAVE，且包含 fmt 和 data 块；该 multipart 协议不承载豆包 WebSocket 帧。",
+    "拒绝未知的请求 JSON 字段；客户端新增字段前需要进行兼容性评审。",
+    "响应不缓存；后端不持久化用户输入、音频或凭据。",
+    "iOS 键盘联网还需要用户明确启用并授予“完全访问”权限；键盘不录音。"
   ],
   "websocket_operations": {
     "streaming_transcription": {
       "method": "GET",
       "path": "/v1/audio/stream",
       "authenticated": true,
-      "protocol": "Doubao ASR v1 binary messages over WSS; message boundaries and payloads preserved. Device Bearer authentication replaces provider headers.",
-      "close_policy": "Generic close reasons only; no upstream HTTP bodies or close reasons forwarded."
+      "protocol": "通过 WSS 传输豆包 ASR v1 二进制消息，保留消息边界和载荷；设备使用 Bearer 鉴权，供应商请求头由后端提供。",
+      "close_policy": "仅返回通用关闭原因，不透传上游 HTTP 正文或连接关闭说明。"
     }
   }
 }
