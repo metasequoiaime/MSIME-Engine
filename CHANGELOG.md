@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.7.0...v0.7.1) (2026-09-08)
+
+
+### Performance Improvements
+
+* **user-dictionary:** keep the default journal connection open ([da61ca4](https://github.com/metasequoiaime/MSIME-Engine/commit/da61ca472eda23445ae0ecd2e4d43868063cb36a))
+* **user-dictionary:** keep the default journal connection open ([ee20339](https://github.com/metasequoiaime/MSIME-Engine/commit/ee2033924d2bca4daaeef1155d1870c3fdfef1de))
+
 ## [0.7.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.6.0...v0.7.0) (2026-09-08)
 
 
