@@ -3,6 +3,7 @@
 #include "../../core/runtime_paths.h"
 #include "personal_dictionary.h"
 #include <functional>
+#include <cstddef>
 #include <variant>
 
 namespace metasequoia
@@ -39,7 +40,8 @@ void stream_dictionary_state(const RuntimePaths &paths, const std::function<bool
 
 // Prepare a complete replacement in an exclusively created generation directory. next returns
 // false only at verified EOF and throws on malformed/truncated input or cancellation. Callers
-// validate their transport envelope/checksum before returning EOF. At most 500,000 records.
+// validate their transport envelope/checksum before returning EOF. maximum_records defaults to
+// 500,000; a validated larger transport may supply its verified record count as the limit.
 // Duplicate identities/positions are rejected. Failure removes this operation's new directory;
 // existing generations are never modified. Returned paths contain the rebuilt dictionaries,
 // journal, selection counts and fixed positions together. The host must quiesce input, atomically
@@ -47,5 +49,6 @@ void stream_dictionary_state(const RuntimePaths &paths, const std::function<bool
 // Preparing a generation alone does not switch input or delete older generations.
 RuntimePaths stage_dictionary_state(const std::filesystem::path &resources, const std::filesystem::path &generation,
                                     const std::string &content_id,
-                                    const std::function<bool(DictionaryStateRecord &)> &next);
+                                    const std::function<bool(DictionaryStateRecord &)> &next,
+                                    std::size_t maximum_records = 500000);
 } // namespace metasequoia

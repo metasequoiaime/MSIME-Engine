@@ -143,7 +143,8 @@ void stream_dictionary_state(const RuntimePaths &paths, const std::function<bool
 
 RuntimePaths stage_dictionary_state(const std::filesystem::path &resources, const std::filesystem::path &generation,
                                     const std::string &content_id,
-                                    const std::function<bool(DictionaryStateRecord &)> &next)
+                                    const std::function<bool(DictionaryStateRecord &)> &next,
+                                    std::size_t maximum_records)
 {
     require(resources.is_absolute() && generation.is_absolute() && static_cast<bool>(next));
     require(!overlap(std::filesystem::weakly_canonical(resources), std::filesystem::weakly_canonical(generation)));
@@ -173,7 +174,7 @@ RuntimePaths stage_dictionary_state(const std::filesystem::path &resources, cons
             std::size_t count = 0;
             while (next(record))
             {
-                require(++count <= 500000);
+                require(++count <= maximum_records);
                 std::visit(
                     [&](const auto &value) {
                         using T = std::decay_t<decltype(value)>;

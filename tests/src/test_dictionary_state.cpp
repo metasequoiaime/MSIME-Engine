@@ -158,6 +158,25 @@ void run(bool capacity)
         }
         check(failed && !std::filesystem::exists(path), "failed staging left partial generation");
     };
+    bool limited = false;
+    try
+    {
+        std::size_t index = 0;
+        stage_dictionary_state(
+            resources, root / "limited", "fixture",
+            [&](DictionaryStateRecord &out) {
+                if (index == records.size())
+                    return false;
+                out = records[index++];
+                return true;
+            },
+            1);
+    }
+    catch (const std::exception &)
+    {
+        limited = true;
+    }
+    check(limited && !std::filesystem::exists(root / "limited"), "explicit record limit ignored");
     auto duplicate = records;
     duplicate.push_back(records.front());
     rejected("duplicate", duplicate);
