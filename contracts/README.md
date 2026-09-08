@@ -32,3 +32,5 @@ Existing DLLs with unversioned hello remain accepted by the new Server using the
 Append opcodes; never change released values or reuse them. An incompatible layout needs a new major protocol and an explicit migration, not another copy of a header. Minor additions must be optional capabilities.
 
 `tests/windows_ipc_contract.cpp` executes wire-layout/upgrade/framing cases on all Engine CI platforms and both Windows TSF architectures.
+
+`backend/protocol.json` owns the optional common HTTP service API for MSIME-Backend. See [backend protocol and compatibility](backend/README.md).
