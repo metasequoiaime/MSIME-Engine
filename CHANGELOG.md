@@ -5,6 +5,7 @@
 
 ### Features
 
+* **contracts:** 定义输入法共通后端 API v1 契约 ([#74](https://github.com/metasequoiaime/MSIME-Engine/issues/74)) ([d59c202](https://github.com/metasequoiaime/MSIME-Engine/commit/d59c2028c64a314d0b14753422d56fc1117b91cd))
 * **dictionary:** expose transactional personal entry editing ([#72](https://github.com/metasequoiaime/MSIME-Engine/issues/72)) ([ec1659c](https://github.com/metasequoiaime/MSIME-Engine/commit/ec1659caf0b9b37706419929c691cdecde575e5a))
 
 ## [0.5.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.4.1...v0.5.0) (2026-09-07)
