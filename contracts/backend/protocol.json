@@ -109,6 +109,22 @@
       "response": {
         "text": "测试"
       }
+    },
+    "models": {
+      "method": "GET",
+      "path": "/v1/models",
+      "authenticated": true,
+      "response": {
+        "object": "list",
+        "data": [
+          {
+            "id": "server-model",
+            "object": "model"
+          }
+        ],
+        "default_model": "server-model"
+      },
+      "description": "管理员允许的聊天模型列表；未配置可选模型时仅返回默认模型。"
     }
   },
   "limits": {
