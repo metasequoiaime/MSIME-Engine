@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.6.0...v0.7.0) (2026-09-08)
+
+
+### Features
+
+* **dictionary:** 支持完整用户词库状态传输与代际准备 ([#79](https://github.com/metasequoiaime/MSIME-Engine/issues/79)) ([dd58732](https://github.com/metasequoiaime/MSIME-Engine/commit/dd587326da8f5ce5a1b98dc8135dc1787c5dd90a))
+* **engine:** support configurable fuzzy pinyin per session ([#81](https://github.com/metasequoiaime/MSIME-Engine/issues/81)) ([5d9a031](https://github.com/metasequoiaime/MSIME-Engine/commit/5d9a031fa61ccf70b7cc9ee27340bdd039b254b5))
+
+
+### Bug Fixes
+
+* **pinyin:** 修复 ong 韵尾漏写 g 的完整词组候选 ([#77](https://github.com/metasequoiaime/MSIME-Engine/issues/77)) ([b377a18](https://github.com/metasequoiaime/MSIME-Engine/commit/b377a1892d89e79cd2c2bda308cbcfd7e6ddf62f))
+
 ## [0.6.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.5.0...v0.6.0) (2026-09-08)
 
 
