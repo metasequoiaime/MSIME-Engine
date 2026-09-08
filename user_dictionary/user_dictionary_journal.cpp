@@ -351,15 +351,86 @@ std::string default_user_db_path()
 
 namespace
 {
+// Opening the journal costs a file open plus a full ensure_schema() pass, and
+// callers on the hot path pay it per keystroke: apply_fixed_positions runs while
+// the candidate list for every input is being built. Measured on Windows with a
+// busy disk, that open dominated the candidate build -- 90% of its time, with
+// single calls reaching 737 ms -- which stalled the IME server's task thread long
+// enough for the client's in-edit-session reply wait to time out and drop the
+// commit key. Keep one connection per path alive instead; sqlite3 connections are
+// opened with SQLITE_OPEN_FULLMUTEX, so sharing one across threads is safe.
+struct CachedDatabase
+{
+    std::string path;
+    std::shared_ptr<sqlite3> connection;
+};
+
+std::mutex &database_cache_mutex()
+{
+    static std::mutex mutex;
+    return mutex;
+}
+
+CachedDatabase &default_database_cache()
+{
+    static CachedDatabase cache;
+    return cache;
+}
+
+// The handle is shared rather than borrowed so that close_default_user_database()
+// can drop the cache entry at any time without invalidating a connection an
+// operation is still running on; the file is released once the last user is done.
+std::shared_ptr<sqlite3> open_shared_database(const std::string &path)
+{
+    Db opened = open_database(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+    if (!opened || !ensure_schema(opened.get()))
+        return {};
+    return std::shared_ptr<sqlite3>(opened.release(), [](sqlite3 *db) { sqlite3_close(db); });
+}
+
+std::shared_ptr<sqlite3> acquire_database(const std::string &path)
+{
+    // Only the default journal is worth caching, and only it is safe to cache:
+    // every other path belongs to an import tool or a test that works on a
+    // database and then deletes the directory holding it, which on Windows fails
+    // while a connection is still open. Those keep the original one-per-call
+    // connection, so nothing but the hot path changes behaviour.
+    if (path != default_user_db_path())
+        return open_shared_database(path);
+
+    const std::lock_guard<std::mutex> guard(database_cache_mutex());
+    auto &cache = default_database_cache();
+    if (cache.connection && cache.path == path)
+        return cache.connection;
+    auto connection = open_shared_database(path);
+    if (!connection)
+        return {};
+    // Assigning also releases a connection cached for an earlier data directory,
+    // so at most one journal file is ever held open.
+    cache.path = path;
+    cache.connection = connection;
+    return connection;
+}
+
 class UserDatabase
 {
   public:
-    explicit UserDatabase(const std::string &path)
+    explicit UserDatabase(const std::string &path) : db_(acquire_database(path))
     {
-        owned_ = open_database(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
-        if (owned_ && ensure_schema(owned_.get()))
-            db_ = owned_.get();
     }
+
+    // A caller that returns between BEGIN IMMEDIATE and COMMIT used to be rescued
+    // by its private connection closing, which rolls back implicitly. A cached
+    // connection outlives the call, so an abandoned transaction would keep its
+    // write lock and fail every later operation. End it here instead.
+    ~UserDatabase()
+    {
+        if (db_ && sqlite3_get_autocommit(db_.get()) == 0)
+            sqlite3_exec(db_.get(), "ROLLBACK", nullptr, nullptr, nullptr);
+    }
+
+    UserDatabase(const UserDatabase &) = delete;
+    UserDatabase &operator=(const UserDatabase &) = delete;
 
     explicit operator bool() const
     {
@@ -367,18 +438,20 @@ class UserDatabase
     }
     sqlite3 *get() const
     {
-        return db_;
+        return db_.get();
     }
 
   private:
-    Db owned_;
-    sqlite3 *db_ = nullptr;
+    std::shared_ptr<sqlite3> db_;
 };
 } // namespace
 
 void close_default_user_database()
 {
-    // Compatibility no-op: every journal operation now owns and closes its connection.
+    // Callers use this to let go of the journal before deleting or replacing the
+    // data directory; a connection left open would block that on Windows.
+    const std::lock_guard<std::mutex> guard(database_cache_mutex());
+    default_database_cache() = {};
 }
 
 bool ensure_user_database(const std::string &user_db_path)
