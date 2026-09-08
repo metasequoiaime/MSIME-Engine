@@ -13,7 +13,11 @@
 using namespace metasequoia;
 namespace
 {
-void check(bool value, const char *message) { if (!value) throw std::runtime_error(message); }
+void check(bool value, const char *message)
+{
+    if (!value)
+        throw std::runtime_error(message);
+}
 void sql(const std::filesystem::path &path, const char *query)
 {
     sqlite3 *db = nullptr;
@@ -27,13 +31,16 @@ RuntimePaths stage(const std::filesystem::path &resources, const std::filesystem
 {
     std::size_t i = 0;
     return stage_dictionary_state(resources, root, "fixture", [&](DictionaryStateRecord &out) {
-        if (i == records.size()) return false;
-        out = records[i++]; return true;
+        if (i == records.size())
+            return false;
+        out = records[i++];
+        return true;
     });
 }
 void run(bool capacity)
 {
-    const auto root = std::filesystem::temp_directory_path() /
+    const auto root =
+        std::filesystem::temp_directory_path() /
         ("dictionary-state-" + std::to_string(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
     test::ScopedDataDirectoryCleanup cleanup(root);
     const auto resources = root / "resources";
@@ -45,19 +52,24 @@ void run(bool capacity)
         "CREATE TABLE quick_parases(key TEXT,value TEXT,weight INTEGER);"
         "CREATE INDEX idx_quick_parases_key_weight ON quick_parases(key,weight DESC);");
     check(EnglishDictionary::ensure_schema(path_to_utf8(resources / assets::english_dictionary)), "English schema");
-    if (capacity) {
+    if (capacity)
+    {
         std::size_t count = 0;
-        const auto staged = stage_dictionary_state(resources, root / "capacity", "fixture", [&](DictionaryStateRecord &out) {
-            if (count == 100000) return false;
-            const auto suffix = std::to_string(++count);
-            out = DictionaryStateEntry{PersonalDictionaryKind::QuickPhrase, "bulk" + suffix, "合成短语" + suffix, 100, "", false, true};
-            return true;
-        });
+        const auto staged =
+            stage_dictionary_state(resources, root / "capacity", "fixture", [&](DictionaryStateRecord &out) {
+                if (count == 100000)
+                    return false;
+                const auto suffix = std::to_string(++count);
+                out = DictionaryStateEntry{
+                    PersonalDictionaryKind::QuickPhrase, "bulk" + suffix, "合成短语" + suffix, 100, "", false, true};
+                return true;
+            });
         std::size_t received = 0;
         stream_dictionary_state(staged, [&](const auto &record) {
             const auto *entry = std::get_if<DictionaryStateEntry>(&record);
             check(entry && entry->user_inserted && entry->weight == 100, "capacity state damaged");
-            ++received; return true;
+            ++received;
+            return true;
         });
         check(received == 100000, "capacity state truncated");
         return;
@@ -67,73 +79,127 @@ void run(bool capacity)
         DictionaryStateEntry{PersonalDictionaryKind::Pinyin, "ni'hao", "拟好", 200, "", false, false},
         DictionaryStateEntry{PersonalDictionaryKind::Pinyin, "ni'hao", "拟蒿", 150, "", false, true},
         DictionaryStateEntry{PersonalDictionaryKind::QuickPhrase, "fixture", "合成短语", 100, "", false, true},
-        DictionaryStateEntry{PersonalDictionaryKind::English, "cloudfixture", "Cloudfixture", 100, "Cloudfixture", false, true},
+        DictionaryStateEntry{PersonalDictionaryKind::English, "cloudfixture", "Cloudfixture", 100, "Cloudfixture",
+                             false, true},
         DictionaryStatePosition{"ni'hao", "ni'hao", "拟蒿", 1},
-        DictionaryStateSelection{"ni'hao", "ni'hao", "拟好", 1}
-    };
+        DictionaryStateSelection{"ni'hao", "ni'hao", "拟好", 1}};
     const auto first = stage(resources, root / "first", records);
     sql(first.user(assets::user_journal), "PRAGMA journal_mode=WAL");
     bool wrote = false;
     std::size_t snapshot_count = 0;
     stream_dictionary_state(first, [&](const auto &) {
         ++snapshot_count;
-        if (!wrote) {
+        if (!wrote)
+        {
             wrote = true;
-            check(user_dictionary::set_fixed_position(path_to_utf8(first.user(assets::user_journal)), "ni'hao", "ni'hao", "拟好", 2), "concurrent writer failed");
+            check(user_dictionary::set_fixed_position(path_to_utf8(first.user(assets::user_journal)), "ni'hao",
+                                                      "ni'hao", "拟好", 2),
+                  "concurrent writer failed");
         }
         return true;
     });
     check(snapshot_count == records.size(), "export mixed concurrent journal versions");
-    check(user_dictionary::clear_fixed_position(path_to_utf8(first.user(assets::user_journal)), "ni'hao", "ni'hao", "拟好"), "clear concurrent fixture");
+    check(user_dictionary::clear_fixed_position(path_to_utf8(first.user(assets::user_journal)), "ni'hao", "ni'hao",
+                                                "拟好"),
+          "clear concurrent fixture");
     std::vector<DictionaryStateRecord> exported;
-    stream_dictionary_state(first, [&](const auto &record) { exported.push_back(record); return true; });
+    stream_dictionary_state(first, [&](const auto &record) {
+        exported.push_back(record);
+        return true;
+    });
     check(exported.size() == records.size(), "complete state not exported");
     const auto second = stage(resources, root / "second", exported);
     std::vector<DictionaryStateRecord> roundtrip;
-    stream_dictionary_state(second, [&](const auto &record) { roundtrip.push_back(record); return true; });
+    stream_dictionary_state(second, [&](const auto &record) {
+        roundtrip.push_back(record);
+        return true;
+    });
     check(roundtrip.size() == records.size(), "state record lost");
     bool selection = false, ownership = false, deleted_ownership = false;
-    for (const auto &record : roundtrip) {
-        if (auto p = std::get_if<DictionaryStateSelection>(&record)) selection = p->count == 1;
-        if (auto p = std::get_if<DictionaryStateEntry>(&record); p && p->value == "拟蒿") ownership = p->user_inserted;
-        if (auto p = std::get_if<DictionaryStateEntry>(&record); p && p->value == "你好") deleted_ownership = p->deleted && p->user_inserted;
+    for (const auto &record : roundtrip)
+    {
+        if (auto p = std::get_if<DictionaryStateSelection>(&record))
+            selection = p->count == 1;
+        if (auto p = std::get_if<DictionaryStateEntry>(&record); p && p->value == "拟蒿")
+            ownership = p->user_inserted;
+        if (auto p = std::get_if<DictionaryStateEntry>(&record); p && p->value == "你好")
+            deleted_ownership = p->deleted && p->user_inserted;
     }
     check(selection && ownership && deleted_ownership, "counter or ownership lost");
-    SessionOptions options; options.paths = second; options.learning = false;
+    SessionOptions options;
+    options.paths = second;
+    options.learning = false;
     Session session(options);
-    for (char ch : std::string("nihao")) session.character(ch);
+    for (char ch : std::string("nihao"))
+        session.character(ch);
     const auto candidates = session.snapshot().candidates;
     check(!candidates.empty() && candidates.front().word == "拟蒿", "fixed position not applied");
-    for (const auto &candidate : candidates) check(candidate.word != "你好", "deleted candidate returned");
+    for (const auto &candidate : candidates)
+        check(candidate.word != "你好", "deleted candidate returned");
     // A complete replacement starts from resources, not the previously overlaid dictionaries.
     const auto empty = stage(resources, root / "empty", {});
-    SessionOptions plain; plain.paths = empty; plain.learning = false;
+    SessionOptions plain;
+    plain.paths = empty;
+    plain.learning = false;
     Session baseline(plain);
-    for (char ch : std::string("nihao")) baseline.character(ch);
+    for (char ch : std::string("nihao"))
+        baseline.character(ch);
     check(baseline.snapshot().candidates.front().word == "你好", "old deletion leaked into replacement");
     auto rejected = [&](const char *name, std::vector<DictionaryStateRecord> invalid) {
         const auto path = root / name;
         bool failed = false;
-        try { stage(resources, path, invalid); } catch (const std::exception &) { failed = true; }
+        try
+        {
+            stage(resources, path, invalid);
+        }
+        catch (const std::exception &)
+        {
+            failed = true;
+        }
         check(failed && !std::filesystem::exists(path), "failed staging left partial generation");
     };
-    auto duplicate = records; duplicate.push_back(records.front()); rejected("duplicate", duplicate);
-    auto duplicate_slot = records; duplicate_slot.push_back(DictionaryStatePosition{"ni'hao", "ni'hao", "拟好", 1}); rejected("slot", duplicate_slot);
+    auto duplicate = records;
+    duplicate.push_back(records.front());
+    rejected("duplicate", duplicate);
+    auto duplicate_slot = records;
+    duplicate_slot.push_back(DictionaryStatePosition{"ni'hao", "ni'hao", "拟好", 1});
+    rejected("slot", duplicate_slot);
     rejected("bad-position", {DictionaryStatePosition{"ni'hao", "ni'hao", "拟好", 6}});
     bool failed = false;
-    try { stage(resources, root / "first", {}); } catch (const std::exception &) { failed = true; }
+    try
+    {
+        stage(resources, root / "first", {});
+    }
+    catch (const std::exception &)
+    {
+        failed = true;
+    }
     check(failed && std::filesystem::exists(first.user(assets::user_journal)), "existing generation was overwritten");
     failed = false;
-    try {
+    try
+    {
         stage_dictionary_state(resources, root / "cancelled", "fixture", [](DictionaryStateRecord &) -> bool {
             throw std::runtime_error("cancelled or invalid transport checksum");
         });
-    } catch (const std::exception &) { failed = true; }
+    }
+    catch (const std::exception &)
+    {
+        failed = true;
+    }
     check(failed && !std::filesystem::exists(root / "cancelled"), "cancelled generation leaked");
 }
-}
+} // namespace
 int main(int argc, char **argv)
 {
-    try { run(argc == 2 && std::string(argv[1]) == "--capacity"); std::cout << "Dictionary state tests passed\n"; return 0; }
-    catch (const std::exception &e) { std::cerr << e.what() << '\n'; return 1; }
+    try
+    {
+        run(argc == 2 && std::string(argv[1]) == "--capacity");
+        std::cout << "Dictionary state tests passed\n";
+        return 0;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+        return 1;
+    }
 }

@@ -45,8 +45,7 @@ void stream_dictionary_state(const RuntimePaths &paths, const std::function<bool
 // journal, selection counts and fixed positions together. The host must quiesce input, atomically
 // publish its active-generation pointer, and recreate sessions before using the returned paths.
 // Preparing a generation alone does not switch input or delete older generations.
-RuntimePaths stage_dictionary_state(const std::filesystem::path &resources,
-                                    const std::filesystem::path &generation,
+RuntimePaths stage_dictionary_state(const std::filesystem::path &resources, const std::filesystem::path &generation,
                                     const std::string &content_id,
                                     const std::function<bool(DictionaryStateRecord &)> &next);
 } // namespace metasequoia
