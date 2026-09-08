@@ -192,6 +192,11 @@ int run_test()
         database.execute("CREATE TABLE tbl_2_n(key TEXT, jp TEXT, value TEXT, weight INTEGER)");
         database.execute("INSERT INTO tbl_2_n VALUES('ni''hao', 'nh', '你好', 200)");
         database.execute("INSERT INTO tbl_2_n VALUES('ni''hao', 'nh', '拟好', 100)");
+        database.execute("CREATE TABLE tbl_2_z(key TEXT, jp TEXT, value TEXT, weight INTEGER)");
+        database.execute("INSERT INTO tbl_2_z VALUES('zhong''guo', 'zg', '中国', 200)");
+        database.execute("CREATE TABLE tbl_2_d(key TEXT, jp TEXT, value TEXT, weight INTEGER)");
+        database.execute("INSERT INTO tbl_2_d VALUES('dong''gua', 'dg', '冬瓜', 200)");
+        database.execute("INSERT INTO tbl_2_d VALUES('dong''an', 'da', '东安', 200)");
         database.execute("CREATE TABLE tbl_2_b(key TEXT, jp TEXT, value TEXT, weight INTEGER)");
         database.execute("INSERT INTO tbl_2_b VALUES('bu''hao', 'bh', '不好', 200)");
         database.execute("INSERT INTO tbl_2_b VALUES('bu''hao', 'bh', '补好', 100)");
@@ -354,6 +359,19 @@ int run_test()
             type(alias_session, test_case.pinyin);
             require(candidate_index(alias_session, test_case.candidate) == 0,
                     "A v-form umlaut syllable did not query its canonical dictionary key.");
+        }
+
+        const std::array<UmlautAliasCase, 6> missing_final_g_cases = {
+            {{"zhonguo", "中国"}, {"zhon'guo", "中国"}, {"zhongguo", "中国"},
+             {"dongua", "冬瓜"}, {"donggua", "冬瓜"}, {"dongan", "东安"}}};
+        for (const auto &test_case : missing_final_g_cases)
+        {
+            metasequoia::InputSession corrected;
+            type(corrected, test_case.pinyin);
+            require(candidate_index(corrected, test_case.candidate) == 0,
+                    "A missing final g did not resolve to the complete dictionary phrase.");
+            require(corrected.select_candidate(0).commit == test_case.candidate && !corrected.has_composition(),
+                    "Selecting a corrected phrase left an unconsumed input suffix.");
         }
 
         metasequoia::InputSession no_autocorrect_session(SchemeType::Quanpin, false);

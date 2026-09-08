@@ -76,6 +76,8 @@ const CorrectionAliases &pinyin_correction_aliases()
         add_suffix_aliases("eng", "egn");
         add_alias("egn", "eng");
         add_alias("jv", "ju");
+        // Missing final g before the next syllable: zhonguo -> zhong guo.
+        add_suffix_aliases("ong", "on");
 
         // Prefer a transposed h (ahng -> hang), while retaining the extra-h
         // interpretation as an alternative (ahng -> ang).
