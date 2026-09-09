@@ -81,6 +81,10 @@ KeyResult Session::punctuation(char value)
     }
     return impl_->session.handle_punctuation(value);
 }
+void Session::set_chinese_punctuation_enabled(bool enabled)
+{
+    impl_->session.set_chinese_punctuation_enabled(enabled);
+}
 KeyResult Session::select(std::size_t index)
 {
     if (impl_->nine_key.active())
