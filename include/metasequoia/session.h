@@ -39,6 +39,11 @@ struct SessionSnapshot
     std::string editing_text;
     std::size_t caret_position = 0;
     std::vector<std::string> nine_key_spellings;
+    // The candidates were produced by the wubi mixed-pinyin fallback rather than by the wubi table.
+    // A host that acts on candidate counts needs this: four letters answered by one pinyin word is
+    // not the "unique four-code wubi candidate" that auto-commit is looking for, and committing it
+    // would take away the fifth letter the fallback exists to allow.
+    bool answered_by_pinyin_fallback = false;
 };
 
 // Stable platform entry point. One host serializes calls to its session; distinct sessions
