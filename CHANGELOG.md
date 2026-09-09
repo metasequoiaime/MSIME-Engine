@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.8.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.7.1...v0.8.0) (2026-09-09)
+
+
+### Features
+
+* **engine:** answer an unmatched wubi code with pinyin ([30e2681](https://github.com/metasequoiaime/MSIME-Engine/commit/30e2681e15ce291fdab513a3f7f67f29e11c0a9a))
+* **engine:** 五笔支持混拼 ([84008ac](https://github.com/metasequoiaime/MSIME-Engine/commit/84008ac23f4380d4f1fa0740feb5b4357ff8f887))
+* **session:** expose live Chinese punctuation mode ([e637e3d](https://github.com/metasequoiaime/MSIME-Engine/commit/e637e3db59669caf29e257f0c21bfd6c35413a03))
+* **session:** expose live Chinese punctuation mode ([a9f5c65](https://github.com/metasequoiaime/MSIME-Engine/commit/a9f5c65ed4f8f6df933ddf24b82ce670309e78e4))
+
+
+### Bug Fixes
+
+* **engine:** 修正混拼评审发现的问题 ([61153e3](https://github.com/metasequoiaime/MSIME-Engine/commit/61153e37e93467e469c96577f74e64856d7e7892))
+
 ## [0.7.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.7.0...v0.7.1) (2026-09-08)
 
 
