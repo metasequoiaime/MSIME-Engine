@@ -59,6 +59,9 @@ class Session
     KeyResult command(Command value);
     KeyResult candidate_key(char value);
     KeyResult punctuation(char value);
+    // Live host mode override; preserves composition, caret and punctuation pairing.
+    // When disabled punctuation() is unhandled; the host owns ASCII passthrough.
+    void set_chinese_punctuation_enabled(bool enabled);
     KeyResult select(std::size_t index);
     KeyResult select_edge(std::size_t index, CandidateEdge edge);
     // Explicit user action: promote a dictionary candidate without committing input.

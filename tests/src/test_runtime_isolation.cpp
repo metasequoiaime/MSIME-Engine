@@ -172,6 +172,37 @@ void test_runtime_isolation()
     {
         SessionOptions options;
         options.paths = paths_a;
+        options.learning = false;
+        Session session(options);
+        Session independent(options);
+        type(session, "ni");
+        session.command(Command::MoveLeft);
+        const auto before = session.snapshot();
+        session.set_chinese_punctuation_enabled(false);
+        session.set_chinese_punctuation_enabled(false);
+        const auto unchanged = session.snapshot();
+        require(unchanged.editing_text == before.editing_text && unchanged.preedit == before.preedit &&
+                    unchanged.caret_position == before.caret_position &&
+                    unchanged.candidates.size() == before.candidates.size(),
+                "Live punctuation mode changed composition or caret");
+        const auto ignored = session.punctuation(',');
+        require(!ignored.handled && !ignored.commit && session.snapshot().editing_text == before.editing_text,
+                "ASCII punctuation mode consumed composition");
+        require(independent.punctuation(',').commit == std::optional<std::string>("，"),
+                "Live punctuation mode leaked to another session");
+        session.command(Command::Cancel);
+        session.set_chinese_punctuation_enabled(true);
+        require(session.punctuation('"').commit == std::optional<std::string>("“"),
+                "Chinese punctuation did not reopen");
+        session.set_chinese_punctuation_enabled(false);
+        require(!session.punctuation('"').handled, "Disabled quote was consumed");
+        session.set_chinese_punctuation_enabled(true);
+        require(session.punctuation('"').commit == std::optional<std::string>("”"),
+                "Punctuation mode reset quote pairing");
+    }
+    {
+        SessionOptions options;
+        options.paths = paths_a;
         options.scheme = SchemeType::Shuangpin;
         options.shuangpin_profile = GetMicrosoftShuangpinProfile();
         options.learning = false;
