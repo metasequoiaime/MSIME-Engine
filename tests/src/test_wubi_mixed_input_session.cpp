@@ -1,7 +1,18 @@
-#include "../../core/input_session.h"
-#include "../../include/metasequoia/session.h"
+#include <metasequoia/session.h>
 
+#include "../../contracts/assets/assets.h"
+#include "../../core/data_path.h"
+#include "../../english/english_dictionary.h"
+#include "../../core/input_session.h"
+#include "../../core/runtime_paths.h"
+#include "test_directory_cleanup.h"
+
+#include <sqlite3.h>
+
+#include <algorithm>
+#include <chrono>
 #include <cstdio>
+#include <filesystem>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -9,15 +20,26 @@
 
 namespace
 {
-void require(bool condition, const char *message)
+using namespace metasequoia;
+
+void require(bool value, const char *message)
 {
-    if (!condition)
+    if (!value)
     {
         throw std::runtime_error(message);
     }
 }
 
-std::vector<std::string> words(const metasequoia::InputSession &session)
+void execute(const std::filesystem::path &path, const std::string &sql)
+{
+    sqlite3 *database = nullptr;
+    require(sqlite3_open(path_to_utf8(path).c_str(), &database) == SQLITE_OK, "Fixture open failed");
+    const int result = sqlite3_exec(database, sql.c_str(), nullptr, nullptr, nullptr);
+    sqlite3_close(database);
+    require(result == SQLITE_OK, "Fixture SQL failed");
+}
+
+std::vector<std::string> words(const InputSession &session)
 {
     std::vector<std::string> result;
     result.reserve(session.candidates().size());
@@ -28,7 +50,7 @@ std::vector<std::string> words(const metasequoia::InputSession &session)
     return result;
 }
 
-std::vector<std::string> type(metasequoia::InputSession &session, const std::string &code)
+std::vector<std::string> type(InputSession &session, const std::string &code)
 {
     for (const char letter : code)
     {
@@ -37,179 +59,33 @@ std::vector<std::string> type(metasequoia::InputSession &session, const std::str
     return words(session);
 }
 
-std::vector<std::string> wubi_candidates(const std::string &code, bool mixed)
+// The fixture answers ni'hao and zi in quanpin and wq in wubi, and leaves nihao unanswered by the
+// wubi table. Hardcoding codes against the shipped dictionary would tie these assertions to what a
+// checkout happens to have built, which is how the first version of this file passed here and
+// failed on every CI platform.
+std::filesystem::path prepare_resources(const std::filesystem::path &root)
 {
-    metasequoia::InputSession session(SchemeType::Wubi);
-    session.set_wubi_input_options(metasequoia::WubiInputOptions{mixed});
-    return type(session, code);
+    const auto resources = root / "resources";
+    std::filesystem::create_directories(resources);
+    execute(resources / assets::main_dictionary,
+            "CREATE TABLE tbl_1_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+            "INSERT INTO tbl_1_n VALUES('ni','n','你',10000);"
+            "CREATE TABLE tbl_1_z(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+            "INSERT INTO tbl_1_z VALUES('zi','z','子',10000);"
+            "CREATE TABLE tbl_2_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+            "INSERT INTO tbl_2_n VALUES('ni''hao','nh','你好',10000),('ni''hao','nh','拟好',9000);"
+            "CREATE TABLE wubi86(key TEXT,value TEXT,weight INTEGER);"
+            "INSERT INTO wubi86 VALUES('wq','你好',10000),('wqaa','众人',9000);");
+    require(EnglishDictionary::ensure_schema(path_to_utf8(resources / assets::english_dictionary)),
+            "English schema failed");
+    return resources;
 }
 
-std::vector<std::string> quanpin_candidates(const std::string &code)
+// InputSession is neither copyable nor movable, so a session is built where it is used.
+RuntimePaths paths_for(const std::filesystem::path &resources, const std::filesystem::path &root,
+                       const std::string &tag)
 {
-    metasequoia::InputSession session(SchemeType::Quanpin);
-    return type(session, code);
-}
-
-// Codes the wubi table cannot answer, each a spelling quanpin knows.
-// women and nihao also exercise the relaxed length limit: both are longer than a wubi code.
-const char *const kUnmatchedCodes[] = {"wode", "shu", "women", "nihao"};
-// Codes the wubi table answers on its own. The mixed setting must not touch these: a fluent wubi
-// typist would otherwise find pinyin candidates arriving alongside the code they meant.
-const char *const kMatchedCodes[] = {"wo", "ni", "de"};
-
-void unmatched_codes_fall_back_to_quanpin()
-{
-    for (const char *code : kUnmatchedCodes)
-    {
-        require(wubi_candidates(code, false).empty(),
-                "A code chosen for having no wubi candidates answered with some.");
-        const auto mixed = wubi_candidates(code, true);
-        require(!mixed.empty(), "An unmatched wubi code stayed empty with mixed input enabled.");
-        require(mixed == quanpin_candidates(code),
-                "Mixed input answered an unmatched wubi code with something other than what quanpin "
-                "answers for the same letters.");
-    }
-}
-
-void matched_codes_keep_their_own_candidates()
-{
-    for (const char *code : kMatchedCodes)
-    {
-        const auto plain = wubi_candidates(code, false);
-        require(!plain.empty(), "A code chosen for having wubi candidates answered with none.");
-        require(wubi_candidates(code, true) == plain,
-                "Mixed input changed the candidates for a code the wubi table already answers.");
-    }
-}
-
-void the_length_limit_holds_until_the_table_fails()
-{
-    metasequoia::InputSession plain(SchemeType::Wubi);
-    type(plain, "women");
-    require(plain.preedit() == "wome", "A wubi composition grew past four letters without mixed input.");
-
-    metasequoia::InputSession mixed(SchemeType::Wubi);
-    mixed.set_wubi_input_options(metasequoia::WubiInputOptions{true});
-    type(mixed, "women");
-    require(mixed.preedit() == "women", "Mixed input did not let an unmatched code reach a full spelling.");
-
-    // A four-letter code the table answers keeps the limit, so wubi as typed is unchanged. This is
-    // the half that matters: wode is four letters the table cannot answer, so it says nothing about
-    // whether a matched code still refuses a fifth.
-    metasequoia::InputSession matched(SchemeType::Wubi);
-    matched.set_wubi_input_options(metasequoia::WubiInputOptions{true});
-    const auto four = type(matched, "ffff");
-    require(!four.empty(), "The four-letter code chosen for having wubi candidates answered with none.");
-    matched.handle_character('a');
-    require(matched.preedit() == "ffff",
-            "A matched four-letter code accepted a fifth letter with mixed input enabled.");
-    require(words(matched) == four, "A refused fifth letter still changed the candidates.");
-
-    // Backspacing back under the limit returns to ordinary wubi behaviour.
-    metasequoia::InputSession shortened(SchemeType::Wubi);
-    shortened.set_wubi_input_options(metasequoia::WubiInputOptions{true});
-    type(shortened, "women");
-    shortened.handle_command(metasequoia::Command::Backspace);
-    require(shortened.preedit() == "wome", "Backspace did not shorten an extended composition.");
-}
-
-void committing_a_spelling_keeps_the_rest_of_the_composition()
-{
-    // Selecting 你好 out of nihaoma commits that spelling and leaves ma composing. Wubi commits the
-    // whole composition, so without this the letters the user had already typed were dropped.
-    const auto tail_after_selecting = [](SchemeType scheme, bool mixed) {
-        metasequoia::InputSession session(scheme);
-        session.set_wubi_input_options(metasequoia::WubiInputOptions{mixed});
-        type(session, "nihaoma");
-        const auto &items = session.candidates();
-        for (std::size_t index = 0; index < items.size(); ++index)
-        {
-            if (items[index].word == "你好")
-            {
-                session.select_candidate(index);
-                return std::make_pair(session.preedit(), words(session));
-            }
-        }
-        throw std::runtime_error("nihaoma did not offer 你好.");
-    };
-
-    const auto pinyin = tail_after_selecting(SchemeType::Quanpin, false);
-    const auto mixed = tail_after_selecting(SchemeType::Wubi, true);
-    require(mixed.first == pinyin.first, "Mixed input dropped the rest of the composition on selection.");
-    // The tail stays with pinyin. ma is a code the wubi table happens to know, and answering it with
-    // wubi would swap schemes underneath a spelling the user is still in the middle of.
-    require(mixed.second == pinyin.second, "The rest of a composition was answered with wubi candidates.");
-}
-
-void the_setting_is_off_by_default()
-{
-    metasequoia::InputSession session(SchemeType::Wubi);
-    require(type(session, "wode").empty(), "Mixed wubi input answered an unmatched code without being switched on.");
-}
-
-void the_public_session_carries_the_setting()
-{
-    metasequoia::SessionOptions options;
-    options.paths = metasequoia::RuntimePaths::legacy();
-    options.scheme = SchemeType::Wubi;
-    options.wubi.mixed_pinyin = true;
-    metasequoia::Session session(options);
-    for (const char letter : std::string("wode"))
-    {
-        session.character(letter);
-    }
-    require(!session.snapshot().candidates.empty(),
-            "SessionOptions did not carry the mixed wubi setting into the session.");
-
-    metasequoia::SessionOptions plain;
-    plain.paths = metasequoia::RuntimePaths::legacy();
-    plain.scheme = SchemeType::Wubi;
-    metasequoia::Session toggled(plain);
-    for (const char letter : std::string("wode"))
-    {
-        toggled.character(letter);
-    }
-    require(toggled.snapshot().candidates.empty(), "Mixed wubi input was on without being asked for.");
-    // The setting decides which dictionary answers the code in hand, so the composition already on
-    // screen is asked again rather than left showing the answer from before the switch.
-    toggled.set_wubi_mixed_pinyin(true);
-    require(!toggled.snapshot().candidates.empty(), "set_wubi_mixed_pinyin did not reach the live composition.");
-    toggled.set_wubi_mixed_pinyin(false);
-    require(toggled.snapshot().candidates.empty(), "Fallback candidates outlived the setting that produced them.");
-}
-
-// z opens no wubi code, so the key is dropped as typed. Dropping it in mixed input would not refuse
-// the spelling, it would quietly turn it into another one, so the letter has to be accepted there.
-void z_reaches_the_pinyin_fallback()
-{
-    metasequoia::InputSession plain(SchemeType::Wubi);
-    type(plain, "zhongguo");
-    require(plain.preedit() == "hong", "Wubi as typed accepted z or grew past four letters.");
-
-    for (const char *code : {"zhongguo", "zi", "zuo"})
-    {
-        metasequoia::InputSession mixed(SchemeType::Wubi);
-        mixed.set_wubi_input_options(metasequoia::WubiInputOptions{true});
-        require(type(mixed, code) == quanpin_candidates(code),
-                "A spelling containing z answered with something other than what quanpin answers.");
-        require(mixed.preedit() == code, "Mixed input dropped the z out of the composition.");
-    }
-}
-
-// Editing at the caret replaces the whole composition, and the replacement must not be clipped to
-// the four letters a wubi code would take: the letters past the fourth would vanish as the caret
-// moved through them.
-void caret_editing_keeps_an_extended_composition()
-{
-    metasequoia::InputSession session(SchemeType::Wubi);
-    session.set_wubi_input_options(metasequoia::WubiInputOptions{true});
-    type(session, "nihao");
-    session.handle_command(metasequoia::Command::MoveHome);
-    session.handle_command(metasequoia::Command::MoveRight);
-    session.handle_character('x');
-    require(session.preedit() == "nxihao", "A caret insert lost the tail of an extended composition.");
-    session.handle_character('y');
-    require(session.preedit() == "nxyihao", "A second caret insert clipped the composition to four letters.");
+    return prepare_runtime_paths(resources, root / ("user-" + tag), root / ("cache-" + tag), "v1");
 }
 } // namespace
 
@@ -217,14 +93,132 @@ int main()
 {
     try
     {
-        unmatched_codes_fall_back_to_quanpin();
-        matched_codes_keep_their_own_candidates();
-        the_length_limit_holds_until_the_table_fails();
-        committing_a_spelling_keeps_the_rest_of_the_composition();
-        the_setting_is_off_by_default();
-        the_public_session_carries_the_setting();
-        z_reaches_the_pinyin_fallback();
-        caret_editing_keeps_an_extended_composition();
+        const auto root =
+            std::filesystem::temp_directory_path() /
+            ("msime-wubi-mixed-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+        test::ScopedDataDirectoryCleanup cleanup(root);
+        const auto resources = prepare_resources(root);
+        int counter = 0;
+        const auto next = [&counter] { return std::to_string(counter++); };
+
+        // A code the wubi table cannot answer is answered by quanpin for the same letters.
+        {
+            InputSession plain(SchemeType::Wubi, GetXiaoheShuangpinProfile(), paths_for(resources, root, next()));
+            plain.set_wubi_input_options(WubiInputOptions{false});
+            require(type(plain, "nihao").empty(), "The fixture answered nihao in wubi.");
+
+            InputSession mixed(SchemeType::Wubi, GetXiaoheShuangpinProfile(), paths_for(resources, root, next()));
+            mixed.set_wubi_input_options(WubiInputOptions{true});
+            InputSession reference(SchemeType::Quanpin, GetXiaoheShuangpinProfile(),
+                                   paths_for(resources, root, next()));
+            reference.set_wubi_input_options(WubiInputOptions{false});
+            require(type(mixed, "nihao") == type(reference, "nihao"),
+                    "Mixed input answered an unmatched code with something other than quanpin.");
+        }
+
+        // A code the table does answer keeps its own candidates, untouched by the setting.
+        {
+            InputSession plain(SchemeType::Wubi, GetXiaoheShuangpinProfile(), paths_for(resources, root, next()));
+            plain.set_wubi_input_options(WubiInputOptions{false});
+            const auto native = type(plain, "wq");
+            require(!native.empty(), "The fixture did not answer wq in wubi.");
+
+            InputSession mixed(SchemeType::Wubi, GetXiaoheShuangpinProfile(), paths_for(resources, root, next()));
+            mixed.set_wubi_input_options(WubiInputOptions{true});
+            require(type(mixed, "wq") == native, "Mixed input changed the candidates for a matched code.");
+        }
+
+        // z is not a wubi letter. Dropping it does not refuse a spelling, it silently becomes a
+        // different one, so mixed input has to accept it -- and only mixed input.
+        {
+            InputSession plain(SchemeType::Wubi, GetXiaoheShuangpinProfile(), paths_for(resources, root, next()));
+            plain.set_wubi_input_options(WubiInputOptions{false});
+            type(plain, "zi");
+            require(plain.preedit() == "i", "Plain wubi stopped dropping z.");
+
+            InputSession mixed(SchemeType::Wubi, GetXiaoheShuangpinProfile(), paths_for(resources, root, next()));
+            mixed.set_wubi_input_options(WubiInputOptions{true});
+            const auto candidates = type(mixed, "zi");
+            require(mixed.preedit() == "zi", "Mixed input dropped the z from a spelling.");
+            require(std::find(candidates.begin(), candidates.end(), "子") != candidates.end(),
+                    "Mixed input did not reach the spelling that needed z.");
+        }
+
+        // The four-letter limit holds until the table has failed the code in hand.
+        {
+            InputSession matched(SchemeType::Wubi, GetXiaoheShuangpinProfile(), paths_for(resources, root, next()));
+            matched.set_wubi_input_options(WubiInputOptions{true});
+            const auto four = type(matched, "wqaa");
+            require(!four.empty(), "The fixture did not answer the four-letter code wqaa.");
+            matched.handle_character('a');
+            require(matched.preedit() == "wqaa", "A matched four-letter code accepted a fifth letter.");
+            require(words(matched) == four, "A refused fifth letter still changed the candidates.");
+
+            InputSession unmatched(SchemeType::Wubi, GetXiaoheShuangpinProfile(), paths_for(resources, root, next()));
+            unmatched.set_wubi_input_options(WubiInputOptions{true});
+            type(unmatched, "nihao");
+            require(unmatched.preedit() == "nihao", "Mixed input could not reach a spelling past four letters.");
+            unmatched.handle_command(Command::Backspace);
+            require(unmatched.preedit() == "niha", "Backspace did not shorten an extended composition.");
+        }
+
+        // Committing a spelling out of a longer one leaves the rest composing, and the rest stays
+        // with pinyin: wq is a code the wubi table knows, and answering it with wubi would swap
+        // schemes underneath a spelling the user is still in the middle of.
+        {
+            const auto tail = [&](SchemeType scheme, bool mixed) {
+                InputSession session(scheme, GetXiaoheShuangpinProfile(), paths_for(resources, root, next()));
+                session.set_wubi_input_options(WubiInputOptions{mixed});
+                type(session, "nihaowq");
+                const auto &items = session.candidates();
+                const auto found =
+                    std::find_if(items.begin(), items.end(), [](const auto &item) { return item.word == "你好"; });
+                require(found != items.end(), "nihaowq did not offer 你好.");
+                session.select_candidate(static_cast<std::size_t>(found - items.begin()));
+                return std::make_pair(session.preedit(), words(session));
+            };
+            const auto pinyin = tail(SchemeType::Quanpin, false);
+            const auto mixed = tail(SchemeType::Wubi, true);
+            require(mixed.first == pinyin.first, "Mixed input dropped the rest of the composition on selection.");
+            require(mixed.second == pinyin.second, "The rest of a composition was answered with wubi candidates.");
+        }
+
+        // Off unless asked for, and the setting reaches a live composition rather than the next one.
+        {
+            InputSession session(SchemeType::Wubi, GetXiaoheShuangpinProfile(), paths_for(resources, root, next()));
+            session.set_wubi_input_options(WubiInputOptions{false});
+            require(type(session, "nihao").empty(), "Mixed input answered without being switched on.");
+            session.set_wubi_input_options(WubiInputOptions{true});
+            require(!words(session).empty(), "Switching the setting on left the composition unanswered.");
+            session.set_wubi_input_options(WubiInputOptions{false});
+            require(words(session).empty(), "Switching the setting off left the fallback candidates on screen.");
+        }
+
+        // The public session carries the setting from its options and at runtime.
+        {
+            SessionOptions options;
+            options.paths = prepare_runtime_paths(resources, root / "user-public", root / "cache-public", "v1");
+            options.scheme = SchemeType::Wubi;
+            options.wubi.mixed_pinyin = true;
+            Session session(options);
+            for (const char letter : std::string("nihao"))
+            {
+                session.character(letter);
+            }
+            require(!session.snapshot().candidates.empty(), "SessionOptions did not carry the mixed setting.");
+
+            SessionOptions plain;
+            plain.paths = prepare_runtime_paths(resources, root / "user-toggle", root / "cache-toggle", "v1");
+            plain.scheme = SchemeType::Wubi;
+            Session toggled(plain);
+            for (const char letter : std::string("nihao"))
+            {
+                toggled.character(letter);
+            }
+            require(toggled.snapshot().candidates.empty(), "Mixed input was on without being asked for.");
+            toggled.set_wubi_mixed_pinyin(true);
+            require(!toggled.snapshot().candidates.empty(), "set_wubi_mixed_pinyin did not reach the composition.");
+        }
     }
     catch (const std::exception &error)
     {
