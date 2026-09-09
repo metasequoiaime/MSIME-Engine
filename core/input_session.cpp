@@ -959,7 +959,7 @@ std::optional<std::string> InputSession::adjust_candidate_frequency(std::size_t 
     const bool wubi = wubi_candidates_are_native();
     const bool pinyin_fallback = is_wubi() && !wubi;
     std::string context_key =
-        super_jianpin ? local_modes::jianpin_ranking_context(local_preedit_.substr(1), scheme(), shuangpin_profile_)
+        super_jianpin     ? local_modes::jianpin_ranking_context(local_preedit_.substr(1), scheme(), shuangpin_profile_)
         : wubi            ? engine_.get_request().raw_input
         : pinyin_fallback ? position_context(false)
                           : engine_.get_request().normalized_segmentation;

@@ -144,8 +144,7 @@ void committing_a_spelling_keeps_the_rest_of_the_composition()
 void the_setting_is_off_by_default()
 {
     metasequoia::InputSession session(SchemeType::Wubi);
-    require(type(session, "wode").empty(),
-            "Mixed wubi input answered an unmatched code without being switched on.");
+    require(type(session, "wode").empty(), "Mixed wubi input answered an unmatched code without being switched on.");
 }
 
 void the_public_session_carries_the_setting()

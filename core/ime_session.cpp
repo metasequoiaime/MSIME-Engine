@@ -173,8 +173,7 @@ int ImeSession::create_word(std::string pinyin, std::string word)
 
 int ImeSession::update_weight_by_pinyin_and_word(std::string pinyin, std::string word)
 {
-    return provider_registry_.update_weight_by_pinyin_and_word(candidate_scheme(), std::move(pinyin),
-                                                               std::move(word));
+    return provider_registry_.update_weight_by_pinyin_and_word(candidate_scheme(), std::move(pinyin), std::move(word));
 }
 
 int ImeSession::delete_by_pinyin_and_word(std::string pinyin, std::string word)
@@ -313,8 +312,7 @@ void ImeSession::refresh_candidates()
         {
             state_.candidates = provider_registry_.resolve(fallback.scheme).query(fallback);
             state_.answered_by_pinyin_fallback = !state_.candidates.empty();
-            composition_uses_pinyin_fallback_ =
-                composition_uses_pinyin_fallback_ || state_.answered_by_pinyin_fallback;
+            composition_uses_pinyin_fallback_ = composition_uses_pinyin_fallback_ || state_.answered_by_pinyin_fallback;
             if (state_.answered_by_pinyin_fallback)
             {
                 // The candidates are pinyin, so the request describing them has to be the pinyin one:
