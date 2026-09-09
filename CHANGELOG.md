@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.8.0...v0.9.0) (2026-09-09)
+
+
+### Features
+
+* **engine:** report when pinyin answered a wubi code ([f3d37d6](https://github.com/metasequoiaime/MSIME-Engine/commit/f3d37d62b63d1602da3b79532e7a7d697e8ec90a))
+* **engine:** 在快照中标出由拼音回退作答的候选 ([54abc77](https://github.com/metasequoiaime/MSIME-Engine/commit/54abc77c4971a344148951f29f14eaa37566a13f))
+
 ## [0.8.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.7.1...v0.8.0) (2026-09-09)
 
 
