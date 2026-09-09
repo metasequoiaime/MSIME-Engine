@@ -461,6 +461,19 @@ void InputSession::set_mixed_expressive_options(MixedExpressiveOptions options)
     update_mixed_candidates();
 }
 
+void InputSession::set_wubi_input_options(metasequoia::WubiInputOptions options)
+{
+    engine_.set_wubi_input_options(options);
+    // The setting decides which dictionary answers the code in hand, so a live composition has to be
+    // asked again. Leaving it alone shows the previous answer: the fallback candidates stay on screen
+    // after the setting is switched off, and switching it on leaves an unmatched code empty until the
+    // next keystroke.
+    if (is_wubi() && !dedicated_english_mode_ && local_input_mode_ == LocalInputMode::None)
+    {
+        recompute_candidates();
+    }
+}
+
 const MixedExpressiveOptions &InputSession::mixed_expressive_options() const
 {
     return mixed_expressive_options_;
@@ -684,7 +697,7 @@ KeyResult InputSession::commit(std::size_t index)
     }
     std::optional<std::string> diagnostic = learn_candidate(index);
     if (selected && local_input_mode_ == LocalInputMode::None && !dedicated_english_mode_ &&
-        (scheme() == SchemeType::Quanpin || scheme() == SchemeType::Shuangpin) &&
+        candidates_follow_pinyin() &&
         (selected->source == CandidateSource::Database || selected->source == CandidateSource::UserDatabase))
     {
         const auto transition =
@@ -939,10 +952,17 @@ std::optional<std::string> InputSession::adjust_candidate_frequency(std::size_t 
                         : std::optional<std::string>("English candidate frequency could not be persisted.");
     }
     const bool super_jianpin = local_input_mode_ == LocalInputMode::SuperJianpin;
-    const bool wubi = scheme() == SchemeType::Wubi;
+    // A wubi code the table could not answer carries quanpin words, so it is ranked, keyed and
+    // stored as pinyin; only a code the wubi table answered is ranked under the code itself. The
+    // fallback reuses the context the fixed positions are written under, otherwise a pinned
+    // candidate would not be recognised here.
+    const bool wubi = wubi_candidates_are_native();
+    const bool pinyin_fallback = is_wubi() && !wubi;
     std::string context_key =
-        super_jianpin ? local_modes::jianpin_ranking_context(local_preedit_.substr(1), scheme(), shuangpin_profile_)
-                      : (wubi ? engine_.get_request().raw_input : engine_.get_request().normalized_segmentation);
+        super_jianpin     ? local_modes::jianpin_ranking_context(local_preedit_.substr(1), scheme(), shuangpin_profile_)
+        : wubi            ? engine_.get_request().raw_input
+        : pinyin_fallback ? position_context(false)
+                          : engine_.get_request().normalized_segmentation;
     if (!super_jianpin && context_key.empty())
     {
         context_key = engine_.get_request().segmentation;

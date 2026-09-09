@@ -92,6 +92,14 @@ struct MixedExpressiveOptions
     bool kaomoji_candidates = false;
 };
 
+struct WubiInputOptions
+{
+    // Answer an unmatched wubi code with quanpin candidates for the same letters. A code that the
+    // table does know keeps its own candidates untouched, so this only ever appears where nothing
+    // could be typed at all, and a fluent wubi typist never sees it.
+    bool mixed_pinyin = false;
+};
+
 // Immutable description of the current composition for asynchronous providers. Frontends copy
 // this value into a request and return it unchanged with the result; InputSession revalidates it
 // against the live composition before changing candidates.
