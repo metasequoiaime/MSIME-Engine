@@ -1,6 +1,7 @@
 #pragma once
 
 #include "composition_state.h"
+#include "input_session_types.h"
 #include "scheme_type.h"
 #include "../providers/provider_registry.h"
 #include "../schemes/input_scheme.h"
@@ -23,6 +24,10 @@ class ImeSession
     {
         fuzzy_pinyin_ = options;
     }
+    void set_wubi_input_options(metasequoia::WubiInputOptions options)
+    {
+        wubi_options_ = options;
+    }
     void replace_shuangpin_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases);
     void replace_quanpin_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases);
     void replace_wubi_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases);
@@ -40,6 +45,10 @@ class ImeSession
     SchemeType current_scheme_type() const;
     const std::string &get_preedit() const;
     const QueryRequest &get_request() const;
+    bool answered_by_pinyin_fallback() const
+    {
+        return state_.answered_by_pinyin_fallback;
+    }
     const std::vector<WordItem> &get_candidates() const;
     bool expand_initial_candidates();
 
@@ -62,4 +71,5 @@ class ImeSession
     bool enable_quanpin_helpcode_ = false;
     bool enable_quanpin_autocorrect_ = true;
     metasequoia::FuzzyPinyinOptions fuzzy_pinyin_;
+    metasequoia::WubiInputOptions wubi_options_;
 };

@@ -220,6 +220,8 @@ void ImeSession::refresh_candidates()
     state_.request.fuzzy_pinyin = fuzzy_pinyin_;
     ApplyShuangpinHelpcodeSegmentation(state_.request, shuangpin_profile_);
 
+    state_.answered_by_pinyin_fallback = false;
+
     if (!state_.request.valid)
     {
         state_.candidates.clear();
@@ -227,6 +229,36 @@ void ImeSession::refresh_candidates()
     }
 
     state_.candidates = provider_registry_.resolve(state_.request.scheme).query(state_.request);
+    const bool wubi_table_answered = !state_.candidates.empty();
+
+    if (state_.request.scheme == SchemeType::Wubi)
+    {
+        // Once the table has failed the code in hand, mixed input lets the composition grow past
+        // four letters so a full spelling can be finished. A code the table answers keeps the limit.
+        if (auto *wubi = dynamic_cast<WubiScheme *>(scheme_.get()))
+        {
+            wubi->set_extended_length_allowed(wubi_options_.mixed_pinyin && !wubi_table_answered);
+        }
+    }
+
+    if (!wubi_table_answered && wubi_options_.mixed_pinyin && state_.request.scheme == SchemeType::Wubi)
+    {
+        // The wubi table knows nothing for this code, so the same letters are offered to quanpin.
+        // A code the table does know never reaches here, which is what keeps this out of the way of
+        // someone typing wubi fluently: it only speaks up where nothing could be typed at all.
+        QuanpinScheme pinyin;
+        pinyin.set_raw_input(state_.request.raw_input, state_.request.raw_input_with_cases);
+        QueryRequest fallback = pinyin.build_request();
+        fallback.enable_quanpin_helpcode = enable_quanpin_helpcode_;
+        fallback.enable_quanpin_autocorrect = enable_quanpin_autocorrect_;
+        fallback.fuzzy_pinyin = fuzzy_pinyin_;
+        fallback.key_strokes = state_.request.key_strokes;
+        if (fallback.valid)
+        {
+            state_.candidates = provider_registry_.resolve(fallback.scheme).query(fallback);
+            state_.answered_by_pinyin_fallback = !state_.candidates.empty();
+        }
+    }
 }
 
 std::unique_ptr<IInputScheme> ImeSession::create_scheme(SchemeType scheme_type) const

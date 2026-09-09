@@ -461,6 +461,11 @@ void InputSession::set_mixed_expressive_options(MixedExpressiveOptions options)
     update_mixed_candidates();
 }
 
+void InputSession::set_wubi_input_options(metasequoia::WubiInputOptions options)
+{
+    engine_.set_wubi_input_options(options);
+}
+
 const MixedExpressiveOptions &InputSession::mixed_expressive_options() const
 {
     return mixed_expressive_options_;

@@ -208,6 +208,10 @@ if(BUILD_TESTING)
     target_link_libraries(test_mixed_expressive_input_session PRIVATE MetasequoiaIme::Engine)
     add_test(NAME mixed_expressive_input_session COMMAND test_mixed_expressive_input_session)
 
+    add_executable(test_wubi_mixed_input_session tests/src/test_wubi_mixed_input_session.cpp)
+    target_link_libraries(test_wubi_mixed_input_session PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME wubi_mixed_input_session COMMAND test_wubi_mixed_input_session)
+
     add_executable(test_jianpin_input_session tests/src/test_jianpin_input_session.cpp)
     target_link_libraries(test_jianpin_input_session PRIVATE MetasequoiaIme::Engine)
     add_test(NAME jianpin_input_session COMMAND test_jianpin_input_session)

@@ -23,6 +23,7 @@ struct SessionOptions
     LocalModeOptions local_modes;
     EnglishInputOptions english;
     MixedExpressiveOptions expressive;
+    WubiInputOptions wubi;
 };
 
 struct SessionSnapshot
@@ -80,6 +81,8 @@ class Session
     // Hosts with per-scheme preferences apply the selected preference after switching.
     void set_helpcode_enabled(bool enabled);
     void set_dedicated_english(bool enabled);
+    // Answer an unmatched wubi code with quanpin candidates for the same letters.
+    void set_wubi_mixed_pinyin(bool enabled);
     SessionSnapshot snapshot() const;
     std::optional<OnlineQuery> online_query() const;
     bool apply_online_candidate(const OnlineQuery &query, std::string candidate, CandidateSource source);

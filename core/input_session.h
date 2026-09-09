@@ -67,6 +67,7 @@ class InputSession
     bool set_english_input_options(EnglishInputOptions options);
     const EnglishInputOptions &english_input_options() const;
     void set_mixed_expressive_options(MixedExpressiveOptions options);
+    void set_wubi_input_options(metasequoia::WubiInputOptions options);
     const MixedExpressiveOptions &mixed_expressive_options() const;
     void set_dedicated_english_mode(bool enabled);
     bool dedicated_english_mode() const;
@@ -180,6 +181,10 @@ class InputSession
     const QueryRequest &request() const;
     bool is_shuangpin() const;
     bool is_wubi() const;
+    // Wubi whose candidates came from the wubi table. A code answered by the quanpin
+    // fallback carries pinyin words, so ranking, fixed positions and removal have to key
+    // off the pinyin rather than off the code that produced them.
+    bool wubi_candidates_are_native() const;
     bool is_japanese() const;
     void clear_pending_sequence();
     void apply_pending_sequence();

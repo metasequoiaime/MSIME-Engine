@@ -34,6 +34,7 @@ void WubiScheme::reset()
 {
     raw_input_.clear();
     key_strokes_.clear();
+    extended_length_allowed_ = false;
 }
 
 void WubiScheme::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch)
@@ -57,7 +58,7 @@ void WubiScheme::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCh
         return;
     }
 
-    if (!is_wubi_vk(vk) || raw_input_.size() >= kMaxCodeLength)
+    if (!is_wubi_vk(vk) || raw_input_.size() >= max_code_length())
     {
         return;
     }
@@ -68,8 +69,19 @@ void WubiScheme::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCh
 
 void WubiScheme::set_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases)
 {
-    raw_input_ = normalize_wubi_code(raw_input_with_cases.empty() ? raw_input : raw_input_with_cases, kMaxCodeLength);
+    raw_input_ =
+        normalize_wubi_code(raw_input_with_cases.empty() ? raw_input : raw_input_with_cases, max_code_length());
     key_strokes_.clear();
+}
+
+void WubiScheme::set_extended_length_allowed(bool allowed)
+{
+    extended_length_allowed_ = allowed;
+}
+
+size_t WubiScheme::max_code_length() const
+{
+    return extended_length_allowed_ ? kMaxMixedCodeLength : kMaxCodeLength;
 }
 
 QueryRequest WubiScheme::build_request() const
