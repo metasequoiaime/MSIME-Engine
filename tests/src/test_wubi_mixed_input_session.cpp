@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace
@@ -92,11 +93,52 @@ void the_length_limit_holds_until_the_table_fails()
     type(mixed, "women");
     require(mixed.preedit() == "women", "Mixed input did not let an unmatched code reach a full spelling.");
 
-    // A code the table answers keeps the four-letter limit, so nothing changes for wubi as typed.
+    // A four-letter code the table answers keeps the limit, so wubi as typed is unchanged. This is
+    // the half that matters: wode is four letters the table cannot answer, so it says nothing about
+    // whether a matched code still refuses a fifth.
     metasequoia::InputSession matched(SchemeType::Wubi);
     matched.set_wubi_input_options(metasequoia::WubiInputOptions{true});
-    type(matched, "wode");
-    require(!matched.candidates().empty(), "The chosen four-letter code answered with nothing.");
+    const auto four = type(matched, "ffff");
+    require(!four.empty(), "The four-letter code chosen for having wubi candidates answered with none.");
+    matched.handle_character('a');
+    require(matched.preedit() == "ffff",
+            "A matched four-letter code accepted a fifth letter with mixed input enabled.");
+    require(words(matched) == four, "A refused fifth letter still changed the candidates.");
+
+    // Backspacing back under the limit returns to ordinary wubi behaviour.
+    metasequoia::InputSession shortened(SchemeType::Wubi);
+    shortened.set_wubi_input_options(metasequoia::WubiInputOptions{true});
+    type(shortened, "women");
+    shortened.handle_command(metasequoia::Command::Backspace);
+    require(shortened.preedit() == "wome", "Backspace did not shorten an extended composition.");
+}
+
+void committing_a_spelling_keeps_the_rest_of_the_composition()
+{
+    // Selecting 你好 out of nihaoma commits that spelling and leaves ma composing. Wubi commits the
+    // whole composition, so without this the letters the user had already typed were dropped.
+    const auto tail_after_selecting = [](SchemeType scheme, bool mixed) {
+        metasequoia::InputSession session(scheme);
+        session.set_wubi_input_options(metasequoia::WubiInputOptions{mixed});
+        type(session, "nihaoma");
+        const auto &items = session.candidates();
+        for (std::size_t index = 0; index < items.size(); ++index)
+        {
+            if (items[index].word == "你好")
+            {
+                session.select_candidate(index);
+                return std::make_pair(session.preedit(), words(session));
+            }
+        }
+        throw std::runtime_error("nihaoma did not offer 你好.");
+    };
+
+    const auto pinyin = tail_after_selecting(SchemeType::Quanpin, false);
+    const auto mixed = tail_after_selecting(SchemeType::Wubi, true);
+    require(mixed.first == pinyin.first, "Mixed input dropped the rest of the composition on selection.");
+    // The tail stays with pinyin. ma is a code the wubi table happens to know, and answering it with
+    // wubi would swap schemes underneath a spelling the user is still in the middle of.
+    require(mixed.second == pinyin.second, "The rest of a composition was answered with wubi candidates.");
 }
 
 void the_setting_is_off_by_default()
@@ -129,14 +171,46 @@ void the_public_session_carries_the_setting()
         toggled.character(letter);
     }
     require(toggled.snapshot().candidates.empty(), "Mixed wubi input was on without being asked for.");
+    // The setting decides which dictionary answers the code in hand, so the composition already on
+    // screen is asked again rather than left showing the answer from before the switch.
     toggled.set_wubi_mixed_pinyin(true);
-    // The setting applies to the next query rather than rewriting the one already answered.
-    toggled.command(metasequoia::Command::Cancel);
-    for (const char letter : std::string("wode"))
+    require(!toggled.snapshot().candidates.empty(), "set_wubi_mixed_pinyin did not reach the live composition.");
+    toggled.set_wubi_mixed_pinyin(false);
+    require(toggled.snapshot().candidates.empty(), "Fallback candidates outlived the setting that produced them.");
+}
+
+// z opens no wubi code, so the key is dropped as typed. Dropping it in mixed input would not refuse
+// the spelling, it would quietly turn it into another one, so the letter has to be accepted there.
+void z_reaches_the_pinyin_fallback()
+{
+    metasequoia::InputSession plain(SchemeType::Wubi);
+    type(plain, "zhongguo");
+    require(plain.preedit() == "hong", "Wubi as typed accepted z or grew past four letters.");
+
+    for (const char *code : {"zhongguo", "zi", "zuo"})
     {
-        toggled.character(letter);
+        metasequoia::InputSession mixed(SchemeType::Wubi);
+        mixed.set_wubi_input_options(metasequoia::WubiInputOptions{true});
+        require(type(mixed, code) == quanpin_candidates(code),
+                "A spelling containing z answered with something other than what quanpin answers.");
+        require(mixed.preedit() == code, "Mixed input dropped the z out of the composition.");
     }
-    require(!toggled.snapshot().candidates.empty(), "set_wubi_mixed_pinyin did not reach the session.");
+}
+
+// Editing at the caret replaces the whole composition, and the replacement must not be clipped to
+// the four letters a wubi code would take: the letters past the fourth would vanish as the caret
+// moved through them.
+void caret_editing_keeps_an_extended_composition()
+{
+    metasequoia::InputSession session(SchemeType::Wubi);
+    session.set_wubi_input_options(metasequoia::WubiInputOptions{true});
+    type(session, "nihao");
+    session.handle_command(metasequoia::Command::MoveHome);
+    session.handle_command(metasequoia::Command::MoveRight);
+    session.handle_character('x');
+    require(session.preedit() == "nxihao", "A caret insert lost the tail of an extended composition.");
+    session.handle_character('y');
+    require(session.preedit() == "nxyihao", "A second caret insert clipped the composition to four letters.");
 }
 } // namespace
 
@@ -147,8 +221,11 @@ int main()
         unmatched_codes_fall_back_to_quanpin();
         matched_codes_keep_their_own_candidates();
         the_length_limit_holds_until_the_table_fails();
+        committing_a_spelling_keeps_the_rest_of_the_composition();
         the_setting_is_off_by_default();
         the_public_session_carries_the_setting();
+        z_reaches_the_pinyin_fallback();
+        caret_editing_keeps_an_extended_composition();
     }
     catch (const std::exception &error)
     {

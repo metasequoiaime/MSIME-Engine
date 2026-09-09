@@ -185,6 +185,10 @@ class InputSession
     // fallback carries pinyin words, so ranking, fixed positions and removal have to key
     // off the pinyin rather than off the code that produced them.
     bool wubi_candidates_are_native() const;
+    // The candidates on offer behave like pinyin: quanpin, shuangpin, or a wubi code the
+    // table could not answer. Committing one of these commits a spelling out of a longer
+    // one, so the rest of the composition has to survive the selection.
+    bool candidates_follow_pinyin() const;
     bool is_japanese() const;
     void clear_pending_sequence();
     void apply_pending_sequence();

@@ -40,6 +40,25 @@ ImeSession::ImeSession(SchemeType scheme_type, const ShuangpinProfile &shuangpin
     : provider_registry_(shuangpin_profile, std::move(paths)), shuangpin_profile_(shuangpin_profile),
       scheme_(create_scheme(scheme_type))
 {
+    bind_wubi_scheme();
+}
+
+void ImeSession::bind_wubi_scheme()
+{
+    wubi_scheme_ = dynamic_cast<WubiScheme *>(scheme_.get());
+    if (wubi_scheme_ != nullptr)
+    {
+        wubi_scheme_->set_mixed_pinyin_allowed(wubi_options_.mixed_pinyin);
+    }
+}
+
+void ImeSession::set_wubi_input_options(metasequoia::WubiInputOptions options)
+{
+    wubi_options_ = options;
+    if (wubi_scheme_ != nullptr)
+    {
+        wubi_scheme_->set_mixed_pinyin_allowed(wubi_options_.mixed_pinyin);
+    }
 }
 
 void ImeSession::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch)
@@ -52,6 +71,7 @@ void ImeSession::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCh
 void ImeSession::switch_scheme(SchemeType scheme_type)
 {
     scheme_ = create_scheme(scheme_type);
+    bind_wubi_scheme();
     state_ = CompositionState{};
 }
 
@@ -111,25 +131,38 @@ void ImeSession::replace_wubi_raw_input(const std::string &raw_input, const std:
         return;
     }
 
-    auto *wubi_scheme = dynamic_cast<WubiScheme *>(scheme_.get());
-    if (!wubi_scheme)
+    if (wubi_scheme_ == nullptr)
     {
         return;
     }
 
-    wubi_scheme->set_raw_input(raw_input, raw_input_with_cases);
+    // A replacement is host-driven editing of text the composition already holds, so the length it
+    // is clipped to comes from the setting rather than from whatever the previous query happened to
+    // answer. Without this, moving the caret through a mixed composition silently drops everything
+    // past the fourth letter. refresh_candidates puts the query-derived value back.
+    wubi_scheme_->set_extended_length_allowed(wubi_options_.mixed_pinyin);
+    wubi_scheme_->set_raw_input(raw_input, raw_input_with_cases);
     refresh_candidates();
 }
 
 void ImeSession::reset()
 {
     scheme_->reset();
+    composition_uses_pinyin_fallback_ = false;
     state_ = CompositionState{};
+}
+
+SchemeType ImeSession::candidate_scheme() const
+{
+    // The dictionary that actually produced the candidates on screen. A wubi code answered by the
+    // quanpin fallback is cached, looked up and learnt in the pinyin dictionary; routing it by the
+    // typed scheme would clear the wrong cache and write the weight into the wubi table.
+    return state_.answered_by_pinyin_fallback ? SchemeType::Quanpin : current_scheme_type();
 }
 
 void ImeSession::reset_cache()
 {
-    provider_registry_.reset_cache(current_scheme_type());
+    provider_registry_.reset_cache(candidate_scheme());
     refresh_candidates();
 }
 
@@ -140,7 +173,7 @@ int ImeSession::create_word(std::string pinyin, std::string word)
 
 int ImeSession::update_weight_by_pinyin_and_word(std::string pinyin, std::string word)
 {
-    return provider_registry_.update_weight_by_pinyin_and_word(current_scheme_type(), std::move(pinyin),
+    return provider_registry_.update_weight_by_pinyin_and_word(candidate_scheme(), std::move(pinyin),
                                                                std::move(word));
 }
 
@@ -163,6 +196,25 @@ void ImeSession::replace_japanese_raw_input(const std::string &raw_input, const 
         return;
     japanese_scheme->set_raw_input(raw_input, raw_input_with_cases);
     refresh_candidates();
+}
+
+void ImeSession::replace_active_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases)
+{
+    switch (scheme_->type())
+    {
+    case SchemeType::Quanpin:
+        replace_quanpin_raw_input(raw_input, raw_input_with_cases);
+        return;
+    case SchemeType::Shuangpin:
+        replace_shuangpin_raw_input(raw_input, raw_input_with_cases);
+        return;
+    case SchemeType::Wubi:
+        replace_wubi_raw_input(raw_input, raw_input_with_cases);
+        return;
+    case SchemeType::JapaneseRomaji:
+        replace_japanese_raw_input(raw_input, raw_input_with_cases);
+        return;
+    }
 }
 
 int ImeSession::cache_dynamic_candidate_for_current_request(const std::string &word, CandidateSource source)
@@ -202,7 +254,7 @@ const std::vector<WordItem> &ImeSession::get_candidates() const
 
 std::optional<WordItem> ImeSession::find_candidate(const std::string &key, const std::string &value)
 {
-    return provider_registry_.find_candidate(current_scheme_type(), key, value);
+    return provider_registry_.find_candidate(candidate_scheme(), key, value);
 }
 
 bool ImeSession::expand_initial_candidates()
@@ -228,20 +280,22 @@ void ImeSession::refresh_candidates()
         return;
     }
 
-    state_.candidates = provider_registry_.resolve(state_.request.scheme).query(state_.request);
-    const bool wubi_table_answered = !state_.candidates.empty();
+    if (state_.request.raw_input.empty())
+    {
+        composition_uses_pinyin_fallback_ = false;
+    }
 
-    if (state_.request.scheme == SchemeType::Wubi)
+    state_.candidates = provider_registry_.resolve(state_.request.scheme).query(state_.request);
+    const bool wubi_table_answered = !state_.candidates.empty() && !composition_uses_pinyin_fallback_;
+
+    if (wubi_scheme_ != nullptr)
     {
         // Once the table has failed the code in hand, mixed input lets the composition grow past
         // four letters so a full spelling can be finished. A code the table answers keeps the limit.
-        if (auto *wubi = dynamic_cast<WubiScheme *>(scheme_.get()))
-        {
-            wubi->set_extended_length_allowed(wubi_options_.mixed_pinyin && !wubi_table_answered);
-        }
+        wubi_scheme_->set_extended_length_allowed(wubi_options_.mixed_pinyin && !wubi_table_answered);
     }
 
-    if (!wubi_table_answered && wubi_options_.mixed_pinyin && state_.request.scheme == SchemeType::Wubi)
+    if (wubi_scheme_ != nullptr && !wubi_table_answered && wubi_options_.mixed_pinyin)
     {
         // The wubi table knows nothing for this code, so the same letters are offered to quanpin.
         // A code the table does know never reaches here, which is what keeps this out of the way of
@@ -252,11 +306,22 @@ void ImeSession::refresh_candidates()
         fallback.enable_quanpin_helpcode = enable_quanpin_helpcode_;
         fallback.enable_quanpin_autocorrect = enable_quanpin_autocorrect_;
         fallback.fuzzy_pinyin = fuzzy_pinyin_;
+        // The same physical keys produced these letters, so the strokes carry over rather than
+        // reaching the provider empty.
         fallback.key_strokes = state_.request.key_strokes;
         if (fallback.valid)
         {
             state_.candidates = provider_registry_.resolve(fallback.scheme).query(fallback);
             state_.answered_by_pinyin_fallback = !state_.candidates.empty();
+            composition_uses_pinyin_fallback_ =
+                composition_uses_pinyin_fallback_ || state_.answered_by_pinyin_fallback;
+            if (state_.answered_by_pinyin_fallback)
+            {
+                // The candidates are pinyin, so the request describing them has to be the pinyin one:
+                // everything downstream reads the segmentation from here, and the wubi request carries
+                // the letters unsplit. The preedit keeps showing the letters as typed either way.
+                state_.request = std::move(fallback);
+            }
         }
     }
 }

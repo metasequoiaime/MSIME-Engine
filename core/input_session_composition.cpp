@@ -368,7 +368,7 @@ InputSession::SelectionTransition InputSession::advance_composition_after_select
         transition.current_segmentation_with_cases = request().raw_input_with_cases;
         return transition;
     }
-    if (is_wubi())
+    if (wubi_candidates_are_native())
     {
         transition.full_pure_pinyin = request().normalized_input;
         transition.current_segmentation = request().normalized_input;
@@ -461,7 +461,7 @@ InputSession::SelectionTransition InputSession::advance_composition_after_select
         std::string rest_raw_input = raw_input_without_helpcodes.substr(consumed_raw_length);
         std::string rest_raw_input_with_cases = raw_input_with_cases_without_helpcodes.substr(consumed_raw_length);
         remove_consumed_leading_separators(rest_raw_input, rest_raw_input_with_cases);
-        engine_.replace_quanpin_raw_input(rest_raw_input, rest_raw_input_with_cases);
+        engine_.replace_active_raw_input(rest_raw_input, rest_raw_input_with_cases);
         online_requests_.invalidate();
         update_mixed_candidates();
         transition.current_segmentation = get_pinyin_segmentation();
@@ -536,7 +536,7 @@ InputSession::CreatingWordProgress InputSession::update_creating_word_progress(
     const SelectionTransition &selection_transition) const
 {
     CreatingWordProgress progress;
-    if (is_wubi())
+    if (wubi_candidates_are_native())
     {
         progress.pinyin = current_pinyin.empty() ? selection_transition.full_pure_pinyin : current_pinyin;
         progress.word = current_word + selected_word;
@@ -574,6 +574,12 @@ bool InputSession::is_wubi() const
 bool InputSession::wubi_candidates_are_native() const
 {
     return is_wubi() && !engine_.answered_by_pinyin_fallback();
+}
+
+bool InputSession::candidates_follow_pinyin() const
+{
+    return current_scheme_type() == SchemeType::Quanpin || current_scheme_type() == SchemeType::Shuangpin ||
+           engine_.answered_by_pinyin_fallback();
 }
 
 bool InputSession::is_japanese() const
