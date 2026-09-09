@@ -93,6 +93,8 @@ class InputSession
     const std::string &raw_segmentation() const;
     const std::string &normalized_segmentation() const;
     const std::vector<WordItem> &candidates() const;
+    // True while the current composition is answered by the wubi mixed-pinyin fallback.
+    bool answered_by_pinyin_fallback() const;
 
     // Advanced composition operations for hosts with their own asynchronous text insertion.
     // They share the same engine/configuration as the portable character/command API.

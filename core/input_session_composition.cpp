@@ -571,6 +571,11 @@ bool InputSession::is_wubi() const
     return current_scheme_type() == SchemeType::Wubi;
 }
 
+bool InputSession::answered_by_pinyin_fallback() const
+{
+    return engine_.answered_by_pinyin_fallback();
+}
+
 bool InputSession::wubi_candidates_are_native() const
 {
     return is_wubi() && !engine_.answered_by_pinyin_fallback();

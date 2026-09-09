@@ -165,15 +165,17 @@ SessionSnapshot Session::snapshot() const
     if (impl_->nine_key.active())
         return impl_->nine_key.snapshot();
     const auto &session = impl_->session;
-    return {session.scheme(),
-            session.local_input_mode(),
-            session.preedit(),
-            session.raw_segmentation(),
-            session.normalized_segmentation(),
-            session.candidates(),
-            session.dedicated_english_mode(),
-            session.editing_text(),
-            session.caret_position()};
+    SessionSnapshot view{session.scheme(),
+                         session.local_input_mode(),
+                         session.preedit(),
+                         session.raw_segmentation(),
+                         session.normalized_segmentation(),
+                         session.candidates(),
+                         session.dedicated_english_mode(),
+                         session.editing_text(),
+                         session.caret_position()};
+    view.answered_by_pinyin_fallback = session.answered_by_pinyin_fallback();
+    return view;
 }
 std::optional<OnlineQuery> Session::online_query() const
 {

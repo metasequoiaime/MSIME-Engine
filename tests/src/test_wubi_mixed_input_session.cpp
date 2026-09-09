@@ -218,6 +218,23 @@ int main()
             require(toggled.snapshot().candidates.empty(), "Mixed input was on without being asked for.");
             toggled.set_wubi_mixed_pinyin(true);
             require(!toggled.snapshot().candidates.empty(), "set_wubi_mixed_pinyin did not reach the composition.");
+            require(toggled.snapshot().answered_by_pinyin_fallback,
+                    "The snapshot did not report that pinyin answered the code.");
+
+            // A host that acts on candidate counts has to tell these apart: four letters answered by
+            // one pinyin word is not the unique four-code wubi candidate that auto-commit looks for.
+            SessionOptions native;
+            native.paths = prepare_runtime_paths(resources, root / "user-native", root / "cache-native", "v1");
+            native.scheme = SchemeType::Wubi;
+            native.wubi.mixed_pinyin = true;
+            Session matched(native);
+            for (const char letter : std::string("wqaa"))
+            {
+                matched.character(letter);
+            }
+            require(!matched.snapshot().candidates.empty(), "The four-letter code answered with nothing.");
+            require(!matched.snapshot().answered_by_pinyin_fallback,
+                    "A code the wubi table answered was reported as a pinyin fallback.");
         }
     }
     catch (const std::exception &error)
