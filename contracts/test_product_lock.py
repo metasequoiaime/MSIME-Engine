@@ -60,7 +60,8 @@ class ProductLockTests(unittest.TestCase):
                 product_lock.resolve_tag_commit("https://example.invalid/repo.git", "latest")
             check_output.assert_not_called()
 
-    def test_download_retries_and_replaces_atomically(self):
+    def download(self, failures, *, waits=None, **kwargs):
+        """Drive one download whose first `failures` attempts raise, recording what it slept for."""
         attempts = 0
 
         class Response(io.BytesIO):
@@ -72,9 +73,8 @@ class ProductLockTests(unittest.TestCase):
 
         def open_url(_url, timeout):
             nonlocal attempts
-            self.assertEqual(timeout, 7)
             attempts += 1
-            if attempts == 1:
+            if attempts <= failures:
                 raise urllib.error.URLError("temporary")
             return Response(b"new")
 
@@ -82,9 +82,46 @@ class ProductLockTests(unittest.TestCase):
             target = Path(temporary) / "asset"
             target.write_bytes(b"old")
             with patch.object(product_lock.urllib.request, "urlopen", side_effect=open_url):
-                product_lock.download_with_retries("https://example.invalid/asset", target, attempts=2, timeout=7)
-            self.assertEqual(target.read_bytes(), b"new")
-            self.assertEqual(attempts, 2)
+                product_lock.download_with_retries("https://example.invalid/asset", target,
+                                                   sleep=(waits if waits is None else waits.append),
+                                                   **kwargs)
+            return attempts, target.read_bytes()
+
+    def test_download_retries_and_replaces_atomically(self):
+        waits = []
+        attempts, content = self.download(1, waits=waits, attempts=2, timeout=7)
+        self.assertEqual((attempts, content), (2, b"new"))
+
+    def test_retries_are_spaced_and_the_first_attempt_is_immediate(self):
+        # Back to back the three attempts land inside the same outage: a host that is briefly
+        # unreachable answers all of them the same way, and the caller fails having waited only for
+        # its own timeouts. The spacing is the point, so it is asserted rather than the count alone.
+        waits = []
+        attempts, _ = self.download(2, waits=waits)
+        self.assertEqual(attempts, 3)
+        self.assertEqual(waits, [5.0, 10.0])
+
+    def test_a_first_attempt_that_works_waits_for_nothing(self):
+        waits = []
+        attempts, _ = self.download(0, waits=waits)
+        self.assertEqual((attempts, waits), (1, []))
+
+    def test_disabling_the_backoff_restores_immediate_retries(self):
+        waits = []
+        attempts, _ = self.download(2, waits=waits, backoff=0)
+        self.assertEqual((attempts, waits), (3, []))
+
+    def test_exhausting_the_attempts_still_reports_the_last_failure(self):
+        with self.assertRaises(ValueError) as raised:
+            self.download(3, waits=[])
+        self.assertIsInstance(raised.exception.__cause__, urllib.error.URLError)
+
+    def test_a_negative_backoff_is_rejected_before_any_request(self):
+        with patch.object(product_lock.urllib.request, "urlopen") as urlopen:
+            with self.assertRaises(ValueError):
+                product_lock.download_with_retries("https://example.invalid/asset", Path("unused"),
+                                                   backoff=-1)
+            urlopen.assert_not_called()
 
 
 if __name__ == "__main__":
