@@ -3,6 +3,16 @@
 #include "quanpin_query.h"
 #include "quanpin_utils.h"
 
+namespace
+{ // The request carries one bool per correction type; the dictionary layer gates
+// the whole feature with a single mask, so bridge the two here.
+unsigned autocorrect_types_from_request(const QueryRequest &request)
+{
+    return (request.enable_quanpin_autocorrect_transposition ? quanpin::kAutocorrectTransposition : 0u) |
+           (request.enable_quanpin_autocorrect_neighbor ? quanpin::kAutocorrectNeighbor : 0u);
+}
+} // namespace
+
 QuanpinEngine::QuanpinEngine(metasequoia::RuntimePaths paths)
     : dictionary_({}, paths),
       helpcodes_(HelpcodeUtils::load_helpcode_keymap(paths.resources, HelpcodeUtils::selected_helpcode_schema()))
@@ -36,7 +46,7 @@ std::vector<WordItem> QuanpinEngine::query(const QueryRequest &request)
         const std::string base_segmentation = quanpin::join_segments(cuts.front());
         const std::string help_codes = request.raw_input.substr(request.raw_input.size() - 2, 2);
         const auto base_candidates = dictionary_.query(base_raw_input, base_segmentation,
-                                                       request.enable_quanpin_autocorrect, request.fuzzy_pinyin);
+                                                       autocorrect_types_from_request(request), request.fuzzy_pinyin);
         return HelpcodeUtils::filter_candidates_with_double_helpcodes(base_candidates, help_codes, helpcodes_.get());
     }
 
@@ -48,11 +58,11 @@ std::vector<WordItem> QuanpinEngine::query(const QueryRequest &request)
         const std::string base_segmentation = quanpin::join_segments(cuts.front());
         const std::string help_code = request.raw_input.substr(request.raw_input.size() - 1, 1);
         const auto base_candidates = dictionary_.query(base_raw_input, base_segmentation,
-                                                       request.enable_quanpin_autocorrect, request.fuzzy_pinyin);
+                                                       autocorrect_types_from_request(request), request.fuzzy_pinyin);
         return HelpcodeUtils::reorder_candidates_with_single_helpcode(base_candidates, help_code, helpcodes_.get());
     }
 
-    return dictionary_.query(request.raw_input, request.segmentation, request.enable_quanpin_autocorrect,
+    return dictionary_.query(request.raw_input, request.segmentation, autocorrect_types_from_request(request),
                              request.fuzzy_pinyin);
 }
 
@@ -113,7 +123,7 @@ int QuanpinEngine::insert_word_to_series_cache(const QueryRequest &request, cons
                                                CandidateSource source)
 {
     return dictionary_.insert_word_to_series_cache(request.raw_input, request.segmentation,
-                                                   request.enable_quanpin_autocorrect, word, source);
+                                                   autocorrect_types_from_request(request), word, source);
 }
 
 std::string QuanpinEngine::search_sentence_from_ime_engine(const std::string &user_pinyin)

@@ -5,6 +5,7 @@
 #include "../shuangpin/shuangpin_utils.h"
 #include "../japanese/romaji_converter.h"
 #include <algorithm>
+#include <cctype>
 
 namespace metasequoia
 {
@@ -151,6 +152,115 @@ std::string ResolveQuanpinCloudCacheKey(const QueryRequest &request)
 {
     return quanpin::strip_active_helpcodes(request.raw_input, request.raw_input_with_cases);
 }
+
+unsigned QuanpinAutocorrectTypes(const QueryRequest &request)
+{
+    return (request.enable_quanpin_autocorrect_transposition ? quanpin::kAutocorrectTransposition : 0u) |
+           (request.enable_quanpin_autocorrect_neighbor ? quanpin::kAutocorrectNeighbor : 0u);
+}
+
+std::string QuanpinLettersWithoutDelimiters(const std::string &text)
+{
+    std::string letters;
+    letters.reserve(text.size());
+    for (const char ch : text)
+    {
+        if (ch != '\'')
+        {
+            letters.push_back(ch);
+        }
+    }
+    return letters;
+}
+
+// Folds letters for autocorrect comparisons: lowercases and strips manual
+// delimiters, and maps the u-umlaut style 'v' spelling onto 'u'. The jv/nv
+// normalisation is not a correction, so it must never make the scheme
+// segmentation look rewritten.
+std::string FoldQuanpinAutocorrectLetters(const std::string &text)
+{
+    std::string folded;
+    folded.reserve(text.size());
+    for (const char ch : text)
+    {
+        if (ch == '\'')
+        {
+            continue;
+        }
+        const char lower = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+        folded.push_back(lower == 'v' ? 'u' : lower);
+    }
+    return folded;
+}
+
+// Rebuilds the preedit from the cased input letters with separators at the raw
+// spans the correction BFS reports. Letters (case included) are preserved
+// verbatim; manual delimiters are replaced by the actual cut positions.
+std::string RebuildQuanpinDisplayFromCut(const std::string &cased_input, const quanpin::AutocorrectCut &cut)
+{
+    std::string display;
+    display.reserve(cased_input.size() + cut.segments.size());
+    size_t letter_index = 0;
+    size_t boundary_index = 0;
+    const size_t boundary_count = cut.segments.empty() ? 0 : cut.segments.size() - 1;
+    for (const char ch : cased_input)
+    {
+        if (ch == '\'')
+        {
+            continue;
+        }
+        display.push_back(ch);
+        ++letter_index;
+        if (boundary_index < boundary_count &&
+            letter_index == cut.segments[boundary_index].start + cut.segments[boundary_index].raw_text.size())
+        {
+            display.push_back('\'');
+            ++boundary_index;
+        }
+    }
+    return display;
+}
+
+// The preedit must always show the letters the user actually typed (PRD R5).
+// Two layers can rewrite them into canonical pinyin: the scheme alias table
+// (sahng -> shang, baked into raw_segmentation) and the dictionary correction
+// BFS (shabg -> shang, which only re-separates). Both are rebuilt here from
+// the raw letters with separators at the actual cut positions; when the BFS
+// cannot explain a rewrite (length-changing aliases such as mihng -> ming) the
+// raw letters are shown without separators. The rebuild is deliberately
+// switch-independent: the alias layer rewrites letters regardless of the
+// autocorrect switches, and AC1 only constrains the candidate list.
+std::string BuildQuanpinAutocorrectDisplay(const QueryRequest &request)
+{
+    const std::string &cased = request.raw_input_with_cases.empty() ? request.raw_input : request.raw_input_with_cases;
+    const std::string base = request.raw_segmentation.empty() ? cased : request.raw_segmentation;
+    if (request.raw_input.empty() || cased.empty())
+    {
+        return base;
+    }
+
+    const unsigned types = QuanpinAutocorrectTypes(request);
+    const std::string folded_input = FoldQuanpinAutocorrectLetters(cased);
+    const bool letters_rewritten = FoldQuanpinAutocorrectLetters(QuanpinLettersWithoutDelimiters(base)) != folded_input;
+
+    // Fast path: the scheme kept the typed letters and either no correction
+    // type is enabled or the input is already a complete pinyin spelling, so
+    // no correction interpretation exists to draw separators from.
+    if (!letters_rewritten && (types == 0 || quanpin::is_complete_pinyin_input(request.raw_input)))
+    {
+        return base;
+    }
+
+    const auto cut = quanpin::autocorrect_cut_detail(folded_input, types);
+    if (!cut.empty())
+    {
+        return RebuildQuanpinDisplayFromCut(cased, cut);
+    }
+    // The BFS cannot explain the input (e.g. a length-changing alias such as
+    // mihng -> ming): fall back to the plain raw letters when the letters were
+    // rewritten, otherwise keep the scheme segmentation untouched.
+    return letters_rewritten ? QuanpinLettersWithoutDelimiters(cased) : base;
+}
 } // namespace
 
 void InputSession::handle_engine_key(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch)
@@ -251,7 +361,7 @@ std::string InputSession::get_pinyin_segmentation_with_cases() const
     }
     if (current_scheme_type() == SchemeType::Quanpin)
     {
-        return request().raw_segmentation.empty() ? request().raw_input_with_cases : request().raw_segmentation;
+        return BuildQuanpinAutocorrectDisplay(request());
     }
     std::string preedit =
         request().normalized_segmentation.empty() ? request().segmentation : request().normalized_segmentation;

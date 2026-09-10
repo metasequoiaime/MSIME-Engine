@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <deque>
 #include <limits>
+#include <optional>
 #include <string_view>
 #include <unordered_map>
 
@@ -148,6 +149,48 @@ bool has_only_complete_pinyin_segments(const Segments &segments)
     const auto &valid_pinyin = intact_pinyin_set();
     return std::all_of(segments.begin(), segments.end(),
                        [&](const std::string &segment) { return valid_pinyin.find(segment) != valid_pinyin.end(); });
+}
+
+bool looks_like_syllable_with_jianpin_tail(const std::string &pinyin)
+{
+    // Manual delimiters express user-intent boundaries and never enter the
+    // correction path, so there is nothing for this guard to protect.
+    if (pinyin.empty() || pinyin.find('\'') != std::string::npos)
+    {
+        return false;
+    }
+
+    const auto &valid_pinyin = intact_pinyin_set();
+    static const size_t kMaxSyllableLength =
+        std::max_element(intact_pinyin_list().begin(), intact_pinyin_list().end(),
+                         [](const std::string &lhs, const std::string &rhs) { return lhs.size() < rhs.size(); })
+            ->size();
+
+    // Greedy longest-match scan: the input must reduce to one or more legal
+    // syllables plus at most one trailing letter ("zheg" = zhe + g) to count
+    // as jianpin intent. All-consonant strings match zero syllables and
+    // return false on purpose: the engine has no multi-letter jianpin, so
+    // correction is the only useful reading of e.g. "bqng" -> bang.
+    size_t pos = 0;
+    while (pos < pinyin.size())
+    {
+        const size_t max_len = std::min(kMaxSyllableLength, pinyin.size() - pos);
+        size_t matched = 0;
+        for (size_t len = max_len; len >= 1; --len)
+        {
+            if (valid_pinyin.find(pinyin.substr(pos, len)) != valid_pinyin.end())
+            {
+                matched = len;
+                break;
+            }
+        }
+        if (matched == 0)
+        {
+            break;
+        }
+        pos += matched;
+    }
+    return pos > 0 && pinyin.size() - pos <= 1;
 }
 
 SyllableGraph build_syllable_graph(const std::string &pinyin)
@@ -424,13 +467,28 @@ namespace
 constexpr size_t kMaxAutocorrectEdges = 3;
 constexpr size_t kMaxAutocorrectInputLength = 64;
 
-const std::unordered_map<std::string_view, std::string_view> &autocorrect_index()
+// Keys point at string literals in the generated tables (static storage), so views
+// stay valid forever.
+const std::unordered_map<std::string_view, std::string_view> &transposition_index()
 {
-    // Keys point at string literals in kEntries (static storage), so views stay valid forever.
     static const std::unordered_map<std::string_view, std::string_view> kIndex = [] {
         std::unordered_map<std::string_view, std::string_view> index;
-        index.reserve(autocorrect::kEntryCount * 2);
-        for (const auto &entry : autocorrect::kEntries)
+        index.reserve(autocorrect::kTranspositionCount * 2);
+        for (const auto &entry : autocorrect::kTranspositionEntries)
+        {
+            index.emplace(entry.wrong, entry.correct);
+        }
+        return index;
+    }();
+    return kIndex;
+}
+
+const std::unordered_map<std::string_view, std::string_view> &neighbor_index()
+{
+    static const std::unordered_map<std::string_view, std::string_view> kIndex = [] {
+        std::unordered_map<std::string_view, std::string_view> index;
+        index.reserve(autocorrect::kNeighborCount * 2);
+        for (const auto &entry : autocorrect::kNeighborEntries)
         {
             index.emplace(entry.wrong, entry.correct);
         }
@@ -447,20 +505,42 @@ struct AutocorrectEdge
 };
 } // namespace
 
-Segments autocorrect_cut(const std::string &pinyin)
+AutocorrectCut autocorrect_cut_detail(const std::string &pinyin, const unsigned autocorrect_types)
 {
     // Contract: the caller has already failed the correction cut (the input is
     // not a legal pinyin combination), so a valid result here always contains
     // at least one corrected edge. Manual delimiters express user intent and
     // are never rewritten.
-    if (pinyin.empty() || pinyin.size() > kMaxAutocorrectInputLength || pinyin.find('\'') != std::string::npos)
+    if (autocorrect_types == 0 || pinyin.empty() || pinyin.size() > kMaxAutocorrectInputLength ||
+        pinyin.find('\'') != std::string::npos)
     {
         return {};
     }
 
     const auto &valid_pinyin = intact_pinyin_set();
-    const auto &index = autocorrect_index();
     const size_t length = pinyin.size();
+
+    // The generated tables are disjoint (cross-type conflicts are resolved at
+    // generation time), so at most one enabled index can claim a piece.
+    const auto correction = [](const unsigned types, const std::string_view piece) -> std::optional<std::string_view> {
+        if ((types & kAutocorrectTransposition) != 0)
+        {
+            const auto &index = transposition_index();
+            if (const auto found = index.find(piece); found != index.end())
+            {
+                return found->second;
+            }
+        }
+        if ((types & kAutocorrectNeighbor) != 0)
+        {
+            const auto &index = neighbor_index();
+            if (const auto found = index.find(piece); found != index.end())
+            {
+                return found->second;
+            }
+        }
+        return std::nullopt;
+    };
 
     const auto kInfinite = std::numeric_limits<size_t>::max();
     std::vector<size_t> dist(length + 1, kInfinite);
@@ -490,9 +570,9 @@ Segments autocorrect_cut(const std::string &pinyin)
             {
                 edge = AutocorrectEdge{start + len, piece, false};
             }
-            else if (const auto found = index.find(piece); found != index.end())
+            else if (const auto corrected = correction(autocorrect_types, piece))
             {
-                edge = AutocorrectEdge{start + len, found->second, true};
+                edge = AutocorrectEdge{start + len, *corrected, true};
             }
             else
             {
@@ -517,30 +597,42 @@ Segments autocorrect_cut(const std::string &pinyin)
         }
     }
 
-    if (dist[length] == kInfinite)
+    if (dist[length] == kInfinite || dist[length] == 0)
     {
-        return {};
-    }
-    if (dist[length] == 0)
-    {
-        // The input is fully legal after all; nothing to correct. The caller
-        // already owns the plain segmentation in this case.
+        // Either no correction path exists, or the input is fully legal after all
+        // (nothing to correct; the caller already owns the plain segmentation).
         return {};
     }
 
     // Rebuild the chain of predecessor edges from the end back to the start.
     // Every edge consumes exactly syllable.size() input chars (transpositions
-    // and neighbor substitutions preserve length), so the previous position is
-    // derivable without storing it.
-    Segments result;
+    // and neighbor substitutions preserve length), so the raw span of each
+    // edge is derivable from the position without storing it.
+    AutocorrectCut result;
     size_t pos = length;
     while (pos != 0)
     {
         const auto &edge = pred[pos];
-        result.push_back(std::string(edge.syllable));
-        pos -= edge.syllable.size();
+        const size_t start = pos - edge.syllable.size();
+        result.segments.push_back(AutocorrectCutSegment{
+            std::string(edge.syllable), pinyin.substr(start, edge.syllable.size()), start, edge.corrected});
+        pos = start;
     }
-    std::reverse(result.begin(), result.end());
+    std::reverse(result.segments.begin(), result.segments.end());
+    return result;
+}
+
+Segments autocorrect_cut(const std::string &pinyin, const unsigned autocorrect_types)
+{
+    // Projection wrapper: existing callers and tests only need the corrected
+    // syllable sequence, so keep the phase-1 signature working unchanged.
+    const auto detail = autocorrect_cut_detail(pinyin, autocorrect_types);
+    Segments result;
+    result.reserve(detail.segments.size());
+    for (const auto &segment : detail.segments)
+    {
+        result.push_back(segment.syllable);
+    }
     return result;
 }
 

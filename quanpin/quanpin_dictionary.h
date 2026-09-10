@@ -25,8 +25,9 @@ class QuanpinDictionary
                                metasequoia::RuntimePaths paths = metasequoia::RuntimePaths::legacy());
     ~QuanpinDictionary();
 
+    // Autocorrection is gated by a quanpin::kAutocorrect* type mask (0 = off).
     std::vector<WordItem> query(const std::string &raw_input, const std::string &segmentation = "",
-                                bool enable_autocorrect = false, metasequoia::FuzzyPinyinOptions fuzzy = {});
+                                unsigned autocorrect_types = 0, metasequoia::FuzzyPinyinOptions fuzzy = {});
     std::vector<WordItem> fuzzy_candidates(const std::string &segmentation, metasequoia::FuzzyPinyinOptions options);
     bool expand_initial_candidates(const std::string &code, std::vector<WordItem> &candidates);
     std::optional<WordItem> find_candidate(const std::string &key, const std::string &value);
@@ -39,7 +40,7 @@ class QuanpinDictionary
     int delete_by_pinyin_and_word(std::string pinyin, std::string word);
     int insert_word_to_series_cache(const std::string &pinyin, const std::string &word, CandidateSource source);
     int insert_word_to_series_cache(const std::string &raw_input, const std::string &segmentation,
-                                    bool enable_autocorrect, const std::string &word, CandidateSource source);
+                                    unsigned autocorrect_types, const std::string &word, CandidateSource source);
 
     std::string search_sentence_from_ime_engine(const std::string &user_pinyin);
 
@@ -63,7 +64,7 @@ class QuanpinDictionary
 
   private:
     std::vector<WordItem> query_exact(const std::string &raw_input, const std::string &segmentation,
-                                      bool enable_autocorrect);
+                                      unsigned autocorrect_types);
     std::vector<WordItem> query_series(const std::string &raw_input, const std::string &segmentation,
                                        const quanpin::Segments &segments);
     std::vector<WordItem> query_single_path(const std::string &raw_input, const std::string &segmentation,
@@ -81,6 +82,7 @@ class QuanpinDictionary
         const quanpin::Segments &primary_segments, const std::vector<quanpin::Segments> &alternative_segmentations,
         std::vector<WordItem> result);
     static void append_unique_words(std::vector<WordItem> &result, const std::vector<WordItem> &extra);
+    void mark_autocorrect_candidates(std::vector<WordItem> &candidates, const std::string &raw_input);
 
     std::vector<std::string> select_data(const std::string &sql_str);
     std::vector<WordItem> select_complete_data(const std::string &sql_str);

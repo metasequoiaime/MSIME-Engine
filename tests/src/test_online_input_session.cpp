@@ -1,5 +1,6 @@
 #include "../../core/data_path.h"
 #include "../../core/input_session.h"
+#include "../../quanpin/quanpin_utils.h"
 #include "test_directory_cleanup.h"
 
 #include <sqlite3.h>
@@ -163,6 +164,7 @@ int main()
                 "A stale result from an earlier identical composition replaced the current result.");
 
         metasequoia::InputSession autocorrected(SchemeType::Quanpin);
+        autocorrected.set_quanpin_autocorrect_types(quanpin::kAutocorrectNeighbor);
         type(autocorrected, "abg");
         const auto autocorrected_query = autocorrected.online_query();
         require(autocorrected_query.has_value(), "Autocorrected Quanpin did not expose an online query.");

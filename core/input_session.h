@@ -28,7 +28,7 @@ class InputSession
   public:
     // Frontends pass their persisted options at session creation so every platform uses the same
     // engine configuration and commit policy.
-    explicit InputSession(SchemeType scheme_type = SchemeType::Quanpin, bool quanpin_autocorrect_enabled = true,
+    explicit InputSession(SchemeType scheme_type = SchemeType::Quanpin, unsigned quanpin_autocorrect_types = 0,
                           bool helpcode_enabled = true, bool chinese_punctuation_enabled = true,
                           bool candidate_learning_enabled = true, RuntimePaths paths = RuntimePaths::legacy());
     InputSession(SchemeType scheme_type, const ShuangpinProfile &shuangpin_profile,
@@ -77,7 +77,7 @@ class InputSession
     bool apply_online_candidate(const OnlineQuery &query, std::string candidate, CandidateSource source);
 
     SchemeType scheme_type() const;
-    bool quanpin_autocorrect_enabled() const;
+    unsigned quanpin_autocorrect_types() const;
     bool helpcode_enabled() const;
     bool chinese_punctuation_enabled() const;
     bool candidate_learning_enabled() const;
@@ -161,7 +161,7 @@ class InputSession
                                                        const std::string &selected_word,
                                                        const SelectionTransition &selection_transition) const;
 
-    void set_quanpin_autocorrect_enabled(bool enabled);
+    void set_quanpin_autocorrect_types(unsigned autocorrect_types);
     void set_fuzzy_pinyin_options(metasequoia::FuzzyPinyinOptions options)
     {
         engine_.set_fuzzy_pinyin_options(options);
@@ -224,7 +224,8 @@ class InputSession
     RuntimePaths paths_;
     CandidateQueries candidate_queries_;
     ImeSession engine_;
-    bool quanpin_autocorrect_enabled_ = true;
+    // 位掩码（quanpin::kAutocorrect* 位），不是 bool：bool 会把邻键位截断丢失。
+    unsigned quanpin_autocorrect_types_ = 0;
     bool quanpin_helpcode_enabled_ = true;
     bool shuangpin_helpcode_enabled_ = true;
     bool chinese_punctuation_enabled_ = true;

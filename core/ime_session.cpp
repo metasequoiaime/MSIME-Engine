@@ -3,6 +3,7 @@
 #include "../schemes/shuangpin_scheme.h"
 #include "../schemes/wubi_scheme.h"
 #include "../schemes/japanese_romaji_scheme.h"
+#include "../quanpin/quanpin_utils.h"
 #include "../shuangpin/shuangpin_query.h"
 #include <stdexcept>
 
@@ -85,9 +86,9 @@ void ImeSession::set_quanpin_helpcode_enabled(bool enabled)
     enable_quanpin_helpcode_ = enabled;
 }
 
-void ImeSession::set_quanpin_autocorrect_enabled(bool enabled)
+void ImeSession::set_quanpin_autocorrect_types(unsigned autocorrect_types)
 {
-    enable_quanpin_autocorrect_ = enabled;
+    quanpin_autocorrect_types_ = autocorrect_types;
 }
 
 void ImeSession::replace_shuangpin_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases)
@@ -267,7 +268,10 @@ void ImeSession::refresh_candidates()
     state_.request = scheme_->build_request();
     state_.request.enable_shuangpin_helpcode = enable_shuangpin_helpcode_;
     state_.request.enable_quanpin_helpcode = enable_quanpin_helpcode_;
-    state_.request.enable_quanpin_autocorrect = enable_quanpin_autocorrect_;
+    state_.request.enable_quanpin_autocorrect_transposition =
+        (quanpin_autocorrect_types_ & quanpin::kAutocorrectTransposition) != 0;
+    state_.request.enable_quanpin_autocorrect_neighbor =
+        (quanpin_autocorrect_types_ & quanpin::kAutocorrectNeighbor) != 0;
     state_.request.fuzzy_pinyin = fuzzy_pinyin_;
     ApplyShuangpinHelpcodeSegmentation(state_.request, shuangpin_profile_);
 
@@ -303,7 +307,10 @@ void ImeSession::refresh_candidates()
         pinyin.set_raw_input(state_.request.raw_input, state_.request.raw_input_with_cases);
         QueryRequest fallback = pinyin.build_request();
         fallback.enable_quanpin_helpcode = enable_quanpin_helpcode_;
-        fallback.enable_quanpin_autocorrect = enable_quanpin_autocorrect_;
+        fallback.enable_quanpin_autocorrect_transposition =
+            (quanpin_autocorrect_types_ & quanpin::kAutocorrectTransposition) != 0;
+        fallback.enable_quanpin_autocorrect_neighbor =
+            (quanpin_autocorrect_types_ & quanpin::kAutocorrectNeighbor) != 0;
         fallback.fuzzy_pinyin = fuzzy_pinyin_;
         // The same physical keys produced these letters, so the strokes carry over rather than
         // reaching the provider empty.

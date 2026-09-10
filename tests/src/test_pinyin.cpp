@@ -14,6 +14,7 @@
 #include "fmt/base.h"
 #include "core/ime_session.h"
 #include "quanpin/quanpin_dictionary.h"
+#include "quanpin/quanpin_utils.h"
 #include "quanpin/word_lattice.h"
 #include "quanpin/quanpin_query.h"
 #include "sqlite3.h"
@@ -21,7 +22,11 @@
 #include "shuangpin/shuangpin_query.h"
 #include "shuangpin/shuangpin_utils.h"
 #include "core/data_path.h"
+#include "core/input_session.h"
 #include "user_dictionary/user_dictionary_journal.h"
+#include <algorithm>
+#include <fstream>
+#include <unordered_set>
 
 using namespace std;
 
@@ -663,6 +668,420 @@ void test_quanpin_order_corrections()
            "Expected ang to remain available as an alternative interpretation.");
 }
 
+namespace
+{ // Minimal deterministic dictionary for the mask matrix: '上' exists only under the
+// corrected key 'shang', so a leading 上 proves the corrected path actually ran.
+std::filesystem::path create_autocorrect_probe_database()
+{
+    const fs::path path = fs::temp_directory_path() / "msime-quanpin-autocorrect-mask-test.db";
+    std::error_code ec;
+    fs::remove(path, ec);
+    sqlite3 *db = nullptr;
+    if (sqlite3_open(path.string().c_str(), &db) != SQLITE_OK)
+    {
+        throw std::runtime_error("Failed to create the autocorrect probe database.");
+    }
+    const char *sql = "CREATE TABLE tbl_1_s(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                      "CREATE TABLE tbl_2_s(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                      "CREATE TABLE tbl_4_s(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                      "INSERT INTO tbl_1_s VALUES('shang','s','上',100);"
+                      "INSERT INTO tbl_2_s VALUES('shang''zhi','sz','上至',100);"
+                      "INSERT INTO tbl_4_s VALUES('sa''huang''na''ge','shng','撒谎那个',1000);";
+    const int result = sqlite3_exec(db, sql, nullptr, nullptr, nullptr);
+    sqlite3_close(db);
+    if (result != SQLITE_OK)
+    {
+        fs::remove(path, ec);
+        throw std::runtime_error("Failed to initialize the autocorrect probe database.");
+    }
+    return path;
+}
+} // namespace
+
+void test_quanpin_autocorrect_switches_and_guard()
+{
+    fmt::println("==== Quanpin Autocorrect Switch Matrix And Jianpin Guard ====");
+
+    const unsigned none = 0;
+    const unsigned transposition_only = quanpin::kAutocorrectTransposition;
+    const unsigned neighbor_only = quanpin::kAutocorrectNeighbor;
+    const unsigned both = transposition_only | neighbor_only;
+
+    // Cut-level switch matrix: 'sahng' is a transposition fix, 'shabg' a neighbor
+    // fix, and each type bit must enable exactly its own family (AC1-AC4).
+    expect(quanpin::autocorrect_cut("sahng", none).empty(), "Both switches off must disable the correction cut.");
+    expect(quanpin::join_segments(quanpin::autocorrect_cut("sahng", transposition_only)) == "shang",
+           "Transposition-only must correct 'sahng'.");
+    expect(quanpin::autocorrect_cut("sahng", neighbor_only).empty(),
+           "Neighbor-only must not correct the transposition case 'sahng'.");
+    expect(quanpin::join_segments(quanpin::autocorrect_cut("sahng", both)) == "shang",
+           "Both switches on must correct 'sahng'.");
+
+    expect(quanpin::autocorrect_cut("shabg", none).empty(), "Both switches off must disable the correction cut.");
+    expect(quanpin::autocorrect_cut("shabg", transposition_only).empty(),
+           "Transposition-only must not correct the neighbor case 'shabg'.");
+    expect(quanpin::join_segments(quanpin::autocorrect_cut("shabg", neighbor_only)) == "shang",
+           "Neighbor-only must correct 'shabg'.");
+    expect(quanpin::join_segments(quanpin::autocorrect_cut("shabg", both)) == "shang",
+           "Both switches on must correct 'shabg'.");
+
+    // Jianpin-shape guard: one or more legal syllables plus at most one trailing
+    // letter is user intent, never a typo (AC5).
+    expect(quanpin::looks_like_syllable_with_jianpin_tail("zheg"),
+           "'zheg' (zhe + g) must be detected as jianpin intent.");
+    expect(quanpin::looks_like_syllable_with_jianpin_tail("keneng"),
+           "A fully legal spelling also satisfies the shape predicate.");
+    expect(!quanpin::looks_like_syllable_with_jianpin_tail("sahng"),
+           "'sahng' leaves a 3-letter tail and must stay correctable.");
+    expect(!quanpin::looks_like_syllable_with_jianpin_tail("shabg"),
+           "'shabg' leaves a 2-letter tail and must stay correctable.");
+    expect(!quanpin::looks_like_syllable_with_jianpin_tail("xi'an"), "Manual delimiters never take part in the guard.");
+    expect(!quanpin::looks_like_syllable_with_jianpin_tail("wj"),
+           "Pure-consonant jianpin must stay correctable at the predicate level.");
+    expect(!quanpin::looks_like_syllable_with_jianpin_tail("bqng"),
+           "3+ letter all-consonant strings stay correctable by design (no multi-letter jianpin).");
+    expect(quanpin::join_segments(quanpin::autocorrect_cut("bqng", neighbor_only)) == "bang",
+           "'bqng' -> bang must remain a valid neighbor correction.");
+    expect(quanpin::autocorrect_cut("zheg", both).empty(),
+           "The cleaned table must offer no correction path for 'zheg' (2-letter keys are gone).");
+
+    // Dictionary-level matrix against a deterministic probe database.
+    const auto db_path = create_autocorrect_probe_database();
+    const auto is_shang = [](const WordItem &item) { return item.word == "上"; };
+    {
+        QuanpinDictionary dictionary(db_path.string());
+
+        const auto corrected = dictionary.query("sahng", "sa'h'n'g", both);
+        expect(!corrected.empty() && corrected.front().word == "上",
+               "Both switches on must put the corrected candidate first.");
+        expect(corrected.front().canonical_pinyin == "shang",
+               "The corrected candidate must keep the corrected key as canonical pinyin.");
+
+        const auto off = dictionary.query("sahng", "sa'h'n'g", none);
+        expect(std::none_of(off.begin(), off.end(), is_shang),
+               "Both switches off must keep the corrected candidate out (AC1).");
+        expect(std::any_of(off.begin(), off.end(), [](const WordItem &item) { return item.word == "撒谎那个"; }),
+               "The legacy fallback candidates must survive with both switches off.");
+
+        const auto transposed = dictionary.query("sahng", "sa'h'n'g", transposition_only);
+        expect(!transposed.empty() && transposed.front().word == "上",
+               "Transposition-only must correct 'sahng' at the dictionary layer (AC2).");
+
+        const auto neighbor_denied = dictionary.query("sahng", "sa'h'n'g", neighbor_only);
+        expect(std::none_of(neighbor_denied.begin(), neighbor_denied.end(), is_shang),
+               "Neighbor-only must not correct the transposition case 'sahng' (AC2).");
+
+        const auto neighbor_corrected = dictionary.query("shabg", "sha'b'g", neighbor_only);
+        expect(!neighbor_corrected.empty() && neighbor_corrected.front().word == "上",
+               "Neighbor-only must correct 'shabg' at the dictionary layer (AC3).");
+
+        const auto transposition_denied = dictionary.query("shabg", "sha'b'g", transposition_only);
+        expect(std::none_of(transposition_denied.begin(), transposition_denied.end(), is_shang),
+               "Transposition-only must not correct the neighbor case 'shabg' (AC3).");
+
+        const auto multi = dictionary.query("sahngzhi", "sa'h'n'g'zhi", both);
+        expect(!multi.empty() && multi.front().word == "上至",
+               "Cross-syllable correction must survive the mask wiring.");
+
+        // The guard fires before the BFS, so a jianpin-shaped input must resolve
+        // through its raw segmentation instead of a corrected key such as 'zu'ge'.
+        (void)dictionary.query("zheg", "", both);
+        expect(dictionary.get_pinyin_segmentation() != "zu'ge",
+               "A jianpin-shaped input must not resolve through a corrected key.");
+    }
+    std::error_code cleanup_ec;
+    fs::remove(db_path, cleanup_ec);
+
+    // Generated-table invariants shared by both type tables (AC6).
+    const auto &legal = quanpin::intact_pinyin_set();
+    std::unordered_set<std::string> seen_keys;
+    size_t total_entries = 0;
+    for (const auto *table : {&quanpin::autocorrect::kTranspositionEntries, &quanpin::autocorrect::kNeighborEntries})
+    {
+        for (const auto &entry : *table)
+        {
+            const std::string wrong(entry.wrong);
+            const std::string correct(entry.correct);
+            expect(wrong.size() >= 3, "2-letter keys belong to the jianpin space and must not be generated.");
+            expect(legal.find(wrong) == legal.end(), "A correction key must never shadow a legal syllable.");
+            expect(legal.find(correct) != legal.end(), "A correction target must be a legal syllable.");
+            expect(seen_keys.insert(wrong).second, "Correction keys must be unique across both tables.");
+            ++total_entries;
+        }
+    }
+    expect(total_entries > 1000, "The generated tables unexpectedly shrank.");
+}
+
+namespace
+{ // 显示/标记用例的独立探针库：shang、shang'hao、ke'neng、nv、sa'huang'na'ge 最小键集。
+std::filesystem::path create_autocorrect_display_probe_database()
+{
+    const fs::path path = fs::temp_directory_path() / "msime-quanpin-autocorrect-display-test.db";
+    std::error_code ec;
+    fs::remove(path, ec);
+    sqlite3 *db = nullptr;
+    if (sqlite3_open(path.string().c_str(), &db) != SQLITE_OK)
+    {
+        throw std::runtime_error("Failed to create the autocorrect display probe database.");
+    }
+    const char *sql = "CREATE TABLE tbl_1_s(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                      "CREATE TABLE tbl_1_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                      "CREATE TABLE tbl_2_s(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                      "CREATE TABLE tbl_2_k(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                      "CREATE TABLE tbl_4_s(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+                      "INSERT INTO tbl_1_s VALUES('shang','s','上',100);"
+                      "INSERT INTO tbl_1_n VALUES('nv','n','女',100);"
+                      "INSERT INTO tbl_2_s VALUES('shang''hao','sh','上好',100);"
+                      "INSERT INTO tbl_2_k VALUES('ke''neng','kn','可能',100);"
+                      "INSERT INTO tbl_4_s VALUES('sa''huang''na''ge','shng','撒谎那个',1000);";
+    const int result = sqlite3_exec(db, sql, nullptr, nullptr, nullptr);
+    sqlite3_close(db);
+    if (result != SQLITE_OK)
+    {
+        fs::remove(path, ec);
+        throw std::runtime_error("Failed to initialize the autocorrect display probe database.");
+    }
+    return path;
+}
+
+std::size_t count_marked(const std::vector<WordItem> &items)
+{
+    return static_cast<std::size_t>(
+        std::count_if(items.begin(), items.end(), [](const WordItem &item) { return !item.corrected_from.empty(); }));
+}
+
+void type_display_session(metasequoia::InputSession &session, const std::string &text)
+{
+    for (const char character : text)
+    {
+        if (!session.handle_character(character).handled)
+        {
+            throw std::runtime_error("A display-test pinyin character was not handled.");
+        }
+    }
+}
+} // namespace
+
+void test_quanpin_autocorrect_display()
+{
+    fmt::println("==== Quanpin Autocorrect Display (raw-letter preedit + candidate marking) ====");
+
+    const unsigned none = 0;
+    const unsigned transposition_only = quanpin::kAutocorrectTransposition;
+    const unsigned neighbor_only = quanpin::kAutocorrectNeighbor;
+    const unsigned both = transposition_only | neighbor_only;
+
+    // utils 级：纠错切分携带原始区间，raw span 从回溯位置直接推出。
+    const auto sahng_cut = quanpin::autocorrect_cut_detail("sahng", both);
+    expect(sahng_cut.segments.size() == 1, "'sahng' must cut into a single corrected segment.");
+    expect(sahng_cut.segments[0].syllable == "shang" && sahng_cut.segments[0].raw_text == "sahng" &&
+               sahng_cut.segments[0].start == 0 && sahng_cut.segments[0].corrected,
+           "The 'sahng' segment must keep the raw letters alongside the corrected syllable.");
+
+    const auto shabg_cut = quanpin::autocorrect_cut_detail("shabg", both);
+    expect(shabg_cut.segments.size() == 1 && shabg_cut.segments[0].syllable == "shang" &&
+               shabg_cut.segments[0].raw_text == "shabg" && shabg_cut.segments[0].start == 0 &&
+               shabg_cut.segments[0].corrected,
+           "The 'shabg' segment must keep the raw letters alongside the corrected syllable.");
+
+    const auto sahnghao_cut = quanpin::autocorrect_cut_detail("sahnghao", both);
+    expect(sahnghao_cut.segments.size() == 2, "'sahnghao' must cut into two segments.");
+    expect(sahnghao_cut.segments[0].syllable == "shang" && sahng_cut.segments[0].raw_text == "sahng" &&
+               sahnghao_cut.segments[0].start == 0 && sahnghao_cut.segments[0].corrected,
+           "The first 'sahnghao' segment must keep the raw letters of the corrected part.");
+    expect(sahnghao_cut.segments[1].syllable == "hao" && sahng_cut.segments[1].raw_text == "hao" &&
+               sahng_cut.segments[1].start == 5 && !sahnghao_cut.segments[1].corrected,
+           "The untouched tail of 'sahnghao' must keep its raw span.");
+
+    expect(quanpin::autocorrect_cut_detail("zheg", both).empty(),
+           "The cleaned table must leave the jianpin shape 'zheg' unexplained by the BFS.");
+    expect(quanpin::autocorrect_cut_detail("keneng", both).empty(),
+           "A fully legal spelling must produce no correction cut.");
+    expect(quanpin::autocorrect_cut_detail("sahng", none).empty(),
+           "Both switches off must disable the range-carrying cut too.");
+    expect(quanpin::autocorrect_cut_detail("xi'an", both).empty(),
+           "Manual delimiters must disable the range-carrying cut.");
+    expect(quanpin::join_segments(quanpin::autocorrect_cut("sahng", both)) == "shang",
+           "The Segments wrapper must stay a projection of the detail cut.");
+
+    // 字典级标记：候选字母 == 主切分字母 且 主切分字母 != 原始字母 才标记。
+    const auto db_path = create_autocorrect_display_probe_database();
+    {
+        QuanpinDictionary dictionary(db_path.string());
+
+        const auto corrected = dictionary.query("sahng", "sa'h'n'g", both);
+        expect(!corrected.empty() && corrected.front().word == "上" && corrected.front().corrected_from == "sahng",
+               "The corrected first candidate must carry the typed input as corrected_from (AC7).");
+        const auto legacy = std::find_if(corrected.begin(), corrected.end(),
+                                         [](const WordItem &item) { return item.word == "撒谎那个"; });
+        expect(legacy != corrected.end() && legacy->corrected_from.empty(),
+               "The legacy fallback tail must stay unmarked.");
+
+        const auto off = dictionary.query("sahng", "sa'h'n'g", none);
+        expect(count_marked(off) == 0,
+               "No candidate may be marked while the primary segmentation keeps the typed letters.");
+
+        // 别名层改写（真实方案层会把校正后的 segmentation 传进来）与开关无关，照样标记。
+        const auto alias_like = dictionary.query("sahng", "shang", none);
+        expect(!alias_like.empty() && alias_like.front().word == "上" && alias_like.front().corrected_from == "sahng",
+               "Alias-layer corrected candidates must be labelled regardless of the switches.");
+
+        // 前缀候选不标记：只有字母等于主切分的整词候选才带 corrected_from。
+        const auto full = dictionary.query("sahnghao", "sa'h'n'g'hao", both);
+        expect(!full.empty() && full.front().word == "上好" && full.front().corrected_from == "sahnghao",
+               "The full-length corrected candidate must be labelled with the typed input.");
+        const auto prefix =
+            std::find_if(full.begin(), full.end(), [](const WordItem &item) { return item.word == "上"; });
+        expect(prefix != full.end() && prefix->corrected_from.empty(), "Partial prefix candidates must stay unmarked.");
+        expect(count_marked(full) == 1, "Exactly the full-length corrected candidate may be marked for 'sahnghao'.");
+
+        const auto keneng = dictionary.query("keneng", "ke'neng", both);
+        expect(count_marked(keneng) == 0, "A legal spelling must produce no marks.");
+        expect(count_marked(dictionary.query("wj", "w'j", both)) == 0, "Jianpin input must produce no marks (AC5).");
+        const auto nv = dictionary.query("nv", "nv", both);
+        expect(!nv.empty() && nv.front().word == "女" && nv.front().corrected_from.empty(),
+               "The u-umlaut 'v' spelling must stay unmarked.");
+    }
+
+    // 会话级 preedit：get_pinyin_segmentation_with_cases 必须画原始字母。
+    const fs::path session_dir = fs::temp_directory_path() / "msime-quanpin-autocorrect-display-session";
+    std::error_code cleanup_ec;
+    fs::remove_all(session_dir, cleanup_ec);
+    fs::create_directories(session_dir / "helpcodes");
+    fs::copy_file(db_path, session_dir / "msime.db", fs::copy_options::overwrite_existing);
+    {
+        std::ofstream helpcodes(session_dir / "helpcodes" / "helpcode.txt");
+        helpcodes << "你=ab\n";
+    }
+    metasequoia::RuntimePaths paths;
+    paths.resources = session_dir;
+    paths.user_data = session_dir;
+    paths.cache = session_dir;
+    paths.dictionaries = session_dir;
+
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, both, true, true, true, paths);
+        type_display_session(session, "sahng");
+        expect(session.get_pinyin_segmentation_with_cases() == "sahng",
+               "The preedit must show the typed letters, not the alias rewrite (AC7).");
+        expect(!session.candidates().empty() && session.candidates().front().word == "上" &&
+                   session.candidates().front().corrected_from == "sahng",
+               "The first candidate for 'sahng' must be the corrected 上 with corrected_from.");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, both, true, true, true, paths);
+        type_display_session(session, "sahnghao");
+        expect(session.get_pinyin_segmentation_with_cases() == "sahng'hao",
+               "The preedit must keep the typed letters and re-separate at the cut positions.");
+        expect(!session.candidates().empty() && session.candidates().front().word == "上好" &&
+                   session.candidates().front().corrected_from == "sahnghao",
+               "The full-length candidate for 'sahnghao' must be marked.");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, both, true, true, true, paths);
+        session.set_pinyin_sequence("sahng");
+        session.set_pinyin_sequence_with_cases("saHng");
+        session.recompute_candidates();
+        expect(session.get_pinyin_segmentation_with_cases() == "saHng",
+               "Uppercase input letters must survive the display rebuild.");
+        expect(!session.candidates().empty() && session.candidates().front().corrected_from == "sahng",
+               "Marking for cased input must carry the folded typed letters.");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, both, true, true, true, paths);
+        type_display_session(session, "shabg");
+        expect(session.get_pinyin_segmentation_with_cases() == "shabg",
+               "A BFS-corrected input with untouched letters must redraw separators from the raw spans.");
+        expect(!session.candidates().empty() && session.candidates().front().word == "上" &&
+                   session.candidates().front().corrected_from == "shabg",
+               "The BFS-corrected candidate for 'shabg' must be marked.");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, none, true, true, true, paths);
+        type_display_session(session, "shabg");
+        expect(session.get_pinyin_segmentation_with_cases() == "sha'b'g",
+               "With both switches off the legacy greedy separators must stay.");
+        expect(count_marked(session.candidates()) == 0, "No corrected candidate exists with both switches off.");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, none, true, true, true, paths);
+        type_display_session(session, "sahng");
+        expect(session.get_pinyin_segmentation_with_cases() == "sahng",
+               "Even with both switches off the alias rewrite must be undone in the preedit.");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, transposition_only, true, true, true, paths);
+        type_display_session(session, "sahng");
+        expect(!session.candidates().empty() && session.candidates().front().word == "上" &&
+                   session.candidates().front().corrected_from == "sahng",
+               "Transposition-only must correct 'sahng' end to end (AC2, mask must survive the session).");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, neighbor_only, true, true, true, paths);
+        type_display_session(session, "shabg");
+        expect(!session.candidates().empty() && session.candidates().front().word == "上" &&
+                   session.candidates().front().corrected_from == "shabg",
+               "Neighbor-only must correct 'shabg' end to end (AC3, mask must survive the session).");
+        expect(session.get_pinyin_segmentation_with_cases() == "shabg",
+               "Neighbor-only 'shabg' preedit shows the typed letters.");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, transposition_only, true, true, true, paths);
+        type_display_session(session, "shabg");
+        expect(count_marked(session.candidates()) == 0,
+               "Transposition-only must not correct the neighbor case 'shabg' (AC3).");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, neighbor_only, true, true, true, paths);
+        type_display_session(session, "sahng");
+        // 邻键开关关不掉别名层（现状基线），sahng 仍由别名层给出「上」并标记。
+        expect(session.get_pinyin_segmentation_with_cases() == "sahng",
+               "Neighbor-only 'sahng' preedit still shows the typed letters.");
+        expect(!session.candidates().empty() && session.candidates().front().word == "上" &&
+                   session.candidates().front().corrected_from == "sahng",
+               "Neighbor-only keeps the alias-layer baseline for 'sahng'.");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, both, true, true, true, paths);
+        type_display_session(session, "keneng");
+        expect(session.get_pinyin_segmentation_with_cases() == "ke'neng",
+               "A legal spelling must keep its exact preedit.");
+        expect(count_marked(session.candidates()) == 0, "A legal spelling must produce no marks.");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, both, true, true, true, paths);
+        type_display_session(session, "xi'an");
+        expect(session.get_pinyin_segmentation_with_cases() == "xi'an",
+               "A manual delimiter input must keep its exact preedit.");
+        expect(count_marked(session.candidates()) == 0, "A manual delimiter input must produce no marks.");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, both, true, true, true, paths);
+        type_display_session(session, "zheg");
+        expect(session.get_pinyin_segmentation_with_cases() == "zhe'g",
+               "The jianpin shape 'zheg' must keep its raw letters and separator.");
+        expect(count_marked(session.candidates()) == 0, "The jianpin shape 'zheg' must produce no marks.");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, both, true, true, true, paths);
+        type_display_session(session, "wj");
+        expect(session.get_pinyin_segmentation_with_cases() == "w'j", "Pure jianpin must keep its greedy preedit.");
+        expect(count_marked(session.candidates()) == 0, "Pure jianpin must produce no marks (AC5).");
+    }
+    {
+        metasequoia::InputSession session(SchemeType::Quanpin, both, true, true, true, paths);
+        type_display_session(session, "nv");
+        expect(session.get_pinyin_segmentation_with_cases() == "nv",
+               "The u-umlaut spelling must keep its exact preedit.");
+        expect(!session.candidates().empty() && session.candidates().front().word == "女" &&
+                   session.candidates().front().corrected_from.empty(),
+               "The u-umlaut candidate must stay unmarked.");
+    }
+
+    fs::remove_all(session_dir, cleanup_ec);
+    fs::remove(db_path, cleanup_ec);
+}
+
 int main(int argc, char *argv[])
 {
     try
@@ -684,6 +1103,8 @@ int main(int argc, char *argv[])
         test_quanpin_four_syllable_alternative_segmentation();
         test_quanpin_single_letter_jianpin_ranking();
         test_quanpin_query_timings();
+        test_quanpin_autocorrect_switches_and_guard();
+        test_quanpin_autocorrect_display();
         fmt::println("All tests passed.");
         return 0;
     }
