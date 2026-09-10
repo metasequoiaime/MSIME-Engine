@@ -19,8 +19,6 @@ void set_data_directory(const std::filesystem::path &path)
 }
 } // namespace
 
-void test_runtime_isolation();
-
 int main()
 {
     const std::filesystem::path expected =
@@ -39,6 +37,5 @@ int main()
     {
         throw std::runtime_error("The data file path was not preserved as UTF-8.");
     }
-    test_runtime_isolation();
     return 0;
 }

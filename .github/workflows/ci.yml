@@ -73,9 +73,11 @@ jobs:
         run: cmake --build build --config Release --parallel
       - name: Test
         shell: pwsh
-        # data_path and candidate_removal exercise Windows filesystem and SQLite paths. On the
-        # windows-2025 runner they can each exceed the 20-second default without hanging; keep the
-        # stricter timeout on Linux/macOS while allowing the observed Windows test budget.
+        # runtime_isolation and candidate_removal exercise Windows filesystem and SQLite paths. On
+        # the windows-2025 runner they can each exceed the 20-second default without hanging; keep
+        # the stricter timeout on Linux/macOS while allowing the observed Windows test budget.
+        # runtime_isolation carries its own ceiling in CMakeLists.txt because 60 seconds is only six
+        # times its Windows best case, which a slow runner has already outrun.
         run: ctest --test-dir build -C Release --output-on-failure --timeout 60
 
   # Every job above builds the engine on its own. None of them builds anything that consumes it, so

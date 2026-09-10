@@ -164,10 +164,14 @@ if(BUILD_TESTING)
     target_link_libraries(test_platform_api PRIVATE MetasequoiaIme::Engine)
     add_test(NAME platform_api COMMAND test_platform_api)
 
-    add_executable(test_data_path tests/src/test_data_path.cpp tests/src/test_runtime_isolation.cpp)
-    target_compile_definitions(test_data_path PRIVATE METASEQUOIA_TEST_PINYIN_MODEL="${CMAKE_CURRENT_SOURCE_DIR}/googlepinyinime-rev/data/dict_pinyin.dat")
+    add_executable(test_data_path tests/src/test_data_path.cpp)
     target_link_libraries(test_data_path PRIVATE MetasequoiaIme::Engine)
     add_test(NAME data_path COMMAND test_data_path)
+
+    add_executable(test_runtime_isolation tests/src/test_runtime_isolation.cpp)
+    target_compile_definitions(test_runtime_isolation PRIVATE METASEQUOIA_TEST_PINYIN_MODEL="${CMAKE_CURRENT_SOURCE_DIR}/googlepinyinime-rev/data/dict_pinyin.dat")
+    target_link_libraries(test_runtime_isolation PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME runtime_isolation COMMAND test_runtime_isolation)
 
     add_executable(test_dictionary_state tests/src/test_dictionary_state.cpp)
     target_link_libraries(test_dictionary_state PRIVATE MetasequoiaImeEngine)
@@ -181,6 +185,16 @@ if(BUILD_TESTING)
     add_executable(test_candidate_removal tests/src/test_candidate_removal.cpp)
     target_link_libraries(test_candidate_removal PRIVATE MetasequoiaIme::Engine)
     add_test(NAME candidate_removal COMMAND test_candidate_removal)
+
+    # These two are the disk-bound outliers. Both spend their time building, staging and tearing
+    # down dictionaries on disk rather than in the decoder, and Windows runs them 15-25x slower than
+    # the other platforms: runtime_isolation takes 10.6s there against 0.70s on macOS, and
+    # candidate_removal 7.6s against 0.30s. That leaves them alone in having single-digit headroom
+    # under the Windows job's 60s default, and a runner that lost disk throughput has already pushed
+    # runtime_isolation past it while the CPU-bound tests barely moved. A timeout is here to catch a
+    # hang, which is unbounded, so it is set against a hang rather than against the runner's best
+    # day; the other twenty tests keep the strict default.
+    set_tests_properties(runtime_isolation candidate_removal PROPERTIES TIMEOUT 300)
 
     add_executable(test_fuzzy_pinyin tests/src/test_fuzzy_pinyin.cpp)
     target_link_libraries(test_fuzzy_pinyin PRIVATE MetasequoiaIme::Engine)
