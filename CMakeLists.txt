@@ -164,10 +164,20 @@ if(BUILD_TESTING)
     target_link_libraries(test_platform_api PRIVATE MetasequoiaIme::Engine)
     add_test(NAME platform_api COMMAND test_platform_api)
 
-    add_executable(test_data_path tests/src/test_data_path.cpp tests/src/test_runtime_isolation.cpp)
-    target_compile_definitions(test_data_path PRIVATE METASEQUOIA_TEST_PINYIN_MODEL="${CMAKE_CURRENT_SOURCE_DIR}/googlepinyinime-rev/data/dict_pinyin.dat")
+    add_executable(test_data_path tests/src/test_data_path.cpp)
     target_link_libraries(test_data_path PRIVATE MetasequoiaIme::Engine)
     add_test(NAME data_path COMMAND test_data_path)
+
+    add_executable(test_runtime_isolation tests/src/test_runtime_isolation.cpp)
+    target_compile_definitions(test_runtime_isolation PRIVATE METASEQUOIA_TEST_PINYIN_MODEL="${CMAKE_CURRENT_SOURCE_DIR}/googlepinyinime-rev/data/dict_pinyin.dat")
+    target_link_libraries(test_runtime_isolation PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME runtime_isolation COMMAND test_runtime_isolation)
+    # The heaviest test here by far: it builds and tears down dictionary generations, stages and
+    # replays them, and loads the pinned decoder model. That makes it disk-bound, and a hosted
+    # Windows runner having a slow half hour stretches it further than the CPU-bound tests -- one
+    # run took it past the 60s default while every other test merely tripled. The ceiling is here to
+    # catch a hang, so it is set against a hang rather than against the runner's best day.
+    set_tests_properties(runtime_isolation PROPERTIES TIMEOUT 300)
 
     add_executable(test_dictionary_state tests/src/test_dictionary_state.cpp)
     target_link_libraries(test_dictionary_state PRIVATE MetasequoiaImeEngine)

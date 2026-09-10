@@ -708,3 +708,9 @@ void test_runtime_isolation()
         second.get();
     }
 }
+
+int main()
+{
+    test_runtime_isolation();
+    return 0;
+}
