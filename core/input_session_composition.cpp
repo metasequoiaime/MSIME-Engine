@@ -232,8 +232,7 @@ std::string RebuildQuanpinDisplayFromCut(const std::string &cased_input, const q
 // autocorrect switches, and AC1 only constrains the candidate list.
 std::string BuildQuanpinAutocorrectDisplay(const QueryRequest &request)
 {
-    const std::string &cased =
-        request.raw_input_with_cases.empty() ? request.raw_input : request.raw_input_with_cases;
+    const std::string &cased = request.raw_input_with_cases.empty() ? request.raw_input : request.raw_input_with_cases;
     const std::string base = request.raw_segmentation.empty() ? cased : request.raw_segmentation;
     if (request.raw_input.empty() || cased.empty())
     {
@@ -242,8 +241,7 @@ std::string BuildQuanpinAutocorrectDisplay(const QueryRequest &request)
 
     const unsigned types = QuanpinAutocorrectTypes(request);
     const std::string folded_input = FoldQuanpinAutocorrectLetters(cased);
-    const bool letters_rewritten =
-        FoldQuanpinAutocorrectLetters(QuanpinLettersWithoutDelimiters(base)) != folded_input;
+    const bool letters_rewritten = FoldQuanpinAutocorrectLetters(QuanpinLettersWithoutDelimiters(base)) != folded_input;
 
     // Fast path: the scheme kept the typed letters and either no correction
     // type is enabled or the input is already a complete pinyin spelling, so

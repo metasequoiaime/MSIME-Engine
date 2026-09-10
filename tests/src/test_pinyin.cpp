@@ -669,7 +669,7 @@ void test_quanpin_order_corrections()
 }
 
 namespace
-{// Minimal deterministic dictionary for the mask matrix: '上' exists only under the
+{ // Minimal deterministic dictionary for the mask matrix: '上' exists only under the
 // corrected key 'shang', so a leading 上 proves the corrected path actually ran.
 std::filesystem::path create_autocorrect_probe_database()
 {
@@ -735,8 +735,7 @@ void test_quanpin_autocorrect_switches_and_guard()
            "'sahng' leaves a 3-letter tail and must stay correctable.");
     expect(!quanpin::looks_like_syllable_with_jianpin_tail("shabg"),
            "'shabg' leaves a 2-letter tail and must stay correctable.");
-    expect(!quanpin::looks_like_syllable_with_jianpin_tail("xi'an"),
-           "Manual delimiters never take part in the guard.");
+    expect(!quanpin::looks_like_syllable_with_jianpin_tail("xi'an"), "Manual delimiters never take part in the guard.");
     expect(!quanpin::looks_like_syllable_with_jianpin_tail("wj"),
            "Pure-consonant jianpin must stay correctable at the predicate level.");
     expect(!quanpin::looks_like_syllable_with_jianpin_tail("bqng"),
@@ -797,8 +796,7 @@ void test_quanpin_autocorrect_switches_and_guard()
     const auto &legal = quanpin::intact_pinyin_set();
     std::unordered_set<std::string> seen_keys;
     size_t total_entries = 0;
-    for (const auto *table :
-         {&quanpin::autocorrect::kTranspositionEntries, &quanpin::autocorrect::kNeighborEntries})
+    for (const auto *table : {&quanpin::autocorrect::kTranspositionEntries, &quanpin::autocorrect::kNeighborEntries})
     {
         for (const auto &entry : *table)
         {
@@ -815,7 +813,7 @@ void test_quanpin_autocorrect_switches_and_guard()
 }
 
 namespace
-{// 显示/标记用例的独立探针库：shang、shang'hao、ke'neng、nv、sa'huang'na'ge 最小键集。
+{ // 显示/标记用例的独立探针库：shang、shang'hao、ke'neng、nv、sa'huang'na'ge 最小键集。
 std::filesystem::path create_autocorrect_display_probe_database()
 {
     const fs::path path = fs::temp_directory_path() / "msime-quanpin-autocorrect-display-test.db";
@@ -848,8 +846,8 @@ std::filesystem::path create_autocorrect_display_probe_database()
 
 std::size_t count_marked(const std::vector<WordItem> &items)
 {
-    return static_cast<std::size_t>(std::count_if(items.begin(), items.end(),
-                                                  [](const WordItem &item) { return !item.corrected_from.empty(); }));
+    return static_cast<std::size_t>(
+        std::count_if(items.begin(), items.end(), [](const WordItem &item) { return !item.corrected_from.empty(); }));
 }
 
 void type_display_session(metasequoia::InputSession &session, const std::string &text)
@@ -912,12 +910,10 @@ void test_quanpin_autocorrect_display()
         QuanpinDictionary dictionary(db_path.string());
 
         const auto corrected = dictionary.query("sahng", "sa'h'n'g", both);
-        expect(!corrected.empty() && corrected.front().word == "上" &&
-                   corrected.front().corrected_from == "sahng",
+        expect(!corrected.empty() && corrected.front().word == "上" && corrected.front().corrected_from == "sahng",
                "The corrected first candidate must carry the typed input as corrected_from (AC7).");
-        const auto legacy = std::find_if(corrected.begin(), corrected.end(), [](const WordItem &item) {
-            return item.word == "撒谎那个";
-        });
+        const auto legacy = std::find_if(corrected.begin(), corrected.end(),
+                                         [](const WordItem &item) { return item.word == "撒谎那个"; });
         expect(legacy != corrected.end() && legacy->corrected_from.empty(),
                "The legacy fallback tail must stay unmarked.");
 
@@ -927,24 +923,21 @@ void test_quanpin_autocorrect_display()
 
         // 别名层改写（真实方案层会把校正后的 segmentation 传进来）与开关无关，照样标记。
         const auto alias_like = dictionary.query("sahng", "shang", none);
-        expect(!alias_like.empty() && alias_like.front().word == "上" &&
-                   alias_like.front().corrected_from == "sahng",
+        expect(!alias_like.empty() && alias_like.front().word == "上" && alias_like.front().corrected_from == "sahng",
                "Alias-layer corrected candidates must be labelled regardless of the switches.");
 
         // 前缀候选不标记：只有字母等于主切分的整词候选才带 corrected_from。
         const auto full = dictionary.query("sahnghao", "sa'h'n'g'hao", both);
         expect(!full.empty() && full.front().word == "上好" && full.front().corrected_from == "sahnghao",
                "The full-length corrected candidate must be labelled with the typed input.");
-        const auto prefix = std::find_if(full.begin(), full.end(),
-                                         [](const WordItem &item) { return item.word == "上"; });
-        expect(prefix != full.end() && prefix->corrected_from.empty(),
-               "Partial prefix candidates must stay unmarked.");
+        const auto prefix =
+            std::find_if(full.begin(), full.end(), [](const WordItem &item) { return item.word == "上"; });
+        expect(prefix != full.end() && prefix->corrected_from.empty(), "Partial prefix candidates must stay unmarked.");
         expect(count_marked(full) == 1, "Exactly the full-length corrected candidate may be marked for 'sahnghao'.");
 
         const auto keneng = dictionary.query("keneng", "ke'neng", both);
         expect(count_marked(keneng) == 0, "A legal spelling must produce no marks.");
-        expect(count_marked(dictionary.query("wj", "w'j", both)) == 0,
-               "Jianpin input must produce no marks (AC5).");
+        expect(count_marked(dictionary.query("wj", "w'j", both)) == 0, "Jianpin input must produce no marks (AC5).");
         const auto nv = dictionary.query("nv", "nv", both);
         expect(!nv.empty() && nv.front().word == "女" && nv.front().corrected_from.empty(),
                "The u-umlaut 'v' spelling must stay unmarked.");
@@ -1072,8 +1065,7 @@ void test_quanpin_autocorrect_display()
     {
         metasequoia::InputSession session(SchemeType::Quanpin, both, true, true, true, paths);
         type_display_session(session, "wj");
-        expect(session.get_pinyin_segmentation_with_cases() == "w'j",
-               "Pure jianpin must keep its greedy preedit.");
+        expect(session.get_pinyin_segmentation_with_cases() == "w'j", "Pure jianpin must keep its greedy preedit.");
         expect(count_marked(session.candidates()) == 0, "Pure jianpin must produce no marks (AC5).");
     }
     {

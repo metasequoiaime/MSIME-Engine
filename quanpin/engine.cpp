@@ -4,7 +4,7 @@
 #include "quanpin_utils.h"
 
 namespace
-{// The request carries one bool per correction type; the dictionary layer gates
+{ // The request carries one bool per correction type; the dictionary layer gates
 // the whole feature with a single mask, so bridge the two here.
 unsigned autocorrect_types_from_request(const QueryRequest &request)
 {
@@ -45,9 +45,8 @@ std::vector<WordItem> QuanpinEngine::query(const QueryRequest &request)
         const auto cuts = quanpin::cut_pinyin_by_mode(base_raw_input, "correction");
         const std::string base_segmentation = quanpin::join_segments(cuts.front());
         const std::string help_codes = request.raw_input.substr(request.raw_input.size() - 2, 2);
-        const auto base_candidates =
-            dictionary_.query(base_raw_input, base_segmentation, autocorrect_types_from_request(request),
-                              request.fuzzy_pinyin);
+        const auto base_candidates = dictionary_.query(base_raw_input, base_segmentation,
+                                                       autocorrect_types_from_request(request), request.fuzzy_pinyin);
         return HelpcodeUtils::filter_candidates_with_double_helpcodes(base_candidates, help_codes, helpcodes_.get());
     }
 
@@ -58,9 +57,8 @@ std::vector<WordItem> QuanpinEngine::query(const QueryRequest &request)
         const auto cuts = quanpin::cut_pinyin_by_mode(base_raw_input, "correction");
         const std::string base_segmentation = quanpin::join_segments(cuts.front());
         const std::string help_code = request.raw_input.substr(request.raw_input.size() - 1, 1);
-        const auto base_candidates =
-            dictionary_.query(base_raw_input, base_segmentation, autocorrect_types_from_request(request),
-                              request.fuzzy_pinyin);
+        const auto base_candidates = dictionary_.query(base_raw_input, base_segmentation,
+                                                       autocorrect_types_from_request(request), request.fuzzy_pinyin);
         return HelpcodeUtils::reorder_candidates_with_single_helpcode(base_candidates, help_code, helpcodes_.get());
     }
 

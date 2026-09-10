@@ -58,7 +58,10 @@ struct AutocorrectCut
 {
     std::vector<AutocorrectCutSegment> segments;
 
-    bool empty() const { return segments.empty(); }
+    bool empty() const
+    {
+        return segments.empty();
+    }
 };
 
 // Range-carrying variant of autocorrect_cut: identical gating (no type enabled,

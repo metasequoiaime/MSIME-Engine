@@ -824,8 +824,7 @@ inline constexpr Entry kNeighborEntries[] = {
     {"zzi", "zai"},       {"zzn", "zan"},       {"zzng", "zang"},     {"zzo", "zao"},
 };
 
-inline constexpr std::size_t kTranspositionCount =
-    sizeof(kTranspositionEntries) / sizeof(kTranspositionEntries[0]);
+inline constexpr std::size_t kTranspositionCount = sizeof(kTranspositionEntries) / sizeof(kTranspositionEntries[0]);
 inline constexpr std::size_t kNeighborCount = sizeof(kNeighborEntries) / sizeof(kNeighborEntries[0]);
 
 } // namespace quanpin::autocorrect

@@ -522,8 +522,7 @@ AutocorrectCut autocorrect_cut_detail(const std::string &pinyin, const unsigned 
 
     // The generated tables are disjoint (cross-type conflicts are resolved at
     // generation time), so at most one enabled index can claim a piece.
-    const auto correction = [](const unsigned types,
-                               const std::string_view piece) -> std::optional<std::string_view> {
+    const auto correction = [](const unsigned types, const std::string_view piece) -> std::optional<std::string_view> {
         if ((types & kAutocorrectTransposition) != 0)
         {
             const auto &index = transposition_index();
@@ -615,9 +614,8 @@ AutocorrectCut autocorrect_cut_detail(const std::string &pinyin, const unsigned 
     {
         const auto &edge = pred[pos];
         const size_t start = pos - edge.syllable.size();
-        result.segments.push_back(AutocorrectCutSegment{std::string(edge.syllable),
-                                                        pinyin.substr(start, edge.syllable.size()), start,
-                                                        edge.corrected});
+        result.segments.push_back(AutocorrectCutSegment{
+            std::string(edge.syllable), pinyin.substr(start, edge.syllable.size()), start, edge.corrected});
         pos = start;
     }
     std::reverse(result.segments.begin(), result.segments.end());
