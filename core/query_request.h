@@ -24,7 +24,10 @@ struct QueryRequest
     std::string segmentation;
     bool enable_shuangpin_helpcode = false;
     bool enable_quanpin_helpcode = false;
-    bool enable_quanpin_autocorrect = true;
+    // Autocorrection is type-gated (bit0 transposition, bit1 neighbor in the session-level
+    // mask); both default off, so a fresh install never rewrites the user's spelling.
+    bool enable_quanpin_autocorrect_transposition = false;
+    bool enable_quanpin_autocorrect_neighbor = false;
     std::vector<KeyStroke> key_strokes;
     metasequoia::FuzzyPinyinOptions fuzzy_pinyin;
     bool valid = false;

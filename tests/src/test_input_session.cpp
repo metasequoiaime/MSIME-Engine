@@ -4,6 +4,7 @@
 #include "test_directory_cleanup.h"
 #include "../../contracts/dictionary/format.h"
 #include "../../quanpin/quanpin_query.h"
+#include "../../quanpin/quanpin_utils.h"
 
 #include <sqlite3.h>
 
@@ -341,7 +342,8 @@ int run_test()
         metasequoia::InputSession default_session;
         require(default_session.scheme_type() == SchemeType::Quanpin,
                 "The default input scheme should be full pinyin.");
-        require(default_session.quanpin_autocorrect_enabled(), "Pinyin autocorrect should be enabled by default.");
+        require(default_session.quanpin_autocorrect_types() == 0,
+                "Pinyin autocorrection should default to off (no type bits set).");
         require(default_session.helpcode_enabled(), "Helpcode should be enabled by default.");
         require(default_session.chinese_punctuation_enabled(), "Chinese punctuation should be enabled by default.");
         require(default_session.candidate_learning_enabled(), "Candidate learning should be enabled by default.");
@@ -377,9 +379,13 @@ int run_test()
                     "Selecting a corrected phrase left an unconsumed input suffix.");
         }
 
-        metasequoia::InputSession no_autocorrect_session(SchemeType::Quanpin, false);
-        require(!no_autocorrect_session.quanpin_autocorrect_enabled(),
+        metasequoia::InputSession no_autocorrect_session(SchemeType::Quanpin, 0u);
+        require(no_autocorrect_session.quanpin_autocorrect_types() == 0,
                 "The requested pinyin autocorrect setting was not retained.");
+        const unsigned both_types = quanpin::kAutocorrectTransposition | quanpin::kAutocorrectNeighbor;
+        no_autocorrect_session.set_quanpin_autocorrect_types(both_types);
+        require(no_autocorrect_session.quanpin_autocorrect_types() == both_types,
+                "The requested pinyin autocorrect mask was not retained.");
         metasequoia::InputSession no_helpcode_session(SchemeType::Quanpin, true, false);
         require(!no_helpcode_session.helpcode_enabled(), "The requested helpcode setting was not retained.");
         type(no_helpcode_session, "ni");

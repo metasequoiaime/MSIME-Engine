@@ -20,7 +20,7 @@ class ImeSession
     void switch_scheme(SchemeType scheme_type);
     void set_shuangpin_helpcode_enabled(bool enabled);
     void set_quanpin_helpcode_enabled(bool enabled);
-    void set_quanpin_autocorrect_enabled(bool enabled);
+    void set_quanpin_autocorrect_types(unsigned autocorrect_types);
     void set_fuzzy_pinyin_options(metasequoia::FuzzyPinyinOptions options)
     {
         fuzzy_pinyin_ = options;
@@ -73,7 +73,7 @@ class ImeSession
     CompositionState state_;
     bool enable_shuangpin_helpcode_ = false;
     bool enable_quanpin_helpcode_ = false;
-    bool enable_quanpin_autocorrect_ = true;
+    unsigned quanpin_autocorrect_types_ = 0;
     metasequoia::FuzzyPinyinOptions fuzzy_pinyin_;
     metasequoia::WubiInputOptions wubi_options_;
     // Resolved when the scheme changes rather than on every keystroke.

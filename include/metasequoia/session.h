@@ -14,7 +14,9 @@ struct SessionOptions
     SchemeType scheme = SchemeType::Quanpin;
     ShuangpinProfile shuangpin_profile = GetXiaoheShuangpinProfile();
     std::string helpcode_schema = "lantian";
-    bool autocorrect = true;
+    // Quanpin autocorrection type mask (quanpin::kAutocorrect* bits); 0 keeps the
+    // user's spelling untouched, which is the default for a fresh install.
+    unsigned autocorrect_types = 0;
     bool helpcode = true;
     bool chinese_punctuation = true;
     bool learning = true;

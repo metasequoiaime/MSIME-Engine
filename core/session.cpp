@@ -12,7 +12,7 @@ class Session::Impl
         : session(options.scheme, options.shuangpin_profile, options.paths),
           nine_key(options.paths, options.learning, options.frequency, options.fuzzy_pinyin)
     {
-        session.set_quanpin_autocorrect_enabled(options.autocorrect);
+        session.set_quanpin_autocorrect_types(options.autocorrect_types);
         session.set_fuzzy_pinyin_options(options.fuzzy_pinyin);
         session.set_quanpin_helpcode_enabled(options.helpcode);
         session.set_shuangpin_helpcode_enabled(options.helpcode);

@@ -90,7 +90,7 @@ int main()
             require(
                 contains(dictionary.query(pairs[i].second, pairs[i].second, false, fuzzy), "原" + std::to_string(i)),
                 "missing reverse rule");
-            require(!contains(dictionary.query(pairs[i].first, pairs[i].first, false), "糊" + std::to_string(i)),
+            require(!contains(dictionary.query(pairs[i].first, pairs[i].first, 0u), "糊" + std::to_string(i)),
                     "fuzzy polluted exact cache");
             require(!contains(dictionary.query(pairs[i].first, pairs[i].first, false,
                                                FuzzyPinyinOptions{1u << ((i + 1) % pairs.size())}),
@@ -106,7 +106,7 @@ int main()
         SessionOptions options;
         options.paths = paths;
         options.helpcode = false;
-        options.autocorrect = false;
+        options.autocorrect_types = 0;
         options.learning = false;
         options.fuzzy_pinyin.rules = 1;
         Session session(options);
