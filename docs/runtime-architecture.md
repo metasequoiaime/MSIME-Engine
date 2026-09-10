@@ -34,6 +34,8 @@ schemes; a host with separate persisted preferences applies the selected flag on
 
 For the Microsoft shuangpin profile, `character(';')` routes the ing final through the
 decoder's existing position validation. Other profiles leave this character unhandled.
+`SessionOptions::shuangpin_profile` also accepts `GetShuangpinProfile("jiajia")` for
+[Pinyin Jiajia](shuangpin-jiajia.md); the default remains Xiaohe.
 
 `MoveLeft`, `MoveRight`, `MoveHome`, `MoveEnd` and `DeleteForward` are composition
 commands. `character` inserts at the session-owned caret; `Backspace` erases before it.

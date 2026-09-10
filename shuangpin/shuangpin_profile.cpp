@@ -137,6 +137,41 @@ const ShuangpinProfile &GetMicrosoftShuangpinProfile()
     return profile;
 }
 
+const ShuangpinProfile &GetJiajiaShuangpinProfile()
+{
+    // Use the vowel-initial spelling rule; see docs/shuangpin-jiajia.md for sources.
+    static const ShuangpinProfile profile{
+        "jiajia",
+        {
+            {"sh", "i"},
+            {"ch", "u"},
+            {"zh", "v"},
+        },
+        {
+            {"a", "aa"},
+            {"ai", "as"},
+            {"an", "af"},
+            {"ang", "ag"},
+            {"ao", "ad"},
+            {"e", "ee"},
+            {"ei", "ew"},
+            {"en", "er"},
+            {"eng", "et"},
+            {"er", "eq"},
+            {"o", "oo"},
+            {"ou", "op"},
+        },
+        {
+            {"ing", "q"},  {"er", "q"}, {"ei", "w"}, {"e", "e"},   {"en", "r"},   {"eng", "t"},  {"ong", "y"},
+            {"iong", "y"}, {"u", "u"},  {"i", "i"},  {"o", "o"},   {"uo", "o"},   {"ou", "p"},   {"a", "a"},
+            {"ai", "s"},   {"ao", "d"}, {"an", "f"}, {"ang", "g"}, {"iang", "h"}, {"uang", "h"}, {"ian", "j"},
+            {"iao", "k"},  {"in", "l"}, {"un", "z"}, {"uai", "x"}, {"ue", "x"},   {"ve", "x"},   {"uan", "c"},
+            {"ui", "v"},   {"v", "v"},  {"ia", "b"}, {"ua", "b"},  {"iu", "n"},   {"ie", "m"},
+        },
+    };
+    return profile;
+}
+
 const ShuangpinProfile &GetShuangpinProfile(std::string_view name)
 {
     if (name == "ziranma")
@@ -150,6 +185,10 @@ const ShuangpinProfile &GetShuangpinProfile(std::string_view name)
     if (name == "microsoft")
     {
         return GetMicrosoftShuangpinProfile();
+    }
+    if (name == "jiajia")
+    {
+        return GetJiajiaShuangpinProfile();
     }
     return GetXiaoheShuangpinProfile();
 }

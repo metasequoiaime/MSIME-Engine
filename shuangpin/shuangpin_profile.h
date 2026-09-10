@@ -17,4 +17,5 @@ const ShuangpinProfile &GetXiaoheShuangpinProfile();
 const ShuangpinProfile &GetZiranmaShuangpinProfile();
 const ShuangpinProfile &GetShoudaoShuangpinProfile();
 const ShuangpinProfile &GetMicrosoftShuangpinProfile();
+const ShuangpinProfile &GetJiajiaShuangpinProfile();
 const ShuangpinProfile &GetShuangpinProfile(std::string_view name);
