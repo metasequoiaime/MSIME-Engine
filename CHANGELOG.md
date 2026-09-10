@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.9.0...v0.10.0) (2026-09-10)
+
+
+### Features
+
+* **engine:** 全拼纠错分类开关、简拼守卫与 preedit 原始输入显示 ([e66634c](https://github.com/metasequoiaime/MSIME-Engine/commit/e66634c48eb39695b0f6be9824a771e7ed6a2f1b))
+* **engine:** 全拼纠错分类开关、简拼守卫与 preedit 原始输入显示 ([c508c84](https://github.com/metasequoiaime/MSIME-Engine/commit/c508c845eeea9d703b0aaccbd64c0f7c1e712010))
+
 ## [0.9.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.8.0...v0.9.0) (2026-09-09)
 
 
