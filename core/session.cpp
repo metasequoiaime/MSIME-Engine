@@ -188,6 +188,9 @@ SessionSnapshot Session::snapshot() const
                          session.caret_position()};
     view.shuangpin_profile = session.shuangpin_profile().name;
     view.answered_by_pinyin_fallback = session.answered_by_pinyin_fallback();
+    view.candidate_sources.reserve(view.candidates.size());
+    for (const auto &candidate : view.candidates)
+        view.candidate_sources.push_back(candidate.source);
     return view;
 }
 std::optional<OnlineQuery> Session::online_query() const
