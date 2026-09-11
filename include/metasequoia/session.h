@@ -19,6 +19,8 @@ struct SessionOptions
     unsigned autocorrect_types = 0;
     bool helpcode = true;
     bool chinese_punctuation = true;
+    bool paired_punctuation = true;
+    int punctuation_lock = 0;
     bool learning = true;
     FuzzyPinyinOptions fuzzy_pinyin;
     FrequencyAdjustmentOptions frequency;
