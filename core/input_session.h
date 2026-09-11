@@ -171,6 +171,7 @@ class InputSession
         chinese_punctuation_enabled_ = enabled;
     }
     void set_punctuation_lock(int lock) { punctuation_lock_ = lock; }
+    void set_paired_punctuation_enabled(bool enabled) { punctuation_.set_paired_enabled(enabled); }
     void set_candidate_learning_enabled(bool enabled)
     {
         candidate_learning_enabled_ = enabled;

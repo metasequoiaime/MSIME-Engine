@@ -71,6 +71,7 @@ class Session
     void set_chinese_punctuation_enabled(bool enabled);
     // 0 follows the current mode, 1 forces Chinese punctuation, 2 forces ASCII.
     void set_punctuation_lock(int lock);
+    void set_paired_punctuation_enabled(bool enabled);
     KeyResult select(std::size_t index);
     KeyResult select_edge(std::size_t index, CandidateEdge edge);
     // Explicit user action: promote a dictionary candidate without committing input.
