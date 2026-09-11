@@ -10,6 +10,8 @@ const char *PunctuationPolicy::translate(char character)
 
     if (const auto *mapping = alternating_mapping(character))
     {
+        if (!paired_enabled_)
+            return mapping->opening;
         const bool opening = character == '"' ? next_double_quote_is_opening_ : next_single_quote_is_opening_;
         if (character == '"')
             next_double_quote_is_opening_ = !next_double_quote_is_opening_;
@@ -21,9 +23,11 @@ const char *PunctuationPolicy::translate(char character)
     // Book title marks nest: the outer pair is 《》 and anything inside it uses 〈〉. The counter is
     // what decides which, so an unmatched '>' has to leave it at zero rather than drive it negative.
     if (character == nested_opening_input)
-        return book_title_nesting_++ == 0 ? nested_opening : nested_opening_inner;
+        return paired_enabled_ ? (book_title_nesting_++ == 0 ? nested_opening : nested_opening_inner) : nested_opening;
     if (character == nested_closing_input)
     {
+        if (!paired_enabled_)
+            return nested_closing;
         if (book_title_nesting_ > 0)
         {
             --book_title_nesting_;
