@@ -4,6 +4,7 @@
 #include "../../core/runtime_paths.h"
 #include "../../shuangpin/shuangpin_profile.h"
 #include "../../core/fuzzy_pinyin_options.h"
+#include "personal_dictionary.h"
 #include <memory>
 
 namespace metasequoia
