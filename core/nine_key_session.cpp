@@ -367,6 +367,9 @@ SessionSnapshot NineKeySession::snapshot() const
     result.candidate_sources.reserve(result.candidates.size());
     for (const auto &candidate : result.candidates)
         result.candidate_sources.push_back(candidate.source);
+    result.candidate_annotations.reserve(result.candidates.size());
+    for (const auto &candidate : result.candidates)
+        result.candidate_annotations.push_back(candidate.corrected_from);
     result.nine_key_spellings = spellings_;
     return result;
 }

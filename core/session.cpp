@@ -191,6 +191,7 @@ SessionSnapshot Session::snapshot() const
     view.candidate_sources.reserve(view.candidates.size());
     for (const auto &candidate : view.candidates)
         view.candidate_sources.push_back(candidate.source);
+    view.candidate_annotations = session.candidate_annotations();
     return view;
 }
 std::optional<OnlineQuery> Session::online_query() const
