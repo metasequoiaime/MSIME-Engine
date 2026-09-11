@@ -52,7 +52,10 @@ class InputSession
     KeyResult select_candidate_edge(std::size_t index, CandidateEdge edge);
     KeyResult pin_candidate(std::size_t index);
     KeyResult remove_candidate(std::size_t index);
-    const ShuangpinProfile &shuangpin_profile() const { return shuangpin_profile_; }
+    const ShuangpinProfile &shuangpin_profile() const
+    {
+        return shuangpin_profile_;
+    }
     KeyResult set_candidate_position(std::size_t index, int position);
     void enable_fixed_positions();
     void set_shuangpin_helpcode_enabled(bool enabled);
