@@ -5,7 +5,10 @@ class PunctuationPolicy
 {
   public:
     const char *translate(char character);
-    void set_paired_enabled(bool enabled) { paired_enabled_ = enabled; }
+    void set_paired_enabled(bool enabled)
+    {
+        paired_enabled_ = enabled;
+    }
 
   private:
     bool next_double_quote_is_opening_ = true;

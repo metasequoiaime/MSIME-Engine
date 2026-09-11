@@ -91,7 +91,8 @@ void Session::set_paired_punctuation_enabled(bool enabled)
 }
 void Session::set_punctuation_lock(int lock)
 {
-    if (lock < 0 || lock > 2) throw std::invalid_argument("Invalid punctuation lock");
+    if (lock < 0 || lock > 2)
+        throw std::invalid_argument("Invalid punctuation lock");
     impl_->session.set_punctuation_lock(lock);
 }
 KeyResult Session::select(std::size_t index)
