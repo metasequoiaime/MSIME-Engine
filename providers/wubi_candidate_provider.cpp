@@ -1,12 +1,24 @@
 #include "wubi_candidate_provider.h"
 #include "../quanpin/quanpin_query.h"
 #include <spdlog/spdlog.h>
+#include <unordered_set>
 #include <utility>
 
 namespace
 {
 constexpr int kNoMutation = 0;
+// A one-letter code prefixes several thousand rows, and the window pages through whatever this
+// returns. Long enough to page through, short enough to build on every keystroke; a user who wants
+// what lies past it types another letter, which is what the remaining letters of the code are for.
+constexpr int kMaxCandidates = 200;
+
+// Wubi codes are lowercase letters, all of which sort below '{', so the range covers exactly the
+// keys carrying the typed prefix.
+std::string prefix_upper_bound(const std::string &prefix)
+{
+    return prefix + "{";
 }
+} // namespace
 
 WubiCandidateProvider::WubiCandidateProvider(std::string db_path)
     : db_path_(db_path.empty() ? quanpin::get_default_db_path() : std::move(db_path))
@@ -26,20 +38,28 @@ std::vector<WordItem> WubiCandidateProvider::query(const QueryRequest &request)
         return {};
     }
 
+    const std::string upper_bound = prefix_upper_bound(request.normalized_input);
     sqlite3_reset(query_statement_);
     sqlite3_clear_bindings(query_statement_);
-    if (sqlite3_bind_text(query_statement_, 1, request.normalized_input.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK)
+    if (sqlite3_bind_text(query_statement_, 1, request.normalized_input.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
+        sqlite3_bind_text(query_statement_, 2, upper_bound.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
+        sqlite3_bind_int(query_statement_, 3, kMaxCandidates) != SQLITE_OK)
     {
         return {};
     }
 
     std::vector<WordItem> candidates;
+    // The same word reaches the list under several codes -- 工 sits at a, aaa and aaaa -- and the
+    // shortest one comes first, so the first spelling seen is the one to keep. Ranking and removal
+    // downstream act on the key the candidate arrived with, which is why the row is kept whole
+    // rather than rewritten to the typed prefix.
+    std::unordered_set<std::string> seen;
     int result = SQLITE_ROW;
     while ((result = sqlite3_step(query_statement_)) == SQLITE_ROW)
     {
         const auto *key = reinterpret_cast<const char *>(sqlite3_column_text(query_statement_, 0));
         const auto *value = reinterpret_cast<const char *>(sqlite3_column_text(query_statement_, 1));
-        if (key == nullptr || value == nullptr)
+        if (key == nullptr || value == nullptr || !seen.insert(value).second)
         {
             continue;
         }
@@ -100,8 +120,14 @@ bool WubiCandidateProvider::ensure_query_statement()
         return false;
     }
 
+    // An unfinished code is a prefix of the codes it can still become, so it answers with all of
+    // them: a table matched on the code alone leaves 你 as the only candidate for wq and the two or
+    // three simplified codes as the whole list for most of the alphabet. Shorter codes first, since
+    // a code that is already complete is the one being typed; the typed code itself is the shortest
+    // match there is and stays at the head of the list.
     constexpr const char *query_sql = "SELECT \"key\", \"value\", \"weight\" FROM wubi86 "
-                                      "WHERE \"key\" = ?1 ORDER BY \"weight\" DESC, rowid ASC";
+                                      "WHERE \"key\" >= ?1 AND \"key\" < ?2 "
+                                      "ORDER BY length(\"key\") ASC, \"weight\" DESC, rowid ASC LIMIT ?3";
     if (sqlite3_prepare_v2(db_, query_sql, -1, &query_statement_, nullptr) != SQLITE_OK)
     {
         (void)0;
