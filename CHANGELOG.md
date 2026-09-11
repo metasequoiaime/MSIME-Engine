@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.12.1...v0.13.0) (2026-09-11)
+
+
+### Features
+
+* **session:** expose shuangpin profile in snapshot ([d8448a3](https://github.com/metasequoiaime/MSIME-Engine/commit/d8448a314667ace97b0cb6487fdc9fa90f10e5ee))
+* **session:** expose shuangpin profile in snapshot ([2cc2c56](https://github.com/metasequoiaime/MSIME-Engine/commit/2cc2c5620343e429da5e72e16ddceac609b2915c))
+
 ## [0.12.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.12.0...v0.12.1) (2026-09-11)
 
 
