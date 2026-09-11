@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.14.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.13.1...v0.14.0) (2026-09-11)
+
+
+### Features
+
+* **session:** expose candidate sources in snapshots ([70106cc](https://github.com/metasequoiaime/MSIME-Engine/commit/70106ccd8e7d823acf863e9cd3fcd8fa69678b95))
+* **session:** expose candidate sources in snapshots ([2638835](https://github.com/metasequoiaime/MSIME-Engine/commit/26388356cdd8a107c1a6f6052f7d1aa9a53ccc89))
+
 ## [0.13.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.13.0...v0.13.1) (2026-09-11)
 
 
