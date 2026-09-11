@@ -251,3 +251,6 @@ option(METASEQUOIA_IME_BUILD_VOICE "Build shared voice input capabilities" OFF)
 if(METASEQUOIA_IME_BUILD_VOICE)
     add_subdirectory(voice)
 endif()
+
+# Optional, independently consumable handwriting recognizer. No platform/UI dependencies.
+add_subdirectory(handwriting)

@@ -1,0 +1,14 @@
+{
+  "zinnia": {
+    "repository": "https://github.com/taku910/zinnia",
+    "commit": "581faa8f6f15e4a7b21964be3a5ec36265c80e5b"
+  },
+  "model": {
+    "url": "https://deb.debian.org/debian/pool/main/t/tegaki-zinnia-simplified-chinese/tegaki-zinnia-simplified-chinese_0.3.orig.tar.gz",
+    "archive_sha256": "63f29e7d7c7a71e94ab003353924304ab2a870a8e220a77800cf984c0620d41f",
+    "file": "handwriting-zh_CN.model",
+    "sha256": "e16153d1ff267cd479aea260d6f71a3edda8b4ba06db2d121513adda65a4449e",
+    "license": "LGPL-2.1",
+    "bytes": 26834816
+  }
+}
