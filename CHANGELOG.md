@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.12.0...v0.12.1) (2026-09-11)
+
+
+### Bug Fixes
+
+* **api:** expose personal dictionary declarations ([a10925e](https://github.com/metasequoiaime/MSIME-Engine/commit/a10925e9f8ffd700ce13c2e35b5668e8b2d53012))
+* **api:** expose personal dictionary declarations ([d5cbd33](https://github.com/metasequoiaime/MSIME-Engine/commit/d5cbd3391764469bc3ac85fe5d461e1c974fd797))
+
 ## [0.12.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.11.0...v0.12.0) (2026-09-11)
 
 
