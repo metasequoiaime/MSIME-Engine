@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.13.0...v0.13.1) (2026-09-11)
+
+
+### Bug Fixes
+
+* **session:** assign snapshot profile by field ([9727eaa](https://github.com/metasequoiaime/MSIME-Engine/commit/9727eaaa1c85837f37e1dad1e424c4fc5c333d26))
+* **session:** assign snapshot profile to its named field ([b06aadf](https://github.com/metasequoiaime/MSIME-Engine/commit/b06aadfe43de2a341d83781bfa29ffc4017d97cb))
+
 ## [0.13.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.12.1...v0.13.0) (2026-09-11)
 
 
