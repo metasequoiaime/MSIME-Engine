@@ -391,7 +391,8 @@ bool InputSession::set_helpcode_schema(const std::string &schema)
 {
     if (!HelpcodeUtils::is_supported_helpcode_schema(schema))
         return false;
-    engine_.set_helpcode_keymap(HelpcodeUtils::load_helpcode_keymap(paths_.resources, schema));
+    helpcode_keymap_ = HelpcodeUtils::load_helpcode_keymap(paths_.resources, schema);
+    engine_.set_helpcode_keymap(helpcode_keymap_);
     update_mixed_candidates();
     return true;
 }
@@ -644,6 +645,26 @@ const std::vector<WordItem> &InputSession::candidates() const
         return mixed_candidates_;
     }
     return engine_.get_candidates();
+}
+
+std::vector<std::string> InputSession::candidate_annotations() const
+{
+    const auto &items = candidates();
+    std::vector<std::string> result;
+    result.reserve(items.size());
+    const bool enabled = helpcode_enabled();
+    const bool uppercase_all = scheme() == SchemeType::Quanpin;
+    const auto *keymap = helpcode_keymap_ ? helpcode_keymap_.get() : nullptr;
+    for (const auto &item : items)
+    {
+        std::string annotation;
+        if (enabled && item.source != CandidateSource::EnglishDictionary)
+            annotation = HelpcodeUtils::compute_helpcodes(item.word, uppercase_all, keymap);
+        if (annotation.empty())
+            annotation = item.corrected_from;
+        result.push_back(std::move(annotation));
+    }
+    return result;
 }
 
 SchemeType InputSession::scheme_type() const

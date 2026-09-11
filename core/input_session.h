@@ -97,6 +97,8 @@ class InputSession
     const std::string &raw_segmentation() const;
     const std::string &normalized_segmentation() const;
     const std::vector<WordItem> &candidates() const;
+    // Display annotations for the current candidate list (helpcodes or correction hints).
+    std::vector<std::string> candidate_annotations() const;
     // True while the current composition is answered by the wubi mixed-pinyin fallback.
     bool answered_by_pinyin_fallback() const;
 
@@ -240,6 +242,7 @@ class InputSession
     unsigned quanpin_autocorrect_types_ = 0;
     bool quanpin_helpcode_enabled_ = true;
     bool shuangpin_helpcode_enabled_ = true;
+    HelpcodeUtils::SharedKeymap helpcode_keymap_;
     bool chinese_punctuation_enabled_ = true;
     int punctuation_lock_ = 0;
     bool candidate_learning_enabled_ = true;

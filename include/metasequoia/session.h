@@ -53,6 +53,8 @@ struct SessionSnapshot
     // Candidate source in the same order as candidates. Hosts can render source-specific
     // affordances without inferring them from display text or local-mode names.
     std::vector<CandidateSource> candidate_sources;
+    // Display annotations aligned with candidates (helpcodes or correction hints).
+    std::vector<std::string> candidate_annotations;
 };
 
 // Stable platform entry point. One host serializes calls to its session; distinct sessions
