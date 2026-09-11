@@ -4,6 +4,7 @@ add_library(MetasequoiaHandwriting STATIC
   third_party/zinnia/feature.cpp
   third_party/zinnia/recognizer.cpp
   third_party/zinnia/sexp.cpp)
+add_library(MetasequoiaIme::Handwriting ALIAS MetasequoiaHandwriting)
 target_include_directories(MetasequoiaHandwriting PUBLIC ../include)
 target_compile_definitions(MetasequoiaHandwriting PRIVATE HAVE_SYS_TYPES_H HAVE_SYS_STAT_H HAVE_FCNTL_H HAVE_STRING_H)
 if(WIN32)
