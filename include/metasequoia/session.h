@@ -50,6 +50,9 @@ struct SessionSnapshot
     // would take away the fifth letter the fallback exists to allow.
     bool answered_by_pinyin_fallback = false;
     std::string shuangpin_profile;
+    // Candidate source in the same order as candidates. Hosts can render source-specific
+    // affordances without inferring them from display text or local-mode names.
+    std::vector<CandidateSource> candidate_sources;
 };
 
 // Stable platform entry point. One host serializes calls to its session; distinct sessions
