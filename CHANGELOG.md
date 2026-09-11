@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.12.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.11.0...v0.12.0) (2026-09-11)
+
+
+### Features
+
+* **punctuation:** add paired punctuation session toggle ([0013a9c](https://github.com/metasequoiaime/MSIME-Engine/commit/0013a9c69d51b14a8150eb5e2218015bc7fb1b23))
+* **punctuation:** add paired punctuation toggle ([f9b5039](https://github.com/metasequoiaime/MSIME-Engine/commit/f9b5039cd5a9f11b0340b71598fc5729a4e20199))
+* **punctuation:** add session punctuation options ([a9ca0d1](https://github.com/metasequoiaime/MSIME-Engine/commit/a9ca0d190de60a34e73601d98833619e3fd3489e))
+* **punctuation:** add session punctuation options ([69b1a5c](https://github.com/metasequoiaime/MSIME-Engine/commit/69b1a5cf266bc48b746e6cfc4f8af317b43fd986))
+
+
+### Bug Fixes
+
+* **wubi:** answer an unfinished code with the codes it can still become ([ee232b4](https://github.com/metasequoiaime/MSIME-Engine/commit/ee232b419634826f8ef2b266169e7c9ea26b9e09))
+* **wubi:** answer an unfinished code with the codes it can still become ([054ed5c](https://github.com/metasequoiaime/MSIME-Engine/commit/054ed5c69bc72b2847920180b5e088dc873ae445))
+
 ## [0.11.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.10.0...v0.11.0) (2026-09-11)
 
 
