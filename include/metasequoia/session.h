@@ -62,6 +62,8 @@ class Session
     // Live host mode override; preserves composition, caret and punctuation pairing.
     // When disabled punctuation() is unhandled; the host owns ASCII passthrough.
     void set_chinese_punctuation_enabled(bool enabled);
+    // 0 follows the current mode, 1 forces Chinese punctuation, 2 forces ASCII.
+    void set_punctuation_lock(int lock);
     KeyResult select(std::size_t index);
     KeyResult select_edge(std::size_t index, CandidateEdge edge);
     // Explicit user action: promote a dictionary candidate without committing input.

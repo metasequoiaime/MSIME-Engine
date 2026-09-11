@@ -201,7 +201,7 @@ KeyResult InputSession::handle_candidate_key(char character)
 
 KeyResult InputSession::handle_punctuation(char character)
 {
-    if (!chinese_punctuation_enabled_)
+    if (!chinese_punctuation_enabled_ || punctuation_lock_ == 2)
     {
         return {};
     }

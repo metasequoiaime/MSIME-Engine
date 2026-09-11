@@ -85,6 +85,11 @@ void Session::set_chinese_punctuation_enabled(bool enabled)
 {
     impl_->session.set_chinese_punctuation_enabled(enabled);
 }
+void Session::set_punctuation_lock(int lock)
+{
+    if (lock < 0 || lock > 2) throw std::invalid_argument("Invalid punctuation lock");
+    impl_->session.set_punctuation_lock(lock);
+}
 KeyResult Session::select(std::size_t index)
 {
     if (impl_->nine_key.active())
