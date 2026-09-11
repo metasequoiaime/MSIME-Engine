@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.11.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.10.0...v0.11.0) (2026-09-11)
+
+
+### Features
+
+* **punctuation:** add session punctuation lock ([3c72e73](https://github.com/metasequoiaime/MSIME-Engine/commit/3c72e739d61b7b52050405ce54b8ed850bb23c3d))
+* **punctuation:** add session punctuation lock ([24953b7](https://github.com/metasequoiaime/MSIME-Engine/commit/24953b73531f6877066f35f4a4d24e112d3e4178))
+
+
+### Bug Fixes
+
+* **contracts:** space out product-lock download attempts ([3b2d52b](https://github.com/metasequoiaime/MSIME-Engine/commit/3b2d52b8961804962d622af0477da32d1f8d5682))
+* **contracts:** space out product-lock download attempts ([36964db](https://github.com/metasequoiaime/MSIME-Engine/commit/36964db71e0ebfb2bc336dc2ce94d09fdc867e4c))
+
 ## [0.10.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.9.0...v0.10.0) (2026-09-10)
 
 
