@@ -170,6 +170,7 @@ class InputSession
     {
         chinese_punctuation_enabled_ = enabled;
     }
+    void set_punctuation_lock(int lock) { punctuation_lock_ = lock; }
     void set_candidate_learning_enabled(bool enabled)
     {
         candidate_learning_enabled_ = enabled;
@@ -229,6 +230,7 @@ class InputSession
     bool quanpin_helpcode_enabled_ = true;
     bool shuangpin_helpcode_enabled_ = true;
     bool chinese_punctuation_enabled_ = true;
+    int punctuation_lock_ = 0;
     bool candidate_learning_enabled_ = true;
     PunctuationPolicy punctuation_;
     const ShuangpinProfile shuangpin_profile_;
