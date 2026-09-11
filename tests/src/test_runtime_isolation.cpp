@@ -207,6 +207,8 @@ void test_runtime_isolation()
         options.shuangpin_profile = GetMicrosoftShuangpinProfile();
         options.learning = false;
         Session session(options);
+        require(session.snapshot().shuangpin_profile == "microsoft", "Snapshot lost applied profile");
+        require(session.snapshot().nine_key_spellings.empty(), "Profile leaked into nine-key spellings");
         require(!session.character(';').handled, "Microsoft semicolon started a syllable");
         session.character('n');
         const auto ing = session.character(';');
