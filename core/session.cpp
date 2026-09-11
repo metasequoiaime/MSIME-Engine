@@ -34,6 +34,8 @@ Session::Session(SessionOptions options)
     options.paths.validate();
     impl_ = std::make_unique<Impl>(options);
     impl_->session.set_chinese_punctuation_enabled(options.chinese_punctuation);
+    impl_->session.set_paired_punctuation_enabled(options.paired_punctuation);
+    impl_->session.set_punctuation_lock(options.punctuation_lock);
     impl_->session.set_candidate_learning_enabled(options.learning);
 }
 Session::~Session() = default;
