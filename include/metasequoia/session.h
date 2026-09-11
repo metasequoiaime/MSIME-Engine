@@ -49,6 +49,7 @@ struct SessionSnapshot
     // not the "unique four-code wubi candidate" that auto-commit is looking for, and committing it
     // would take away the fifth letter the fallback exists to allow.
     bool answered_by_pinyin_fallback = false;
+    std::string shuangpin_profile;
 };
 
 // Stable platform entry point. One host serializes calls to its session; distinct sessions

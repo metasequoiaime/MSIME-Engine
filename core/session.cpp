@@ -185,7 +185,8 @@ SessionSnapshot Session::snapshot() const
                          session.candidates(),
                          session.dedicated_english_mode(),
                          session.editing_text(),
-                         session.caret_position()};
+                         session.caret_position(),
+                         session.shuangpin_profile().name};
     view.answered_by_pinyin_fallback = session.answered_by_pinyin_fallback();
     return view;
 }
