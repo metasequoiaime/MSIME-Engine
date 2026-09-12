@@ -97,22 +97,22 @@ std::string get_first_han_char(const std::string &words)
 
 namespace
 {
-std::string::size_type get_first_char_size(const std::string &words)
+std::string::size_type get_first_char_size(const std::string &words, size_t index)
 {
     size_t cplen = 1;
-    if ((words[0] & 0xf8) == 0xf0)
+    if ((words[index] & 0xf8) == 0xf0)
     {
         cplen = 4;
     }
-    else if ((words[0] & 0xf0) == 0xe0)
+    else if ((words[index] & 0xf0) == 0xe0)
     {
         cplen = 3;
     }
-    else if ((words[0] & 0xe0) == 0xc0)
+    else if ((words[index] & 0xe0) == 0xc0)
     {
         cplen = 2;
     }
-    if (cplen > words.length())
+    if (cplen > words.size() - index)
     {
         cplen = 1;
     }
@@ -143,7 +143,7 @@ std::string::size_type count_han_chars(const std::string &words)
     size_t cnt = 0;
     while (index < words.size())
     {
-        size_t cplen = get_first_char_size(words.substr(index, words.size() - index));
+        size_t cplen = get_first_char_size(words, index);
         index += cplen;
         cnt += 1;
     }

@@ -42,6 +42,13 @@ template <typename Key, typename Value> class CircularBuffer
         return std::nullopt;
     }
 
+    // Presence test for callers that only need to know whether a key is cached: get() returns the value by value, so
+    // using it as a probe deep-copies the whole entry and throws it away.
+    bool contains(const Key &key) const
+    {
+        return _map.find(key) != _map.end();
+    }
+
     bool remove(const Key &key)
     {
         auto it = _map.find(key);
