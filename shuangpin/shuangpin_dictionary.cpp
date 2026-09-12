@@ -53,10 +53,13 @@ ShuangpinDictionary::ShuangpinDictionary(const ShuangpinProfile &profile, metase
     // 最多可以输出 64 个汉字，拼音最多可以接受 128 个字符
 
     quanpin_db_path_ = metasequoia::path_to_utf8(paths_.dictionary(metasequoia::assets::main_dictionary));
-    int exit = sqlite3_open(quanpin_db_path_.c_str(), &quanpin_db_);
+    // No SQLITE_OPEN_CREATE: a missing dictionary must stay missing instead of being materialised as an empty file,
+    // and the handle has to become null so the quanpin_db_ == nullptr guards on the query paths actually fire.
+    int exit = sqlite3_open_v2(quanpin_db_path_.c_str(), &quanpin_db_, SQLITE_OPEN_READWRITE, nullptr);
     if (exit != SQLITE_OK)
     {
-        (void)0;
+        sqlite3_close(quanpin_db_);
+        quanpin_db_ = nullptr;
     }
     else
     {
@@ -93,7 +96,7 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generate( //
     {
         const std::string effective_cache_key = cache_key.empty() ? pinyin_sequence : cache_key;
         // Check cache first
-        if (_cached_buffer.get(effective_cache_key))
+        if (_cached_buffer.contains(effective_cache_key))
         {
             reset_cache_if_database_changed();
             if (const auto cached = _cached_buffer.get(effective_cache_key))
@@ -135,7 +138,7 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generateSeries( //
     {
         const std::string effective_cache_key = cache_key.empty() ? pinyin_sequence : cache_key;
         // 先看一下缓存里有没有
-        if (_cached_buffer_series.get(effective_cache_key))
+        if (_cached_buffer_series.contains(effective_cache_key))
         {
             reset_cache_if_database_changed();
             if (const auto cached = _cached_buffer_series.get(effective_cache_key))
@@ -356,7 +359,7 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generate_with_helpcod
     if (help_codes.size() == 1)
     {
         auto &single_helpcode_cache = reversed_single_helpcode ? _cached_buffer_sgl_reversed : _cached_buffer_sgl;
-        if (const auto cached = single_helpcode_cache.get(pinyin_sequence))
+        if (single_helpcode_cache.contains(pinyin_sequence))
         {
             reset_cache_if_database_changed();
             if (const auto refreshed = single_helpcode_cache.get(pinyin_sequence))
@@ -367,7 +370,7 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generate_with_helpcod
     }
     else if (help_codes.size() == 2)
     {
-        if (_cached_buffer_dbl.get(pinyin_sequence))
+        if (_cached_buffer_dbl.contains(pinyin_sequence))
         {
             reset_cache_if_database_changed();
             if (const auto cached = _cached_buffer_dbl.get(pinyin_sequence))
