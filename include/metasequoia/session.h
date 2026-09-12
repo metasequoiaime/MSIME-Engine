@@ -14,6 +14,7 @@ struct SessionOptions
     RuntimePaths paths;
     SchemeType scheme = SchemeType::Quanpin;
     ShuangpinProfile shuangpin_profile = GetXiaoheShuangpinProfile();
+    bool shuangpin_preedit_uses_raw = true;
     std::string helpcode_schema = "lantian";
     // Quanpin autocorrection type mask (quanpin::kAutocorrect* bits); 0 keeps the
     // user's spelling untouched, which is the default for a fresh install.
