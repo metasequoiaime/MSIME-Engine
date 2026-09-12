@@ -122,6 +122,21 @@ void prepare_frequency_fixture(const std::filesystem::path &directory)
                      "COMMIT;");
 }
 
+void prepare_mixed_key_frequency_fixture(const std::filesystem::path &directory)
+{
+    std::filesystem::create_directories(directory);
+    Database database(directory / "msime.db");
+    // A single-letter context lists several entry keys at once. The two rivals share a weight, so
+    // promoting 丙 has to rebalance, and neither rival belongs to key 'ni', so the rebalance
+    // staircase is not allowed to demote them.
+    database.execute("BEGIN;"
+                     "CREATE TABLE tbl_1_n(key TEXT, jp TEXT, value TEXT, weight INTEGER);"
+                     "INSERT INTO tbl_1_n VALUES('na', 'n', '甲', 5000000);"
+                     "INSERT INTO tbl_1_n VALUES('ne', 'n', '乙', 5000000);"
+                     "INSERT INTO tbl_1_n VALUES('ni', 'n', '丙', 3000000);"
+                     "COMMIT;");
+}
+
 void prepare_shuangpin_frequency_fixture(const std::filesystem::path &directory)
 {
     std::filesystem::create_directories(directory);
@@ -713,6 +728,23 @@ int run_test()
     require(first_candidate_session.select_candidate(static_cast<std::size_t>(0)).commit == "甲" &&
                 !std::filesystem::exists(first_candidate_directory / "msime_user.db"),
             "Selecting the already-leading candidate created frequency state.");
+
+    user_dictionary::close_default_user_database();
+    const std::filesystem::path mixed_key_directory = data_directory / "frequency-mixed-key";
+    prepare_mixed_key_frequency_fixture(mixed_key_directory);
+    set_data_directory(mixed_key_directory);
+    metasequoia::InputSession mixed_key_session(SchemeType::Quanpin);
+    require(mixed_key_session.set_frequency_adjustment({metasequoia::FrequencyAdjustmentMode::Promote, 1, 1}),
+            "A valid mixed-key learning configuration was rejected.");
+    type(mixed_key_session, "n");
+    require(candidate_index(mixed_key_session, "丙") == 2,
+            "The mixed-key fixture did not start 丙 behind both rivals.");
+    require(mixed_key_session.select_candidate(std::string("丙")).commit == "丙",
+            "Mixed-key frequency learning blocked candidate commit.");
+    metasequoia::InputSession reopened_mixed_key(SchemeType::Quanpin);
+    type(reopened_mixed_key, "n");
+    require(candidate_index(reopened_mixed_key, "丙") < 2,
+            "Promoting across entry keys left the selection behind the rivals it had to overtake.");
 
     user_dictionary::close_default_user_database();
     const std::filesystem::path shuangpin_directory = data_directory / "frequency-shuangpin";

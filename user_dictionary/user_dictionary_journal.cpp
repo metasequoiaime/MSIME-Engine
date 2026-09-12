@@ -1032,6 +1032,25 @@ bool adjust_candidate_ranking(const std::string &main_db_path, const std::string
     }
     if (need_rebalance)
     {
+        // The staircase below only demotes rows whose own key is entry_key; a row belonging to
+        // another key keeps the weight it already has. `new_weight` is built on the assumption that
+        // index `target` was demoted by that loop, so a staircase with a hole in it writes the
+        // selection underneath a row that never moved and a tie turns into last place. When the
+        // window is not all ours, promote the selected row on its own the way the low-weight
+        // cluster above does.
+        const size_t rebalance_end = (std::min)(database_candidates.size(), target + kRebalanceCount);
+        const bool contiguous = std::all_of(owns_entry_key.begin() + static_cast<std::ptrdiff_t>(target),
+                                            owns_entry_key.begin() + static_cast<std::ptrdiff_t>(rebalance_end),
+                                            [](bool owned) { return owned; });
+        const std::int64_t cluster = (std::max)(upper, lower);
+        if (!contiguous && cluster <= (std::numeric_limits<std::int64_t>::max)() - kRebalanceGap)
+        {
+            new_weight = clamp_managed_weight(cluster + kRebalanceGap);
+            need_rebalance = false;
+        }
+    }
+    if (need_rebalance)
+    {
         const size_t rebalance_begin = target;
         const size_t rebalance_end = (std::min)(database_candidates.size(), rebalance_begin + kRebalanceCount);
         std::int64_t base = target == 0 ? kManagedWeightCeiling - kRebalanceGap : kManagedWeightCeiling;
