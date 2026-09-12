@@ -10,7 +10,7 @@ class Session::Impl
   public:
     explicit Impl(const SessionOptions &options)
         : session(options.scheme, options.shuangpin_profile, options.paths),
-          nine_key(options.paths, options.learning, options.frequency, options.fuzzy_pinyin)
+          nine_key(options.paths, options.learning, options.frequency, options.fuzzy_pinyin, options.english)
     {
         shuangpin_preedit_uses_raw = options.shuangpin_preedit_uses_raw;
         session.set_shuangpin_preedit_uses_raw(options.shuangpin_preedit_uses_raw);

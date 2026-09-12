@@ -3,6 +3,10 @@
 #include "../user_dictionary/user_dictionary_journal.h"
 #include "../common/helpcode_utils.h"
 #include <algorithm>
+#include <cctype>
+#include <filesystem>
+#include <system_error>
+#include "contracts/assets/assets.h"
 #include <unordered_set>
 
 namespace metasequoia
@@ -62,6 +66,58 @@ const std::vector<Spelling> &spellings()
     }();
     return values;
 }
+
+// 九键上的字母只印在键面上,打字时按的是数字,所以英文候选得把数字还原成字母才查得到。
+// T9 expansion multiplies by three or four per digit, so only the leading digits are expanded and
+// the dictionary's own prefix search carries the rest; a word is then kept only if its whole code
+// starts with what was typed.
+constexpr const char *kDigitLetters[] = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+
+std::string LettersForDigit(char digit)
+{
+    return digit >= '2' && digit <= '9' ? kDigitLetters[digit - '0'] : std::string{};
+}
+
+std::string DigitsForWord(const std::string &word)
+{
+    std::string code;
+    code.reserve(word.size());
+    for (const unsigned char raw : word)
+    {
+        const char letter = static_cast<char>(std::tolower(raw));
+        if (letter < 'a' || letter > 'z')
+            return {};
+        for (char digit = '2'; digit <= '9'; ++digit)
+        {
+            const auto letters = LettersForDigit(digit);
+            if (letters.find(letter) != std::string::npos)
+            {
+                code.push_back(digit);
+                break;
+            }
+        }
+    }
+    return code;
+}
+
+std::vector<std::string> LetterPrefixes(const std::string &digits, std::size_t budget)
+{
+    std::vector<std::string> prefixes{std::string{}};
+    for (const char digit : digits)
+    {
+        const auto letters = LettersForDigit(digit);
+        if (letters.empty() || prefixes.size() * letters.size() > budget)
+            break;
+        std::vector<std::string> grown;
+        grown.reserve(prefixes.size() * letters.size());
+        for (const auto &prefix : prefixes)
+            for (const char letter : letters)
+                grown.push_back(prefix + letter);
+        prefixes = std::move(grown);
+    }
+    return prefixes.size() == 1 && prefixes.front().empty() ? std::vector<std::string>{} : prefixes;
+}
+
 using Path = std::vector<std::string>;
 std::vector<Path> paths(const std::string &digits)
 {
@@ -107,6 +163,49 @@ std::size_t NineKeySession::locked_length() const
         count += part.size();
     return count;
 }
+
+std::vector<WordItem> NineKeySession::english_candidates()
+{
+    if (!english_.mixed_candidates || !locked_.empty() || digits_.size() < english_.minimum_prefix)
+        return {};
+    if (!english_dictionary_)
+    {
+        const auto path = paths_.dictionary(assets::english_dictionary);
+        std::error_code code;
+        if (!std::filesystem::exists(path, code))
+            return {};
+        english_dictionary_ = std::make_unique<EnglishDictionary>(path.string(), false);
+    }
+    std::vector<WordItem> words;
+    std::unordered_set<std::string> seen;
+    for (const auto &prefix : LetterPrefixes(digits_, 64))
+    {
+        for (auto &word : english_dictionary_->query_prefix(prefix, 5))
+        {
+            // 只有整串编码对得上的才算,否则展开之外的字母会混进来。
+            if (!starts(DigitsForWord(word.word), digits_) || !seen.insert(word.word).second)
+                continue;
+            words.push_back(std::move(word));
+        }
+    }
+    // 打满几位就先给几个字母的词,同长度再比词频。
+    //
+    // Prefix matches belong in the list -- a nine-key code is also the start of longer words -- but
+    // not ahead of the word the code spells exactly. Ranked on frequency alone, typing 65 for "ok"
+    // led with "old", which is simply the more common word and not the one being asked for.
+    const auto typed = digits_.size();
+    std::stable_sort(words.begin(), words.end(), [typed](const WordItem &a, const WordItem &b) {
+        const bool a_exact = a.word.size() == typed;
+        const bool b_exact = b.word.size() == typed;
+        if (a_exact != b_exact)
+            return a_exact;
+        return a.weight != b.weight ? a.weight > b.weight : a.word.size() < b.word.size();
+    });
+    if (words.size() > 5)
+        words.resize(5);
+    return words;
+}
+
 void NineKeySession::refresh()
 {
     candidates_.clear();
@@ -172,6 +271,14 @@ void NineKeySession::refresh()
                       candidates_.end());
     if (candidates_.size() > 128)
         candidates_.resize(128);
+    auto english = english_candidates();
+    if (!english.empty())
+    {
+        const auto slot = std::min<std::size_t>(1, candidates_.size());
+        candidates_.insert(candidates_.begin() + static_cast<std::ptrdiff_t>(slot), english.front());
+        candidates_.insert(candidates_.end(), std::make_move_iterator(english.begin() + 1),
+                           std::make_move_iterator(english.end()));
+    }
     user_dictionary::apply_fixed_positions(path_to_utf8(paths_.user(assets::user_journal)), ranking_context(),
                                            candidates_, false);
     // Keep the most likely reading visible without requiring a horizontal scroll.

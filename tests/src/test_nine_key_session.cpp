@@ -55,13 +55,29 @@ int main()
                          nullptr, nullptr, nullptr) == SQLITE_OK,
             "populate fixture");
     sqlite3_close(db);
+    // 九键上按的是数字,英文候选得把数字还原成字母才查得到。
+    sqlite3 *english = nullptr;
+    require(sqlite3_open((directory / "english.db").u8string().c_str(), &english) == SQLITE_OK, "open english fixture");
+    require(sqlite3_exec(english,
+                         "CREATE TABLE english_words(word TEXT,display TEXT,weight INTEGER);"
+                         "INSERT INTO english_words VALUES('ok','ok',900);"
+                         "INSERT INTO english_words VALUES('old','old',1000);"
+                         "INSERT INTO english_words VALUES('older','older',800);",
+                         nullptr, nullptr, nullptr) == SQLITE_OK,
+            "populate english fixture");
+    sqlite3_close(english);
     SessionOptions options;
     options.paths = {directory, directory, directory, directory};
     options.learning = false;
+    options.english.mixed_candidates = true;
     Session session(options);
     require(!session.character('6').handled, "ordinary pinyin swallowed digit");
     session.set_nine_key_enabled(true);
     require(!session.character('0').handled && !session.character('1').handled, "invalid digits accepted");
+    type(session, "65");
+    // old 的词频更高,但 65 正好拼满 ok,先给拼满的那个。
+    require(candidate(session, "ok") < candidate(session, "old"), "nine-key english ranks the exact code first");
+    session.command(Command::Cancel);
     type(session, "64");
     candidate(session, "你");
     candidate(session, "米");
