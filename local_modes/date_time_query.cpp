@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <ctime>
+#include <utility>
 
 namespace metasequoia::local_modes
 {
@@ -240,7 +241,7 @@ std::string lunar_date(const LocalDateTime &now)
 std::vector<std::string> date_candidates(const LocalDateTime &now)
 {
     const unsigned weekday = weekday_index(now);
-    return {
+    std::vector<std::string> results = {
         format("%u年%u月%u日", now.year, now.month, now.day),
         format("%04u-%02u-%02u", now.year, now.month, now.day),
         format("%04u/%02u/%02u", now.year, now.month, now.day),
@@ -257,8 +258,14 @@ std::vector<std::string> date_candidates(const LocalDateTime &now)
         format("%u月%u日 ", now.month, now.day) + format("%02u:%02u", now.hour, now.minute),
         chinese_digits(now.year) + "年" + chinese_number(now.month) + "月" + chinese_number(now.day) + "日",
         financial_digits(now.year) + "年" + financial_digits(now.month) + "月" + financial_digits(now.day, 2) + "日",
-        lunar_date(now),
     };
+    // lunar_date() returns an empty string for dates outside the supported 1900-2100 table, so only append it when it
+    // resolved; an empty candidate would render as a blank row that commits nothing.
+    if (std::string lunar = lunar_date(now); !lunar.empty())
+    {
+        results.push_back(std::move(lunar));
+    }
+    return results;
 }
 
 std::vector<std::string> time_candidates(const LocalDateTime &now)

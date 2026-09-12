@@ -49,7 +49,7 @@ bool is_complete_pinyin_part(const std::string &part)
         return false;
     }
 
-    return !cut_one_piece_greedy(part, true).empty();
+    return !cut_one_piece_min_segments(part, true).empty();
 }
 
 Segments append_rest(const Segments &head, const Segments &segments)

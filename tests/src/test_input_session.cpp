@@ -232,6 +232,19 @@ int run_test()
         database.execute("CREATE TABLE tbl_2_t(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
         database.execute("INSERT INTO tbl_2_t VALUES('te''le','tl','特乐',100)");
         database.execute("CREATE TABLE tbl_3_x(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
+        // Single-syllable rows so the lattice can cover a whole remaining composition with one generated
+        // sentence, plus the v-spelled rows the lue/nue aliases have to reach. tbl_4_x starts empty: the
+        // learning path writes the finished four-syllable phrase into the table keyed by its first initial.
+        database.execute("CREATE TABLE tbl_1_t(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
+        database.execute("INSERT INTO tbl_1_t VALUES('te','t','特',100)");
+        database.execute("CREATE TABLE tbl_1_l(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
+        database.execute("INSERT INTO tbl_1_l VALUES('le','l','乐',100)");
+        database.execute("INSERT INTO tbl_1_l VALUES('lve','l','掠',100)");
+        database.execute("CREATE TABLE tbl_1_h(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
+        database.execute("INSERT INTO tbl_1_h VALUES('hao','h','好',100)");
+        database.execute("CREATE TABLE tbl_1_n(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
+        database.execute("INSERT INTO tbl_1_n VALUES('nve','n','虐',100)");
+        database.execute("CREATE TABLE tbl_4_x(key TEXT,jp TEXT,value TEXT,weight INTEGER)");
         {
             metasequoia::InputSession portable(SchemeType::Quanpin, true, false);
             type(portable, "xi'te'le");
@@ -269,6 +282,30 @@ int run_test()
             const auto punctuation = unlearned.handle_punctuation(',');
             require(punctuation.commit == "特乐，" && !unlearned.has_composition(),
                     "Punctuation failed to finish the remaining portable composition atomically.");
+        }
+        {
+            // A whole-sentence candidate produced by the lattice is a real pinyin selection, so it has to
+            // finish the phrase that an earlier dictionary selection started. Before the generated/fallback
+            // reading was accepted here, selecting it silently dropped the in-progress 西 and learned nothing.
+            metasequoia::InputSession sentence_learning(SchemeType::Quanpin, true, false);
+            type(sentence_learning, "xi'te'le'hao");
+            const auto sentence_prefix = sentence_learning.select_candidate(candidate_index(sentence_learning, "西"));
+            require(sentence_prefix.commit == "西" && sentence_learning.has_composition() &&
+                        sentence_learning.preedit() == "te'le'hao",
+                    "The generated-sentence learning fixture did not leave the unconsumed pinyin suffix.");
+            const std::size_t sentence_index = candidate_index(sentence_learning, "特乐好");
+            const WordItem sentence = sentence_learning.candidates()[sentence_index];
+            // Generated or Fallback: the Google sentence is inserted as Fallback first and the lattice merge
+            // skips the duplicate, so which of the two labels survives is not part of the contract.
+            require((sentence.source == CandidateSource::Generated || sentence.source == CandidateSource::Fallback) &&
+                        !sentence.canonical_pinyin.empty(),
+                    "The remaining composition did not offer a generated whole-sentence candidate with a reading.");
+            require(sentence_learning.select_candidate(sentence_index).commit == "特乐好" &&
+                        !sentence_learning.has_composition(),
+                    "Selecting a generated whole-sentence candidate did not finish the composition.");
+            require(database.query_integer(
+                        "SELECT COUNT(*) FROM tbl_4_x WHERE key='xi''te''le''hao' AND value='西特乐好'") == 1,
+                    "A phrase completed by a generated whole-sentence candidate was not learned.");
         }
 
         // A seven-syllable key and eight/nine-syllable keys cross the shipping
@@ -376,6 +413,20 @@ int run_test()
             type(alias_session, test_case.pinyin);
             require(candidate_index(alias_session, test_case.candidate) == 0,
                     "A v-form umlaut syllable did not query its canonical dictionary key.");
+        }
+
+        // lue/nue are legal spellings of lve/nve and the dictionary stores only the v rows, so the alias
+        // layer has to rewrite the lookup key while the preedit keeps showing what was typed.
+        const std::array<UmlautAliasCase, 2> ue_alias_cases = {{{"lue", "掠"}, {"nue", "虐"}}};
+        for (const auto &test_case : ue_alias_cases)
+        {
+            metasequoia::InputSession ue_alias_session;
+            type(ue_alias_session, test_case.pinyin);
+            require(std::any_of(ue_alias_session.candidates().begin(), ue_alias_session.candidates().end(),
+                                [&](const WordItem &item) { return item.word == test_case.candidate; }),
+                    "A typed lue/nue syllable did not reach its v-spelled dictionary row.");
+            require(ue_alias_session.preedit() == test_case.pinyin,
+                    "The lue/nue alias rewrote the preedit instead of only the dictionary lookup key.");
         }
 
         const std::array<UmlautAliasCase, 6> missing_final_g_cases = {{{"zhonguo", "中国"},
@@ -605,6 +656,21 @@ int run_test()
                     !metasequoia::InputSession::select_helpcode_schema("unknown"),
                 "An unknown helpcode schema was accepted.");
 
+        // Spellings whose greedy longest-match prefix is a dead end (li+nian, ji+nian+ri) are still complete
+        // pinyin. A greedy completeness test rejects them, the trailing helpcode letter is then never
+        // stripped, and the query goes out as "linianz" instead of "linian" - quanpin helpcode is dead.
+        require(quanpin::is_complete_pinyin_input("linian") && quanpin::is_complete_pinyin_input("jinian") &&
+                    quanpin::is_complete_pinyin_input("jinianri"),
+                "A spelling only a minimum-segment cut can split was rejected as incomplete pinyin.");
+        require(!quanpin::is_complete_pinyin_input("nih") && !quanpin::is_complete_pinyin_input("zhonguo"),
+                "An unsplittable spelling was accepted as complete pinyin.");
+        require(quanpin::detect_active_helpcode_length("jinianriz", "jinianriZ") == 1 &&
+                    quanpin::strip_active_helpcodes("jinianriz", "jinianriZ") == "jinianri",
+                "The helpcode letter was not stripped from a spelling greedy segmentation cannot cut.");
+        require(quanpin::detect_active_helpcode_length("nihc", "nihC") == 0 &&
+                    quanpin::strip_active_helpcodes("nihc", "nihC") == "nihc",
+                "An incomplete base spelling activated helpcode stripping.");
+
         metasequoia::InputSession quanpin_helpcode(SchemeType::Quanpin);
         quanpin_helpcode.set_quanpin_helpcode_enabled(true);
         require(quanpin_helpcode.set_helpcode_schema("lantian"), "The Lantian helpcode fixture was not selected.");
@@ -646,6 +712,42 @@ int run_test()
         require(!shuangpin_without_helpcode.handle_character('H').handled &&
                     shuangpin_without_helpcode.preedit() == "ni",
                 "A setter-disabled Shuangpin helpcode key was swallowed.");
+
+        // Toggling helpcode while a composition is on screen is supported usage. The engine reads the flag
+        // only while querying, so the setters have to re-query; re-wrapping the candidates they already hold
+        // leaves the previous list (and its segmentation) on screen until the next keystroke. Both directions
+        // use the double-helpcode form because it filters the list, which a re-ordering alone cannot prove.
+        metasequoia::InputSession quanpin_helpcode_toggled(SchemeType::Quanpin);
+        quanpin_helpcode_toggled.set_quanpin_helpcode_enabled(false);
+        require(quanpin_helpcode_toggled.set_helpcode_schema("lantian"),
+                "The Quanpin helpcode-toggle fixture schema was not selected.");
+        quanpin_helpcode_toggled.set_pinyin_sequence("nihaoae");
+        quanpin_helpcode_toggled.set_pinyin_sequence_with_cases("nihaoAE");
+        quanpin_helpcode_toggled.recompute_candidates();
+        const std::size_t unfiltered_helpcode_size = quanpin_helpcode_toggled.candidates().size();
+        require(unfiltered_helpcode_size > 1,
+                "The Quanpin helpcode-toggle fixture did not start from an unfiltered candidate list.");
+        quanpin_helpcode_toggled.set_quanpin_helpcode_enabled(true);
+        require(quanpin_helpcode_toggled.candidates().size() < unfiltered_helpcode_size &&
+                    !quanpin_helpcode_toggled.candidates().empty() &&
+                    quanpin_helpcode_toggled.candidates().front().word == "你好",
+                "Enabling Quanpin helpcode mid-composition kept the stale unfiltered candidate list.");
+        quanpin_helpcode_toggled.set_quanpin_helpcode_enabled(false);
+        require(quanpin_helpcode_toggled.candidates().size() == unfiltered_helpcode_size,
+                "Disabling Quanpin helpcode mid-composition kept the stale helpcode-filtered candidate list.");
+
+        metasequoia::InputSession shuangpin_helpcode_toggled(SchemeType::Shuangpin);
+        shuangpin_helpcode_toggled.set_shuangpin_helpcode_enabled(true);
+        require(shuangpin_helpcode_toggled.set_helpcode_schema("lantian"),
+                "The Shuangpin helpcode-toggle fixture schema was not selected.");
+        type(shuangpin_helpcode_toggled, "nihcAE");
+        require(shuangpin_helpcode_toggled.candidates().empty() &&
+                    shuangpin_helpcode_toggled.raw_segmentation() == "ni'hc'AE",
+                "The Shuangpin helpcode-toggle fixture did not start from a helpcode-filtered candidate list.");
+        shuangpin_helpcode_toggled.set_shuangpin_helpcode_enabled(false);
+        require(!shuangpin_helpcode_toggled.candidates().empty() &&
+                    shuangpin_helpcode_toggled.raw_segmentation() == "ni'hc'A'E",
+                "Disabling Shuangpin helpcode mid-composition kept the stale filtered list and segmentation.");
 
         require(!session.handle_character('1').handled, "A digit was swallowed instead of passed through.");
         require(!session.handle_command(metasequoia::Command::Backspace).handled,

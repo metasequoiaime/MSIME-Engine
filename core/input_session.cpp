@@ -366,7 +366,8 @@ void InputSession::set_shuangpin_helpcode_enabled(bool enabled)
     }
     shuangpin_helpcode_enabled_ = enabled;
     engine_.set_shuangpin_helpcode_enabled(enabled);
-    update_mixed_candidates();
+    // The engine reads the flag only while querying, so a live composition has to be asked again instead of re-wrapped.
+    recompute_candidates();
     online_requests_.invalidate();
 }
 
@@ -378,7 +379,8 @@ void InputSession::set_quanpin_helpcode_enabled(bool enabled)
     }
     quanpin_helpcode_enabled_ = enabled;
     engine_.set_quanpin_helpcode_enabled(enabled);
-    update_mixed_candidates();
+    // Same as the shuangpin toggle: the flag alone does not refresh a composition that is already on screen.
+    recompute_candidates();
     online_requests_.invalidate();
 }
 

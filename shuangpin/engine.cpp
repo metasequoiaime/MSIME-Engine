@@ -82,6 +82,15 @@ std::optional<HelpcodeQuery> build_single_helpcode_query(const std::string &raw_
         return std::nullopt;
     }
 
+    // An apostrophe immediately before the last letter makes that letter a user-defined pinyin segment, not an
+    // auxiliary code. The double-helpcode path gets this rule from detect_active_double_helpcode_length; without it
+    // here the engine and the composition layer would disagree about what "ui'u" means.
+    const size_t raw_prefix = shuangpin::raw_length_for_effective_prefix(raw_input, pure_input_with_cases.size() - 1);
+    if (raw_prefix < raw_input.size() && raw_input[raw_prefix] == '\'')
+    {
+        return std::nullopt;
+    }
+
     HelpcodeQuery query;
     query.base_raw_input = shuangpin::trim_trailing_letters_preserve_delimiters(raw_input, 1);
     query.base_pure_input = shuangpin::remove_manual_delimiters(query.base_raw_input);

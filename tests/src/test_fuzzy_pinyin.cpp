@@ -155,6 +155,52 @@ int main()
         Session exact(options);
         type(exact, "zsgo");
         require(!contains(exact.snapshot().candidates, "中国"), "session configuration leaked");
+        // SessionOptions::shuangpin_preedit_uses_raw rewrites SessionSnapshot::preedit, the string every frontend
+        // renders. Both branches are pinned below, plus the local-mode and dedicated-English guards that keep the
+        // rewrite out of compositions that are not shuangpin pinyin.
+        SessionOptions shuangpinDisplay;
+        shuangpinDisplay.paths = paths;
+        shuangpinDisplay.scheme = SchemeType::Shuangpin;
+        shuangpinDisplay.helpcode = false;
+        shuangpinDisplay.autocorrect_types = 0;
+        shuangpinDisplay.learning = false;
+        shuangpinDisplay.fuzzy_pinyin.rules = 1;
+        shuangpinDisplay.shuangpin_preedit_uses_raw = true;
+        Session rawPreedit(shuangpinDisplay);
+        type(rawPreedit, "zsgo");
+        const auto rawView = rawPreedit.snapshot();
+        // The default shows the plain typed keys, not the segmented raw input and not the pinyin.
+        require(rawView.preedit == "zsgo",
+                "shuangpin_preedit_uses_raw=true stopped rendering the typed keys, preedit is " + rawView.preedit);
+        require(rawView.raw_segmentation == "zs'go" && rawView.normalized_segmentation == "zong'guo",
+                "shuangpin segmentation fields changed: " + rawView.raw_segmentation + " / " +
+                    rawView.normalized_segmentation);
+        shuangpinDisplay.shuangpin_preedit_uses_raw = false;
+        Session convertedPreedit(shuangpinDisplay);
+        type(convertedPreedit, "zsgo");
+        const auto convertedView = convertedPreedit.snapshot();
+        require(convertedView.preedit == "zong'guo",
+                "shuangpin_preedit_uses_raw=false stopped rendering the converted pinyin, preedit is " +
+                    convertedView.preedit);
+        require(convertedView.raw_segmentation == "zs'go" && convertedView.normalized_segmentation == "zong'guo",
+                "the converted preedit overwrote the segmentation fields");
+        // The rewrite is guarded by local_input_mode() == None; without the guard the Unicode preedit would be replaced
+        // by the pinyin segmentation of an untouched composition.
+        Session convertedUnicode(shuangpinDisplay);
+        require(convertedUnicode.character('U', true).handled, "Shift+U was rejected by a shuangpin session");
+        type(convertedUnicode, "4e2d");
+        const auto unicodeView = convertedUnicode.snapshot();
+        require(unicodeView.local_mode == LocalInputMode::Unicode, "Shift+U did not enter Unicode mode");
+        require(unicodeView.preedit == "U4e2d",
+                "the converted shuangpin preedit leaked into Unicode mode, preedit is " + unicodeView.preedit);
+        // Same for dedicated English, whose preedit is the ASCII the user typed rather than pinyin.
+        Session convertedEnglish(shuangpinDisplay);
+        convertedEnglish.set_dedicated_english(true);
+        type(convertedEnglish, "zs");
+        const auto englishView = convertedEnglish.snapshot();
+        require(englishView.dedicated_english && englishView.preedit == "zs",
+                "the converted shuangpin preedit leaked into dedicated English mode, preedit is " +
+                    englishView.preedit);
         const auto start = std::chrono::steady_clock::now();
         for (int i = 0; i < 200; ++i)
             dictionary.query("zongguo", "zong'guo", false, {0x7ff});

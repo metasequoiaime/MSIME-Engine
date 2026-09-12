@@ -77,7 +77,17 @@ RomajiConversion ConvertRomaji(std::string_view input)
                 index += 2;
                 continue;
             }
-            if (next == 'n' || (IsConsonant(next) && next != 'y'))
+            if (next == 'n')
+            {
+                // "nn" spells a single ん when the second n cannot begin a kana of its own; otherwise only the first n
+                // is consumed so that "nna" still yields んな.
+                const bool second_n_stands_alone = index + 2 == normalized.size() || normalized[index + 2] == '\'' ||
+                                                   (IsConsonant(normalized[index + 2]) && normalized[index + 2] != 'y');
+                result.hiragana += "ん";
+                index += second_n_stands_alone ? 2 : 1;
+                continue;
+            }
+            if (IsConsonant(next) && next != 'y')
             {
                 result.hiragana += "ん";
                 ++index;
@@ -85,8 +95,11 @@ RomajiConversion ConvertRomaji(std::string_view input)
             }
         }
 
-        if (index + 1 < normalized.size() && normalized[index] == normalized[index + 1] &&
-            IsConsonant(normalized[index]) && normalized[index] != 'n')
+        const bool doubled_consonant = index + 1 < normalized.size() && normalized[index] == normalized[index + 1] &&
+                                       IsConsonant(normalized[index]) && normalized[index] != 'n';
+        // Hepburn writes っち as "tchi", so a t directly before "ch" is a sokuon even though the consonants differ.
+        const bool hepburn_tch = normalized[index] == 't' && normalized.compare(index + 1, 2, "ch") == 0;
+        if (doubled_consonant || hepburn_tch)
         {
             result.hiragana += "っ";
             ++index;
@@ -145,10 +158,15 @@ const std::vector<std::pair<std::string, std::string>> &KanaToRomajiTable()
         entries.reserve(RomajiTable().size());
         for (const auto &entry : RomajiTable())
             entries.emplace_back(entry.second, entry.first);
+        // RomajiTable() is an unordered_map and std::sort is not stable, so two spellings of equal length would
+        // otherwise be ordered by whatever bucket order this standard library happened to produce. The spelling
+        // tiebreak makes HiraganaToRomaji pick the same romanisation on every implementation.
         std::sort(entries.begin(), entries.end(), [](const auto &a, const auto &b) {
             if (a.first.size() != b.first.size())
                 return a.first.size() > b.first.size();
-            return a.second.size() > b.second.size();
+            if (a.second.size() != b.second.size())
+                return a.second.size() > b.second.size();
+            return a.second < b.second;
         });
         std::vector<std::pair<std::string, std::string>> unique;
         for (const auto &entry : entries)

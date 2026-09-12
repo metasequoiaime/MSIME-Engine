@@ -97,17 +97,15 @@ std::vector<WordItem> JapaneseCandidateProvider::query(const QueryRequest &reque
         const auto pending_kana = japanese::KanaForRomajiPrefix(conversion.pending);
         if (!conversion.hiragana.empty() && !conversion.pending.empty())
         {
-            const std::string typed = request.raw_input;
+            // KanaForRomajiPrefix already restricts the kana to spellings that start with the pending letters, so every
+            // lemma reached here matches what was typed. Re-deriving romaji from lemma.reading to re-check the prefix
+            // would only add false negatives, because a reading usually has several equally valid spellings and
+            // HiraganaToRomaji picks just one of them.
             for (const auto &kana : pending_kana)
             {
                 for (const auto &lemma : sentence_decoder_->PrefixLemmas(conversion.hiragana + kana, 24))
-                {
-                    const std::string romaji = japanese::HiraganaToRomaji(lemma.reading);
-                    if (romaji.size() < typed.size() || romaji.compare(0, typed.size(), typed) != 0)
-                        continue;
                     AppendUnique(candidates, seen, request.raw_input_with_cases, lemma.surface,
                                  980000 - lemma.word_cost, CandidateSource::Database);
-                }
             }
         }
         else if (conversion.pending.empty() && conversion.hiragana.size() >= 6)

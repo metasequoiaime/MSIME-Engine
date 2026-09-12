@@ -180,6 +180,10 @@ std::vector<LatticePath> decode_word_lattice(const Segments &syllables, const Wo
     auto &final_col = columns[n];
     if (final_col.empty())
         return {};
+    // The loop above only beam-prunes columns [0, n), so the terminal column still holds every hypothesis that reached
+    // the end. Prune it too before the full sort; no other column traces back through columns[n], so truncating it
+    // cannot break traceback.
+    keep_beam(final_col, (std::max)(options.beam, options.nbest));
     std::sort(final_col.begin(), final_col.end(), [](const Hyp &a, const Hyp &b) { return a.score > b.score; });
     const int take = (std::min)(options.nbest, static_cast<int>(final_col.size()));
 

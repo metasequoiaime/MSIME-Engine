@@ -31,7 +31,7 @@ jobs:
       - name: Build
         run: cmake --build build --parallel
       - name: Test
-        run: ctest --test-dir build --output-on-failure --timeout 20
+        run: ctest --test-dir build --output-on-failure --no-tests=error --timeout 20
 
   macos:
     name: macOS arm64
@@ -51,7 +51,7 @@ jobs:
       - name: Build
         run: cmake --build build --parallel
       - name: Test
-        run: ctest --test-dir build --output-on-failure --timeout 20
+        run: ctest --test-dir build --output-on-failure --no-tests=error --timeout 20
 
   windows:
     name: Windows x64
@@ -78,7 +78,7 @@ jobs:
         # the stricter timeout on Linux/macOS while allowing the observed Windows test budget.
         # runtime_isolation carries its own ceiling in CMakeLists.txt because 60 seconds is only six
         # times its Windows best case, which a slow runner has already outrun.
-        run: ctest --test-dir build -C Release --output-on-failure --timeout 60
+        run: ctest --test-dir build -C Release --output-on-failure --no-tests=error --timeout 60
 
   # Every job above builds the engine on its own. None of them builds anything that consumes it, so
   # a change to a signature or a semantic that all three frontends depend on passes here and is
@@ -128,9 +128,10 @@ jobs:
       # Naming them went stale: five dictionary-dependent suites arrived in a single day and this
       # job then failed every engine pull request, none of which had touched anything related.
       # What is wanted here is the interface and semantic breakage a signature change would cause.
+      # --no-tests=error because ctest exits 0 on "No tests were found": a label rename downstream would otherwise leave this step green having run nothing. A failure here on that message means the frontend's label set moved, not that the engine regressed.
       - name: Test
         run: >-
-          ctest --test-dir build --output-on-failure --timeout 120
+          ctest --test-dir build --output-on-failure --no-tests=error --timeout 120
           -LE 'needs-dictionary|needs-desktop-services|needs-installed-tree'
 
   webview-contract:
@@ -148,7 +149,7 @@ jobs:
       - run: node contracts/webview/test.js
       - run: sudo apt-get update && sudo apt-get install --no-install-recommends -y cmake libboost-json-dev
       - run: cmake -S contracts/webview -B build-webview && cmake --build build-webview
-      - run: ctest --test-dir build-webview --output-on-failure
+      - run: ctest --test-dir build-webview --output-on-failure --no-tests=error
 
   sanitizers:
     name: Linux ASan and UBSan
