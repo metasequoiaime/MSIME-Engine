@@ -277,15 +277,18 @@ void ImeSession::refresh_candidates()
 
     state_.answered_by_pinyin_fallback = false;
 
+    // An emptied composition starts over, so the fallback flag has to be cleared before the invalid
+    // request leaves early: a scheme that reports an empty input as invalid would otherwise carry the
+    // flag into the next code typed and blank out what the table answers.
+    if (state_.request.raw_input.empty())
+    {
+        composition_uses_pinyin_fallback_ = false;
+    }
+
     if (!state_.request.valid)
     {
         state_.candidates.clear();
         return;
-    }
-
-    if (state_.request.raw_input.empty())
-    {
-        composition_uses_pinyin_fallback_ = false;
     }
 
     state_.candidates = provider_registry_.resolve(state_.request.scheme).query(state_.request);
