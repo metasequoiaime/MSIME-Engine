@@ -545,7 +545,8 @@ bool set_fixed_position(const std::string &user_db_path, const std::string &cont
     UserDatabase db(user_db_path);
     if (!db)
         return false;
-    sqlite3_exec(db.get(), "BEGIN IMMEDIATE", nullptr, nullptr, nullptr);
+    if (!execute_sql(db.get(), "BEGIN IMMEDIATE"))
+        return false;
     auto clear_slot = prepare(db.get(), "DELETE FROM fixed_candidate_positions WHERE context_key=?1 AND position=?2");
     auto upsert = prepare(
         db.get(), "INSERT INTO fixed_candidate_positions(context_key,entry_key,value,position) VALUES(?1,?2,?3,?4)"
@@ -617,7 +618,12 @@ bool adjust_english_candidate_ranking(const std::string &english_db_path, const 
     const size_t rank = static_cast<size_t>(selected - ordered_candidates.begin());
     if (rank == 0)
     {
-        const bool committed = execute_sql(user_db.get(), "COMMIT");
+        auto reset = prepare(
+            user_db.get(), "DELETE FROM candidate_selection_state WHERE context_key=?1 AND entry_key=?2 AND value=?3");
+        const bool reset_ok = reset && bind_text(reset.get(), 1, context_key) && bind_text(reset.get(), 2, entry_key) &&
+                              bind_text(reset.get(), 3, value) && sqlite3_step(reset.get()) == SQLITE_DONE;
+        reset.reset();
+        const bool committed = reset_ok && execute_sql(user_db.get(), "COMMIT");
         if (!committed)
             rollback_user();
         return committed;
