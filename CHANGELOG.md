@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.17.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.16.0...v0.17.0) (2026-09-12)
+
+
+### Features
+
+* **engine:** support ordered batches of online candidates ([#128](https://github.com/metasequoiaime/MSIME-Engine/issues/128)) ([74be030](https://github.com/metasequoiaime/MSIME-Engine/commit/74be030d1ccbe49cc18aec59b92f77118e580229))
+* **handwriting:** share Chinese-first candidate ordering ([#130](https://github.com/metasequoiaime/MSIME-Engine/issues/130)) ([df45b44](https://github.com/metasequoiaime/MSIME-Engine/commit/df45b44c9153f4f273a7cb1e49c44784a9f0f4a0))
+* **nine-key:** offer English words for the digits typed ([#126](https://github.com/metasequoiaime/MSIME-Engine/issues/126)) ([15ff08f](https://github.com/metasequoiaime/MSIME-Engine/commit/15ff08fc50ff9b469dae0f4bdabeae76c2a66b91))
+
+
+### Bug Fixes
+
+* audit findings across the engine, with regression tests ([be394c7](https://github.com/metasequoiaime/MSIME-Engine/commit/be394c74a0336a8e7214f60063eec55dc950744d))
+* **core:** reset the wubi fallback flag and requery on a helpcode toggle ([4191aad](https://github.com/metasequoiaime/MSIME-Engine/commit/4191aad0391db1f4cb4587369ab00376b4f63bf9))
+* **engine:** keep online batch method in session namespace ([b9fb725](https://github.com/metasequoiaime/MSIME-Engine/commit/b9fb725a9b5bf4dc9669f47460b1e5e36a35d7f3))
+* **engine:** keep online batch method in session namespace ([b821f65](https://github.com/metasequoiaime/MSIME-Engine/commit/b821f65b076aa404406f56bad77809cf4a2965b0))
+* **japanese:** correct nn and tch romaji, and stop dropping prefix lemmas ([f2cd24f](https://github.com/metasequoiaime/MSIME-Engine/commit/f2cd24f97132546995daf7798eb6aea90650937d))
+* **local-modes:** drop the blank date candidate when the lunar table has no entry ([914d452](https://github.com/metasequoiaime/MSIME-Engine/commit/914d452e506f810e20b199f88ca71018dcd26e99))
+* **quanpin:** accept every valid spelling and stop dropping merged sentences ([2752f1b](https://github.com/metasequoiaime/MSIME-Engine/commit/2752f1b2c88dc79a6926657a6372c2af29baa592))
+* **shuangpin:** honour a manual delimiter before a trailing helpcode letter ([e975002](https://github.com/metasequoiaime/MSIME-Engine/commit/e975002a6232e29f6634d72436bd7219cc8872a2))
+* **user-dictionary:** respect BEGIN IMMEDIATE and clear the rank-0 counter ([286729a](https://github.com/metasequoiaime/MSIME-Engine/commit/286729a4222cec9a4fe66fa1175bc7032f35004c))
+
+
+### Performance Improvements
+
+* **engine:** stop copying candidate vectors on cache probes and char counting ([53a1f9f](https://github.com/metasequoiaime/MSIME-Engine/commit/53a1f9f9e173445f8809ee19160db2fc6dd236f6))
+
 ## [0.16.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.15.0...v0.16.0) (2026-09-12)
 
 
