@@ -199,9 +199,9 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generateSeries( //
             const bool duplicate = std::any_of(candidate_list.begin(), candidate_list.end(),
                                                [&](const WordItem &item) { return item.word == google_sentence; });
             if (!google_sentence.empty() && !duplicate)
-                candidate_list.insert(candidate_list.begin(),
-                                      WordItem(_pinyin_sequence, google_sentence, 1, CandidateSource::Fallback,
-                                               quanpin_segmentation));
+                candidate_list.insert(
+                    candidate_list.begin(),
+                    WordItem(_pinyin_sequence, google_sentence, 1, CandidateSource::Fallback, quanpin_segmentation));
         }
         quanpin::WordLatticeOptions lattice_options;
         lattice_options.nbest = 1;
