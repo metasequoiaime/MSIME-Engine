@@ -1210,10 +1210,12 @@ int QuanpinDictionary::insert_word_to_series_cache(const std::string &raw_input,
     return insert_word_to_series_cache_key(resolution.cache_key, raw_input, words, source);
 }
 
-int QuanpinDictionary::insert_word_to_series_cache_key(const std::string &cache_key, const std::string &pinyin, const std::vector<std::string> &words, CandidateSource source)
+int QuanpinDictionary::insert_word_to_series_cache_key(const std::string &cache_key, const std::string &pinyin,
+                                                       const std::vector<std::string> &words, CandidateSource source)
 {
     auto list = series_cache_.get(cache_key).value_or(std::vector<WordItem>{});
-    if (!replace_online_candidate_batch(list, pinyin, words, source)) return -1;
+    if (!replace_online_candidate_batch(list, pinyin, words, source))
+        return -1;
     series_cache_.insert(cache_key, list);
     return 0;
 }

@@ -23,8 +23,7 @@ class ICandidateProvider
                                         CandidateSource source) = 0;
     virtual int cache_dynamic_candidate_for_request(const QueryRequest &request, const std::string &word,
                                                     CandidateSource source) = 0;
-    virtual int cache_dynamic_candidate_for_request(const QueryRequest &request,
-                                                    const std::vector<std::string> &words,
+    virtual int cache_dynamic_candidate_for_request(const QueryRequest &request, const std::vector<std::string> &words,
                                                     CandidateSource source)
     {
         return words.size() == 1 ? cache_dynamic_candidate_for_request(request, words.front(), source) : -1;

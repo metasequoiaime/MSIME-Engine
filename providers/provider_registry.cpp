@@ -82,8 +82,8 @@ int ProviderRegistry::cache_dynamic_candidate_for_request(const QueryRequest &re
     return resolve(request.scheme).cache_dynamic_candidate_for_request(request, word, source);
 }
 
-int ProviderRegistry::cache_dynamic_candidate_for_request(const QueryRequest &request, const std::vector<std::string> &words,
-                                                          CandidateSource source)
+int ProviderRegistry::cache_dynamic_candidate_for_request(const QueryRequest &request,
+                                                          const std::vector<std::string> &words, CandidateSource source)
 {
     return resolve(request.scheme).cache_dynamic_candidate_for_request(request, words, source);
 }

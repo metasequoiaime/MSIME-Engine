@@ -19,7 +19,8 @@ class ShuangpinEngine
     int update_weight_by_pinyin_and_word(std::string pinyin, std::string word);
     int delete_by_pinyin_and_word(std::string pinyin, std::string word);
     int insert_word_to_series_cache(const std::string &pinyin, const std::string &word, CandidateSource source);
-    int insert_word_to_series_cache(const std::string &pinyin, const std::vector<std::string> &words, CandidateSource source);
+    int insert_word_to_series_cache(const std::string &pinyin, const std::vector<std::string> &words,
+                                    CandidateSource source);
     int insert_word_to_active_helpcode_cache(const std::string &pinyin, const std::string &word,
                                              CandidateSource source);
     int insert_word_to_active_helpcode_cache(const std::string &pinyin, const std::vector<std::string> &words,

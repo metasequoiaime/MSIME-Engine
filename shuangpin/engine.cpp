@@ -260,8 +260,8 @@ int ShuangpinEngine::insert_word_to_series_cache(const std::string &pinyin, cons
     return dictionary_.insert_word_to_cached_buffer_series(pinyin, words, source);
 }
 
-int ShuangpinEngine::insert_word_to_active_helpcode_cache(const std::string &pinyin, const std::vector<std::string> &words,
-                                                          CandidateSource source)
+int ShuangpinEngine::insert_word_to_active_helpcode_cache(const std::string &pinyin,
+                                                          const std::vector<std::string> &words, CandidateSource source)
 {
     return dictionary_.insert_word_to_active_helpcode_cache(pinyin, words, source);
 }
