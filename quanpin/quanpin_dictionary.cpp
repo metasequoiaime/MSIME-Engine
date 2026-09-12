@@ -42,6 +42,16 @@ quanpin::Segments normalize_umlaut_aliases(quanpin::Segments segments)
         {
             segment[1] = 'u';
         }
+        // lue/nue are legal spellings of lve/nve, but the dictionary only stores the v rows. Exact syllable equality,
+        // not a "ends with ue" test: no other syllable may be rewritten.
+        else if (segment == "lue")
+        {
+            segment = "lve";
+        }
+        else if (segment == "nue")
+        {
+            segment = "nve";
+        }
     }
     return segments;
 }
@@ -121,10 +131,13 @@ QuanpinDictionary::QuanpinDictionary(std::string db_path, metasequoia::RuntimePa
                                : std::move(db_path))
 {
 
-    const int exit = sqlite3_open(db_path_.c_str(), &db_);
+    // No SQLITE_OPEN_CREATE: a missing dictionary must stay missing instead of being materialised as an empty file,
+    // and the handle has to become null so the db_ == nullptr guards on the query paths actually fire.
+    const int exit = sqlite3_open_v2(db_path_.c_str(), &db_, SQLITE_OPEN_READWRITE, nullptr);
     if (exit != SQLITE_OK)
     {
-        (void)0;
+        sqlite3_close(db_);
+        db_ = nullptr;
     }
 
     quanpin::warm_up(db_, statement_cache_);
@@ -169,13 +182,14 @@ std::vector<WordItem> QuanpinDictionary::query_exact(const std::string &raw_inpu
 
     // Autocorrected results get their own cache slot so they never leak the
     // fallback tail into plain (correct) spellings sharing the same key.
-    if (auto cached = series_cache_.get(resolution.cache_key))
+    if (series_cache_.contains(resolution.cache_key))
     {
         reset_cache_if_database_changed();
-        if (cached = series_cache_.get(resolution.cache_key))
+        if (auto cached = series_cache_.get(resolution.cache_key))
         {
-            current_candidate_list_ = cached.value();
-            return current_candidate_list_;
+            // CircularBuffer::get returns std::optional<Value> by value, so `cached` already owns a private copy and
+            // moving out of it cannot touch the cached entry.
+            return std::move(*cached);
         }
     }
 
@@ -233,8 +247,7 @@ std::vector<WordItem> QuanpinDictionary::query_exact(const std::string &raw_inpu
         }
     }
     series_cache_.insert(resolution.cache_key, result);
-    current_candidate_list_ = result;
-    return current_candidate_list_;
+    return result;
 }
 
 std::optional<WordItem> QuanpinDictionary::find_candidate(const std::string &key, const std::string &value)
@@ -556,9 +569,10 @@ std::vector<WordItem> QuanpinDictionary::merge_alternative_segmentations(
     }
 
     std::vector<WordItem> merged = std::move(merged_full);
-    const size_t primary_full_count = primary_full.size() < result.size() ? primary_full.size() : result.size();
-    std::vector<WordItem> remaining(result.begin() + static_cast<std::ptrdiff_t>(primary_full_count), result.end());
-    append_unique_words(merged, remaining);
+    // Append all of result, not a suffix of it: query_series prepends whole-sentence candidates, so any index
+    // arithmetic that assumes result starts with primary_full silently drops them. append_unique_words dedups by
+    // word, so the primary rows already in merged are not duplicated.
+    append_unique_words(merged, result);
     return merged;
 }
 
