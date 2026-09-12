@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(MetasequoiaImeEngine VERSION 0.14.0 LANGUAGES CXX) # x-release-please-version
+project(MetasequoiaImeEngine VERSION 0.15.0 LANGUAGES CXX) # x-release-please-version
 
 include(CTest)
 
