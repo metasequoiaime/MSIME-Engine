@@ -105,6 +105,7 @@ class Session
     void set_dedicated_english(bool enabled);
     // Answer an unmatched wubi code with quanpin candidates for the same letters.
     void set_wubi_mixed_pinyin(bool enabled);
+    void reset_cache();
     SessionSnapshot snapshot() const;
     std::optional<OnlineQuery> online_query() const;
     bool apply_online_candidate(const OnlineQuery &query, std::string candidate, CandidateSource source);

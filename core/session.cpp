@@ -172,6 +172,10 @@ void Session::set_wubi_mixed_pinyin(bool enabled)
 {
     impl_->session.set_wubi_input_options(WubiInputOptions{enabled});
 }
+void Session::reset_cache()
+{
+    impl_->session.reset_cache();
+}
 SessionSnapshot Session::snapshot() const
 {
     if (impl_->nine_key.active())
