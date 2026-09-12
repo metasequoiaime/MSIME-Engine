@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.16.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.15.0...v0.16.0) (2026-09-12)
+
+
+### Features
+
+* **engine:** expose shuangpin raw preedit option ([#120](https://github.com/metasequoiaime/MSIME-Engine/issues/120)) ([429e886](https://github.com/metasequoiaime/MSIME-Engine/commit/429e886bdca5c44093971ee735b8db050b3671cd))
+
+
+### Bug Fixes
+
+* **input:** learn generated sentence candidates ([#123](https://github.com/metasequoiaime/MSIME-Engine/issues/123)) ([1e8e557](https://github.com/metasequoiaime/MSIME-Engine/commit/1e8e55726baf381b1d699cf626850acec5ee4b3e))
+* **user-dictionary:** keep cross-key promotion above the rows it cannot demote ([25ccf6e](https://github.com/metasequoiaime/MSIME-Engine/commit/25ccf6e1f6a541b8a345cb8aeea211b31b2a6f4f))
+
 ## [0.15.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.14.0...v0.15.0) (2026-09-12)
 
 
