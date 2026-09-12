@@ -1,3 +1,4 @@
+#include <metasequoia/handwriting_candidates.h>
 #include <metasequoia/handwriting.h>
 #include "third_party/zinnia/zinnia.h"
 #include <cmath>
@@ -49,12 +50,12 @@ std::vector<std::string> Recognizer::recognize(const std::vector<Stroke> &stroke
     for (size_t i = 0; i < strokes.size(); ++i)
         for (auto point : strokes[i])
             ink->add(i, 500 + (point.x - center_x) * scale, 500 + (point.y - center_y) * scale);
-    std::unique_ptr<zinnia::Result> result(impl_->engine->classify(*ink, 8));
+    std::unique_ptr<zinnia::Result> result(impl_->engine->classify(*ink, 12));
     if (!result)
         throw std::runtime_error("Handwriting recognition failed");
     std::vector<std::string> candidates;
     for (size_t i = 0; i < result->size(); ++i)
         candidates.emplace_back(result->value(i));
-    return candidates;
+    return order_candidates(candidates);
 }
 } // namespace metasequoia::handwriting
