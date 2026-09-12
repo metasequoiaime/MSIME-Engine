@@ -158,6 +158,8 @@ if(BUILD_TESTING)
 
     add_executable(test_nine_key_session tests/src/test_nine_key_session.cpp)
     target_link_libraries(test_nine_key_session PRIVATE MetasequoiaImeEngine)
+    add_executable(bench_nine_key tests/src/bench_nine_key.cpp)
+    target_link_libraries(bench_nine_key PRIVATE MetasequoiaImeEngine)
     add_test(NAME nine_key_session COMMAND test_nine_key_session)
 
     add_executable(test_platform_api tests/src/test_platform_api.cpp tests/src/test_public_session.cpp)
