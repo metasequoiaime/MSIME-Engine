@@ -209,7 +209,9 @@ class ShuangpinDictionary
         return get_current_candidate_list();
     }
 
+    int insert_word_to_cached_buffer_series(const std::string &pinyin, const std::vector<std::string> &words, CandidateSource source);
     int insert_word_to_cached_buffer_series(const std::string &pinyin, const std::string &word, CandidateSource source);
+    int insert_word_to_active_helpcode_cache(const std::string &pinyin, const std::vector<std::string> &words, CandidateSource source);
     int insert_word_to_active_helpcode_cache(const std::string &pinyin, const std::string &word,
                                              CandidateSource source);
 

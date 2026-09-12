@@ -21,6 +21,8 @@ class PinyinCandidateProvider : public ICandidateProvider
                                 CandidateSource source) override;
     int cache_dynamic_candidate_for_request(const QueryRequest &request, const std::string &word,
                                             CandidateSource source) override;
+    int cache_dynamic_candidate_for_request(const QueryRequest &request, const std::vector<std::string> &words,
+                                            CandidateSource source) override;
 
     void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table)
     {

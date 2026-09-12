@@ -131,3 +131,43 @@ int PinyinCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequ
 
     return shuangpin_engine_.insert_word_to_series_cache(request.raw_input, word, source);
 }
+
+int PinyinCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequest &request, const std::vector<std::string> &words,
+                                                                 CandidateSource source)
+{
+    if (request.scheme == SchemeType::Quanpin)
+    {
+        return quanpin_engine_.insert_word_to_series_cache(request, words, source);
+    }
+
+    if (request.scheme != SchemeType::Shuangpin)
+    {
+        return -1;
+    }
+
+    if (!request.enable_shuangpin_helpcode)
+    {
+        return shuangpin_engine_.insert_word_to_series_cache(request.raw_input, words, source);
+    }
+
+    const std::string &raw_input_with_cases =
+        request.raw_input_with_cases.empty() ? request.raw_input : request.raw_input_with_cases;
+    const std::string pure_input = shuangpin::remove_manual_delimiters(request.raw_input);
+    const std::string pure_input_with_cases = shuangpin::remove_manual_delimiters(raw_input_with_cases);
+    if (ShuangpinUtil::IsFullHelpMode(pure_input_with_cases, shuangpin_profile_))
+    {
+        return shuangpin_engine_.insert_word_to_active_helpcode_cache(request.raw_input, words, source);
+    }
+
+    if (pure_input.size() % 2 == 1 && pure_input.size() > 1)
+    {
+        const std::string base_raw_input = pure_input.substr(0, pure_input.size() - 1);
+        const std::string base_raw_segmentation = shuangpin::segment_input(base_raw_input, shuangpin_profile_);
+        if (ShuangpinUtil::is_all_complete_pinyin(base_raw_input, base_raw_segmentation))
+        {
+            return shuangpin_engine_.insert_word_to_active_helpcode_cache(request.raw_input, words, source);
+        }
+    }
+
+    return shuangpin_engine_.insert_word_to_series_cache(request.raw_input, words, source);
+}

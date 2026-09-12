@@ -22,6 +22,8 @@ class ProviderRegistry
                                 CandidateSource source);
     int cache_dynamic_candidate_for_request(const QueryRequest &request, const std::string &word,
                                             CandidateSource source);
+    int cache_dynamic_candidate_for_request(const QueryRequest &request, const std::vector<std::string> &words,
+                                            CandidateSource source);
 
     void set_helpcode_keymap(HelpcodeUtils::SharedKeymap table)
     {

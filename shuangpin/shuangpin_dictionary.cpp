@@ -1,3 +1,4 @@
+#include "../core/online_candidate_batch.h"
 #include "shuangpin_dictionary.h"
 #include "../user_dictionary/user_dictionary_journal.h"
 #include "../common/helpcode_utils.h"
@@ -1134,6 +1135,8 @@ void ShuangpinDictionary::reset_cache_if_database_changed()
 int ShuangpinDictionary::insert_word_to_cached_buffer_series(const std::string &pinyin, const std::string &word,
                                                              CandidateSource source)
 {
+    if (source == CandidateSource::AiSuggestion || source == CandidateSource::CloudSuggestion)
+        return insert_word_to_cached_buffer_series(pinyin, std::vector<std::string>{word}, source);
     (void)0;
     if (pinyin.empty() || word.empty())
     {
@@ -1183,6 +1186,8 @@ int ShuangpinDictionary::insert_word_to_cached_buffer_series(const std::string &
 int ShuangpinDictionary::insert_word_to_active_helpcode_cache(const std::string &pinyin, const std::string &word,
                                                               CandidateSource source)
 {
+    if (source == CandidateSource::AiSuggestion || source == CandidateSource::CloudSuggestion)
+        return insert_word_to_active_helpcode_cache(pinyin, std::vector<std::string>{word}, source);
     auto insert_into_cache = [&](auto &cache) {
         if (auto opt = cache.get(pinyin))
         {
@@ -1281,4 +1286,31 @@ std::string ShuangpinDictionary::get_pinyin_segmentation_with_cases()
     }
 
     return res;
+}
+
+int ShuangpinDictionary::insert_word_to_cached_buffer_series(const std::string &pinyin, const std::vector<std::string> &words, CandidateSource source)
+{
+    if (pinyin.empty()) return -1;
+    auto list = _cached_buffer_series.get(pinyin).value_or(std::vector<WordItem>{});
+    if (!replace_online_candidate_batch(list, pinyin, words, source)) return -1;
+    _cached_buffer_series.insert(pinyin, list);
+    return 0;
+}
+
+int ShuangpinDictionary::insert_word_to_active_helpcode_cache(const std::string &pinyin, const std::vector<std::string> &words, CandidateSource source)
+{
+    auto insert_into_cache = [&](auto &cache) {
+        if (auto cached = cache.get(pinyin))
+        {
+            auto list = *cached;
+            if (!replace_online_candidate_batch(list, pinyin, words, source)) return false;
+            cache.insert(pinyin, list);
+            return true;
+        }
+        return false;
+    };
+    const bool single = insert_into_cache(_cached_buffer_sgl);
+    const bool reversed = insert_into_cache(_cached_buffer_sgl_reversed);
+    const bool double_code = insert_into_cache(_cached_buffer_dbl);
+    return single || reversed || double_code ? 0 : -1;
 }
