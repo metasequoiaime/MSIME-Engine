@@ -162,6 +162,35 @@ int main()
             require(unmatched.preedit() == "niha", "Backspace did not shorten an extended composition.");
         }
 
+        // Backspacing a composition away starts over. Backspace never goes through reset_composition, so the only
+        // thing that clears the "this composition is being answered by pinyin" flag is the emptied request itself --
+        // and an empty request is also an invalid one. A flag that outlives the composition makes every later code
+        // look like one the table failed, so the table's own answer gets thrown away and replaced by an empty pinyin
+        // one.
+        {
+            InputSession fresh(SchemeType::Wubi, GetXiaoheShuangpinProfile(), paths_for(resources, root, next()));
+            fresh.set_wubi_input_options(WubiInputOptions{true});
+            const auto answer_for_wq = type(fresh, "wq");
+            require(!answer_for_wq.empty(), "The fixture did not answer wq in mixed wubi.");
+            const auto answer_for_wqaa = type(fresh, "aa");
+            require(!answer_for_wqaa.empty(), "The fixture did not answer wqaa in mixed wubi.");
+
+            InputSession reused(SchemeType::Wubi, GetXiaoheShuangpinProfile(), paths_for(resources, root, next()));
+            reused.set_wubi_input_options(WubiInputOptions{true});
+            require(!type(reused, "nihao").empty(), "Pinyin did not answer nihao, so no fallback flag was ever set.");
+            for (int remaining = 5; remaining > 0; --remaining)
+            {
+                reused.handle_command(Command::Backspace);
+            }
+            require(reused.preedit().empty(), "Backspacing every letter of nihao left a preedit behind.");
+            require(words(reused).empty(), "An emptied composition kept the candidates of the letters removed.");
+
+            require(type(reused, "wq") == answer_for_wq,
+                    "A code the wubi table answers came back blanked after an emptied pinyin-fallback composition.");
+            require(type(reused, "aa") == answer_for_wqaa,
+                    "The blackout from an emptied composition outlived the code that followed it.");
+        }
+
         // Committing a spelling out of a longer one leaves the rest composing, and the rest stays
         // with pinyin: wq is a code the wubi table knows, and answering it with wubi would swap
         // schemes underneath a spelling the user is still in the middle of.

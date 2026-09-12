@@ -73,6 +73,20 @@ void require_words(const std::vector<WordItem> &actual, const std::array<const c
                 message);
     }
 }
+
+// Structural invariant for generated date/time candidates: the list holds exactly the expected number of rows, no row
+// carries a blank word (a blank row would render in the candidate window and commit an empty string), and the weights
+// stay a contiguous descending run so the window keeps its order even when a row is suppressed.
+void require_generated_candidates(const std::vector<WordItem> &actual, std::size_t expected_size, const char *message)
+{
+    require(actual.size() == expected_size, message);
+    for (std::size_t index = 0; index < actual.size(); ++index)
+    {
+        require(!actual[index].word.empty() && actual[index].source == CandidateSource::Generated &&
+                    actual[index].weight == static_cast<std::int64_t>(actual.size() - index),
+                message);
+    }
+}
 } // namespace
 
 int main()
@@ -145,6 +159,36 @@ int main()
                 metasequoia::local_modes::query_date_time("rq", &now, -1).empty() &&
                 metasequoia::local_modes::query_date_time("rq", &now, 3).size() == 3,
             "Date/time query limit or unknown-keyword handling was incorrect.");
+
+    // The lunar table resolves only 1900-01-31..2101-01-28. Outside that window lunar_date() yields an empty string,
+    // which must drop the lunar row entirely instead of shipping a blank candidate.
+    const LocalDateTime last_supported_lunar_day = {2101, 1, 28, 5, 9, 5, 7};
+    require_generated_candidates(metasequoia::local_modes::query_date_time("rq", &last_supported_lunar_day), 17,
+                                 "The last date covered by the lunar table lost its lunar candidate.");
+
+    const LocalDateTime first_unsupported_lunar_day = {2101, 1, 29, 6, 9, 5, 7};
+    require_generated_candidates(metasequoia::local_modes::query_date_time("rq", &first_unsupported_lunar_day), 16,
+                                 "The first date past the lunar table emitted a blank date candidate.");
+
+    const LocalDateTime before_lunar_epoch = {1900, 1, 1, 1, 9, 5, 7};
+    require_generated_candidates(metasequoia::local_modes::query_date_time("date", &before_lunar_epoch), 16,
+                                 "A date before the lunar epoch emitted a blank date candidate.");
+
+    const LocalDateTime far_future = {2150, 6, 15, 3, 9, 5, 7};
+    const auto far_future_dates = metasequoia::local_modes::query_date_time("riqi", &far_future);
+    require_generated_candidates(far_future_dates, 16, "A far-future date emitted a blank date candidate.");
+    require(far_future_dates.back().word == "贰壹伍零年陆月壹伍日" && far_future_dates.back().weight == 1,
+            "An unresolvable lunar date dropped the wrong row instead of the lunar one.");
+
+    // current_local_date_time() returns an all-zero LocalDateTime when std::time or localtime_r/localtime_s fails;
+    // every keyword must still produce well-formed rows.
+    const LocalDateTime unreadable_clock = {};
+    require_generated_candidates(metasequoia::local_modes::query_date_time("rq", &unreadable_clock), 16,
+                                 "A failed clock reading emitted a blank date candidate.");
+    require_generated_candidates(metasequoia::local_modes::query_date_time("sj", &unreadable_clock), 13,
+                                 "A failed clock reading emitted a blank time candidate.");
+    require_generated_candidates(metasequoia::local_modes::query_date_time("xq", &unreadable_clock), 4,
+                                 "A failed clock reading emitted a blank weekday candidate.");
 
     const auto suffix = std::to_string(std::chrono::high_resolution_clock::now().time_since_epoch().count());
     const std::filesystem::path quick_phrase_directory =

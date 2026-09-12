@@ -206,6 +206,11 @@ if(BUILD_TESTING)
     target_link_libraries(test_engine_smoke PRIVATE MetasequoiaIme::Engine)
     add_test(NAME engine_smoke COMMAND test_engine_smoke)
 
+    # tests/src/test_shuangpin.cpp existed for a long time without being registered here, so nothing outside the Windows-only tests/CMakeLists.txt project ever compiled it and CI never ran it. tests/src/test_pinyin.cpp is still unregistered for the same reason plus one more: it includes Windows.h, so it cannot build on Linux or macOS until that dependency is removed.
+    add_executable(test_shuangpin tests/src/test_shuangpin.cpp)
+    target_link_libraries(test_shuangpin PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME shuangpin COMMAND test_shuangpin)
+
     add_executable(test_input_session tests/src/test_input_session.cpp)
     target_compile_definitions(test_input_session PRIVATE METASEQUOIA_SKIP_FREQUENCY_TESTS)
     target_link_libraries(test_input_session PRIVATE MetasequoiaIme::Engine)

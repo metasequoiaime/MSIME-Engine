@@ -239,6 +239,64 @@ int main()
                     "English ranking was not journaled for upgrade replay.");
         }
     }
+    {
+        // Selecting an English candidate that is already rank 0 must consume its selection counter, exactly like the
+        // pinyin/wubi path. A surviving counter lets the next selection of the same word - taken when it has fallen
+        // below rank 0 - pass the trigger_count gate on its first hit and jump straight to the top.
+        const std::string english_db = metasequoia::path_to_utf8(english_mode_directory / "english.db");
+        const std::string user_db = user_dictionary::default_user_db_path();
+        {
+            Database database(english_mode_directory / "english.db");
+            database.execute("INSERT INTO english_words VALUES('nickel','Nickel',400)");
+            database.execute("INSERT INTO english_words VALUES('nicker','Nicker',300)");
+        }
+        const std::vector<WordItem> leading{WordItem("nickel", "Nickel", 400, CandidateSource::EnglishDictionary),
+                                            WordItem("nicker", "Nicker", 300, CandidateSource::EnglishDictionary)};
+        const std::vector<WordItem> trailing{WordItem("nicker", "Nicker", 300, CandidateSource::EnglishDictionary),
+                                             WordItem("nickel", "Nickel", 400, CandidateSource::EnglishDictionary)};
+        bool ranking_changed = true;
+        require(user_dictionary::adjust_english_candidate_ranking(english_db, user_db, "english:nick", leading,
+                                                                  "nickel", "Nickel", "promote", 1, 1, false,
+                                                                  &ranking_changed) &&
+                    !ranking_changed,
+                "Selecting an already-leading English candidate did not succeed as a no-op reordering.");
+        {
+            Database database(english_mode_directory / "msime_user.db");
+            require(database.query_integer("SELECT COUNT(*) FROM candidate_selection_state WHERE "
+                                           "context_key='english:nick' AND entry_key='nickel' AND "
+                                           "value='Nickel'") == 0,
+                    "Selecting an already-leading English candidate left its selection counter behind.");
+        }
+        require(user_dictionary::adjust_english_candidate_ranking(english_db, user_db, "english:nick", trailing,
+                                                                  "nickel", "Nickel", "promote", 1, 2, false,
+                                                                  &ranking_changed) &&
+                    !ranking_changed,
+                "A stale rank-0 selection counter promoted an English candidate before its trigger count.");
+        {
+            Database database(english_mode_directory / "english.db");
+            require(database.query_integer("SELECT weight FROM english_words WHERE word='nickel' AND "
+                                           "display='Nickel'") == 400,
+                    "An English candidate was reweighted on the first selection below its trigger count.");
+        }
+        require(user_dictionary::adjust_english_candidate_ranking(english_db, user_db, "english:nick", trailing,
+                                                                  "nickel", "Nickel", "promote", 1, 2, false,
+                                                                  &ranking_changed) &&
+                    ranking_changed,
+                "An English candidate was not promoted once its trigger count was reached.");
+        {
+            Database database(english_mode_directory / "english.db");
+            require(database.query_integer("SELECT weight FROM english_words WHERE word='nickel' AND "
+                                           "display='Nickel'") == 1400,
+                    "Reaching the English trigger count did not lift the candidate above the list.");
+        }
+        {
+            Database database(english_mode_directory / "msime_user.db");
+            require(database.query_integer("SELECT COUNT(*) FROM candidate_selection_state WHERE "
+                                           "context_key='english:nick' AND entry_key='nickel' AND "
+                                           "value='Nickel'") == 0,
+                    "A promoted English candidate kept its selection counter.");
+        }
+    }
     dedicated.set_dedicated_english_mode(false);
     require(!dedicated.dedicated_english_mode() && !dedicated.has_composition(),
             "Dedicated English mode did not exit cleanly.");
