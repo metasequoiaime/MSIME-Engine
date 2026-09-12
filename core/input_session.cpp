@@ -717,9 +717,17 @@ KeyResult InputSession::commit(std::size_t index)
         text = preedit();
     }
     std::optional<std::string> diagnostic = learn_candidate(index);
-    if (selected && local_input_mode_ == LocalInputMode::None && !dedicated_english_mode_ &&
-        candidates_follow_pinyin() &&
-        (selected->source == CandidateSource::Database || selected->source == CandidateSource::UserDatabase))
+    const bool has_dictionary_reading =
+        selected && (selected->source == CandidateSource::Database || selected->source == CandidateSource::UserDatabase);
+    // Whole-sentence candidates produced by the lattice (and Google fallback
+    // candidates) are valid pinyin selections when they carry a canonical
+    // reading.  They must participate in the same creating-word completion
+    // path as dictionary rows so a preceding selected segment can be learned.
+    const bool has_generated_reading =
+        selected && (selected->source == CandidateSource::Generated || selected->source == CandidateSource::Fallback) &&
+        !selected->canonical_pinyin.empty();
+    if ((has_dictionary_reading || has_generated_reading) && local_input_mode_ == LocalInputMode::None &&
+        !dedicated_english_mode_ && candidates_follow_pinyin())
     {
         const auto transition =
             advance_composition_after_selection(selected->pinyin, selected->word, selected->canonical_pinyin);
