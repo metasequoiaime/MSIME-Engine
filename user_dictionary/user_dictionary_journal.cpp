@@ -1007,33 +1007,45 @@ bool adjust_candidate_ranking(const std::string &main_db_path, const std::string
             new_weight = lower + (upper - lower) / 2;
         }
     }
+    const size_t rebalance_end = (std::min)(database_candidates.size(), target + kRebalanceCount);
+    // Lift the selected row above the whole cluster and leave every other row exactly where it is.
+    // Does nothing when the cluster sits within one gap of the integer ceiling; need_rebalance then
+    // stays set and the ceiling compact path below takes over.
+    const auto promote_selection_alone = [&]() {
+        const std::int64_t cluster = (std::max)(upper, lower);
+        if (cluster > (std::numeric_limits<std::int64_t>::max)() - kRebalanceGap)
+            return;
+        new_weight = clamp_managed_weight(cluster + kRebalanceGap);
+        need_rebalance = false;
+    };
     if (need_rebalance && !oversized && !top_near_limit && target != 0)
     {
-        const size_t rebalance_end = (std::min)(database_candidates.size(), target + kRebalanceCount);
         const std::int64_t last_index = static_cast<std::int64_t>(rebalance_end - 1);
         const std::int64_t last_weight =
             upper - kRebalanceGap - (last_index - static_cast<std::int64_t>(target)) * kRebalanceGap;
+        // Equal/low weights have no room for a 16-slot descending staircase.
+        // Promote only the selected row instead of writing negatives onto
+        // neighbors (and onto shorter-syllable singles mixed into the UI list).
         if (last_weight < kManagedWeightFloor)
-        {
-            // Equal/low weights have no room for a 16-slot descending staircase.
-            // Promote only the selected row instead of writing negatives onto
-            // neighbors (and onto shorter-syllable singles mixed into the UI list).
-            const std::int64_t cluster = (std::max)(upper, lower);
-            if (cluster > (std::numeric_limits<std::int64_t>::max)() - kRebalanceGap)
-            {
-                // Fall through to the ceiling compact path below.
-            }
-            else
-            {
-                new_weight = clamp_managed_weight(cluster + kRebalanceGap);
-                need_rebalance = false;
-            }
-        }
+            promote_selection_alone();
     }
     if (need_rebalance)
     {
-        const size_t rebalance_begin = target;
-        const size_t rebalance_end = (std::min)(database_candidates.size(), rebalance_begin + kRebalanceCount);
+        // The staircase below only demotes rows whose own key is entry_key; a row belonging to
+        // another key keeps the weight it already has. `new_weight` is built on the assumption that
+        // index `target` was demoted by that loop, so a staircase with a hole in it writes the
+        // selection underneath a row that never moved and a tie turns into last place. The staircase
+        // also compacts the whole window up against `upper`, which would lift rows from the bottom of
+        // the window over a foreign row it is not allowed to touch. When the window is not all ours,
+        // promote the selected row on its own the way the low-weight cluster above does.
+        const bool contiguous = std::all_of(owns_entry_key.begin() + static_cast<std::ptrdiff_t>(target),
+                                            owns_entry_key.begin() + static_cast<std::ptrdiff_t>(rebalance_end),
+                                            [](bool owned) { return owned; });
+        if (!contiguous)
+            promote_selection_alone();
+    }
+    if (need_rebalance)
+    {
         std::int64_t base = target == 0 ? kManagedWeightCeiling - kRebalanceGap : kManagedWeightCeiling;
         if (target != 0 && !top_near_limit && !oversized)
         {
@@ -1042,7 +1054,7 @@ bool adjust_candidate_ranking(const std::string &main_db_path, const std::string
             base = (std::min)(requested_base, kManagedWeightCeiling);
         }
         bool rebalance_ok = true;
-        for (size_t i = rebalance_begin; i < rebalance_end && rebalance_ok; ++i)
+        for (size_t i = target; i < rebalance_end && rebalance_ok; ++i)
         {
             if (!owns_entry_key[i])
                 continue;
