@@ -1025,8 +1025,6 @@ void InputSession::set_quanpin_autocorrect_types(unsigned autocorrect_types)
     update_mixed_candidates();
 }
 
-} // namespace metasequoia
-
 bool InputSession::apply_online_candidates(const OnlineQuery &query, const std::vector<std::string> &words,
                                             CandidateSource source)
 {
@@ -1040,3 +1038,5 @@ bool InputSession::apply_online_candidates(const OnlineQuery &query, const std::
     update_mixed_candidates();
     return true;
 }
+
+} // namespace metasequoia
