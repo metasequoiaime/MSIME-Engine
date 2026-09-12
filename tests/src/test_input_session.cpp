@@ -743,8 +743,12 @@ int run_test()
             "Mixed-key frequency learning blocked candidate commit.");
     metasequoia::InputSession reopened_mixed_key(SchemeType::Quanpin);
     type(reopened_mixed_key, "n");
-    require(candidate_index(reopened_mixed_key, "丙") < 2,
+    // Both rivals are tied, so the only placement that promotes 丙 at all is above the pair.
+    require(candidate_index(reopened_mixed_key, "丙") == 0,
             "Promoting across entry keys left the selection behind the rivals it had to overtake.");
+    require(reopened_mixed_key.candidates()[candidate_index(reopened_mixed_key, "甲")].weight == 5000000 &&
+                reopened_mixed_key.candidates()[candidate_index(reopened_mixed_key, "乙")].weight == 5000000,
+            "Promoting across entry keys rewrote a row that belongs to another entry key.");
 
     user_dictionary::close_default_user_database();
     const std::filesystem::path shuangpin_directory = data_directory / "frequency-shuangpin";
