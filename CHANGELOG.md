@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.15.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.14.0...v0.15.0) (2026-09-12)
+
+
+### Features
+
+* **handwriting:** add offline stroke recognition and packaged Chinese model ([9af88ea](https://github.com/metasequoiaime/MSIME-Engine/commit/9af88ea6141b430fc30c25821492e42d00f8f8b0))
+* **handwriting:** add offline stroke recognition engine ([1df2165](https://github.com/metasequoiaime/MSIME-Engine/commit/1df2165a1029163cef7766df0d942b9e13bf0b7a))
+* **handwriting:** expose reusable engine target ([5b54413](https://github.com/metasequoiaime/MSIME-Engine/commit/5b544136e39f8b7d523642728b874ab9e3b3bb25))
+* **session:** expose candidate display annotations ([7290620](https://github.com/metasequoiaime/MSIME-Engine/commit/7290620dd79e98c466f8d8eaf2236c0a66a9188b))
+* **session:** expose candidate display annotations ([0a03ba2](https://github.com/metasequoiaime/MSIME-Engine/commit/0a03ba2a3ff9515ee44b6b674260dd63933c98b2))
+
+
+### Bug Fixes
+
+* **handwriting:** link zinnia statically on Windows ([#117](https://github.com/metasequoiaime/MSIME-Engine/issues/117)) ([4f80900](https://github.com/metasequoiaime/MSIME-Engine/commit/4f80900fc94bbc6609b45419c5f59aeb62786bc4))
+* **input:** preserve fallback sentence readings ([e1f46d0](https://github.com/metasequoiaime/MSIME-Engine/commit/e1f46d024fdef0e78f2ad5dafb3a147ad90b4570))
+* **session:** expose cache reset API ([659084c](https://github.com/metasequoiaime/MSIME-Engine/commit/659084c19f339c7a519de18dede46e01f4acad99))
+* **session:** expose cache reset API ([f00188e](https://github.com/metasequoiaime/MSIME-Engine/commit/f00188e138713eb1d028e73476b0d2bebd69043e))
+
 ## [0.14.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.13.1...v0.14.0) (2026-09-11)
 
 
