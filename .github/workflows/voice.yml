@@ -42,5 +42,9 @@ jobs:
         run: cmake -S voice -B build-voice -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded$<$<CONFIG:Debug>:Debug>' -DVCPKG_MANIFEST_FEATURES=windows-app -DMSIME_VOICE_WINDOWS_APP=ON
       - name: Build public libraries and enabled hosts
         run: cmake --build build-voice --config Release --parallel 4
+      # Both sanitizers recover by default, so a Linux ASan or UBSan report would otherwise print to stderr while the process still exits 0 and ctest reports PASS. These match the options ci.yml uses for its own instrumented job; on macOS and Windows there is no sanitizer runtime and they are ignored.
       - name: Test synthetic audio and loopback HTTP
-        run: ctest --test-dir build-voice -C Release --output-on-failure --timeout 25
+        env:
+          ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+        run: ctest --test-dir build-voice -C Release --output-on-failure --no-tests=error --timeout 25
