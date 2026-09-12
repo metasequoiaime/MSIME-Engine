@@ -13,6 +13,7 @@ from licensing import is_excluded  # noqa: E402  -- needs REPOSITORY_ROOT on the
 
 OALDPE_WORDS_PATH = REPOSITORY_ROOT / "en" / "oaldpe_words.txt"
 BASE_DICT_PATH = REPOSITORY_ROOT / "en" / "BaseDictIceEn.txt"
+GOOGLE_COUNTS_PATH = REPOSITORY_ROOT / "en" / "google_count_1_w.txt"
 DB_PATH = REPOSITORY_ROOT / "out" / "english.db"
 BATCH_SIZE = 10_000
 
@@ -83,18 +84,37 @@ def load_base_dict_words() -> dict[str, str]:
     }
 
 
+def load_google_counts() -> dict[str, int]:
+    """Unigram counts, which are what orders the words once several of them match.
+
+    The column existed and every row carried its default of zero, so the order a prefix answered in
+    was whatever SQLite returned -- alphabetical. Typing the nine-key code for "ok" offered ml, nj
+    and oj ahead of it, all equally weightless. The file has been in the tree the whole time.
+    """
+    counts: dict[str, int] = {}
+    if not GOOGLE_COUNTS_PATH.exists():
+        return counts
+    with GOOGLE_COUNTS_PATH.open(encoding="utf-8") as handle:
+        for line in handle:
+            word, _, count = line.strip().partition("\t")
+            if not word or not count.isdigit():
+                continue
+            counts[word.lower()] = int(count)
+    return counts
+
+
 def build_rows(
-    oaldpe_words: set[str], base_words: dict[str, str]
-) -> list[tuple[str, str]]:
+    oaldpe_words: set[str], base_words: dict[str, str], counts: dict[str, int]
+) -> list[tuple[str, str, int]]:
     all_words = oaldpe_words | base_words.keys()
     return [
-        (word, base_words.get(word, word))
+        (word, base_words.get(word, word), counts.get(word, 0))
         for word in sorted(all_words)
     ]
 
 
-def insert_rows(conn: sqlite3.Connection, rows: list[tuple[str, str]]) -> None:
-    sql = "INSERT INTO english_words(word, display) VALUES (?, ?)"
+def insert_rows(conn: sqlite3.Connection, rows: list[tuple[str, str, int]]) -> None:
+    sql = "INSERT INTO english_words(word, display, weight) VALUES (?, ?, ?)"
     for start in range(0, len(rows), BATCH_SIZE):
         conn.executemany(sql, rows[start : start + BATCH_SIZE])
 
@@ -109,7 +129,8 @@ def main() -> None:
     # BaseDictIceEn (GPL-3.0) alone. See dictionary/licensing.py.
     oaldpe_words: set[str] = set() if is_excluded("en/oaldpe_words.txt") else load_oaldpe_words()
     base_words = load_base_dict_words()
-    rows = build_rows(oaldpe_words, base_words)
+    counts = load_google_counts()
+    rows = build_rows(oaldpe_words, base_words, counts)
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute("PRAGMA journal_mode = WAL")
         conn.execute("PRAGMA synchronous = NORMAL")
@@ -118,6 +139,7 @@ def main() -> None:
 
     print(f"OALDPE words: {len(oaldpe_words)}")
     print(f"BaseDict pure English words: {len(base_words)}")
+    print(f"Words with a frequency: {sum(1 for row in rows if row[2] > 0)}")
     print(f"Overlapping words: {len(oaldpe_words & base_words.keys())}")
     print(f"Inserted unique words: {len(rows)}")
 

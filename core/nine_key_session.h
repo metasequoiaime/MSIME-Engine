@@ -1,5 +1,6 @@
 #pragma once
 #include "../include/metasequoia/session.h"
+#include "../english/english_dictionary.h"
 #include "../quanpin/quanpin_dictionary.h"
 
 namespace metasequoia
@@ -9,9 +10,14 @@ class NineKeySession
 {
   public:
     explicit NineKeySession(RuntimePaths paths, bool learning = false, FrequencyAdjustmentOptions frequency = {},
-                            FuzzyPinyinOptions fuzzy = {})
-        : paths_(std::move(paths)), learning_(learning), frequency_(frequency), fuzzy_(fuzzy)
+                            FuzzyPinyinOptions fuzzy = {}, EnglishInputOptions english = {})
+        : paths_(std::move(paths)), learning_(learning), frequency_(frequency), fuzzy_(fuzzy), english_(english)
     {
+    }
+    void set_english_input_options(EnglishInputOptions english)
+    {
+        english_ = english;
+        refresh();
     }
     bool active() const
     {
@@ -37,7 +43,10 @@ class NineKeySession
     bool learning_;
     FrequencyAdjustmentOptions frequency_;
     FuzzyPinyinOptions fuzzy_;
+    EnglishInputOptions english_;
     std::unique_ptr<QuanpinDictionary> dictionary_;
+    std::unique_ptr<EnglishDictionary> english_dictionary_;
+    std::vector<WordItem> english_candidates();
     std::string digits_;
     std::vector<std::string> locked_;
     std::vector<std::string> spellings_;
