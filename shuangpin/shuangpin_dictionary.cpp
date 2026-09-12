@@ -160,7 +160,9 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generateSeries( //
                 string res = search_sentence_from_ime_engine(quanpin_str);
                 if (res.size() > 0)
                 {
-                    candidate_list.emplace_back(_pinyin_sequence, res, 1, CandidateSource::Fallback);
+                    // Whole-sentence fallbacks must retain the converted
+                    // quanpin reading for creating-word persistence.
+                    candidate_list.emplace_back(_pinyin_sequence, res, 1, CandidateSource::Fallback, quanpin_str);
                 }
             }
         }
@@ -198,7 +200,8 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generateSeries( //
                                                [&](const WordItem &item) { return item.word == google_sentence; });
             if (!google_sentence.empty() && !duplicate)
                 candidate_list.insert(candidate_list.begin(),
-                                      WordItem(_pinyin_sequence, google_sentence, 1, CandidateSource::Fallback));
+                                      WordItem(_pinyin_sequence, google_sentence, 1, CandidateSource::Fallback,
+                                               quanpin_segmentation));
         }
         quanpin::WordLatticeOptions lattice_options;
         lattice_options.nbest = 1;

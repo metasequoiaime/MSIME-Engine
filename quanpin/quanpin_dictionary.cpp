@@ -338,8 +338,10 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
             const auto duplicate = std::find_if(result.begin(), result.end(),
                                                 [&](const WordItem &item) { return item.word == google_sentence; });
             if (duplicate == result.end())
+                // Whole-sentence fallbacks must carry their canonical quanpin
+                // reading so creating-word learning can persist them.
                 result.insert(result.begin(), WordItem(segmentation.empty() ? raw_input : segmentation, google_sentence,
-                                                       1, CandidateSource::Fallback));
+                                                       1, CandidateSource::Fallback, segmentation));
         }
 
         quanpin::WordLatticeOptions lattice_options;
@@ -580,7 +582,9 @@ std::vector<WordItem> QuanpinDictionary::append_ime_fallback(const std::string &
         std::find_if(result.begin(), result.end(), [&](const WordItem &item) { return item.word == sentence; });
     if (exists == result.end())
     {
-        result.emplace_back(segmentation.empty() ? raw_input : segmentation, sentence, 1, CandidateSource::Fallback);
+        // Keep the complete reading for the creating-word persistence path.
+        result.emplace_back(segmentation.empty() ? raw_input : segmentation, sentence, 1, CandidateSource::Fallback,
+                            segmentation);
     }
     return result;
 }
