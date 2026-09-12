@@ -717,8 +717,8 @@ KeyResult InputSession::commit(std::size_t index)
         text = preedit();
     }
     std::optional<std::string> diagnostic = learn_candidate(index);
-    const bool has_dictionary_reading =
-        selected && (selected->source == CandidateSource::Database || selected->source == CandidateSource::UserDatabase);
+    const bool has_dictionary_reading = selected && (selected->source == CandidateSource::Database ||
+                                                     selected->source == CandidateSource::UserDatabase);
     // Whole-sentence candidates produced by the lattice (and Google fallback
     // candidates) are valid pinyin selections when they carry a canonical
     // reading.  They must participate in the same creating-word completion
