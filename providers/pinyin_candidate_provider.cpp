@@ -132,7 +132,8 @@ int PinyinCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequ
     return shuangpin_engine_.insert_word_to_series_cache(request.raw_input, word, source);
 }
 
-int PinyinCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequest &request, const std::vector<std::string> &words,
+int PinyinCandidateProvider::cache_dynamic_candidate_for_request(const QueryRequest &request,
+                                                                 const std::vector<std::string> &words,
                                                                  CandidateSource source)
 {
     if (request.scheme == SchemeType::Quanpin)

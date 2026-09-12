@@ -217,9 +217,10 @@ bool Session::apply_online_candidate(const OnlineQuery &query, std::string candi
     return impl_->session.apply_online_candidate(query, std::move(candidate), source);
 }
 bool Session::apply_online_candidates(const OnlineQuery &query, const std::vector<std::string> &words,
-                                       CandidateSource source)
+                                      CandidateSource source)
 {
-    if (impl_->nine_key.active()) return false;
+    if (impl_->nine_key.active())
+        return false;
     return impl_->session.apply_online_candidates(query, words, source);
 }
 } // namespace metasequoia

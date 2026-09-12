@@ -354,6 +354,7 @@ std::unique_ptr<IInputScheme> ImeSession::create_scheme(SchemeType scheme_type) 
 int ImeSession::apply_dynamic_candidates(const std::vector<std::string> &words, CandidateSource source)
 {
     const int result = provider_registry_.cache_dynamic_candidate_for_request(state_.request, words, source);
-    if (result == 0) refresh_candidates();
+    if (result == 0)
+        refresh_candidates();
     return result;
 }
