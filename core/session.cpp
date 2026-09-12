@@ -12,6 +12,7 @@ class Session::Impl
         : session(options.scheme, options.shuangpin_profile, options.paths),
           nine_key(options.paths, options.learning, options.frequency, options.fuzzy_pinyin)
     {
+        shuangpin_preedit_uses_raw = options.shuangpin_preedit_uses_raw;
         session.set_shuangpin_preedit_uses_raw(options.shuangpin_preedit_uses_raw);
         session.set_quanpin_autocorrect_types(options.autocorrect_types);
         session.set_fuzzy_pinyin_options(options.fuzzy_pinyin);
@@ -28,6 +29,7 @@ class Session::Impl
     InputSession session;
     NineKeySession nine_key;
     bool nine_key_enabled = false;
+    bool shuangpin_preedit_uses_raw = true;
 };
 
 Session::Session(SessionOptions options)
@@ -192,6 +194,9 @@ SessionSnapshot Session::snapshot() const
                          session.editing_text(),
                          session.caret_position()};
     view.shuangpin_profile = session.shuangpin_profile().name;
+    if (!impl_->shuangpin_preedit_uses_raw && session.scheme() == SchemeType::Shuangpin &&
+        session.local_input_mode() == LocalInputMode::None && !session.dedicated_english_mode())
+        view.preedit = session.get_pinyin_segmentation_with_cases();
     view.answered_by_pinyin_fallback = session.answered_by_pinyin_fallback();
     view.candidate_sources.reserve(view.candidates.size());
     for (const auto &candidate : view.candidates)
