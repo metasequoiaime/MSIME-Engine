@@ -253,3 +253,15 @@ std::vector<WordItem> ShuangpinEngine::append_fuzzy(std::vector<WordItem> exact,
                      [](const auto &a, const auto &b) { return a.pinyin.size() > b.pinyin.size(); });
     return exact;
 }
+
+int ShuangpinEngine::insert_word_to_series_cache(const std::string &pinyin, const std::vector<std::string> &words,
+                                                 CandidateSource source)
+{
+    return dictionary_.insert_word_to_cached_buffer_series(pinyin, words, source);
+}
+
+int ShuangpinEngine::insert_word_to_active_helpcode_cache(const std::string &pinyin, const std::vector<std::string> &words,
+                                                          CandidateSource source)
+{
+    return dictionary_.insert_word_to_active_helpcode_cache(pinyin, words, source);
+}

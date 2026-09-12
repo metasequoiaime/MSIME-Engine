@@ -78,6 +78,7 @@ class InputSession
     LocalInputMode local_input_mode() const;
     void set_local_date_time_provider(std::function<local_modes::LocalDateTime()> provider);
     std::optional<OnlineQuery> online_query() const;
+    bool apply_online_candidates(const OnlineQuery &query, const std::vector<std::string> &words, CandidateSource source);
     bool apply_online_candidate(const OnlineQuery &query, std::string candidate, CandidateSource source);
 
     SchemeType scheme_type() const;

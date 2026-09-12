@@ -1,3 +1,4 @@
+#include "online_candidate_batch.h"
 #include "input_session.h"
 
 #include "../common/helpcode_utils.h"
@@ -1025,3 +1026,17 @@ void InputSession::set_quanpin_autocorrect_types(unsigned autocorrect_types)
 }
 
 } // namespace metasequoia
+
+bool InputSession::apply_online_candidates(const OnlineQuery &query, const std::vector<std::string> &words,
+                                            CandidateSource source)
+{
+    std::vector<WordItem> validated;
+    if (!replace_online_candidate_batch(validated, query.cache_key, words, source)) return false;
+    const auto current = online_query();
+    if (!current || !online_requests_.matches(*current, query) ||
+        (source == CandidateSource::CloudSuggestion && !current->cloud_eligible) ||
+        (source == CandidateSource::AiSuggestion && !current->ai_eligible)) return false;
+    if (engine_.apply_dynamic_candidates(words, source) != 0) return false;
+    update_mixed_candidates();
+    return true;
+}

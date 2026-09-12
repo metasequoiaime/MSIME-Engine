@@ -1,3 +1,4 @@
+#include "../core/online_candidate_batch.h"
 #include "fuzzy_pinyin.h"
 #include "quanpin_dictionary.h"
 #include "../user_dictionary/user_dictionary_journal.h"
@@ -798,6 +799,8 @@ int QuanpinDictionary::insert_word_to_series_cache(const std::string &raw_input,
 int QuanpinDictionary::insert_word_to_series_cache_key(const std::string &cache_key, const std::string &pinyin,
                                                        const std::string &word, CandidateSource source)
 {
+    if (source == CandidateSource::AiSuggestion || source == CandidateSource::CloudSuggestion)
+        return insert_word_to_series_cache_key(cache_key, pinyin, std::vector<std::string>{word}, source);
     auto list = series_cache_.get(cache_key).value_or(std::vector<WordItem>{});
 
     // Keep at most one cloud/AI suggestion in the series cache for this key.
@@ -1177,4 +1180,40 @@ std::vector<WordItem> QuanpinDictionary::query(const std::string &raw_input, con
     mark_autocorrect_candidates(result, raw_input);
     current_candidate_list_ = result;
     return result;
+}
+
+int QuanpinDictionary::insert_word_to_series_cache(const std::string &pinyin, const std::vector<std::string> &words,
+                                                   CandidateSource source)
+{
+    if (pinyin.empty() || words.empty())
+    {
+        return ERROR_CODE;
+    }
+
+    const auto cuts = quanpin::cut_pinyin_by_mode(pinyin, "correction");
+    const std::string segmentation = cuts.empty() ? pinyin : quanpin::join_segments(cuts.front());
+    const std::string cache_key = series_cache_key(pinyin, segmentation);
+    return insert_word_to_series_cache_key(cache_key, pinyin, words, source);
+}
+
+int QuanpinDictionary::insert_word_to_series_cache(const std::string &raw_input, const std::string &segmentation,
+                                                   unsigned autocorrect_types, const std::vector<std::string> &words,
+                                                   CandidateSource source)
+{
+    if (raw_input.empty() || words.empty())
+    {
+        return ERROR_CODE;
+    }
+
+    const auto segments = resolve_segments(raw_input, segmentation);
+    const auto resolution = resolve_series_query(raw_input, segmentation, segments, autocorrect_types);
+    return insert_word_to_series_cache_key(resolution.cache_key, raw_input, words, source);
+}
+
+int QuanpinDictionary::insert_word_to_series_cache_key(const std::string &cache_key, const std::string &pinyin, const std::vector<std::string> &words, CandidateSource source)
+{
+    auto list = series_cache_.get(cache_key).value_or(std::vector<WordItem>{});
+    if (!replace_online_candidate_batch(list, pinyin, words, source)) return -1;
+    series_cache_.insert(cache_key, list);
+    return 0;
 }

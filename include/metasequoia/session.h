@@ -109,6 +109,7 @@ class Session
     void reset_cache();
     SessionSnapshot snapshot() const;
     std::optional<OnlineQuery> online_query() const;
+    bool apply_online_candidates(const OnlineQuery &query, const std::vector<std::string> &words, CandidateSource source);
     bool apply_online_candidate(const OnlineQuery &query, std::string candidate, CandidateSource source);
 
   private:

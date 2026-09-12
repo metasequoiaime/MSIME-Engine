@@ -140,3 +140,16 @@ void QuanpinEngine::reset_cache()
 {
     dictionary_.reset_cache();
 }
+
+int QuanpinEngine::insert_word_to_series_cache(const std::string &pinyin, const std::vector<std::string> &words,
+                                               CandidateSource source)
+{
+    return dictionary_.insert_word_to_series_cache(pinyin, words, source);
+}
+
+int QuanpinEngine::insert_word_to_series_cache(const QueryRequest &request, const std::vector<std::string> &words,
+                                               CandidateSource source)
+{
+    return dictionary_.insert_word_to_series_cache(request.raw_input, request.segmentation,
+                                                   autocorrect_types_from_request(request), words, source);
+}
