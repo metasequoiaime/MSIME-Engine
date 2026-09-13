@@ -512,6 +512,21 @@ int run_test()
         type(chinese_variant_session, "ni");
         require(!chinese_variant_session.handle_command(metasequoia::Command::CycleKanaVariant).handled,
                 "The kana variant command reached a Chinese scheme.");
+
+        // 無変換確定:回车要交出打出来的假名,而不是引擎猜的汉字。ありがとう、人名、拟声词都靠它。
+        metasequoia::InputSession reading_session(SchemeType::JapaneseRomaji);
+        type(reading_session, "nihon");
+        const auto reading = reading_session.handle_command(metasequoia::Command::CommitReading);
+        require(reading.handled && reading.commit.has_value() && *reading.commit == "にほん",
+                "Committing the reading did not hand back the kana that were typed.");
+        require(!reading_session.has_composition(), "Committing the reading left the composition open.");
+        metasequoia::InputSession empty_reading_session(SchemeType::JapaneseRomaji);
+        require(!empty_reading_session.handle_command(metasequoia::Command::CommitReading).handled,
+                "Committing an empty reading reported handled.");
+        metasequoia::InputSession chinese_reading_session(SchemeType::Quanpin);
+        type(chinese_reading_session, "ni");
+        require(!chinese_reading_session.handle_command(metasequoia::Command::CommitReading).handled,
+                "A Chinese scheme answered the reading command with its pinyin.");
         metasequoia::InputSession wubi_session(SchemeType::Wubi);
         require(!wubi_session.handle_character('z').handled && wubi_session.preedit().empty(),
                 "An unsupported Wubi letter was swallowed.");

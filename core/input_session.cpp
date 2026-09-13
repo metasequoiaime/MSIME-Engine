@@ -298,6 +298,16 @@ KeyResult InputSession::handle_command(Command command)
         reset_composition();
         return {true, std::move(raw), std::move(diagnostic)};
     }
+    case Command::CommitReading: {
+        // 只有日语有"读み"这个概念:其余方案的 normalized_segmentation 是拼音,不是要上屏的字。
+        if (scheme() != SchemeType::JapaneseRomaji || !has_composition())
+            return {};
+        std::string reading = normalized_segmentation();
+        if (reading.empty())
+            return {};
+        reset_composition();
+        return {true, std::move(reading), std::nullopt};
+    }
     case Command::Cancel:
         reset_composition();
         return {true, std::nullopt, std::nullopt};
