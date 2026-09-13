@@ -7,7 +7,9 @@ namespace
 {
 bool IsRomajiKey(ImeKeyCode vk)
 {
-    return vk >= 'A' && vk <= 'Z';
+    // '-' 是長音符,罗马字表里本来就有 {"-", "ー"}。Letters alone left every borrowed word
+    // unreachable: コーヒー and ラーメン have no spelling without it.
+    return (vk >= 'A' && vk <= 'Z') || vk == '-';
 }
 } // namespace
 
@@ -42,7 +44,9 @@ void JapaneseRomajiScheme::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_d
         return;
 
     key_strokes_.push_back(KeyStroke{vk, modifiers_down, wch});
-    if ((wch >= u'a' && wch <= u'z') || (wch >= u'A' && wch <= u'Z'))
+    if (vk == '-')
+        raw_input_.push_back('-');
+    else if ((wch >= u'a' && wch <= u'z') || (wch >= u'A' && wch <= u'Z'))
         raw_input_.push_back(static_cast<char>(wch));
     else
         raw_input_.push_back(static_cast<char>(vk + ('a' - 'A')));

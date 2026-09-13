@@ -466,6 +466,17 @@ int run_test()
         metasequoia::InputSession japanese_session(SchemeType::JapaneseRomaji);
         require(japanese_session.handle_character('k').handled && japanese_session.preedit() == "k",
                 "A valid Japanese romaji letter was rejected.");
+        // 長音符。ラーメン 这类外来语每一个都要它,而它以前进不了组字:'-' 被字符门槛挡在外面,
+        // 键盘只能把已经打的假名强制上屏,再把一个裸 ー 插在旁边。
+        metasequoia::InputSession long_vowel_session(SchemeType::JapaneseRomaji);
+        type(long_vowel_session, "ra");
+        require(long_vowel_session.handle_character('-').handled,
+                "The Japanese long vowel mark was rejected by the character gate.");
+        type(long_vowel_session, "menn");
+        require(long_vowel_session.has_composition(), "Typing through a long vowel ended the composition.");
+        metasequoia::InputSession quanpin_dash_session(SchemeType::Quanpin);
+        require(!quanpin_dash_session.handle_character('-').handled,
+                "The long vowel mark leaked into a Chinese scheme.");
         metasequoia::InputSession wubi_session(SchemeType::Wubi);
         require(!wubi_session.handle_character('z').handled && wubi_session.preedit().empty(),
                 "An unsupported Wubi letter was swallowed.");

@@ -163,10 +163,14 @@ KeyResult InputSession::handle_character(char character, bool shift_only)
     const bool lowercase_letter = character >= 'a' && character <= 'z';
     const bool microsoft_final =
         character == ';' && scheme() == SchemeType::Shuangpin && shuangpin_profile_.name == "microsoft";
+    // 長音符。The romaji table has carried {"-", "ー"} all along and nothing could reach it: the
+    // gate below never let '-' through. Every word Japanese borrowed from another language needs
+    // it, so the keyboard had to commit the composition and drop a bare ー beside it instead.
+    const bool japanese_long_vowel = character == '-' && scheme() == SchemeType::JapaneseRomaji;
     const bool active_helpcode = character >= 'A' && character <= 'Z' && has_composition() &&
                                  ((scheme() == SchemeType::Quanpin && quanpin_helpcode_enabled_) ||
                                   (scheme() == SchemeType::Shuangpin && shuangpin_helpcode_enabled_));
-    if (!lowercase_letter && !active_helpcode && character != '\'' && !microsoft_final)
+    if (!lowercase_letter && !active_helpcode && character != '\'' && !microsoft_final && !japanese_long_vowel)
     {
         return {};
     }
