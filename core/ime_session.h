@@ -30,6 +30,9 @@ class ImeSession
     void replace_quanpin_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases);
     void replace_wubi_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases);
     void replace_japanese_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases);
+    /// 小゛゜。Cycles the kana just typed through its small/voiced/semi-voiced forms; false when
+    /// there is nothing completed to modify.
+    bool cycle_japanese_kana_variant();
     // Writes back to whichever scheme is composing. Committing a spelling out of a longer one
     // has to shorten the live composition, and under the wubi fallback the pinyin-shaped
     // caller would otherwise address a scheme that is not the active one and be ignored.

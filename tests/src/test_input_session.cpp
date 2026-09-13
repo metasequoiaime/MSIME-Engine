@@ -477,6 +477,41 @@ int run_test()
         metasequoia::InputSession quanpin_dash_session(SchemeType::Quanpin);
         require(!quanpin_dash_session.handle_character('-').handled,
                 "The long vowel mark leaked into a Chinese scheme.");
+
+        // 小゛゜ 是后置修饰键:改刚打的那个假名,而不是插入一个新的。
+        // The keyboard used to offer a 36-item menu whose entries inserted a fresh kana, so typing
+        // か and then picking が produced かが.
+        metasequoia::InputSession variant_session(SchemeType::JapaneseRomaji);
+        type(variant_session, "ka");
+        require(variant_session.normalized_segmentation() == "か", "ka did not read as か.");
+        require(variant_session.handle_command(metasequoia::Command::CycleKanaVariant).handled &&
+                    variant_session.normalized_segmentation() == "が",
+                "The variant key did not voice か.");
+        require(variant_session.handle_command(metasequoia::Command::CycleKanaVariant).handled &&
+                    variant_session.normalized_segmentation() == "か",
+                "か did not cycle back round to itself.");
+        // は carries three forms, つ carries the small one, and only the last kana is touched.
+        metasequoia::InputSession three_form_session(SchemeType::JapaneseRomaji);
+        type(three_form_session, "kaha");
+        three_form_session.handle_command(metasequoia::Command::CycleKanaVariant);
+        require(three_form_session.normalized_segmentation() == "かば", "は did not voice.");
+        three_form_session.handle_command(metasequoia::Command::CycleKanaVariant);
+        require(three_form_session.normalized_segmentation() == "かぱ", "ば did not reach ぱ.");
+        three_form_session.handle_command(metasequoia::Command::CycleKanaVariant);
+        require(three_form_session.normalized_segmentation() == "かは", "ぱ did not cycle back.");
+        metasequoia::InputSession small_session(SchemeType::JapaneseRomaji);
+        type(small_session, "tsu");
+        small_session.handle_command(metasequoia::Command::CycleKanaVariant);
+        require(small_session.normalized_segmentation() == "っ", "つ did not reach っ.");
+        // 半截的罗马字没有可改的假名。
+        metasequoia::InputSession pending_session(SchemeType::JapaneseRomaji);
+        type(pending_session, "k");
+        require(!pending_session.handle_command(metasequoia::Command::CycleKanaVariant).handled,
+                "A half-finished romaji tail was treated as a kana.");
+        metasequoia::InputSession chinese_variant_session(SchemeType::Quanpin);
+        type(chinese_variant_session, "ni");
+        require(!chinese_variant_session.handle_command(metasequoia::Command::CycleKanaVariant).handled,
+                "The kana variant command reached a Chinese scheme.");
         metasequoia::InputSession wubi_session(SchemeType::Wubi);
         require(!wubi_session.handle_character('z').handled && wubi_session.preedit().empty(),
                 "An unsupported Wubi letter was swallowed.");

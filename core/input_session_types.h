@@ -22,6 +22,8 @@ enum class Command
     MoveHome,
     MoveEnd,
     DeleteForward,
+    // 小゛゜:把刚打的假名换成下一个变体。Japanese only; every other scheme ignores it.
+    CycleKanaVariant,
 };
 
 // Outcome of one dispatched key or selection. `handled` tells the frontend whether to swallow the

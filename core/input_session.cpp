@@ -238,6 +238,11 @@ KeyResult InputSession::handle_command(Command command)
     case Command::MoveEnd:
     case Command::DeleteForward:
         return edit_at_caret(command);
+    case Command::CycleKanaVariant:
+        if (!engine_.cycle_japanese_kana_variant())
+            return {};
+        update_mixed_candidates();
+        return {true, std::nullopt, std::nullopt};
     case Command::Backspace:
         if (caret_position() < editing_text().size())
             return edit_at_caret(command);
