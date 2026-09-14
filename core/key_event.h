@@ -23,5 +23,6 @@ inline constexpr ImeKeyCode Shift = 0x10;
 inline constexpr ImeKeyCode Escape = 0x1B;
 inline constexpr ImeKeyCode Space = 0x20;
 inline constexpr ImeKeyCode Semicolon = 0xBA;
+inline constexpr ImeKeyCode Minus = 0xBD;
 inline constexpr ImeKeyCode Apostrophe = 0xDE;
 } // namespace ImeKey

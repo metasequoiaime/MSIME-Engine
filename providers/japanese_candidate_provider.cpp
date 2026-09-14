@@ -79,6 +79,14 @@ std::vector<WordItem> JapaneseCandidateProvider::query(const QueryRequest &reque
 
     std::vector<WordItem> candidates;
     std::unordered_set<std::string> seen;
+    // A bare minus starts a composition whose first choice is the Japanese
+    // long-vowel mark while retaining an explicit plain-hyphen fallback.
+    if (request.raw_input == "-")
+    {
+        AppendUnique(candidates, seen, request.raw_input_with_cases, "ー", 1000000, CandidateSource::Generated);
+        AppendUnique(candidates, seen, request.raw_input_with_cases, "-", 999999, CandidateSource::Generated);
+        return candidates;
+    }
     const auto conversion = japanese::ConvertRomaji(request.raw_input);
     const bool kana_first = japanese::IsSingleKanaConversion(conversion);
 
