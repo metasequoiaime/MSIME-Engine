@@ -667,6 +667,34 @@ void test_runtime_isolation()
         QuanpinDictionary dictionary({}, restored_v1);
         require(dictionary.find_candidate("ni", "倪").has_value(), "Returning to old generation lost newer learning");
     }
+    // 联网补回来的释义落在 user 目录,不落 english.db。english.db 是按代复制的工作副本,换代时从资源
+    // 目录重拷、只回放 msime_user.db,写进去的释义会被静默清掉。
+    {
+        EnglishDictionary english(path_to_utf8(restored_v1.dictionary(assets::english_dictionary)), false,
+                                  path_to_utf8(restored_v1.resource(assets::translations)),
+                                  path_to_utf8(restored_v1.user(assets::gloss_cache)));
+        require(english.query_chinese_gloss("nimbus").empty(), "A gloss appeared before anything cached it");
+        require(english.cache_gloss(false, "nimbus", "积雨云"), "Caching a fetched gloss failed");
+        require(english.query_chinese_gloss("nimbus") == "积雨云", "A cached gloss was not readable");
+        // 缓存排在最后一层:它装的恰恰是词库查不到的词,质量最没保证,不该盖掉出货词库和用户自己写的
+        // sidecar。
+        require(english.cache_gloss(false, "hello", "机翻"), "Caching alongside a shipped gloss failed");
+        require(english.query_chinese_gloss("hello") == "你翻译", "The cache overrode the translation sidecar");
+    }
+    // 反证:同一条释义写进 english.db 的工作副本,换一代就没了。这就是缓存不能放在那里的原因。
+    require(EnglishDictionary::upsert_gloss(path_to_utf8(restored_v1.dictionary(assets::english_dictionary)), false,
+                                            "cumulus", "积云"),
+            "Writing a gloss into the working copy failed");
+    const auto paths_v4 = prepare_runtime_paths(resource_a, paths_a.user_data, paths_a.cache, "v4");
+    {
+        EnglishDictionary english(path_to_utf8(paths_v4.dictionary(assets::english_dictionary)), false,
+                                  path_to_utf8(paths_v4.resource(assets::translations)),
+                                  path_to_utf8(paths_v4.user(assets::gloss_cache)));
+        require(english.query_chinese_gloss("cumulus").empty(),
+                "A gloss written into the copied dictionary survived a generation change");
+        require(english.query_chinese_gloss("nimbus") == "积雨云", "A new generation lost the cached gloss");
+    }
+
     const auto before_failure = bytes(paths_v2.dictionary(assets::main_dictionary));
     require(user_dictionary::record_upsert(path_to_utf8(paths_a.user(assets::user_journal)),
                                            user_dictionary::DictionaryKind::Pinyin, "@", "无效词", 10),
