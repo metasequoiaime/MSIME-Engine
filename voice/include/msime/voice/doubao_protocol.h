@@ -28,8 +28,7 @@ struct DoubaoResponse
 std::vector<std::uint8_t> make_doubao_request(const DoubaoRequestOptions &options = {});
 // Finite mono float PCM in [-1, 1], encoded as little-endian signed 16-bit.
 // At most one 200 ms chunk; only the final chunk may be empty.
-std::vector<std::uint8_t> make_doubao_audio(const float *samples, std::size_t count,
-                                         std::int32_t sequence, bool last);
+std::vector<std::uint8_t> make_doubao_audio(const float *samples, std::size_t count, std::int32_t sequence, bool last);
 // One complete WebSocket binary message, not an individual network fragment.
 DoubaoResponse parse_doubao_response(const std::vector<std::uint8_t> &message);
 } // namespace metasequoia::voice

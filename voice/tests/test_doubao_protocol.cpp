@@ -34,8 +34,7 @@ static Bytes gzip(const std::string &value)
 static Bytes unpack(const Bytes &packet)
 {
     assert(packet.size() >= 12);
-    const auto length = (std::uint32_t(packet[8]) << 24) | (std::uint32_t(packet[9]) << 16) |
-                        (std::uint32_t(packet[10]) << 8) | packet[11];
+    const auto length = (std::uint32_t(packet[8]) << 24) | (std::uint32_t(packet[9]) << 16) | (std::uint32_t(packet[10]) << 8) | packet[11];
     assert(length == packet.size() - 12);
     Bytes result(20000);
     z_stream state{};
@@ -52,17 +51,22 @@ static Bytes unpack(const Bytes &packet)
 static Bytes response(std::string text, bool compressed = false, std::uint8_t flags = 3)
 {
     Bytes result{0x11, static_cast<std::uint8_t>(0x90 | flags), static_cast<std::uint8_t>(compressed ? 0x11 : 0x10), 0};
-    if (flags & 1) word(result, flags & 2 ? 0xfffffffe : 2);
-    if (flags & 4) word(result, 42);
+    if (flags & 1)
+        word(result, flags & 2 ? 0xfffffffe : 2);
+    if (flags & 4)
+        word(result, 42);
     const auto body = compressed ? gzip(text) : Bytes(text.begin(), text.end());
     word(result, static_cast<std::uint32_t>(body.size()));
     result.insert(result.end(), body.begin(), body.end());
     return result;
 }
-template<class F> static void rejects(F f)
+template <class F> static void rejects(F f)
 {
     bool rejected = false;
-    try { f(); }
+    try
+    {
+        f();
+    }
     catch (const std::invalid_argument &error)
     {
         rejected = true;
@@ -118,7 +122,7 @@ int main()
     Bytes failure{0x11, 0xf0, 0x00, 0};
     word(failure, 45000001);
     word(failure, 9);
-    failure.insert(failure.end(), {'s','y','n','t','h','e','t','i','c'});
+    failure.insert(failure.end(), {'s', 'y', 'n', 't', 'h', 'e', 't', 'i', 'c'});
     assert(parse_doubao_response(failure).code == 45000001 && parse_doubao_response(failure).text.empty());
     const auto good = response(R"({"result":{"text":"synthetic"}})", true);
     for (std::size_t size = 0; size < good.size(); ++size)
