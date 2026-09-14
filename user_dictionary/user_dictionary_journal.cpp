@@ -929,6 +929,10 @@ bool adjust_candidate_ranking(const std::string &main_db_path, const std::string
     // selection permanently rank 0 and no weight is ever written. Writes still
     // go to entry_key rows only, so a rebalance can never land on another key's
     // row the way it did in #36.
+    const auto ranking_scale = [kind](const std::string &key) -> std::size_t {
+        return kind == DictionaryKind::Wubi ? 0 : pinyin_segments(key).size();
+    };
+    const std::size_t entry_scale = ranking_scale(entry_key);
     std::vector<WordItem> database_candidates;
     std::vector<bool> owns_entry_key;
     for (const auto &item : ordered_candidates)
@@ -937,6 +941,8 @@ bool adjust_candidate_ranking(const std::string &main_db_path, const std::string
             continue;
         const std::string item_key =
             kind == DictionaryKind::Wubi ? item.pinyin : candidate_dictionary_key(item, context_key);
+        if (entry_scale != 0 && ranking_scale(item_key) != entry_scale)
+            continue;
         database_candidates.push_back(item);
         owns_entry_key.push_back(item_key == entry_key);
     }
