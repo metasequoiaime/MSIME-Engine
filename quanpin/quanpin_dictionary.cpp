@@ -1216,7 +1216,8 @@ std::vector<WordItem> QuanpinDictionary::query(const std::string &raw_input, con
         append_unique_words(result, fuzzy_candidates(typed, fuzzy));
         const auto matched_letters = [](const WordItem &item) {
             size_t letters = 0;
-            for (const char ch : item.pinyin) letters += ch != '\'';
+            for (const char ch : item.pinyin)
+                letters += ch != '\'';
             return letters;
         };
         std::stable_sort(result.begin(), result.end(),
