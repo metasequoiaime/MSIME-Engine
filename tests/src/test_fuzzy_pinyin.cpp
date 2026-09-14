@@ -1,6 +1,7 @@
 #include <metasequoia/session.h>
 #include "quanpin/fuzzy_pinyin.h"
 #include "quanpin/quanpin_dictionary.h"
+#include "user_dictionary/user_dictionary_journal.h"
 #include <sqlite3.h>
 #include <chrono>
 #include <filesystem>
@@ -50,7 +51,7 @@ int main()
     {
         sqlite3 *db = nullptr;
         require(sqlite3_open((directory / "msime.db").u8string().c_str(), &db) == SQLITE_OK, "open fixture");
-        const auto insert = [&](const std::string &key, const std::string &word) {
+        const auto insert = [&](const std::string &key, const std::string &word, std::int64_t weight = 100) {
             const auto segments = quanpin::split_segments(key);
             const auto table = quanpin::build_table_name(segments);
             std::string escaped;
@@ -62,7 +63,7 @@ int main()
             }
             const auto sql = "CREATE TABLE IF NOT EXISTS " + table +
                              "(key TEXT,jp TEXT,value TEXT,weight INTEGER);INSERT INTO " + table + " VALUES('" +
-                             escaped + "','','" + word + "',100);";
+                             escaped + "','','" + word + "'," + std::to_string(weight) + ");";
             require(sqlite3_exec(db, sql.c_str(), nullptr, nullptr, nullptr) == SQLITE_OK, "fixture insert " + key);
         };
         const std::vector<std::pair<std::string, std::string>> pairs = {
@@ -77,6 +78,17 @@ int main()
         insert("zhong", "中");
         insert("guo", "国");
         insert("zhong'guo", "中国");
+        // Shipped dictionary scales, pinned by upstream 809c6299 and 9bbd86b6.
+        insert("xian", "先", 1662684);
+        insert("xi'an", "西安", 55003);
+        insert("xie", "些", 3752167);
+        insert("xie", "写", 605147);
+        insert("xi'e", "西鄂", 6);
+        insert("jiang", "将", 2629219);
+        insert("jiang", "僵", 94955);
+        insert("ji'ang", "激昂", 23740);
+        insert("you'dian", "邮电", 999);
+        insert("you'di'an", "尤迪安", 7);
         sqlite3_close(db);
         std::filesystem::create_directories(directory / "helpcodes");
         std::ofstream(directory / "helpcodes" / "helpcode.txt") << "中=ab\n宗=cd\n国=ef\n";
@@ -97,6 +109,55 @@ int main()
                               "糊" + std::to_string(i)),
                     "unselected rule expanded");
         }
+        const auto position = [](const std::vector<WordItem> &items, const std::string &word) {
+            const auto found =
+                std::find_if(items.begin(), items.end(), [&](const auto &item) { return item.word == word; });
+            require(found != items.end(), "missing ranking fixture");
+            return std::distance(items.begin(), found);
+        };
+        const FuzzyPinyinOptions fuzzy_on{1u};
+        const auto xian_list = dictionary.query("xian", "xian", 0u, fuzzy_on);
+        require(xian_list.at(0).word == "先" && xian_list.at(1).word == "西安",
+                "real ambiguity lost its protected slot");
+        const auto xie_list = dictionary.query("xie", "xie", 0u, fuzzy_on);
+        require(xie_list.at(0).word == "些" && xie_list.at(1).word == "写" && position(xie_list, "西鄂") > 1,
+                "rare re-segmentation outranked the exact reading");
+        const auto jiang_list = dictionary.query("jiang", "jiang", 0u, fuzzy_on);
+        require(jiang_list.at(0).word == "将" && jiang_list.at(1).word == "僵" && position(jiang_list, "激昂") > 1,
+                "rare homophone word outranked the exact reading");
+        const auto youdian_list = dictionary.query("youdian", "you'dian", 0u, fuzzy_on);
+        require(youdian_list.at(0).word == "邮电" && position(youdian_list, "尤迪安") > 0,
+                "longer alternative key outranked the exact reading");
+        const std::vector<WordItem> mixed_scale = {
+            {"xi'e", "西鄂", 6, CandidateSource::Database, "xi'e"},
+            {"xie", "些", 3752167, CandidateSource::Database, "xie"},
+            {"xie", "写", 605147, CandidateSource::Database, "xie"},
+        };
+        bool changed = false;
+        require(user_dictionary::adjust_candidate_ranking((directory / "msime.db").u8string(),
+                                                          (directory / "msime_user.db").u8string(), "xie", mixed_scale,
+                                                          "xie", "写", "pin", 1, 1, true, &changed) &&
+                    changed,
+                "pin did not update selected candidate");
+        require(sqlite3_open((directory / "msime.db").u8string().c_str(), &db) == SQLITE_OK, "open ranking fixture");
+        const auto weight = [&](const char *sql) {
+            sqlite3_stmt *stmt = nullptr;
+            require(sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK, "prepare ranking query");
+            require(sqlite3_step(stmt) == SQLITE_ROW, "missing ranking row");
+            const auto result = sqlite3_column_int64(stmt, 0);
+            sqlite3_finalize(stmt);
+            return result;
+        };
+        require(weight("SELECT weight FROM tbl_1_x WHERE value='写'") > 3752167, "pin used a different syllable scale");
+        require(weight("SELECT weight FROM tbl_2_x WHERE value='西鄂'") == 6, "pin modified a different key");
+        changed = false;
+        require(user_dictionary::adjust_candidate_ranking((directory / "msime.db").u8string(),
+                                                          (directory / "msime_user.db").u8string(), "xie", mixed_scale,
+                                                          "xie", "些", "pin", 1, 1, true, &changed) &&
+                    !changed,
+                "same-scale leader was unnecessarily changed");
+        require(weight("SELECT weight FROM tbl_1_x WHERE value='些'") == 3752167, "same-scale leader was demoted");
+        sqlite3_close(db);
         require(quanpin::fuzzy_syllables("zh", {0x7ff}) == std::vector<std::string>{"zh"},
                 "incomplete initial changed");
         require(quanpin::fuzzy_syllables("bian", {1u << 6}) == std::vector<std::string>{"bian"},
