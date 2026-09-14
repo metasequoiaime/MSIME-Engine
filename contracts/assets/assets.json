@@ -181,6 +181,12 @@
       "path": "user_dict.dat",
       "role": "user",
       "profiles": []
+    },
+    {
+      "id": "gloss_cache",
+      "path": "gloss_cache.db",
+      "role": "user",
+      "profiles": []
     }
   ]
 }

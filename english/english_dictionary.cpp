@@ -19,8 +19,10 @@ bool IsLowerAsciiWord(const std::string &value)
 }
 } // namespace
 
-EnglishDictionary::EnglishDictionary(std::string db_path, bool initialize_schema, std::string translations_path)
-    : translations_path_(std::move(translations_path)), db_path_(std::move(db_path))
+EnglishDictionary::EnglishDictionary(std::string db_path, bool initialize_schema, std::string translations_path,
+                                     std::string gloss_cache_path)
+    : translations_path_(std::move(translations_path)), db_path_(std::move(db_path)),
+      gloss_cache_path_(std::move(gloss_cache_path))
 {
     if (initialize_schema)
     {
@@ -103,12 +105,22 @@ std::string QueryGloss(sqlite3_stmt *statement, const std::string &key)
 }
 } // namespace
 
+// 三层,顺序就是权威性顺序:用户自己写的 custom_translations.txt 最大,出货词库的 ECDICT 次之,
+// 联网补回来的缓存最后 —— 缓存里的东西恰恰是词库查不到的那些,质量最没保证,不该盖掉前两层。
 std::string EnglishDictionary::query_chinese_gloss(const std::string &english)
 {
     const auto custom = custom_en_zh_.find(english);
     if (custom != custom_en_zh_.end())
         return custom->second;
-    return english.empty() || !ensure_gloss_statements() ? std::string{} : QueryGloss(en_zh_statement_, english);
+    if (english.empty())
+        return {};
+    if (ensure_gloss_statements())
+    {
+        auto gloss = QueryGloss(en_zh_statement_, english);
+        if (!gloss.empty())
+            return gloss;
+    }
+    return ensure_cache_statements() ? QueryGloss(cache_en_zh_statement_, english) : std::string{};
 }
 
 std::string EnglishDictionary::query_english_gloss(const std::string &chinese)
@@ -116,7 +128,25 @@ std::string EnglishDictionary::query_english_gloss(const std::string &chinese)
     const auto custom = custom_zh_en_.find(chinese);
     if (custom != custom_zh_en_.end())
         return custom->second;
-    return chinese.empty() || !ensure_gloss_statements() ? std::string{} : QueryGloss(zh_en_statement_, chinese);
+    if (chinese.empty())
+        return {};
+    if (ensure_gloss_statements())
+    {
+        auto gloss = QueryGloss(zh_en_statement_, chinese);
+        if (!gloss.empty())
+            return gloss;
+    }
+    return ensure_cache_statements() ? QueryGloss(cache_zh_en_statement_, chinese) : std::string{};
+}
+
+bool EnglishDictionary::cache_gloss(bool chinese_to_english, const std::string &key, const std::string &gloss)
+{
+    if (gloss_cache_path_.empty() || !upsert_gloss(gloss_cache_path_, chinese_to_english, key, gloss))
+        return false;
+    // 读句柄是只读打开的,而且可能是在缓存文件还不存在的时候就失败过一次。写完直接关掉,
+    // 下次查询重新打开,省得去想「这条新写的什么时候能被看见」。
+    close_cache();
+    return true;
 }
 
 bool EnglishDictionary::upsert_gloss(const std::string &db_path, bool chinese_to_english, const std::string &key,
@@ -330,8 +360,53 @@ bool EnglishDictionary::ensure_gloss_statements()
     return true;
 }
 
+// 缓存文件是用户目录下的,可能还不存在(一次都没联网补过释义)。这里只读打开、不创建:
+// 没有就当没有,查询照常回落到空结果。
+bool EnglishDictionary::ensure_cache_statements()
+{
+    if (cache_en_zh_statement_ != nullptr && cache_zh_en_statement_ != nullptr)
+        return true;
+    if (gloss_cache_path_.empty())
+        return false;
+    if (cache_db_ == nullptr && sqlite3_open_v2(gloss_cache_path_.c_str(), &cache_db_,
+                                                SQLITE_OPEN_READONLY | SQLITE_OPEN_NOMUTEX, nullptr) != SQLITE_OK)
+    {
+        close_cache();
+        return false;
+    }
+    if (sqlite3_prepare_v2(cache_db_, "SELECT chinese_gloss FROM en_zh_glosses WHERE english=?1", -1,
+                           &cache_en_zh_statement_, nullptr) != SQLITE_OK ||
+        sqlite3_prepare_v2(cache_db_, "SELECT english_gloss FROM zh_en_glosses WHERE chinese=?1", -1,
+                           &cache_zh_en_statement_, nullptr) != SQLITE_OK)
+    {
+        close_cache();
+        return false;
+    }
+    return true;
+}
+
+void EnglishDictionary::close_cache()
+{
+    if (cache_en_zh_statement_ != nullptr)
+    {
+        sqlite3_finalize(cache_en_zh_statement_);
+        cache_en_zh_statement_ = nullptr;
+    }
+    if (cache_zh_en_statement_ != nullptr)
+    {
+        sqlite3_finalize(cache_zh_en_statement_);
+        cache_zh_en_statement_ = nullptr;
+    }
+    if (cache_db_ != nullptr)
+    {
+        sqlite3_close(cache_db_);
+        cache_db_ = nullptr;
+    }
+}
+
 void EnglishDictionary::close_database()
 {
+    close_cache();
     if (en_zh_statement_ != nullptr)
     {
         sqlite3_finalize(en_zh_statement_);

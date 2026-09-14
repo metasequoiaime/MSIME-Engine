@@ -198,9 +198,10 @@ EnglishDictionary &CandidateQueries::english_dictionary()
 {
     if (!english_dictionary_)
     {
-        english_dictionary_ =
-            std::make_unique<EnglishDictionary>(path_to_utf8(paths_.dictionary(assets::english_dictionary)), false,
-                                                path_to_utf8(paths_.resource(assets::translations)));
+        // 缓存走 user 目录:english.db 是按代复制的可写副本,换代时从资源目录重拷,写进去的释义留不住。
+        english_dictionary_ = std::make_unique<EnglishDictionary>(
+            path_to_utf8(paths_.dictionary(assets::english_dictionary)), false,
+            path_to_utf8(paths_.resource(assets::translations)), path_to_utf8(paths_.user(assets::gloss_cache)));
     }
     return *english_dictionary_;
 }
