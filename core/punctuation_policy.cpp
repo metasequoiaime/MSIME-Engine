@@ -37,4 +37,11 @@ const char *PunctuationPolicy::translate(char character)
     }
     return nullptr;
 }
+
+void PunctuationPolicy::balance_after_auto_close(char opening)
+{
+    using namespace punctuation_contract;
+    if (paired_enabled_ && opening == nested_opening_input && book_title_nesting_ > 0)
+        --book_title_nesting_;
+}
 } // namespace metasequoia

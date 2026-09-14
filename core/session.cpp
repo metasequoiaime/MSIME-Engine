@@ -94,6 +94,10 @@ void Session::set_paired_punctuation_enabled(bool enabled)
 {
     impl_->session.set_paired_punctuation_enabled(enabled);
 }
+void Session::balance_paired_punctuation_after_auto_close(char opening)
+{
+    impl_->session.balance_paired_punctuation_after_auto_close(opening);
+}
 void Session::set_punctuation_lock(int lock)
 {
     if (lock < 0 || lock > 2)
