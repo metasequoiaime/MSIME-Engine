@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.18.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.17.0...v0.18.0) (2026-09-14)
+
+
+### Features
+
+* **contracts:** define voice control hello ([6215a99](https://github.com/metasequoiaime/MSIME-Engine/commit/6215a99425ff417c1b3552d4842801db5720a3ea))
+* **contracts:** define voice control message ([c54b1fa](https://github.com/metasequoiaime/MSIME-Engine/commit/c54b1fad92c463adf3c83646c9a9d6e29730f176))
+* **voice:** add bounded shared Doubao wire codec ([0850d01](https://github.com/metasequoiaime/MSIME-Engine/commit/0850d018948fa90d2caebb4786393a105500ead2))
+
+
+### Bug Fixes
+
+* **punctuation:** balance auto-closed book titles ([c5be6a2](https://github.com/metasequoiaime/MSIME-Engine/commit/c5be6a29ea8caef5a5bfd4eba441aa374c5be630))
+* **punctuation:** balance auto-closed book titles ([c1de18a](https://github.com/metasequoiaime/MSIME-Engine/commit/c1de18a97a5bf2ed9a3f6afc507977a9bdc8b796))
+
 ## [0.17.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.16.0...v0.17.0) (2026-09-14)
 
 
