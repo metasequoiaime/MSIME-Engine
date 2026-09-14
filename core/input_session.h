@@ -186,6 +186,10 @@ class InputSession
     {
         punctuation_.set_paired_enabled(enabled);
     }
+    void balance_paired_punctuation_after_auto_close(char opening)
+    {
+        punctuation_.balance_after_auto_close(opening);
+    }
     void set_candidate_learning_enabled(bool enabled)
     {
         candidate_learning_enabled_ = enabled;

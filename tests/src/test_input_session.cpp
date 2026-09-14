@@ -626,6 +626,17 @@ int run_test()
         require(session.handle_punctuation('>').commit == "》", "Book title nesting did not return to depth zero.");
         require(session.handle_punctuation('<').commit == "《" && session.handle_punctuation('>').commit == "》",
                 "Book-title brackets were not converted to Chinese punctuation.");
+        session.handle_punctuation('<');
+        session.balance_paired_punctuation_after_auto_close('<');
+        require(session.handle_punctuation('<').commit == "《",
+                "An auto-closed book title mark left the nesting depth elevated.");
+        session.balance_paired_punctuation_after_auto_close('(');
+        require(session.handle_punctuation('>').commit == "》",
+                "Balancing an unrelated punctuation mark changed book-title nesting.");
+        session.balance_paired_punctuation_after_auto_close('<');
+        require(session.handle_punctuation('<').commit == "《",
+                "Repeated auto-close balancing drove the book-title nesting depth below zero.");
+        session.balance_paired_punctuation_after_auto_close('<');
         require(session.handle_punctuation('\\').commit == "、", "The enumeration comma was not converted.");
 
         type(session, "nihao");

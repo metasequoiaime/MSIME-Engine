@@ -5,6 +5,7 @@ class PunctuationPolicy
 {
   public:
     const char *translate(char character);
+    void balance_after_auto_close(char opening);
     void set_paired_enabled(bool enabled)
     {
         paired_enabled_ = enabled;
