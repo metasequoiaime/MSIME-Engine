@@ -249,6 +249,8 @@ int run_test()
     requireConversion("konnichiha", "こんにちは", "", true, "nn before a vowel stopped splitting into ん + に");
     requireConversion("nnya", "んにゃ", "", true, "nn before y stopped splitting into ん + にゃ");
     requireConversion("n'a", "んあ", "", true, "an apostrophe no longer closes ん");
+    requireConversion("ko-hi-", "こーひー", "", true, "minus no longer spells a Japanese long-vowel mark");
+    requireConversion("n-", "んー", "", true, "n before a long-vowel mark no longer closes as ん");
 
     // Hepburn writes っち as "tch", which is not a doubled consonant: "matcha" used to stall as ま plus a
     // pending "tcha" that no table key could ever consume, so 抹茶 was unreachable.
@@ -434,6 +436,14 @@ int run_test()
         if (std::any_of(shishi.begin(), shishi.end(), [](const WordItem &item) { return item.word.empty(); }))
         {
             throw std::runtime_error("The Japanese provider returned a blank candidate for \"sis\".");
+        }
+
+        const auto bare_long_vowel = provider.query(japaneseRequest("-"));
+        if (bare_long_vowel.size() != 2 || bare_long_vowel[0].word != "ー" || bare_long_vowel[1].word != "-")
+        {
+            throw std::runtime_error("A bare Japanese minus no longer offers the long-vowel mark before the plain "
+                                     "hyphen: " +
+                                     describeCandidates(bare_long_vowel));
         }
 
         // The reported case: "kanj" must reach the かんじ lemmas whatever spelling HiraganaToRomaji picks for じ.

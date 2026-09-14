@@ -77,7 +77,7 @@ RomajiConversion ConvertRomaji(std::string_view input)
                 index += 2;
                 continue;
             }
-            if (next == 'n' || next == '-')
+            if (next == 'n')
             {
                 // "nn" spells a single ん when the second n cannot begin a kana of its own; otherwise only the first n
                 // is consumed so that "nna" still yields んな.
@@ -87,7 +87,7 @@ RomajiConversion ConvertRomaji(std::string_view input)
                 index += second_n_stands_alone ? 2 : 1;
                 continue;
             }
-            if (IsConsonant(next) && next != 'y')
+            if (next == '-' || (IsConsonant(next) && next != 'y'))
             {
                 result.hiragana += "ん";
                 ++index;

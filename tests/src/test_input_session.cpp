@@ -474,6 +474,17 @@ int run_test()
                 "The Japanese long vowel mark was rejected by the character gate.");
         type(long_vowel_session, "menn");
         require(long_vowel_session.has_composition(), "Typing through a long vowel ended the composition.");
+        metasequoia::InputSession bare_long_vowel_session(SchemeType::JapaneseRomaji);
+        require(bare_long_vowel_session.handle_character('-').handled && bare_long_vowel_session.preedit() == "-",
+                "A bare Japanese minus did not start a composition.");
+        require(bare_long_vowel_session.candidates().size() == 2 &&
+                    bare_long_vowel_session.candidates()[0].word == "ー" &&
+                    bare_long_vowel_session.candidates()[1].word == "-",
+                "A bare Japanese minus did not preserve the long-vowel and plain-hyphen choices.");
+        ImeSession restored_long_vowel(SchemeType::JapaneseRomaji);
+        restored_long_vowel.replace_japanese_raw_input("ko-hi-", "ko-hi-");
+        require(restored_long_vowel.get_preedit() == "ko-hi-",
+                "Restoring Japanese raw input discarded long-vowel marks.");
         metasequoia::InputSession quanpin_dash_session(SchemeType::Quanpin);
         require(!quanpin_dash_session.handle_character('-').handled,
                 "The long vowel mark leaked into a Chinese scheme.");

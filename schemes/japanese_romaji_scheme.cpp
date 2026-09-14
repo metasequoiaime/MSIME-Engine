@@ -7,9 +7,7 @@ namespace
 {
 bool IsRomajiKey(ImeKeyCode vk)
 {
-    // '-' 是長音符,罗马字表里本来就有 {"-", "ー"}。Letters alone left every borrowed word
-    // unreachable: コーヒー and ラーメン have no spelling without it.
-    return (vk >= 'A' && vk <= 'Z') || vk == '-';
+    return vk >= 'A' && vk <= 'Z';
 }
 } // namespace
 
@@ -40,13 +38,20 @@ void JapaneseRomajiScheme::handle_key(ImeKeyCode vk, ImeModifierMask modifiers_d
         key_strokes_.push_back(KeyStroke{vk, modifiers_down, wch});
         return;
     }
+    // The physical minus key spells the Japanese long-vowel mark. Treat it as
+    // input rather than a generic symbol so native hosts can distinguish it
+    // from their candidate-page shortcut.
+    if (vk == ImeKey::Minus && wch == u'-')
+    {
+        raw_input_.push_back('-');
+        key_strokes_.push_back(KeyStroke{vk, modifiers_down, wch});
+        return;
+    }
     if (!IsRomajiKey(vk))
         return;
 
     key_strokes_.push_back(KeyStroke{vk, modifiers_down, wch});
-    if (vk == '-')
-        raw_input_.push_back('-');
-    else if ((wch >= u'a' && wch <= u'z') || (wch >= u'A' && wch <= u'Z'))
+    if ((wch >= u'a' && wch <= u'z') || (wch >= u'A' && wch <= u'Z'))
         raw_input_.push_back(static_cast<char>(wch));
     else
         raw_input_.push_back(static_cast<char>(vk + ('a' - 'A')));
@@ -86,7 +91,7 @@ void JapaneseRomajiScheme::set_raw_input(const std::string &raw_input, const std
 {
     raw_input_ = raw_input_with_cases.empty() ? raw_input : raw_input_with_cases;
     raw_input_.erase(std::remove_if(raw_input_.begin(), raw_input_.end(),
-                                    [](unsigned char ch) { return !std::isalpha(ch) && ch != '\''; }),
+                                    [](unsigned char ch) { return !std::isalpha(ch) && ch != '\'' && ch != '-'; }),
                      raw_input_.end());
     key_strokes_.clear();
 }
