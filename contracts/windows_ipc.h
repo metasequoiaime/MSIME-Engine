@@ -141,6 +141,16 @@ struct alignas(8) FanyImePipeHello
     std::uint32_t pipe_role = 0;
 };
 
+// First frame on the dedicated voice-control pipe. It binds the connection
+// to a client before any lifecycle command is accepted; this is distinct from
+// the reverse-pipe hello and carries an explicit protocol identity.
+struct alignas(8) FanyImeVoiceControlHello
+{
+    std::uint32_t magic = 0x56434C31; // "VCL1"
+    std::uint32_t version = 1;
+    std::uint64_t client_id = 0;
+};
+
 //
 // Data received from server end
 //
@@ -193,6 +203,7 @@ static_assert(offsetof(FanyImeNamedpipeDataToTsf, request_id) == 8);
 static_assert(offsetof(FanyImeNamedpipeDataToTsf, candidate_string) == 16);
 static_assert(sizeof(FanyImeNamedpipeDataToTsf) == 416);
 static_assert(sizeof(FanyImePipeHello) == 16);
+static_assert(sizeof(FanyImeVoiceControlHello) == 16);
 static_assert(sizeof(FanyImeNamedpipeDataToTsfWorkerThread) == 404);
 static_assert(sizeof(FanyImeTsfDiagnosticBatchHeader) == 28);
 
