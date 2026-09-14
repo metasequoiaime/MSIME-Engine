@@ -17,6 +17,9 @@
 namespace
 {
 constexpr size_t kSparsePinyinFallbackThreshold = 8;
+// 续接词只取前三档音节长度:再长的条目权重已经掉到几十,占位不如留给前缀单字。
+constexpr size_t kLongerPhraseExtraSyllables = 3;
+constexpr int kLongerPhraseLimit = 12;
 constexpr size_t kSyllableGraphPathLimit = 32;
 constexpr size_t kMaxSyllablesForMultipleSegmentations = 4;
 constexpr int kAlternativeSegmentationCandidateLimit = 128;
@@ -336,6 +339,23 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
         const std::string partial_segmentation = quanpin::join_segments(partial_segments);
         const std::string partial_input = remove_delimiters(partial_segmentation);
         auto partial_result = query_single_path(partial_input, partial_segmentation, partial_segments);
+        if (count == segments.size())
+        {
+            // 同长度的表往往只剩边角词: ping'guo 整张表就是 苹果 1143881、评过 1180、平果 169、平锅 1,
+            // 而 苹果电脑 21495、苹果公司 19725 按音节数分在 tbl_4_p,等长查询永远看不到它们。于是打完
+            // 一个完整拼写后,第 2 位起就是冷僻同音词,再往后直接掉到只匹配首音节的单字。
+            //
+            // 续接词按权重和等长结果并成一组: 权重出自同一份语料,跨表可比。pinyin 仍是用户键入的那串
+            // (组字推进必须只消费打出来的部分),canonical_pinyin 记完整读音,造词持久化用得上。
+            auto longer = append_longer_phrase_candidates(partial_segmentation, partial_segments);
+            if (!longer.empty())
+            {
+                partial_result.insert(partial_result.end(), std::make_move_iterator(longer.begin()),
+                                      std::make_move_iterator(longer.end()));
+                std::stable_sort(partial_result.begin(), partial_result.end(),
+                                 [](const WordItem &lhs, const WordItem &rhs) { return lhs.weight > rhs.weight; });
+            }
+        }
         result.insert(result.end(), partial_result.begin(), partial_result.end());
     }
 
@@ -385,6 +405,24 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
     }
 
     return result;
+}
+
+std::vector<WordItem> QuanpinDictionary::append_longer_phrase_candidates(const std::string &segmentation,
+                                                                         const quanpin::Segments &segments)
+{
+    if (db_ == nullptr)
+    {
+        return {};
+    }
+    const auto rows = quanpin::query_longer_phrases_keyed(normalize_umlaut_aliases(segments), db_, statement_cache_,
+                                                          kLongerPhraseExtraSyllables, kLongerPhraseLimit);
+    std::vector<WordItem> items;
+    items.reserve(rows.size());
+    for (const auto &row : rows)
+    {
+        items.emplace_back(segmentation, row.value, row.weight, CandidateSource::Database, row.key);
+    }
+    return items;
 }
 
 std::vector<WordItem> QuanpinDictionary::query_single_path(const std::string &raw_input,

@@ -69,6 +69,12 @@ std::vector<KeyedQueryItem> query_segments_keyed_flat(const Segments &segments, 
 std::vector<KeyedQueryItem> query_segments_keyed_flat(const Segments &segments, sqlite3 *db,
                                                       std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
                                                       int limit = 8, QuerySource source = QuerySource::Quanpin);
+// 以打完的整串音为前缀,到音节更多的表里取词组: 打 ping'guo 时 苹果电脑/苹果公司 的权重远高于
+// 同长度里剩下的 评过/平果,但它们按音节数分在别的表,等长查询看不到。
+std::vector<KeyedQueryItem> query_longer_phrases_keyed(const Segments &segments, sqlite3 *db,
+                                                       std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
+                                                       std::size_t extra_syllables, int limit);
+
 std::vector<KeyedQueryItem> query_exact_segmentations_keyed_flat(
     const std::vector<Segments> &segmentations, sqlite3 *db,
     std::unordered_map<std::string, sqlite3_stmt *> &statement_cache, int limit = 128);

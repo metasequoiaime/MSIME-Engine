@@ -72,6 +72,9 @@ class QuanpinDictionary
                                       unsigned autocorrect_types);
     std::vector<WordItem> query_series(const std::string &raw_input, const std::string &segmentation,
                                        const quanpin::Segments &segments);
+    // 打完整串音之后的续接词组,见 query_series 里的说明。
+    std::vector<WordItem> append_longer_phrase_candidates(const std::string &segmentation,
+                                                          const quanpin::Segments &segments);
     std::vector<WordItem> query_single_path(const std::string &raw_input, const std::string &segmentation,
                                             const quanpin::Segments &segments);
     quanpin::Segments resolve_segments(const std::string &raw_input, const std::string &segmentation);
