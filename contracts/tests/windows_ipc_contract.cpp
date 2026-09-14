@@ -84,6 +84,10 @@ int main()
 
     CHECK(FanyImeWorkerReplyType::SwitchToEn == FanyImeWorkerReplyType::SwitchToEnglish);
     CHECK(FanyImeWorkerReplyType::CommitCandidate == FanyImeWorkerReplyType::CommitCurCandidate);
+    CHECK(FanyImeVoiceControl::Start == 1);
+    CHECK(FanyImeVoiceControl::Stop == 2);
+    CHECK(FanyImeVoiceControl::Cancel == 3);
+    CHECK(FanyImeVoiceControl::MaxMessageChars == 96);
     const std::wstring voice(1000, L'x');
     const auto frames = FanyImeVoiceCompositionPipe::EncodeSnapshot(voice, 7);
     CHECK(FanyImeVoiceCompositionPipe::AssembleFrames(frames) == voice);
