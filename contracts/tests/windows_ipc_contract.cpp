@@ -88,6 +88,10 @@ int main()
     CHECK(FanyImeVoiceControl::Stop == 2);
     CHECK(FanyImeVoiceControl::Cancel == 3);
     CHECK(FanyImeVoiceControl::MaxMessageChars == 96);
+    FanyImeVoiceControlHello control_hello{};
+    CHECK(control_hello.magic == 0x56434C31);
+    CHECK(control_hello.version == 1);
+    CHECK(sizeof(control_hello) == 16);
     const std::wstring voice(1000, L'x');
     const auto frames = FanyImeVoiceCompositionPipe::EncodeSnapshot(voice, 7);
     CHECK(FanyImeVoiceCompositionPipe::AssembleFrames(frames) == voice);
