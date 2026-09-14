@@ -3,7 +3,8 @@
 #include <cassert>
 #include <limits>
 
-int main() {
+int main()
+{
     using namespace FanyImeVoiceController;
     Request request;
     request.controller_id = (uint64_t{7} << 32) | 1;
@@ -18,7 +19,8 @@ int main() {
     request.operation = Operation::Poll;
     request.language_bytes = 0;
     assert(valid_request(request, sizeof(Request)));
-    for (const auto operation : {Operation::Stop, Operation::Cancel}) {
+    for (const auto operation : {Operation::Stop, Operation::Cancel})
+    {
         request.operation = operation;
         assert(valid_request(request, sizeof(Request)));
     }
