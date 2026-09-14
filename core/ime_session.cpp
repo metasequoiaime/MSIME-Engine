@@ -198,6 +198,17 @@ void ImeSession::replace_japanese_raw_input(const std::string &raw_input, const 
     refresh_candidates();
 }
 
+bool ImeSession::cycle_japanese_kana_variant()
+{
+    if (scheme_->type() != SchemeType::JapaneseRomaji)
+        return false;
+    auto *japanese_scheme = dynamic_cast<JapaneseRomajiScheme *>(scheme_.get());
+    if (!japanese_scheme || !japanese_scheme->cycle_last_kana_variant())
+        return false;
+    refresh_candidates();
+    return true;
+}
+
 void ImeSession::replace_active_raw_input(const std::string &raw_input, const std::string &raw_input_with_cases)
 {
     switch (scheme_->type())

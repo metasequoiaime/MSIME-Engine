@@ -16,8 +16,8 @@ inline bool contains_cjk(const std::string &text)
         if (first < 0xe0 || first > 0xef || (second & 0xc0) != 0x80 || (third & 0xc0) != 0x80)
             continue;
         const unsigned cp = ((first & 0x0f) << 12) | ((second & 0x3f) << 6) | (third & 0x3f);
-        if ((cp >= 0x3400 && cp <= 0x4dbf) || (cp >= 0x4e00 && cp <= 0x9fff) ||
-            (cp >= 0xf900 && cp <= 0xfaff)) return true;
+        if ((cp >= 0x3400 && cp <= 0x4dbf) || (cp >= 0x4e00 && cp <= 0x9fff) || (cp >= 0xf900 && cp <= 0xfaff))
+            return true;
     }
     return false;
 }
@@ -34,7 +34,8 @@ inline std::vector<std::string> order_candidates(const std::vector<std::string> 
             result.push_back(candidate);
     }
     std::stable_partition(result.begin(), result.end(), contains_cjk);
-    if (result.size() > 12) result.resize(12);
+    if (result.size() > 12)
+        result.resize(12);
     return result;
 }
 } // namespace metasequoia::handwriting

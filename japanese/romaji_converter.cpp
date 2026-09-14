@@ -259,4 +259,37 @@ std::vector<std::string> KanaForRomajiPrefix(std::string_view pending)
     kana.erase(std::unique(kana.begin(), kana.end()), kana.end());
     return kana;
 }
+
+namespace
+{
+// 每个假名的变体环。Order follows the key every Japanese keyboard prints as 小゛゜: the small form
+// first where one exists, then the voiced and semi-voiced ones, then back to the plain kana.
+const std::vector<std::vector<std::string>> &KanaVariantCycles()
+{
+    static const std::vector<std::vector<std::string>> cycles = {
+        {"あ", "ぁ"},       {"い", "ぃ"},       {"う", "ぅ", "ゔ"}, {"え", "ぇ"},       {"お", "ぉ"},
+        {"か", "が"},       {"き", "ぎ"},       {"く", "ぐ"},       {"け", "げ"},       {"こ", "ご"},
+        {"さ", "ざ"},       {"し", "じ"},       {"す", "ず"},       {"せ", "ぜ"},       {"そ", "ぞ"},
+        {"た", "だ"},       {"ち", "ぢ"},       {"つ", "っ", "づ"}, {"て", "で"},       {"と", "ど"},
+        {"は", "ば", "ぱ"}, {"ひ", "び", "ぴ"}, {"ふ", "ぶ", "ぷ"}, {"へ", "べ", "ぺ"}, {"ほ", "ぼ", "ぽ"},
+        {"や", "ゃ"},       {"ゆ", "ゅ"},       {"よ", "ょ"},       {"わ", "ゎ"},
+    };
+    return cycles;
+}
+} // namespace
+
+std::string NextKanaVariant(std::string_view kana)
+{
+    const std::string needle(kana);
+    for (const auto &cycle : KanaVariantCycles())
+    {
+        for (std::size_t index = 0; index < cycle.size(); ++index)
+        {
+            if (cycle[index] == needle)
+                return cycle[(index + 1) % cycle.size()];
+        }
+    }
+    return needle;
+}
+
 } // namespace japanese

@@ -22,6 +22,11 @@ enum class Command
     MoveHome,
     MoveEnd,
     DeleteForward,
+    // 小゛゜:把刚打的假名换成下一个变体。Japanese only; every other scheme ignores it.
+    CycleKanaVariant,
+    // 無変換確定:把读み原样交出去,不经过候选。Japanese only. Return used to commit candidate 0,
+    // so ありがとう and every name written in kana came back as whatever kanji the engine guessed.
+    CommitReading,
 };
 
 // Outcome of one dispatched key or selection. `handled` tells the frontend whether to swallow the
