@@ -1,5 +1,9 @@
 # Product contracts
 
+The additive [voice controller v2 contract](voice_controller.md) separates
+Tauri controller identity from the Server-owned TSF target lease. It uses a
+dedicated endpoint and does not change the released v1 voice-control layout.
+
 These headers are independently consumable C++17 contracts. Including them does not link the input engine, start threads, access dictionaries, or require its third-party submodules. The TSF text service consumes only these headers; the server consumes the same source through the Engine submodule. Both now live in MSIME-Windows — `windows/` and `server/` — so they share one pin rather than each carrying their own.
 
 `windows_ipc.h` owns the wire layouts, pipe names and opcodes. `voice_composition_pipe.h` owns voice framing. Platform repositories may wrap these headers but must not duplicate their definitions. MSIME-Windows records the engine commit in `product-lock.json` as well as in the gitlink, and `product_lock.py verify-contracts` requires the two to agree — a bump that moves the submodule without the lock would otherwise attest to an engine revision the product was not built from.
