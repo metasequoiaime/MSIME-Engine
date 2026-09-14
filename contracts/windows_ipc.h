@@ -273,7 +273,10 @@ constexpr std::uint32_t CapsLockChanged = 19;
 constexpr std::uint32_t TsfDiagnosticLogChanged = 20;
 // Payload "0" follow IME, "1" always Chinese punctuation, "2" always English punctuation.
 constexpr std::uint32_t PunctuationLockChanged = 21;
-constexpr std::uint32_t MaxKnown = PunctuationLockChanged;
+// Optional negotiated keyboard cancellation; see keyboard_composition_pipe.h.
+// Never commits text or changes the CN/EN compartment. Payload: focus token.
+constexpr std::uint32_t CancelKeyboardComposition = 22;
+constexpr std::uint32_t MaxKnown = CancelKeyboardComposition;
 // Source compatibility for the Server's historical spellings.
 constexpr std::uint32_t SwitchToEn = SwitchToEnglish;
 constexpr std::uint32_t SwitchToCn = SwitchToChinese;

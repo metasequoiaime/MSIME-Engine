@@ -15,6 +15,9 @@ constexpr std::uint32_t FramedVoice = 1u << 2;
 // Optional: Ctrl+Shift+F KeyEvent toggles the configured character set without
 // changing composition. A consumer must opt in only after implementing it.
 constexpr std::uint32_t CharacterSetShortcut = 1u << 3;
+// Optional: focus-bound keyboard preedit cancellation without a text commit.
+// Advertise only after implementing the UI-thread/edit-session cancellation.
+constexpr std::uint32_t KeyboardCompositionCancel = 1u << 4;
 constexpr std::uint32_t Capabilities = RequestIds | FocusEpochs | FramedVoice;
 constexpr std::uint32_t RequiredCapabilities = RequestIds | FocusEpochs;
 

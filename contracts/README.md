@@ -35,6 +35,36 @@ Existing DLLs with unversioned hello remain accepted by the new Server using the
 
 Append opcodes; never change released values or reuse them. An incompatible layout needs a new major protocol and an explicit migration, not another copy of a header. Minor additions must be optional capabilities.
 
+## Keyboard composition cancellation
+
+`KeyboardCompositionCancel` is an optional capability, not part of `Capabilities`
+or `RequiredCapabilities`. Both peers opt in after implementing it. Legacy
+unversioned connections never authorize it, even if their negotiation result
+contains server-local optional bits. Use `FanyImeKeyboardCompositionPipe::CanCancel`.
+
+Worker opcode `CancelKeyboardComposition` (22) retains the 404-byte worker layout.
+`keyboard_composition_pipe.h` encodes a canonical nonzero decimal activation/focus
+token as UTF-16, followed by NUL and zero padding. Zero, the no-request sentinel,
+overflow, non-ASCII digits and nonzero trailing data are invalid. The frame carries
+no text and never requests a commit, a voice operation or a CN/EN compartment change.
+
+The Server must serialize cancellation with key/selection transactions and validate
+the current authenticated client, transport generation and focus lease before
+writing. The TIP must require the negotiated capability, validate the complete
+frame, match the token to its current focus fence and capture its local composition
+epoch before queuing UI work. The UI handler and its TSF edit session must recheck
+both identities before deleting keyboard preedit and ending composition without
+committing. Idle cancellation is a no-op; stale work must not cancel a newer
+composition or touch voice composition. A failed edit must not be reported as
+applied. This version has no application acknowledgement: successful transport
+delivery proves only delivery, not that the host executed the cancellation.
+
+Older peers omit the capability and must not receive this opcode. Do not fall back
+to an empty candidate commit (a reverse-pipe trigger), a voice cancellation, or a
+pair of language switches. Unknown future worker opcodes retain the existing
+ignore behavior. The contract test covers opt-in/new-old/legacy negotiation and
+strict frame parsing; platform consumers still need native focus/edit-session tests.
+
 `CharacterSetShortcut` is optional and is not included in the default capability set.
 Windows implementations that support it pass `Capabilities | CharacterSetShortcut`
 to `Hello` / `Negotiate`. Only after negotiating this bit may a Chinese-mode client
