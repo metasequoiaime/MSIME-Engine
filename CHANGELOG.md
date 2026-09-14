@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.19.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.18.0...v0.19.0) (2026-09-14)
+
+
+### Features
+
+* **contracts:** separate voice controller v2 from TSF identity ([#139](https://github.com/metasequoiaime/MSIME-Engine/issues/139)) ([d6a1f6b](https://github.com/metasequoiaime/MSIME-Engine/commit/d6a1f6b62b8498cc2d9252aa312147cd06de8b80))
+* **english:** cache fetched glosses in a durable user file ([#141](https://github.com/metasequoiaime/MSIME-Engine/issues/141)) ([f19e1f3](https://github.com/metasequoiaime/MSIME-Engine/commit/f19e1f315f5d3933786165081ccc36af827146e2))
+
 ## [0.18.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.17.0...v0.18.0) (2026-09-14)
 
 
