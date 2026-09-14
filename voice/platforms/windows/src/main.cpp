@@ -185,7 +185,7 @@ LRESULT CALLBACK keyboard_hook_proc(int nCode, WPARAM wParam, LPARAM lParam)
 }
 } // namespace
 
-int main()
+int voice_input_main()
 {
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
@@ -644,4 +644,11 @@ int main()
     }
 
     return 0;
+}
+
+// WIN32 targets use the Unicode GUI CRT entry point. Keep the implementation
+// parameterless so the existing standalone host logic remains unchanged.
+int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)
+{
+    return voice_input_main();
 }
