@@ -1262,6 +1262,46 @@ std::vector<KeyedQueryItem> query_exact_segmentations_keyed_flat(
     return result;
 }
 
+std::vector<KeyedQueryItem> query_longer_phrases_keyed(const Segments &segments, sqlite3 *db,
+                                                       std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
+                                                       std::size_t extra_syllables, int limit)
+{
+    if (db == nullptr || segments.size() < 2 || extra_syllables == 0 || limit <= 0 ||
+        !has_only_complete_pinyin_segments(segments))
+    {
+        return {};
+    }
+
+    // 键里音节之间是 '\'',所以前缀补一个 '\'' 才只命中「整音节的续接」: ping'guo' 命中 ping'guo'ji,
+    // 不会命中别的拼写。上界沿用 build_key_prefix_upper_bound 的 '{',它排在 'z' 之后。
+    const std::string prefix = join_segments(segments) + '\'';
+    const std::string upper_bound = build_key_prefix_upper_bound(prefix);
+    const char initial = segments.front().front();
+
+    std::vector<KeyedQueryItem> result;
+    for (std::size_t extra = 1; extra <= extra_syllables; ++extra)
+    {
+        const std::string table = metasequoia::dictionary_format::quanpin_table(segments.size() + extra, initial);
+        if (table.empty())
+        {
+            continue;
+        }
+        const std::string sql = "SELECT \"key\", \"value\", \"weight\" FROM \"" + table +
+                                "\" WHERE \"key\" >= ? AND \"key\" < ? ORDER BY \"weight\" DESC LIMIT ?";
+        auto rows = run_keyed_query(db, statement_cache, sql, prefix, upper_bound, limit);
+        result.insert(result.end(), std::make_move_iterator(rows.begin()), std::make_move_iterator(rows.end()));
+    }
+
+    deduplicate_keyed_items_by_value(result);
+    std::stable_sort(result.begin(), result.end(),
+                     [](const KeyedQueryItem &lhs, const KeyedQueryItem &rhs) { return lhs.weight > rhs.weight; });
+    if (static_cast<int>(result.size()) > limit)
+    {
+        result.resize(static_cast<std::size_t>(limit));
+    }
+    return result;
+}
+
 WordLatticeLookup make_lattice_db_lookup(sqlite3 *db, std::unordered_map<std::string, sqlite3_stmt *> &statement_cache,
                                          QuerySource source, int span_limit)
 {

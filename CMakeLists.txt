@@ -237,6 +237,10 @@ if(BUILD_TESTING)
     target_link_libraries(test_wubi_mixed_input_session PRIVATE MetasequoiaIme::Engine)
     add_test(NAME wubi_mixed_input_session COMMAND test_wubi_mixed_input_session)
 
+    add_executable(test_longer_phrase_candidates tests/src/test_longer_phrase_candidates.cpp)
+    target_link_libraries(test_longer_phrase_candidates PRIVATE MetasequoiaIme::Engine)
+    add_test(NAME longer_phrase_candidates COMMAND test_longer_phrase_candidates)
+
     add_executable(test_jianpin_input_session tests/src/test_jianpin_input_session.cpp)
     target_link_libraries(test_jianpin_input_session PRIVATE MetasequoiaIme::Engine)
     add_test(NAME jianpin_input_session COMMAND test_jianpin_input_session)
