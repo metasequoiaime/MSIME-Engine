@@ -475,6 +475,10 @@ SessionSnapshot NineKeySession::snapshot() const
     SessionSnapshot result{};
     result.scheme = SchemeType::Quanpin;
     result.local_mode = LocalInputMode::None;
+    // The grid's snapshot stands in for the whole session's while it is composing, so it has to carry the mode too: a
+    // host that draws its English keys from this flag would otherwise put Chinese ones back the moment the first digit
+    // arrived.
+    result.dedicated_english = english_only_;
     result.preedit = quanpin::join_segments(locked_);
     if (active() && locked_length() < digits_.size())
     {

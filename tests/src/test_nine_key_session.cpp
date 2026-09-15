@@ -208,6 +208,8 @@ int main()
     for (const auto &item : words.snapshot().candidates)
         require(item.word != "\u4f60" && item.word != "\u7c73", "pinyin candidates leaked into english nine-key");
     require(words.snapshot().nine_key_spellings.empty(), "english nine-key offered pinyin spellings");
+    // 键面靠这个标志画:九键一激活就把整个会话的快照顶掉,不带上模式的话第一个数字就把中文键面换回来了。
+    require(words.snapshot().dedicated_english, "the grid's snapshot dropped the English mode");
     words.command(Command::Cancel);
 
     // 一个数字就该出词:混排时用来压噪音的前缀长度,在只剩单词的列表里没有意义。
