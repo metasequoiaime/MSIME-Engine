@@ -166,7 +166,15 @@ std::size_t NineKeySession::locked_length() const
 
 std::vector<WordItem> NineKeySession::english_candidates()
 {
-    if (!english_.mixed_candidates || !locked_.empty() || digits_.size() < english_.minimum_prefix)
+    // In English-only mode the words are the whole answer rather than an addition to the pinyin list, so neither the
+    // mixed-candidate setting nor the prefix length that keeps a mixed list readable applies: one digit already narrows
+    // the alphabet enough to be worth showing.
+    if (english_only_)
+    {
+        if (digits_.empty())
+            return {};
+    }
+    else if (!english_.mixed_candidates || !locked_.empty() || digits_.size() < english_.minimum_prefix)
         return {};
     if (!english_dictionary_)
     {
@@ -212,6 +220,12 @@ void NineKeySession::refresh()
     spellings_.clear();
     if (!active())
         return;
+    if (english_only_)
+    {
+        // No syllables to offer and no pinyin to look up: the digits stand for letters only.
+        candidates_ = english_candidates();
+        return;
+    }
     if (!dictionary_)
         dictionary_ = std::make_unique<QuanpinDictionary>(std::string{}, paths_);
     const auto remaining = digits_.substr(locked_length());
