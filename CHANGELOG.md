@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.21.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.20.0...v0.21.0) (2026-09-15)
+
+
+### Features
+
+* **nine-key:** spell English words on the grid ([b775b81](https://github.com/metasequoiaime/MSIME-Engine/commit/b775b81bf0547b113d29fbece2dc6a85cec47073))
+
+
+### Bug Fixes
+
+* **nine-key:** keep the English mode in the grid's snapshot ([7ea5350](https://github.com/metasequoiaime/MSIME-Engine/commit/7ea5350ba0990862875302c54b5c4d0caf9bb80a))
+
 ## [0.20.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.19.0...v0.20.0) (2026-09-14)
 
 
