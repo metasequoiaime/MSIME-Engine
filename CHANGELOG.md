@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.20.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.19.0...v0.20.0) (2026-09-14)
+
+
+### Features
+
+* **ipc:** define negotiated keyboard composition cancellation ([#144](https://github.com/metasequoiaime/MSIME-Engine/issues/144)) ([aa0dfcb](https://github.com/metasequoiaime/MSIME-Engine/commit/aa0dfcb930f1b21f9bcaa7bf785dca2f0af1f198))
+* **voice:** select capture devices by backend endpoint identity ([#142](https://github.com/metasequoiaime/MSIME-Engine/issues/142)) ([f0d212c](https://github.com/metasequoiaime/MSIME-Engine/commit/f0d212c8a90dac2f70d48a5a149e4f71080b4e7b))
+
+
+### Bug Fixes
+
+* **engine:** preserve fuzzy candidate ranking scales ([886fe2f](https://github.com/metasequoiaime/MSIME-Engine/commit/886fe2f0ca015e1d36d046a607682cc7d2fb9a2c))
+* **japanese:** complete minus-key long-vowel input ([#147](https://github.com/metasequoiaime/MSIME-Engine/issues/147)) ([f331a45](https://github.com/metasequoiaime/MSIME-Engine/commit/f331a45a38903bbbe92d3c9da7449c6baa0c5adf))
+* **japanese:** resolve n before long vowel mark ([#146](https://github.com/metasequoiaime/MSIME-Engine/issues/146)) ([a0c60be](https://github.com/metasequoiaime/MSIME-Engine/commit/a0c60bef0c31f6434940563ade9e566a700885ed))
+
 ## [0.19.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.18.0...v0.19.0) (2026-09-14)
 
 
