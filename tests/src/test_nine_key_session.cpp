@@ -192,5 +192,43 @@ int main()
     auto failed_learning = failing.finish(candidate(failing, "米"));
     require(failed_learning.commit == "米" && failed_learning.diagnostic && failing.snapshot().preedit.empty(),
             "failed learning lost commit or diagnostic");
+    // 英文九键:同一个键面,数字拼的是单词而不是音节。
+    //
+    // English is a mode rather than a scheme, so the grid stays available in it. The words are the whole answer here
+    // rather than an addition to a pinyin list, which is why they appear with mixed candidates switched off and from
+    // the very first digit.
+    auto english_options = options;
+    english_options.english.mixed_candidates = false;
+    english_options.english.minimum_prefix = 2;
+    Session words(english_options);
+    words.set_nine_key_enabled(true);
+    words.set_dedicated_english(true);
+    type(words, "65");
+    require(candidate(words, "ok") < candidate(words, "old"), "english nine-key ranks the exact code first");
+    for (const auto &item : words.snapshot().candidates)
+        require(item.word != "\u4f60" && item.word != "\u7c73", "pinyin candidates leaked into english nine-key");
+    require(words.snapshot().nine_key_spellings.empty(), "english nine-key offered pinyin spellings");
+    // 键面靠这个标志画:九键一激活就把整个会话的快照顶掉,不带上模式的话第一个数字就把中文键面换回来了。
+    require(words.snapshot().dedicated_english, "the grid's snapshot dropped the English mode");
+    words.command(Command::Cancel);
+
+    // 一个数字就该出词:混排时用来压噪音的前缀长度,在只剩单词的列表里没有意义。
+    type(words, "6");
+    require(words.select(candidate(words, "old")).commit == "old",
+            "english nine-key withheld words behind the prefix length");
+
+    // 退出英文,音节就回来了;两个开关的先后顺序不该影响结果。
+    words.set_dedicated_english(false);
+    type(words, "64");
+    candidate(words, "\u4f60");
+    require(!words.snapshot().nine_key_spellings.empty(), "pinyin spellings did not return");
+    words.command(Command::Cancel);
+    words.set_nine_key_enabled(false);
+    words.set_dedicated_english(true);
+    words.set_nine_key_enabled(true);
+    type(words, "65");
+    candidate(words, "ok");
+    words.command(Command::Cancel);
+
     std::cout << "Nine-key input contract passed\n";
 }

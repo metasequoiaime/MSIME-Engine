@@ -19,6 +19,22 @@ class NineKeySession
         english_ = english;
         refresh();
     }
+    // 纯英文九键:只出英文词,不再拼拼音。
+    //
+    // The same digits mean two different things depending on this. Mixed candidates put English words beside pinyin
+    // ones and are a setting; this replaces them, and is a mode the host enters deliberately, so it is not gated on
+    // that setting or on the minimum prefix a mixed list needs to stay useful.
+    void set_english_only(bool english_only)
+    {
+        if (english_only_ == english_only)
+            return;
+        english_only_ = english_only;
+        refresh();
+    }
+    bool english_only() const
+    {
+        return english_only_;
+    }
     bool active() const
     {
         return !digits_.empty();
@@ -41,6 +57,7 @@ class NineKeySession
     std::optional<std::string> adjust_frequency(std::size_t index, bool force_top);
     RuntimePaths paths_;
     bool learning_;
+    bool english_only_ = false;
     FrequencyAdjustmentOptions frequency_;
     FuzzyPinyinOptions fuzzy_;
     EnglishInputOptions english_;

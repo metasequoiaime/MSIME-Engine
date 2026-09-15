@@ -166,7 +166,15 @@ std::size_t NineKeySession::locked_length() const
 
 std::vector<WordItem> NineKeySession::english_candidates()
 {
-    if (!english_.mixed_candidates || !locked_.empty() || digits_.size() < english_.minimum_prefix)
+    // In English-only mode the words are the whole answer rather than an addition to the pinyin list, so neither the
+    // mixed-candidate setting nor the prefix length that keeps a mixed list readable applies: one digit already narrows
+    // the alphabet enough to be worth showing.
+    if (english_only_)
+    {
+        if (digits_.empty())
+            return {};
+    }
+    else if (!english_.mixed_candidates || !locked_.empty() || digits_.size() < english_.minimum_prefix)
         return {};
     if (!english_dictionary_)
     {
@@ -212,6 +220,12 @@ void NineKeySession::refresh()
     spellings_.clear();
     if (!active())
         return;
+    if (english_only_)
+    {
+        // No syllables to offer and no pinyin to look up: the digits stand for letters only.
+        candidates_ = english_candidates();
+        return;
+    }
     if (!dictionary_)
         dictionary_ = std::make_unique<QuanpinDictionary>(std::string{}, paths_);
     const auto remaining = digits_.substr(locked_length());
@@ -461,6 +475,10 @@ SessionSnapshot NineKeySession::snapshot() const
     SessionSnapshot result{};
     result.scheme = SchemeType::Quanpin;
     result.local_mode = LocalInputMode::None;
+    // The grid's snapshot stands in for the whole session's while it is composing, so it has to carry the mode too: a
+    // host that draws its English keys from this flag would otherwise put Chinese ones back the moment the first digit
+    // arrived.
+    result.dedicated_english = english_only_;
     result.preedit = quanpin::join_segments(locked_);
     if (active() && locked_length() < digits_.size())
     {

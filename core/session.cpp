@@ -46,6 +46,7 @@ void Session::set_nine_key_enabled(bool enabled)
 {
     impl_->nine_key.command(Command::Cancel);
     impl_->nine_key_enabled = enabled;
+    impl_->nine_key.set_english_only(enabled && impl_->session.dedicated_english_mode());
 }
 KeyResult Session::choose_nine_key_spelling(std::size_t index)
 {
@@ -53,9 +54,12 @@ KeyResult Session::choose_nine_key_spelling(std::size_t index)
 }
 KeyResult Session::character(char value, bool shift_only)
 {
+    // English is a mode rather than a scheme, so the grid stays available in it: the same digits spell words instead of
+    // syllables. A local input mode still takes the keys, and the scheme underneath must still be quanpin, because that
+    // is the only one whose syllables the grid knows.
     if (impl_->nine_key_enabled && impl_->session.scheme() == SchemeType::Quanpin &&
-        impl_->session.local_input_mode() == LocalInputMode::None && !impl_->session.dedicated_english_mode() &&
-        impl_->session.preedit().empty() && value >= '2' && value <= '9')
+        impl_->session.local_input_mode() == LocalInputMode::None && impl_->session.preedit().empty() && value >= '2' &&
+        value <= '9')
         return impl_->nine_key.character(value);
     if (impl_->nine_key.active())
         return {};
@@ -174,6 +178,9 @@ void Session::set_dedicated_english(bool enabled)
 {
     impl_->nine_key.command(Command::Cancel);
     impl_->session.set_dedicated_english_mode(enabled);
+    // The grid's digits mean letters in English and syllables outside it, so whichever of the two switches moves last
+    // has to tell it.
+    impl_->nine_key.set_english_only(impl_->nine_key_enabled && enabled);
 }
 void Session::set_wubi_mixed_pinyin(bool enabled)
 {
