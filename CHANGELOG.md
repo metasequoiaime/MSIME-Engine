@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.21.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.21.0...v0.21.1) (2026-09-15)
+
+
+### Bug Fixes
+
+* rank nine-key spellings by digit length ([6f235a5](https://github.com/metasequoiaime/MSIME-Engine/commit/6f235a5144e02bf0468ab7ee2d625cd2181df931))
+* rank nine-key spellings by digit length ([acfc34a](https://github.com/metasequoiaime/MSIME-Engine/commit/acfc34ac38460267062cbe90296df952e55944a4))
+
 ## [0.21.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.20.0...v0.21.0) (2026-09-15)
 
 
