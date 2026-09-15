@@ -237,7 +237,9 @@ void NineKeySession::refresh()
             spellings_.push_back(syllable);
     }
     std::stable_sort(spellings_.begin(), spellings_.end(), [&remaining](const auto &a, const auto &b) {
-        const auto al = std::min(a.size(), remaining.size()), bl = std::min(b.size(), remaining.size());
+        // 九键输入长度以数字位数计算；直接比较拼音字母数会把同一数字前缀下
+        // 的候选顺序排错（例如一个两位数字才能完成的音节被提前）。
+        const auto al = std::min(encode(a).size(), remaining.size()), bl = std::min(encode(b).size(), remaining.size());
         return al != bl ? al > bl : a < b;
     });
     auto alternatives = paths(remaining);
