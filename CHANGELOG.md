@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.3](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.21.2...v0.21.3) (2026-09-17)
+
+
+### Bug Fixes
+
+* stop assembled sentences from crowding out dictionary candidates ([9710c3b](https://github.com/metasequoiaime/MSIME-Engine/commit/9710c3ba630a4baa4d2877eab1e14532670da10a))
+
 ## [0.21.2](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.21.1...v0.21.2) (2026-09-17)
 
 
