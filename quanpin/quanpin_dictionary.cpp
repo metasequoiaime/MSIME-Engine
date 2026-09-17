@@ -146,6 +146,10 @@ QuanpinDictionary::QuanpinDictionary(std::string db_path, metasequoia::RuntimePa
     }
 
     quanpin::warm_up(db_, statement_cache_);
+    // Reading fifteen megabytes of word pairs takes about a tenth of a second. Left to the first query that wants
+    // it, that lands on a keystroke; here it joins the work of opening the dictionary, which the host already
+    // does off the typing path.
+    quanpin::BigramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
     reset_cache_if_database_changed();
 }
 

@@ -65,6 +65,8 @@ ShuangpinDictionary::ShuangpinDictionary(const ShuangpinProfile &profile, metase
     else
     {
         quanpin::warm_up(quanpin_db_, quanpin_statement_cache_);
+        // Off the typing path, for the reason QuanpinDictionary's constructor gives.
+        quanpin::BigramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
         reset_cache_if_database_changed();
     }
 }
