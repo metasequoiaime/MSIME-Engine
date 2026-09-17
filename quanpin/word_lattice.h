@@ -72,4 +72,9 @@ void merge_lattice_candidates(std::vector<WordItem> &candidates, const Segments 
                               const WordLatticeLookup &lookup, const std::string &typed_pinyin,
                               const WordLatticeOptions &options = {});
 
+// Index of the first row a synthesised whole sentence may take, which is after the leading run of
+// exact full-cover Database/UserDatabase hits. Both whole-sentence sources share it so neither can
+// displace a dictionary entry that already answers the whole key, per the ranking above.
+size_t whole_sentence_insert_position(const std::vector<WordItem> &candidates, size_t n_syllables);
+
 } // namespace quanpin

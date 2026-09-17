@@ -366,6 +366,12 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
         // suggestion.  The lattice is a secondary source; it should add only
         // its best path rather than filling the candidate page with near-
         // duplicate low-quality sentences.
+        //
+        // Both of them rank below a dictionary entry that already answers the
+        // whole key, which is what word_lattice.h documents and what
+        // whole_sentence_insert_position computes.  This used to insert at
+        // index 0 unconditionally: an assembled sentence displaced the exact
+        // word, turning 百依百顺 into 白一百顺 and 颁布实施 into 版不是是.
         const std::string normalized = remove_delimiters(segmentation.empty() ? raw_input : segmentation);
         const std::string google_sentence = search_sentence_from_ime_engine(normalized);
         if (!google_sentence.empty())
@@ -373,10 +379,15 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
             const auto duplicate = std::find_if(result.begin(), result.end(),
                                                 [&](const WordItem &item) { return item.word == google_sentence; });
             if (duplicate == result.end())
+            {
                 // Whole-sentence fallbacks must carry their canonical quanpin
                 // reading so creating-word learning can persist them.
-                result.insert(result.begin(), WordItem(segmentation.empty() ? raw_input : segmentation, google_sentence,
-                                                       1, CandidateSource::Fallback, segmentation));
+                const auto at =
+                    static_cast<std::ptrdiff_t>(quanpin::whole_sentence_insert_position(result, segments.size()));
+                result.insert(result.begin() + at,
+                              WordItem(segmentation.empty() ? raw_input : segmentation, google_sentence, 1,
+                                       CandidateSource::Fallback, segmentation));
+            }
         }
 
         quanpin::WordLatticeOptions lattice_options;
@@ -391,11 +402,15 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
             const auto google = std::find_if(result.begin(), result.end(), [&](const WordItem &item) {
                 return item.word == google_sentence && item.source == CandidateSource::Fallback;
             });
-            if (google != result.end() && google != result.begin())
+            // The lattice merge above may have inserted ahead of the fallback. Put the fallback
+            // back in front of the lattice row, but still behind the exact dictionary hits.
+            const auto boundary =
+                static_cast<std::ptrdiff_t>(quanpin::whole_sentence_insert_position(result, segments.size()));
+            if (google != result.end() && google - result.begin() > boundary)
             {
                 WordItem preferred = std::move(*google);
                 result.erase(google);
-                result.insert(result.begin(), std::move(preferred));
+                result.insert(result.begin() + boundary, std::move(preferred));
             }
         }
     }

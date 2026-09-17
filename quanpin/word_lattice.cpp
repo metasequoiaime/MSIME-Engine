@@ -251,12 +251,18 @@ void merge_lattice_candidates(std::vector<WordItem> &candidates, const Segments 
     if (extra.empty())
         return;
 
+    const size_t insert_at = whole_sentence_insert_position(candidates, syllables.size());
+    candidates.insert(candidates.begin() + static_cast<std::ptrdiff_t>(insert_at), extra.begin(), extra.end());
+}
+
+size_t whole_sentence_insert_position(const std::vector<WordItem> &candidates, size_t n_syllables)
+{
     size_t insert_at = 0;
-    while (insert_at < candidates.size() && covers_all_syllables(candidates[insert_at], syllables.size()) &&
+    while (insert_at < candidates.size() && covers_all_syllables(candidates[insert_at], n_syllables) &&
            (candidates[insert_at].source == CandidateSource::Database ||
             candidates[insert_at].source == CandidateSource::UserDatabase))
         ++insert_at;
-    candidates.insert(candidates.begin() + static_cast<std::ptrdiff_t>(insert_at), extra.begin(), extra.end());
+    return insert_at;
 }
 
 } // namespace quanpin
