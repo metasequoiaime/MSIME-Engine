@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.22.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.21.3...v0.22.0) (2026-09-17)
+
+
+### Features
+
+* **quanpin:** a sentence-accuracy eval set, and a corpus bigram for the lattice ([2dc1a9d](https://github.com/metasequoiaime/MSIME-Engine/commit/2dc1a9d57e119ec5e7b6925bcd05cbf3defbb4d5))
+* **quanpin:** search six sentences, show one, and open the seam to rescore them ([575d568](https://github.com/metasequoiaime/MSIME-Engine/commit/575d568c5d35401bdd3f77b51d7c7f2819b2172d))
+
+
+### Performance Improvements
+
+* **quanpin:** map the ngram tables instead of reading them ([5d99f3d](https://github.com/metasequoiaime/MSIME-Engine/commit/5d99f3d7b1e7833d56e4fd98dbdf1a2997d17cb2))
+
 ## [0.21.3](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.21.2...v0.21.3) (2026-09-17)
 
 
