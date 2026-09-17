@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../core/word_item.h"
+#include "ngram_table.h"
 #include "quanpin_utils.h"
 
 #include <cstdint>
@@ -14,8 +15,23 @@ namespace quanpin
 // Phrase-graph + Viterbi beam search over dictionary spans.
 // Algorithm follows libpinyin PinyinLookup2 (unigram path score as a product of
 // P(word), beam per syllable step) and sunpinyin's lattice columns.
-// Bigram interpolation is omitted until a bigram table exists; the unigram
-// normalizer supplies the usual "fewer tokens win" bias.
+// The unigram normalizer supplies the usual "fewer tokens win" bias.
+//
+// When WordLatticeOptions::bigram is supplied, each transition also earns
+// bigram_weight * log(P(next|previous) / P(next)) from the table (see
+// ngram_table.h). Without it every path spelling the same syllables is judged
+// on its words' frequencies alone, which is why 配置于权限 used to beat
+// 配置与权限: 于 is the commoner character and nothing else had an opinion.
+// The term is a bonus rather than a replacement, so an absent pair leaves the
+// path exactly where the unigram score put it.
+//
+// A trigram cannot be searched the same way without carrying two words of
+// history in every beam entry, so WordLatticeOptions::trigram is applied after
+// the search instead: the n best paths are rescored with what the third word of
+// context adds over the second, then reordered. This is the reason to decode
+// more paths than are shown. `emit` caps how many reach the candidate list, so
+// a caller can search six and display one - the extra five exist to be
+// reordered, not to fill the page with near-duplicate sentences.
 //
 // Ranking when merging into an existing candidate list:
 //   1. Exact SQLite full-key hits (CandidateSource::Database / UserDatabase)
@@ -61,6 +77,17 @@ struct WordLatticeOptions
     // Not calibrated on the full dictionary.
     double unigram_z = 1e6;
     double phrase_length_bonus = 3.0;
+    // Borrowed, not owned: one table is shared by every session and outlives them.
+    const NgramTable *bigram = nullptr;
+    const NgramTable *trigram = nullptr;
+    // How much each context term is allowed to move a path. Calibrated on
+    // tests/scripts/build_eval_set.py output; see tests/src/eval_sentences.cpp.
+    double bigram_weight = 1.0;
+    double trigram_weight = 1.0;
+    // How many of the decoded paths reach the candidate list. 0 emits all of
+    // them, which is what a caller measuring the decoder wants; a caller
+    // feeding a candidate page wants 1.
+    int emit = 0;
 };
 
 using WordLatticeLookup = std::function<std::vector<LatticeLexeme>(const Segments &span)>;

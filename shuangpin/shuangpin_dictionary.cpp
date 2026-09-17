@@ -65,6 +65,9 @@ ShuangpinDictionary::ShuangpinDictionary(const ShuangpinProfile &profile, metase
     else
     {
         quanpin::warm_up(quanpin_db_, quanpin_statement_cache_);
+        // Off the typing path, for the reason QuanpinDictionary's constructor gives.
+        quanpin::NgramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
+        quanpin::NgramTable::shared(paths_.dictionary(quanpin::kTrigramFileName));
         reset_cache_if_database_changed();
     }
 }
@@ -218,7 +221,10 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generateSeries( //
             }
         }
         quanpin::WordLatticeOptions lattice_options;
-        lattice_options.nbest = 1;
+        lattice_options.nbest = 6;
+        lattice_options.emit = 1;
+        lattice_options.bigram = quanpin::NgramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
+        lattice_options.trigram = quanpin::NgramTable::shared(paths_.dictionary(quanpin::kTrigramFileName));
         quanpin::merge_lattice_candidates(candidate_list, quanpin_segments,
                                           quanpin::make_lattice_db_lookup(quanpin_db_, quanpin_statement_cache_,
                                                                           quanpin::QuerySource::Shuangpin,

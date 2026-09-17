@@ -58,6 +58,7 @@ set(METASEQUOIA_IME_ENGINE_SOURCES
     quanpin/quanpin_dictionary.cpp
     quanpin/quanpin_query.cpp
     quanpin/quanpin_utils.cpp
+    quanpin/ngram_table.cpp
     quanpin/word_lattice.cpp
     schemes/japanese_romaji_scheme.cpp
     schemes/quanpin_scheme.cpp
@@ -177,6 +178,21 @@ if(BUILD_TESTING)
     add_executable(bench_nine_key tests/src/bench_nine_key.cpp)
     target_link_libraries(bench_nine_key PRIVATE MetasequoiaImeEngine)
     add_test(NAME nine_key_session COMMAND test_nine_key_session)
+
+    add_executable(test_ngram_table tests/src/test_ngram_table.cpp)
+    target_link_libraries(test_ngram_table PRIVATE MetasequoiaIme::Engine)
+    if(MSVC)
+        target_compile_options(test_ngram_table PRIVATE /utf-8)
+    endif()
+    add_test(NAME ngram_table COMMAND test_ngram_table)
+
+    # Measures conversion accuracy against a frozen eval set instead of asserting one behaviour, so it
+    # needs a dictionary and a set on the command line; see tests/scripts/build_eval_set.py.
+    add_executable(eval_sentences tests/src/eval_sentences.cpp)
+    target_link_libraries(eval_sentences PRIVATE MetasequoiaIme::Engine)
+    if(MSVC)
+        target_compile_options(eval_sentences PRIVATE /utf-8)
+    endif()
 
     add_executable(test_platform_api tests/src/test_platform_api.cpp tests/src/test_public_session.cpp)
     target_link_libraries(test_platform_api PRIVATE MetasequoiaIme::Engine)
