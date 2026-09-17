@@ -136,6 +136,25 @@ int main()
         }
 
         {
+            // The same ranking on the shuangpin path, which kept inserting the fallback at index 0
+            // after the quanpin path stopped: 笔录蓝绿 took the first row from 筚路蓝缕 for anyone
+            // typing 小鹤. anqrbcww is an'quan'bao'wei in xiaohe, the session default profile.
+            SessionOptions options;
+            options.paths = prepare_runtime_paths(resources, root / "user-sp", root / "cache-sp", "v1");
+            options.scheme = SchemeType::Shuangpin;
+            Session session(options);
+            for (const char letter : std::string("anqrbcww"))
+            {
+                session.character(letter);
+            }
+            const auto listed = words(session);
+            require(!listed.empty() && listed.front() == "安全保卫",
+                    "A synthesised whole sentence displaced the exact dictionary entry in shuangpin.");
+            require(std::find(listed.begin(), listed.end(), "安全包围") != listed.end(),
+                    "The fallback whole sentence never reached the shuangpin candidate list.");
+        }
+
+        {
             SessionOptions options;
             options.paths = prepare_runtime_paths(resources, root / "user-select", root / "cache-select", "v1");
             options.scheme = SchemeType::Quanpin;
