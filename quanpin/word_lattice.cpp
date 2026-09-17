@@ -164,10 +164,15 @@ std::vector<LatticePath> decode_word_lattice(const Segments &syllables, const Wo
         for (int hi = 0; hi < static_cast<int>(columns[pos].size()); ++hi)
         {
             const Hyp &hyp = columns[pos][static_cast<size_t>(hi)];
+            // Column 0 has no predecessor, so the start token carries whatever the corpus knows about how
+            // sentences open; every later column uses the word the hypothesis arrived on.
+            const std::string &previous = pos == 0 ? BigramTable::sentence_start() : hyp.word;
             for (const auto &edge : graph[pos])
             {
                 Hyp next;
                 next.score = hyp.score + edge.log_prob;
+                if (options.bigram)
+                    next.score += options.bigram_weight * options.bigram->bonus(previous, edge.word);
                 next.prev_pos = static_cast<int>(pos);
                 next.prev_idx = hi;
                 next.word = edge.word;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../core/word_item.h"
+#include "bigram_table.h"
 #include "quanpin_utils.h"
 
 #include <cstdint>
@@ -14,8 +15,15 @@ namespace quanpin
 // Phrase-graph + Viterbi beam search over dictionary spans.
 // Algorithm follows libpinyin PinyinLookup2 (unigram path score as a product of
 // P(word), beam per syllable step) and sunpinyin's lattice columns.
-// Bigram interpolation is omitted until a bigram table exists; the unigram
-// normalizer supplies the usual "fewer tokens win" bias.
+// The unigram normalizer supplies the usual "fewer tokens win" bias.
+//
+// When WordLatticeOptions::bigram is supplied, each transition also earns
+// bigram_weight * log(P(next|previous) / P(next)) from the table (see
+// bigram_table.h). Without it every path spelling the same syllables is judged
+// on its words' frequencies alone, which is why 配置于权限 used to beat
+// 配置与权限: 于 is the commoner character and nothing else had an opinion.
+// The term is a bonus rather than a replacement, so an absent pair leaves the
+// path exactly where the unigram score put it.
 //
 // Ranking when merging into an existing candidate list:
 //   1. Exact SQLite full-key hits (CandidateSource::Database / UserDatabase)
@@ -61,6 +69,11 @@ struct WordLatticeOptions
     // Not calibrated on the full dictionary.
     double unigram_z = 1e6;
     double phrase_length_bonus = 3.0;
+    // Borrowed, not owned: one table is shared by every session and outlives them.
+    const BigramTable *bigram = nullptr;
+    // How much the transition term is allowed to move a path. Calibrated on
+    // tests/scripts/build_eval_set.py output; see tests/src/eval_sentences.cpp.
+    double bigram_weight = 1.0;
 };
 
 using WordLatticeLookup = std::function<std::vector<LatticeLexeme>(const Segments &span)>;

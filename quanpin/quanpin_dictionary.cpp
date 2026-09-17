@@ -405,6 +405,7 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
 
         quanpin::WordLatticeOptions lattice_options;
         lattice_options.nbest = 1;
+        lattice_options.bigram = quanpin::BigramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
         quanpin::merge_lattice_candidates(result, segments,
                                           quanpin::make_lattice_db_lookup(db_, statement_cache_,
                                                                           quanpin::QuerySource::Quanpin,

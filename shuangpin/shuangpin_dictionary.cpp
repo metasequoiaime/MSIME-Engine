@@ -219,6 +219,7 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generateSeries( //
         }
         quanpin::WordLatticeOptions lattice_options;
         lattice_options.nbest = 1;
+        lattice_options.bigram = quanpin::BigramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
         quanpin::merge_lattice_candidates(candidate_list, quanpin_segments,
                                           quanpin::make_lattice_db_lookup(quanpin_db_, quanpin_statement_cache_,
                                                                           quanpin::QuerySource::Shuangpin,

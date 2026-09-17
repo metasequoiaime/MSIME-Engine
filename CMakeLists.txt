@@ -58,6 +58,7 @@ set(METASEQUOIA_IME_ENGINE_SOURCES
     quanpin/quanpin_dictionary.cpp
     quanpin/quanpin_query.cpp
     quanpin/quanpin_utils.cpp
+    quanpin/bigram_table.cpp
     quanpin/word_lattice.cpp
     schemes/japanese_romaji_scheme.cpp
     schemes/quanpin_scheme.cpp
@@ -177,6 +178,13 @@ if(BUILD_TESTING)
     add_executable(bench_nine_key tests/src/bench_nine_key.cpp)
     target_link_libraries(bench_nine_key PRIVATE MetasequoiaImeEngine)
     add_test(NAME nine_key_session COMMAND test_nine_key_session)
+
+    add_executable(test_bigram_table tests/src/test_bigram_table.cpp)
+    target_link_libraries(test_bigram_table PRIVATE MetasequoiaIme::Engine)
+    if(MSVC)
+        target_compile_options(test_bigram_table PRIVATE /utf-8)
+    endif()
+    add_test(NAME bigram_table COMMAND test_bigram_table)
 
     # Measures conversion accuracy against a frozen eval set instead of asserting one behaviour, so it
     # needs a dictionary and a set on the command line; see tests/scripts/build_eval_set.py.
