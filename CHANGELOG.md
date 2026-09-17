@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.21.2](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.21.1...v0.21.2) (2026-09-17)
+
+
+### Bug Fixes
+
+* **quanpin:** rank whole sentences behind exact dictionary hits ([375c067](https://github.com/metasequoiaime/MSIME-Engine/commit/375c0670e582d7b829b2f8870432aea455d7adf9))
+* **quanpin:** rank whole sentences behind exact dictionary hits ([a40b845](https://github.com/metasequoiaime/MSIME-Engine/commit/a40b8452593af5fa6e931ef75315618c0118a1db))
+
 ## [0.21.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.21.0...v0.21.1) (2026-09-15)
 
 
