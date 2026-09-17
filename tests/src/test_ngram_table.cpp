@@ -131,7 +131,8 @@ void test_rejects_bad_files()
         check(table->bonus("配置", "与") == 0.0, "an empty table scores everything zero");
 }
 
-quanpin::WordLatticeLookup table_lookup(const std::unordered_map<std::string, std::vector<quanpin::LatticeLexeme>> &rows)
+quanpin::WordLatticeLookup table_lookup(
+    const std::unordered_map<std::string, std::vector<quanpin::LatticeLexeme>> &rows)
 {
     return [&rows](const quanpin::Segments &span) {
         std::string key;
@@ -158,7 +159,8 @@ void test_lattice_uses_the_transition()
 
     const auto without = quanpin::decode_word_lattice(syllables, table_lookup(rows));
     check(!without.empty() && without.front().sentence == "配置于权限",
-          "without a table the commoner character wins: got '" + (without.empty() ? std::string() : without.front().sentence) + "'");
+          "without a table the commoner character wins: got '" +
+              (without.empty() ? std::string() : without.front().sentence) + "'");
 
     const auto path = scratch_dir() / "transition.bin";
     write_table(path, sorted_entries({{hash_pair("配置", "与"), 3.0f}}));
@@ -209,7 +211,8 @@ void test_trigram_reorders_the_paths()
     options.trigram = table.get();
     const auto rescored = quanpin::decode_word_lattice(syllables, table_lookup(rows), options);
     check(!rescored.empty() && rescored.front().sentence == "输入法",
-          "the trigram reorders the finished paths: got '" + (rescored.empty() ? std::string() : rescored.front().sentence) + "'");
+          "the trigram reorders the finished paths: got '" +
+              (rescored.empty() ? std::string() : rescored.front().sentence) + "'");
 
     options.trigram_weight = 0.0;
     const auto silenced = quanpin::decode_word_lattice(syllables, table_lookup(rows), options);

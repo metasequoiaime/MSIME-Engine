@@ -1,12 +1,18 @@
 // Whole-sentence conversion accuracy over a frozen eval set.
 //
-// Reads `pinyin<TAB>sentence` rows (tests/scripts/build_eval_set.py writes them), types each pinyin into a fresh composition one letter at a time, and reports how often the engine's answer is the sentence the text came from. Nothing is learned and no personal history carries between rows, so two runs of the same binary on the same set produce the same numbers and two builds can be compared directly.
+// Reads `pinyin<TAB>sentence` rows (tests/scripts/build_eval_set.py writes them), types each pinyin into a fresh
+// composition one letter at a time, and reports how often the engine's answer is the sentence the text came from.
+// Nothing is learned and no personal history carries between rows, so two runs of the same binary on the same set
+// produce the same numbers and two builds can be compared directly.
 //
 // Four numbers, because they answer different questions:
 //   top-1            the first candidate is the whole sentence. This is the ranking quality the user sees.
-//   within page      the sentence is somewhere on the first page. This is the ceiling for any reranker: a sentence the decoder never proposed cannot be promoted into first place, so the gap between this and top-1 is all a rescoring pass could ever win.
-//   commit           what Session::finish() actually inserts, which for a partially covered input is the leading candidate plus the remaining segments rather than candidate zero.
-//   character        per-position agreement between candidate zero and the sentence, so a near miss scores better than a wrong sentence of the same length.
+//   within page      the sentence is somewhere on the first page. This is the ceiling for any reranker: a sentence the
+//   decoder never proposed cannot be promoted into first place, so the gap between this and top-1 is all a rescoring
+//   pass could ever win. commit           what Session::finish() actually inserts, which for a partially covered input
+//   is the leading candidate plus the remaining segments rather than candidate zero. character        per-position
+//   agreement between candidate zero and the sentence, so a near miss scores better than a wrong sentence of the same
+//   length.
 //
 // Usage: eval_sentences <dictionary-dir> <sentences.tsv> [--limit N] [--page N] [--detail out.tsv]
 
@@ -33,7 +39,8 @@ struct Row
     std::string sentence;
 };
 
-// Character count and per-position comparison both need the sentence split at code point boundaries; a byte-wise diff would score a wrong character with a shared lead byte as a partial match.
+// Character count and per-position comparison both need the sentence split at code point boundaries; a byte-wise diff
+// would score a wrong character with a shared lead byte as a partial match.
 std::vector<std::string> split_utf8(const std::string &text)
 {
     std::vector<std::string> characters;
@@ -86,7 +93,8 @@ int main(int argc, char **argv)
 {
     if (argc < 3)
     {
-        std::cerr << "usage: eval_sentences <dictionary-dir> <sentences.tsv> [--limit N] [--page N] [--detail out.tsv]\n";
+        std::cerr
+            << "usage: eval_sentences <dictionary-dir> <sentences.tsv> [--limit N] [--page N] [--detail out.tsv]\n";
         return 2;
     }
     const std::filesystem::path dictionary = argv[1];
@@ -123,7 +131,8 @@ int main(int argc, char **argv)
     std::filesystem::create_directories(user);
     SessionOptions options;
     options.paths = {dictionary, user, user, dictionary};
-    // Learning off keeps every row a cold start: the set measures the shipped dictionary, not the order in which the rows happen to be read.
+    // Learning off keeps every row a cold start: the set measures the shipped dictionary, not the order in which the
+    // rows happen to be read.
     options.learning = false;
     Session session(options);
 
