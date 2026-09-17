@@ -78,6 +78,11 @@ std::size_t index_of(const std::vector<std::string> &values, const std::string &
     require(found != values.end(), "The candidate list is missing an expected word.");
     return static_cast<std::size_t>(found - values.begin());
 }
+
+std::size_t syllables(const std::string &key)
+{
+    return key.empty() ? 0 : static_cast<std::size_t>(std::count(key.begin(), key.end(), '\'')) + 1;
+}
 } // namespace
 
 int main()
@@ -133,6 +138,54 @@ int main()
             // above passes vacuously, which is how this defect survived.
             require(std::find(listed.begin(), listed.end(), "安全包围") != listed.end(),
                     "The fallback whole sentence never reached the candidate list.");
+        }
+
+        {
+            // The same ranking on the shuangpin path, which kept inserting the fallback at index 0
+            // after the quanpin path stopped: 笔录蓝绿 took the first row from 筚路蓝缕 for anyone
+            // typing 小鹤. anqrbcww is an'quan'bao'wei in xiaohe, the session default profile.
+            SessionOptions options;
+            options.paths = prepare_runtime_paths(resources, root / "user-sp", root / "cache-sp", "v1");
+            options.scheme = SchemeType::Shuangpin;
+            Session session(options);
+            for (const char letter : std::string("anqrbcww"))
+            {
+                session.character(letter);
+            }
+            const auto listed = words(session);
+            require(!listed.empty() && listed.front() == "安全保卫",
+                    "A synthesised whole sentence displaced the exact dictionary entry in shuangpin.");
+            require(std::find(listed.begin(), listed.end(), "安全包围") != listed.end(),
+                    "The fallback whole sentence never reached the shuangpin candidate list.");
+        }
+
+        {
+            // A decoder sentence answers the whole key; for a prefix of it there is nothing to
+            // answer. Those rows used to head the prefix's group, above every dictionary word in
+            // it — 你好是 over 你好, 开会是 over 开会, 版不是 over 颁布 — and spelled nothing that
+            // picking the shorter word could not already reach.
+            SessionOptions options;
+            options.paths = prepare_runtime_paths(resources, root / "user-prefix", root / "cache-prefix", "v1");
+            options.scheme = SchemeType::Quanpin;
+            Session session(options);
+            for (const char letter : std::string("nihaoshijie"))
+            {
+                session.character(letter);
+            }
+            const auto snapshot = session.snapshot();
+            bool whole_key_sentence = false;
+            for (const auto &candidate : snapshot.candidates)
+            {
+                if (candidate.source != CandidateSource::Fallback)
+                {
+                    continue;
+                }
+                require(syllables(candidate.canonical_pinyin) == 4,
+                        "A decoder sentence answered a prefix of the typed input.");
+                whole_key_sentence = true;
+            }
+            // Without this the loop above is vacuous, which is how the prefix rows stayed invisible.
+            require(whole_key_sentence, "The whole-key decoder sentence never reached the candidate list.");
         }
 
         {
