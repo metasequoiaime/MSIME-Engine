@@ -357,6 +357,19 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
                                  [](const WordItem &lhs, const WordItem &rhs) { return lhs.weight > rhs.weight; });
             }
         }
+        else
+        {
+            // query_single_path answers an empty dictionary result with a decoder sentence, which is
+            // right for the whole key and wrong for a prefix of it: the decoder pads the shorter
+            // dictionary word with one arbitrary character, and the row lands at the head of the
+            // prefix's group, above every real word there. 你好是 outranked 你好, 开会是 outranked
+            // 开会, 版不是 outranked 颁布. Whatever such a row spells is already reachable by picking
+            // the shorter word, so drop it and leave the whole-key sentence below as the only one.
+            partial_result.erase(
+                std::remove_if(partial_result.begin(), partial_result.end(),
+                               [](const WordItem &item) { return item.source == CandidateSource::Fallback; }),
+                partial_result.end());
+        }
         result.insert(result.end(), partial_result.begin(), partial_result.end());
     }
 
