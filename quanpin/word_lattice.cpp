@@ -132,6 +132,33 @@ size_t utf8_codepoints(const std::string &text)
     return n;
 }
 
+// The beam carries one word of history, so a third word of context cannot be searched without widening every
+// hypothesis into (position, last two words) - and that multiplies the beam by the vocabulary of a column. The
+// standard answer, and qingjian's, is to search with the shorter context and rescore the survivors: the paths are
+// already built here, and eight transitions across six sentences is nothing next to the search that produced them.
+//
+// Each entry holds what the third word adds over the second, so summing it onto a path that already carries its
+// bigram score is the whole model, not a second opinion competing with the first.
+void rescore_with_trigram(std::vector<LatticePath> &paths, const WordLatticeOptions &options)
+{
+    if (!options.trigram || options.trigram_weight == 0.0 || paths.size() < 2)
+        return;
+    const std::string &start = NgramTable::sentence_start();
+    for (auto &path : paths)
+    {
+        double bonus = 0;
+        for (size_t i = 0; i < path.words.size(); ++i)
+        {
+            const std::string &before = i >= 2 ? path.words[i - 2] : start;
+            const std::string &previous = i >= 1 ? path.words[i - 1] : start;
+            bonus += options.trigram->bonus(before, previous, path.words[i]);
+        }
+        path.log_prob += options.trigram_weight * bonus;
+    }
+    std::stable_sort(paths.begin(), paths.end(),
+                     [](const LatticePath &a, const LatticePath &b) { return a.log_prob > b.log_prob; });
+}
+
 bool covers_all_syllables(const WordItem &item, size_t n_syllables)
 {
     if (n_syllables == 0)
@@ -166,7 +193,7 @@ std::vector<LatticePath> decode_word_lattice(const Segments &syllables, const Wo
             const Hyp &hyp = columns[pos][static_cast<size_t>(hi)];
             // Column 0 has no predecessor, so the start token carries whatever the corpus knows about how
             // sentences open; every later column uses the word the hypothesis arrived on.
-            const std::string &previous = pos == 0 ? BigramTable::sentence_start() : hyp.word;
+            const std::string &previous = pos == 0 ? NgramTable::sentence_start() : hyp.word;
             for (const auto &edge : graph[pos])
             {
                 Hyp next;
@@ -224,6 +251,7 @@ std::vector<LatticePath> decode_word_lattice(const Segments &syllables, const Wo
             continue;
         paths.push_back(std::move(path));
     }
+    rescore_with_trigram(paths, options);
     return paths;
 }
 
@@ -236,9 +264,13 @@ void merge_lattice_candidates(std::vector<WordItem> &candidates, const Segments 
     if (!has_only_complete_pinyin_segments(syllables))
         return;
 
-    const auto paths = decode_word_lattice(syllables, lookup, options);
+    auto paths = decode_word_lattice(syllables, lookup, options);
     if (paths.empty())
         return;
+    // Searching several paths and showing one is the point of `emit`: the alternatives exist so the trigram has
+    // something to reorder, not so the candidate page fills with near-duplicate sentences.
+    if (options.emit > 0 && paths.size() > static_cast<size_t>(options.emit))
+        paths.resize(static_cast<size_t>(options.emit));
 
     std::unordered_set<std::string> already;
     for (const auto &item : candidates)

@@ -149,7 +149,8 @@ QuanpinDictionary::QuanpinDictionary(std::string db_path, metasequoia::RuntimePa
     // Reading fifteen megabytes of word pairs takes about a tenth of a second. Left to the first query that wants
     // it, that lands on a keystroke; here it joins the work of opening the dictionary, which the host already
     // does off the typing path.
-    quanpin::BigramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
+    quanpin::NgramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
+    quanpin::NgramTable::shared(paths_.dictionary(quanpin::kTrigramFileName));
     reset_cache_if_database_changed();
 }
 
@@ -408,8 +409,11 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
         }
 
         quanpin::WordLatticeOptions lattice_options;
-        lattice_options.nbest = 1;
-        lattice_options.bigram = quanpin::BigramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
+        // Six paths searched, one shown: the other five are what the trigram reorders.
+        lattice_options.nbest = 6;
+        lattice_options.emit = 1;
+        lattice_options.bigram = quanpin::NgramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
+        lattice_options.trigram = quanpin::NgramTable::shared(paths_.dictionary(quanpin::kTrigramFileName));
         quanpin::merge_lattice_candidates(result, segments,
                                           quanpin::make_lattice_db_lookup(db_, statement_cache_,
                                                                           quanpin::QuerySource::Quanpin,

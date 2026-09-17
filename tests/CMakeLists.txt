@@ -59,7 +59,7 @@ set(
     "../quanpin/quanpin_dictionary.cpp"
     "../quanpin/quanpin_query.cpp"
     "../quanpin/quanpin_utils.cpp"
-    "../quanpin/bigram_table.cpp"
+    "../quanpin/ngram_table.cpp"
     "../quanpin/word_lattice.cpp"
     "../shuangpin/engine.cpp"
     "../common/helpcode_utils.cpp"

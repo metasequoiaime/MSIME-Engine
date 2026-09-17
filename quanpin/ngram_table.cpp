@@ -1,4 +1,4 @@
-#include "bigram_table.h"
+#include "ngram_table.h"
 
 #include <algorithm>
 #include <cstring>
@@ -11,38 +11,42 @@ namespace quanpin
 namespace
 {
 
-constexpr char kMagic[4] = {'M', 'S', 'B', 'G'};
+constexpr char kMagic[4] = {'M', 'S', 'N', 'G'};
 constexpr std::uint32_t kVersion = 1;
 
 // Entry count that would take more memory than any plausible table; a truncated or foreign file that happens to
 // carry the magic must not turn into a multi-gigabyte allocation.
 constexpr std::uint32_t kMaxEntries = 40u * 1000u * 1000u;
 
-std::uint64_t fnv1a64(const std::string &previous, const std::string &next)
+std::uint64_t fnv1a64(std::initializer_list<const std::string *> words)
 {
     std::uint64_t digest = 0xCBF29CE484222325ULL;
     const auto mix = [&digest](unsigned char byte) {
         digest ^= byte;
         digest *= 0x100000001B3ULL;
     };
-    for (unsigned char byte : previous)
-        mix(byte);
-    mix(0);
-    for (unsigned char byte : next)
-        mix(byte);
+    bool first = true;
+    for (const std::string *word : words)
+    {
+        if (!first)
+            mix(0);
+        first = false;
+        for (unsigned char byte : *word)
+            mix(byte);
+    }
     return digest;
 }
 
 } // namespace
 
-const std::string &BigramTable::sentence_start()
+const std::string &NgramTable::sentence_start()
 {
     // Not a character any dictionary value can contain, so it cannot be confused with a real first word.
     static const std::string token("\x01");
     return token;
 }
 
-std::unique_ptr<BigramTable> BigramTable::open(const std::filesystem::path &path)
+std::unique_ptr<NgramTable> NgramTable::open(const std::filesystem::path &path)
 {
     std::error_code error;
     if (!std::filesystem::is_regular_file(path, error))
@@ -62,7 +66,7 @@ std::unique_ptr<BigramTable> BigramTable::open(const std::filesystem::path &path
     if (!file || std::memcmp(magic, kMagic, sizeof(kMagic)) != 0 || version != kVersion || count > kMaxEntries)
         return nullptr;
 
-    auto table = std::unique_ptr<BigramTable>(new BigramTable);
+    auto table = std::unique_ptr<NgramTable>(new NgramTable);
     table->keys_.resize(count);
     table->values_.resize(count);
     if (count)
@@ -80,10 +84,10 @@ std::unique_ptr<BigramTable> BigramTable::open(const std::filesystem::path &path
     return table;
 }
 
-const BigramTable *BigramTable::shared(const std::filesystem::path &path)
+const NgramTable *NgramTable::shared(const std::filesystem::path &path)
 {
     static std::mutex mutex;
-    static std::map<std::filesystem::path, std::unique_ptr<BigramTable>> loaded;
+    static std::map<std::filesystem::path, std::unique_ptr<NgramTable>> loaded;
     const std::lock_guard<std::mutex> lock(mutex);
     const auto found = loaded.find(path);
     if (found != loaded.end())
@@ -91,15 +95,26 @@ const BigramTable *BigramTable::shared(const std::filesystem::path &path)
     return loaded.emplace(path, open(path)).first->second.get();
 }
 
-double BigramTable::bonus(const std::string &previous, const std::string &next) const
+double NgramTable::lookup(std::uint64_t key) const
 {
-    if (keys_.empty() || next.empty())
-        return 0.0;
-    const std::uint64_t key = fnv1a64(previous, next);
     const auto found = std::lower_bound(keys_.begin(), keys_.end(), key);
     if (found == keys_.end() || *found != key)
         return 0.0;
     return values_[static_cast<std::size_t>(found - keys_.begin())];
+}
+
+double NgramTable::bonus(const std::string &previous, const std::string &next) const
+{
+    if (keys_.empty() || next.empty())
+        return 0.0;
+    return lookup(fnv1a64({&previous, &next}));
+}
+
+double NgramTable::bonus(const std::string &before, const std::string &previous, const std::string &next) const
+{
+    if (keys_.empty() || next.empty())
+        return 0.0;
+    return lookup(fnv1a64({&before, &previous, &next}));
 }
 
 } // namespace quanpin
