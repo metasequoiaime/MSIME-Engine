@@ -178,6 +178,14 @@ if(BUILD_TESTING)
     target_link_libraries(bench_nine_key PRIVATE MetasequoiaImeEngine)
     add_test(NAME nine_key_session COMMAND test_nine_key_session)
 
+    # Measures conversion accuracy against a frozen eval set instead of asserting one behaviour, so it
+    # needs a dictionary and a set on the command line; see tests/scripts/build_eval_set.py.
+    add_executable(eval_sentences tests/src/eval_sentences.cpp)
+    target_link_libraries(eval_sentences PRIVATE MetasequoiaIme::Engine)
+    if(MSVC)
+        target_compile_options(eval_sentences PRIVATE /utf-8)
+    endif()
+
     add_executable(test_platform_api tests/src/test_platform_api.cpp tests/src/test_public_session.cpp)
     target_link_libraries(test_platform_api PRIVATE MetasequoiaIme::Engine)
     add_test(NAME platform_api COMMAND test_platform_api)
