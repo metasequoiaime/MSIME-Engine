@@ -122,6 +122,15 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generate( //
  * @param pinyin_segmentation
  * @return vector<ShuangpinDictionary::WordItem>
  */
+void ShuangpinDictionary::set_sentence_alternatives(bool enabled)
+{
+    if (sentence_alternatives_ == enabled)
+        return;
+    sentence_alternatives_ = enabled;
+    // The cached series were assembled under the previous answer.
+    _cached_buffer_series.clear();
+}
+
 vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generateSeries( //
     const string &pinyin_sequence,                                         //
     const string &pinyin_segmentation,                                     //
@@ -220,11 +229,7 @@ vector<ShuangpinDictionary::WordItem> ShuangpinDictionary::generateSeries( //
                     WordItem(_pinyin_sequence, google_sentence, 1, CandidateSource::Fallback, quanpin_segmentation));
             }
         }
-        quanpin::WordLatticeOptions lattice_options;
-        lattice_options.nbest = 6;
-        lattice_options.emit = 1;
-        lattice_options.bigram = quanpin::NgramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
-        lattice_options.trigram = quanpin::NgramTable::shared(paths_.dictionary(quanpin::kTrigramFileName));
+        const auto lattice_options = quanpin::make_sentence_lattice_options(paths_, sentence_alternatives_);
         quanpin::merge_lattice_candidates(candidate_list, quanpin_segments,
                                           quanpin::make_lattice_db_lookup(quanpin_db_, quanpin_statement_cache_,
                                                                           quanpin::QuerySource::Shuangpin,

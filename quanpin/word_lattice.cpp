@@ -302,4 +302,16 @@ size_t whole_sentence_insert_position(const std::vector<WordItem> &candidates, s
     return insert_at;
 }
 
+WordLatticeOptions make_sentence_lattice_options(const metasequoia::RuntimePaths &paths, bool alternatives)
+{
+    WordLatticeOptions options;
+    // Six are searched and rescored either way; `emit` only decides how many of the results already
+    // computed are handed back.
+    options.nbest = 6;
+    options.emit = alternatives ? 0 : 1;
+    options.bigram = NgramTable::shared(paths.dictionary(kBigramFileName));
+    options.trigram = NgramTable::shared(paths.dictionary(kTrigramFileName));
+    return options;
+}
+
 } // namespace quanpin
