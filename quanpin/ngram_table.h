@@ -5,7 +5,6 @@
 #include <filesystem>
 #include <memory>
 #include <string>
-#include <vector>
 
 namespace quanpin
 {
@@ -27,16 +26,24 @@ inline constexpr char kTrigramFileName[] = "trigram.bin";
 // than the words themselves is what keeps a million entries inside twelve megabytes; a collision mis-scores one
 // sequence out of millions, which is well below the noise the corpus itself carries.
 //
-// The packed file is little-endian, matching every platform the engine targets.
+// The file is mapped, not read. Fifteen megabytes read into a vector is fifteen megabytes of dirty anonymous
+// memory, which is the whole budget of an iOS keyboard extension; mapped, the same bytes are clean and file
+// backed, so the system can drop them under pressure and fault them back, exactly as it already does for the
+// hundred-megabyte dictionary sitting next to it. Layout is little-endian, matching every platform the engine
+// targets, and the header is sized so the key array lands eight-byte aligned from the mapping base.
 class NgramTable
 {
   public:
+    ~NgramTable();
+    NgramTable(const NgramTable &) = delete;
+    NgramTable &operator=(const NgramTable &) = delete;
+
     // Returns nullptr when the file is missing or malformed. A host without a table decodes exactly as before.
     static std::unique_ptr<NgramTable> open(const std::filesystem::path &path);
 
-    // The table every session should use. A dozen megabytes is not worth loading once per dictionary instance, and
-    // the file never changes under a running process, so the first caller for a path loads it and the rest borrow
-    // it. Lives until the process exits; a missing file is remembered as nullptr rather than retried on every key.
+    // The table every session should use. The mapping is cheap but not free, and the file never changes under a
+    // running process, so the first caller for a path maps it and the rest borrow it. Lives until the process
+    // exits; a missing file is remembered as nullptr rather than retried on every key.
     static const NgramTable *shared(const std::filesystem::path &path);
 
     // Stands in for the start of a sentence, so the first words of a composition have a context too.
@@ -48,14 +55,23 @@ class NgramTable
 
     std::size_t size() const
     {
-        return keys_.size();
+        return count_;
     }
 
   private:
+    NgramTable() = default;
     double lookup(std::uint64_t key) const;
 
-    std::vector<std::uint64_t> keys_;
-    std::vector<float> values_;
+    // Owned mapping of the whole file, and the two arrays inside it.
+    void *mapping_ = nullptr;
+    std::size_t mapped_bytes_ = 0;
+#ifdef _WIN32
+    void *file_ = nullptr;
+    void *section_ = nullptr;
+#endif
+    const std::uint64_t *keys_ = nullptr;
+    const float *values_ = nullptr;
+    std::size_t count_ = 0;
 };
 
 } // namespace quanpin

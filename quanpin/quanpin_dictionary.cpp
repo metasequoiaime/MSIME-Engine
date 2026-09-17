@@ -146,8 +146,8 @@ QuanpinDictionary::QuanpinDictionary(std::string db_path, metasequoia::RuntimePa
     }
 
     quanpin::warm_up(db_, statement_cache_);
-    // Reading fifteen megabytes of word pairs takes about a tenth of a second. Left to the first query that wants
-    // it, that lands on a keystroke; here it joins the work of opening the dictionary, which the host already
+    // Mapping the tables and checking they are sorted is a sequential pass over fifteen megabytes. Left to the first query that wants
+    // them, that lands on a keystroke; here it joins the work of opening the dictionary, which the host already
     // does off the typing path.
     quanpin::NgramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
     quanpin::NgramTable::shared(paths_.dictionary(quanpin::kTrigramFileName));
