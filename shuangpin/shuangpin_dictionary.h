@@ -153,7 +153,7 @@ class ShuangpinDictionary
     CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer_sgl;          // 缓存单码辅助结果
     CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer_sgl_reversed; // 缓存反向单码辅助结果
     CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer_dbl;          // 缓存双码辅助结果
-    CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer_series;       // 缓存拼音序列对应的所有结果
+    CircularBuffer<std::string, std::vector<WordItem>> _cached_buffer_series; // 缓存拼音序列对应的所有结果
 
   public:
     // Getters and setters
