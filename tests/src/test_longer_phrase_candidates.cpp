@@ -50,10 +50,15 @@ std::filesystem::path prepare_resources(const std::filesystem::path &root)
             "INSERT INTO tbl_2_n VALUES('ni''hao','nh','你好',10000),('ni''hao','nh','拟好',30);"
             "CREATE TABLE tbl_3_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
             "INSERT INTO tbl_3_n VALUES('ni''hao''ma','nhm','你好吗',900);"
+            "CREATE TABLE tbl_4_a(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
+            "INSERT INTO tbl_4_a VALUES('an''quan''bao''wei','aqbw','安全保卫',6000);"
             "CREATE TABLE tbl_4_n(key TEXT,jp TEXT,value TEXT,weight INTEGER);"
             "INSERT INTO tbl_4_n VALUES('ni''hao''a''ya','nhay','你好啊呀',500);");
     require(EnglishDictionary::ensure_schema(path_to_utf8(resources / assets::english_dictionary)),
             "English schema failed");
+    // Without the decoder model the Google-Pinyin whole-sentence path returns nothing and the
+    // ranking it competes in is never exercised.
+    std::filesystem::copy_file(path_from_utf8(METASEQUOIA_TEST_PINYIN_MODEL), resources / assets::pinyin_model);
     return resources;
 }
 
@@ -104,6 +109,30 @@ int main()
             // 只匹配首音节的单字仍排在所有打全了的结果之后。
             require(index_of(listed, "拟好") < index_of(listed, "泥"),
                     "A first-syllable character outranked a full-spelling candidate.");
+        }
+
+        {
+            // A three-syllable key the dictionary answers outright. Whole-sentence sources may add
+            // their own assembly, but neither may take the first row from the exact entry: the
+            // fallback used to be moved to index 0 unconditionally, which is how 百依百顺 became
+            // 白一百顺 in the shipped ranking.
+            SessionOptions options;
+            options.paths = prepare_runtime_paths(resources, root / "user-whole", root / "cache-whole", "v1");
+            options.scheme = SchemeType::Quanpin;
+            Session session(options);
+            for (const char letter : std::string("anquanbaowei"))
+            {
+                session.character(letter);
+            }
+            const auto listed = words(session);
+            require(!listed.empty() && listed.front() == "安全保卫",
+                    "A synthesised whole sentence displaced the exact dictionary entry.");
+            // Prove the fallback actually ran; otherwise the assertion above passes vacuously,
+            // which is how this defect survived.
+            // The decoder reads anquanbaowei as 安全包围; if that row is missing the assertion
+            // above passes vacuously, which is how this defect survived.
+            require(std::find(listed.begin(), listed.end(), "安全包围") != listed.end(),
+                    "The fallback whole sentence never reached the candidate list.");
         }
 
         {
