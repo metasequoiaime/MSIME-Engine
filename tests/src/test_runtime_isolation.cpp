@@ -209,6 +209,14 @@ void test_runtime_isolation()
         Session session(options);
         require(session.snapshot().shuangpin_profile == "microsoft", "Snapshot lost applied profile");
         require(session.snapshot().nine_key_spellings.empty(), "Profile leaked into nine-key spellings");
+        require(session.segment_raw_boundaries().empty(), "Idle session reported input units");
+        for (const auto &fixture : std::vector<std::pair<std::string, std::vector<std::size_t>>>{
+                 {"b;ni", {0, 2, 4}}, {"nihkb;", {0, 2, 4, 6}}, {"nihcb;", {0, 2, 3, 5, 6}}})
+        {
+            type(session, fixture.first);
+            require(session.segment_raw_boundaries() == fixture.second, "Microsoft raw units disagree with parsing");
+            session.command(Command::Cancel);
+        }
         require(!session.character(';').handled, "Microsoft semicolon started a syllable");
         session.character('n');
         const auto ing = session.character(';');

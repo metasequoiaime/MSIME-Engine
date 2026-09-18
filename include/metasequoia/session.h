@@ -114,6 +114,10 @@ class Session
     void set_wubi_mixed_pinyin(bool enabled);
     void reset_cache();
     SessionSnapshot snapshot() const;
+    // Authoritative offsets in snapshot().editing_text for pinyin-unit editing.
+    // Empty for idle, local modes, non-pinyin schemes and active nine-key input.
+    // A read-only query: no candidate generation, caret or composition changes.
+    std::vector<std::size_t> segment_raw_boundaries() const;
     std::optional<OnlineQuery> online_query() const;
     bool apply_online_candidates(const OnlineQuery &query, const std::vector<std::string> &words,
                                  CandidateSource source);

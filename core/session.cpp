@@ -78,6 +78,12 @@ KeyResult Session::candidate_key(char value)
         return value >= '1' && value <= '9' ? impl_->nine_key.select(value - '1') : KeyResult{};
     return impl_->session.handle_candidate_key(value);
 }
+std::vector<std::size_t> Session::segment_raw_boundaries() const
+{
+    if (impl_->nine_key.active())
+        return {};
+    return impl_->session.segment_raw_boundaries();
+}
 KeyResult Session::punctuation(char value)
 {
     if (impl_->nine_key.active())
