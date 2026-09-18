@@ -1,4 +1,6 @@
 #include "input_session.h"
+#include "../shuangpin/shuangpin_query.h"
+#include "../shuangpin/shuangpin_utils.h"
 #include <algorithm>
 #include <cctype>
 
@@ -20,6 +22,102 @@ std::size_t InputSession::caret_position() const
 {
     const auto size = editing_text().size();
     return std::min(caret_.value_or(size), size);
+}
+
+namespace
+{
+// Unit boundaries of a quanpin spelling in raw coordinates. The visible preedit
+// (BuildQuanpinAutocorrectDisplay) is always rebuilt from the raw letters -- the
+// autocorrect cut and the alias layer only move or add separators -- so a
+// separator in the display marks where the next raw unit starts. A display that
+// cannot explain the raw letters yields no boundaries and the caller falls back
+// to single-character editing.
+std::vector<std::size_t> QuanpinRawBoundaries(const std::string &raw, const std::string &display)
+{
+    std::vector<std::size_t> boundaries;
+    std::vector<std::size_t> raw_letter_offsets;
+    raw_letter_offsets.reserve(raw.size());
+    for (std::size_t index = 0; index < raw.size(); ++index)
+    {
+        if (raw[index] != '\'')
+        {
+            raw_letter_offsets.push_back(index);
+        }
+    }
+    if (raw_letter_offsets.empty())
+    {
+        return boundaries;
+    }
+
+    boundaries.push_back(0);
+    std::size_t letters_seen = 0;
+    for (const char ch : display)
+    {
+        if (ch != '\'')
+        {
+            ++letters_seen;
+            continue;
+        }
+        // The next unit starts at the raw offset of the next letter; a
+        // trailing separator has no next letter and starts no unit.
+        if (letters_seen < raw_letter_offsets.size())
+        {
+            boundaries.push_back(raw_letter_offsets[letters_seen]);
+        }
+    }
+    if (letters_seen != raw_letter_offsets.size())
+    {
+        // The display no longer corresponds letter-for-letter: refuse to map
+        // rather than delete an arbitrary span.
+        return {};
+    }
+    boundaries.push_back(raw.size());
+    boundaries.erase(std::unique(boundaries.begin(), boundaries.end()), boundaries.end());
+    return boundaries;
+}
+} // namespace
+
+std::vector<std::size_t> InputSession::segment_raw_boundaries() const
+{
+    // Local modes and the dedicated English scheme spell words, not syllables:
+    // the host treats these keys exactly like a plain Backspace (PRD R4).
+    if (dedicated_english_mode_ || local_input_mode_ != LocalInputMode::None)
+    {
+        return {};
+    }
+
+    const std::string raw_with_cases = get_pinyin_sequence_with_cases();
+    const std::string raw = get_pinyin_sequence();
+    if (raw_with_cases.empty())
+    {
+        return {};
+    }
+
+    if (current_scheme_type() == SchemeType::Shuangpin)
+    {
+        const std::size_t helpcode_length =
+            shuangpin::detect_active_double_helpcode_length(raw, raw_with_cases, shuangpin_profile_);
+        const std::string base =
+            helpcode_length > 0 ? shuangpin::trim_trailing_letters_preserve_delimiters(raw_with_cases, helpcode_length)
+                                : raw_with_cases;
+        std::vector<std::size_t> boundaries = shuangpin::segment_raw_boundaries(base, shuangpin_profile_);
+        if (helpcode_length > 0 && !boundaries.empty())
+        {
+            // The active double helpcode is one editable unit of its own, the
+            // same boundary raw_segmentation draws before it.
+            boundaries.push_back(base.size());
+            boundaries.push_back(raw_with_cases.size());
+            std::sort(boundaries.begin(), boundaries.end());
+            boundaries.erase(std::unique(boundaries.begin(), boundaries.end()), boundaries.end());
+        }
+        return boundaries;
+    }
+
+    if (current_scheme_type() != SchemeType::Quanpin)
+    {
+        return {};
+    }
+    return QuanpinRawBoundaries(raw_with_cases, get_pinyin_segmentation_with_cases());
 }
 
 KeyResult InputSession::edit_at_caret(Command command)

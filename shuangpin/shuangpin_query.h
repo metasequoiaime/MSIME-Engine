@@ -1,12 +1,21 @@
 #pragma once
 
 #include "shuangpin_profile.h"
+#include <cstddef>
 #include <string>
+#include <vector>
 
 namespace shuangpin
 {
 
 std::string segment_input(const std::string &raw_input, const ShuangpinProfile &profile = GetXiaoheShuangpinProfile());
+// Raw offsets where one shuangpin syllable starts, always including 0 (when
+// non-empty) and raw_input.size(). A unit is one syllable: 1-2 keys decided by
+// the same forward-greedy acceptance pinyin_segmentation uses, so the Microsoft
+// ';' final and the profile's syllable set are honored. Manual delimiters start
+// a new chunk. Empty input yields an empty vector.
+std::vector<std::size_t> segment_raw_boundaries(const std::string &raw_input,
+                                                const ShuangpinProfile &profile = GetXiaoheShuangpinProfile());
 std::string to_quanpin_segmentation(const std::string &segmented_input,
                                     const ShuangpinProfile &profile = GetXiaoheShuangpinProfile());
 std::string normalize_input(const std::string &raw_input,
