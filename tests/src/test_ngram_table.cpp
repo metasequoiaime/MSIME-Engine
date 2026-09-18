@@ -226,6 +226,20 @@ void test_trigram_reorders_the_paths()
     quanpin::merge_lattice_candidates(candidates, syllables, table_lookup(rows), "shurufa", options);
     check(candidates.size() == 1, "emit caps what reaches the candidate list");
     check(!candidates.empty() && candidates.front().word == "输入法", "and what reaches it is the rescored winner");
+
+    // A host that reorders the readings itself asks for all of them. The alternatives are already
+    // decoded and rescored either way; emit only decides how many are handed back.
+    std::vector<WordItem> every;
+    options.emit = 0;
+    quanpin::merge_lattice_candidates(every, syllables, table_lookup(rows), "shurufa", options);
+    check(every.size() > 1, "emit zero hands back the alternatives, got " + std::to_string(every.size()));
+    check(!every.empty() && every.front().word == "输入法", "and the winner still leads them");
+
+    // The option block both dictionaries use is built in one place so they cannot drift apart.
+    const auto shown = quanpin::make_sentence_lattice_options(metasequoia::RuntimePaths::legacy());
+    check(shown.nbest == 6 && shown.emit == 1, "the default searches six and shows one");
+    const auto all = quanpin::make_sentence_lattice_options(metasequoia::RuntimePaths::legacy(), true);
+    check(all.nbest == 6 && all.emit == 0, "asking for alternatives searches the same six and shows them");
 }
 
 } // namespace

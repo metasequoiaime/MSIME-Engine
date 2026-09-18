@@ -169,6 +169,16 @@ QuanpinDictionary::~QuanpinDictionary()
     }
 }
 
+void QuanpinDictionary::set_sentence_alternatives(bool enabled)
+{
+    if (sentence_alternatives_ == enabled)
+        return;
+    sentence_alternatives_ = enabled;
+    // The caches hold lists assembled under the previous answer, so they cannot be reused.
+    cache_.clear();
+    series_cache_.clear();
+}
+
 std::vector<WordItem> QuanpinDictionary::query_exact(const std::string &raw_input, const std::string &segmentation,
                                                      unsigned autocorrect_types)
 {
@@ -408,12 +418,7 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
             }
         }
 
-        quanpin::WordLatticeOptions lattice_options;
-        // Six paths searched, one shown: the other five are what the trigram reorders.
-        lattice_options.nbest = 6;
-        lattice_options.emit = 1;
-        lattice_options.bigram = quanpin::NgramTable::shared(paths_.dictionary(quanpin::kBigramFileName));
-        lattice_options.trigram = quanpin::NgramTable::shared(paths_.dictionary(quanpin::kTrigramFileName));
+        const auto lattice_options = quanpin::make_sentence_lattice_options(paths_, sentence_alternatives_);
         quanpin::merge_lattice_candidates(result, segments,
                                           quanpin::make_lattice_db_lookup(db_, statement_cache_,
                                                                           quanpin::QuerySource::Quanpin,

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../core/runtime_paths.h"
 #include "../core/word_item.h"
 #include "ngram_table.h"
 #include "quanpin_utils.h"
@@ -103,5 +104,18 @@ void merge_lattice_candidates(std::vector<WordItem> &candidates, const Segments 
 // exact full-cover Database/UserDatabase hits. Both whole-sentence sources share it so neither can
 // displace a dictionary entry that already answers the whole key, per the ranking above.
 size_t whole_sentence_insert_position(const std::vector<WordItem> &candidates, size_t n_syllables);
+
+// The one place the sentence decoder is configured.
+//
+// Quanpin and shuangpin decode sentences identically and used to each build this block themselves.
+// That duplication is how the two paths drift: engine PR #156 found a ranking fix that had been
+// applied to one and missed in the other for weeks. Configuring them from here means a change to
+// either reaches both, or reaches neither.
+//
+// `alternatives` is what a host asks for when it intends to reorder the readings itself. The
+// default answers with one, which is what a candidate page wants: the other readings are near
+// duplicates of it, and no host crops them, so emitting them unasked would push the short
+// candidates a user actually wants off the first page.
+WordLatticeOptions make_sentence_lattice_options(const metasequoia::RuntimePaths &paths, bool alternatives = false);
 
 } // namespace quanpin

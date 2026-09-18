@@ -33,6 +33,15 @@ class QuanpinDictionary
     std::optional<WordItem> find_candidate(const std::string &key, const std::string &value);
     int handleVkCode(ImeKeyCode vk, ImeModifierMask modifiers_down, ImeCharacter wch = 0);
 
+    // Ask the decoder for every whole-sentence reading it found rather than only its best. A host
+    // wants this when it reorders the readings itself and crops the list before display; see
+    // quanpin::make_sentence_lattice_options for why the default answers with one.
+    //
+    // A session-level setting rather than a query argument: it describes what the caller does with
+    // the list, which does not change between keystrokes. Changing it clears the cached lists,
+    // which were built under the previous answer.
+    void set_sentence_alternatives(bool enabled);
+
     int create_word(std::string pinyin, std::string word);
     int create_word_from_canonical_pinyin(std::string pinyin, std::string word);
     int update_weight_by_word(std::string word);
@@ -119,6 +128,7 @@ class QuanpinDictionary
     sqlite3 *db_ = nullptr;
     sqlite3_int64 data_version_ = -1;
     metasequoia::RuntimePaths paths_;
+    bool sentence_alternatives_ = false;
     metasequoia::PinyinDecoder decoder_;
     std::unordered_map<std::string, sqlite3_stmt *> statement_cache_;
     std::string db_path_;

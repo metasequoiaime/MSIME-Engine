@@ -33,6 +33,11 @@ class ShuangpinDictionary
         const std::string &pinyin_segmentation, //
         const std::string &cache_key = ""       //
     );
+    // Mirrors QuanpinDictionary::set_sentence_alternatives. The two paths decode sentences with the
+    // same code and must answer a host's request the same way; engine PR #156 is what happens when
+    // one of them is changed and the other is not.
+    void set_sentence_alternatives(bool enabled);
+
     std::vector<WordItem> generateSeries(       //
         const std::string &pinyin_sequence,     //
         const std::string &pinyin_segmentation, //
@@ -80,6 +85,7 @@ class ShuangpinDictionary
     sqlite3 *quanpin_db_ = nullptr;
     sqlite3_int64 data_version_ = -1;
     metasequoia::RuntimePaths paths_;
+    bool sentence_alternatives_ = false;
     metasequoia::PinyinDecoder decoder_;
     HelpcodeUtils::SharedKeymap helpcodes_;
     std::unordered_map<std::string, sqlite3_stmt *> quanpin_statement_cache_;
