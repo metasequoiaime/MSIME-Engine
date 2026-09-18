@@ -194,6 +194,11 @@ class InputSession
     {
         candidate_learning_enabled_ = enabled;
     }
+    // Forwarded to the scheme session, which puts it on every QueryRequest it builds.
+    void set_sentence_alternatives(bool enabled)
+    {
+        engine_.set_sentence_alternatives(enabled);
+    }
     void set_shuangpin_preedit_uses_raw(bool enabled)
     {
         shuangpin_preedit_uses_raw_ = enabled;

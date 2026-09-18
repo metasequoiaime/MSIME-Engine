@@ -40,6 +40,7 @@ Session::Session(SessionOptions options)
     impl_->session.set_paired_punctuation_enabled(options.paired_punctuation);
     impl_->session.set_punctuation_lock(options.punctuation_lock);
     impl_->session.set_candidate_learning_enabled(options.learning);
+    impl_->session.set_sentence_alternatives(options.sentence_alternatives);
 }
 Session::~Session() = default;
 void Session::set_nine_key_enabled(bool enabled)

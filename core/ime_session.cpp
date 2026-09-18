@@ -86,6 +86,11 @@ void ImeSession::set_quanpin_helpcode_enabled(bool enabled)
     enable_quanpin_helpcode_ = enabled;
 }
 
+void ImeSession::set_sentence_alternatives(bool enabled)
+{
+    sentence_alternatives_ = enabled;
+}
+
 void ImeSession::set_quanpin_autocorrect_types(unsigned autocorrect_types)
 {
     quanpin_autocorrect_types_ = autocorrect_types;
@@ -279,6 +284,7 @@ void ImeSession::refresh_candidates()
     state_.request = scheme_->build_request();
     state_.request.enable_shuangpin_helpcode = enable_shuangpin_helpcode_;
     state_.request.enable_quanpin_helpcode = enable_quanpin_helpcode_;
+    state_.request.sentence_alternatives = sentence_alternatives_;
     state_.request.enable_quanpin_autocorrect_transposition =
         (quanpin_autocorrect_types_ & quanpin::kAutocorrectTransposition) != 0;
     state_.request.enable_quanpin_autocorrect_neighbor =
@@ -321,6 +327,7 @@ void ImeSession::refresh_candidates()
         pinyin.set_raw_input(state_.request.raw_input, state_.request.raw_input_with_cases);
         QueryRequest fallback = pinyin.build_request();
         fallback.enable_quanpin_helpcode = enable_quanpin_helpcode_;
+        fallback.sentence_alternatives = sentence_alternatives_;
         fallback.enable_quanpin_autocorrect_transposition =
             (quanpin_autocorrect_types_ & quanpin::kAutocorrectTransposition) != 0;
         fallback.enable_quanpin_autocorrect_neighbor =

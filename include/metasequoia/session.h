@@ -24,6 +24,10 @@ struct SessionOptions
     bool paired_punctuation = true;
     int punctuation_lock = 0;
     bool learning = true;
+    // Hand back every whole-sentence reading the decoder found rather than only its best. Off by
+    // default: a host that does not reorder and crop the readings itself would put several near
+    // duplicate sentences on the first page of candidates.
+    bool sentence_alternatives = false;
     FuzzyPinyinOptions fuzzy_pinyin;
     FrequencyAdjustmentOptions frequency;
     LocalModeOptions local_modes;

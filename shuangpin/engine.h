@@ -34,6 +34,14 @@ class ShuangpinEngine
         dictionary_.set_helpcode_keymap(std::move(table));
     }
 
+    // Both schemes decode sentences with the same code, so both have to answer the host the same way.
+    void set_sentence_alternatives(bool enabled)
+    {
+        dictionary_.set_sentence_alternatives(enabled);
+        if (fuzzy_dictionary_)
+            fuzzy_dictionary_->set_sentence_alternatives(enabled);
+    }
+
   private:
     const ShuangpinProfile profile_;
     ShuangpinDictionary dictionary_;
