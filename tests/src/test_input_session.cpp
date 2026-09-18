@@ -1046,6 +1046,47 @@ int run_test()
                 unicode_session.local_input_mode() == metasequoia::LocalInputMode::None,
             "Committing a Unicode candidate did not leave the local mode.");
 
+    // Segment boundaries are the engine's unit model: quanpin reports one offset
+    // per displayed syllable, and a local mode reports none so the host keeps
+    // single-character editing (PRD R4).
+    {
+        require(unicode_session.handle_character('U', true).handled,
+                "Unicode mode could not be re-entered for the boundary check.");
+        require(unicode_session.segment_raw_boundaries().empty(),
+                "A local mode must report no pinyin segment boundaries.");
+        require(unicode_session.handle_command(metasequoia::Command::Cancel).handled,
+                "Cancel did not leave Unicode mode after the boundary check.");
+
+        metasequoia::InputSession boundary_session(SchemeType::Quanpin);
+        for (const char character : std::string("nihaoma"))
+        {
+            require(boundary_session.handle_character(character).handled, "Quanpin rejected a letter.");
+        }
+        require(boundary_session.segment_raw_boundaries() == std::vector<std::size_t>({0, 2, 5, 7}),
+                "Quanpin unit boundaries did not follow the displayed syllables.");
+
+        metasequoia::InputSession delimited(SchemeType::Quanpin);
+        for (const char character : std::string("ni'hao"))
+        {
+            require(delimited.handle_character(character).handled, "Quanpin rejected a delimiter.");
+        }
+        require(delimited.segment_raw_boundaries() == std::vector<std::size_t>({0, 3, 6}),
+                "Manual delimiter did not become a raw unit boundary.");
+
+        metasequoia::InputSession shuangpin(SchemeType::Shuangpin);
+        for (const char character : std::string("nihaoma"))
+        {
+            require(shuangpin.handle_character(character).handled, "Shuangpin rejected a letter.");
+        }
+        require(shuangpin.segment_raw_boundaries() == std::vector<std::size_t>({0, 2, 4, 5, 7}),
+                "Shuangpin unit boundaries did not follow syllable segmentation.");
+
+        metasequoia::InputSession wubi(SchemeType::Wubi);
+        require(wubi.segment_raw_boundaries().empty(), "Wubi must not claim pinyin units.");
+        metasequoia::InputSession japanese(SchemeType::JapaneseRomaji);
+        require(japanese.segment_raw_boundaries().empty(), "Japanese must not claim pinyin units.");
+    }
+
     require(unicode_session.handle_character('U', true).handled && unicode_session.handle_character('+').handled,
             "Unicode mode rejected its optional plus prefix.");
     for (const char character : std::string("1f600"))

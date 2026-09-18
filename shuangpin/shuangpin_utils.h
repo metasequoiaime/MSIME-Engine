@@ -22,6 +22,12 @@ class ShuangpinUtil
                                                const ShuangpinProfile &profile = GetXiaoheShuangpinProfile());
     static std::string pinyin_segmentation(std::string sp_str,
                                            const ShuangpinProfile &profile = GetXiaoheShuangpinProfile());
+    // True when a delimiter-free chunk decodes to a syllable the shuangpin
+    // segmentation accepts. pinyin_segmentation and the raw unit boundaries
+    // (shuangpin::segment_raw_boundaries) both decide with this predicate so a
+    // deleted unit can never disagree with the displayed segmentation.
+    static bool is_accepted_syllable_code(const std::string &sp_str,
+                                          const ShuangpinProfile &profile = GetXiaoheShuangpinProfile());
     static std::string::size_type get_first_char_size(std::string words);
     static std::string::size_type count_utf8_chars(const std::string &str);
     static std::string extract_preview(std::string candidate);

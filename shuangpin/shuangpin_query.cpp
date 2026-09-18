@@ -2,6 +2,7 @@
 
 #include "../common/helpcode_utils.h"
 #include "shuangpin_utils.h"
+#include <algorithm>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
@@ -50,6 +51,54 @@ std::string segment_input(const std::string &raw_input, const ShuangpinProfile &
     }
 
     return result;
+}
+
+std::vector<std::size_t> segment_raw_boundaries(const std::string &raw_input, const ShuangpinProfile &profile)
+{
+    std::vector<std::size_t> boundaries;
+    if (raw_input.empty())
+    {
+        return boundaries;
+    }
+
+    boundaries.push_back(0);
+    std::size_t chunk_start = 0;
+    while (chunk_start <= raw_input.size())
+    {
+        const std::size_t separator = raw_input.find('\'', chunk_start);
+        const std::size_t chunk_end = separator == std::string::npos ? raw_input.size() : separator;
+        std::size_t position = chunk_start;
+        while (position < chunk_end)
+        {
+            // Same forward-greedy rule as pinyin_segmentation: take two keys
+            // when they form an accepted syllable, otherwise one.
+            const bool two_key = (chunk_end - position) >= 2 &&
+                                 ShuangpinUtil::is_accepted_syllable_code(
+                                     boost::algorithm::to_lower_copy(raw_input.substr(position, 2)), profile);
+            position += two_key ? 2u : 1u;
+            boundaries.push_back(position);
+        }
+
+        if (separator == std::string::npos)
+        {
+            break;
+        }
+        chunk_start = separator + 1;
+        if (chunk_start < raw_input.size())
+        {
+            boundaries.push_back(chunk_start);
+        }
+    }
+
+    // A trailing delimiter starts no unit, but the end of the spelling always
+    // belongs to the last unit; collapse any duplicate a delimiter next to a
+    // chunk start produced.
+    if (boundaries.back() != raw_input.size())
+    {
+        boundaries.push_back(raw_input.size());
+    }
+    boundaries.erase(std::unique(boundaries.begin(), boundaries.end()), boundaries.end());
+    return boundaries;
 }
 
 std::string to_quanpin_segmentation(const std::string &segmented_input, const ShuangpinProfile &profile)

@@ -104,6 +104,11 @@ string ShuangpinUtil::cvt_single_sp_to_pinyin(string sp_str, const ShuangpinProf
     return res;
 }
 
+bool ShuangpinUtil::is_accepted_syllable_code(const std::string &sp_str, const ShuangpinProfile &profile)
+{
+    return shuangpin_pinyin_set().count(cvt_single_sp_to_pinyin(sp_str, profile)) > 0;
+}
+
 /**
  * @brief Split shuangpin, using ' as delimiter, using forward greedy segmentation
  *
@@ -124,8 +129,7 @@ string ShuangpinUtil::pinyin_segmentation(string sp_str, const ShuangpinProfile 
         {
             // Try to cut two chars to test
             string cur_sp = sp_str.substr(range_start, 2);
-            if (shuangpin_pinyin_set().count(
-                    cvt_single_sp_to_pinyin(boost::algorithm::to_lower_copy(cur_sp), profile)) > 0)
+            if (is_accepted_syllable_code(boost::algorithm::to_lower_copy(cur_sp), profile))
             {
                 res = res + "'" + cur_sp;
                 range_start += 2;
