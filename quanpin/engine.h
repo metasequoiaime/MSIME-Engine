@@ -38,6 +38,13 @@ class QuanpinEngine
         reset_cache();
     }
 
+    // See QuanpinDictionary::set_sentence_alternatives. A host asks for this when it reorders the
+    // whole-sentence readings itself and crops the list before showing it.
+    void set_sentence_alternatives(bool enabled)
+    {
+        dictionary_.set_sentence_alternatives(enabled);
+    }
+
   private:
     QuanpinDictionary dictionary_;
     HelpcodeUtils::SharedKeymap helpcodes_;

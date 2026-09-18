@@ -30,5 +30,9 @@ struct QueryRequest
     bool enable_quanpin_autocorrect_neighbor = false;
     std::vector<KeyStroke> key_strokes;
     metasequoia::FuzzyPinyinOptions fuzzy_pinyin;
+    // Hand back every whole-sentence reading the lattice found, not only its best. A host asks for
+    // this when it reorders the readings itself and crops the list before display; see
+    // quanpin::make_sentence_lattice_options for why the default answers with one.
+    bool sentence_alternatives = false;
     bool valid = false;
 };
