@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.23.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.22.0...v0.23.0) (2026-09-18)
+
+
+### Features
+
+* **quanpin:** 让宿主可以要到全部整句读法，而不只是最好的那条 ([#160](https://github.com/metasequoiaime/MSIME-Engine/issues/160)) ([6213d0f](https://github.com/metasequoiaime/MSIME-Engine/commit/6213d0f14b3cf02e1ca264cbcc086f173a288d85))
+* **session:** expose the sentence-alternatives request to hosts ([#162](https://github.com/metasequoiaime/MSIME-Engine/issues/162)) ([06e6700](https://github.com/metasequoiaime/MSIME-Engine/commit/06e6700bf51aef080f7610c8e335203725dddc87))
+
 ## [0.22.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.21.3...v0.22.0) (2026-09-17)
 
 
