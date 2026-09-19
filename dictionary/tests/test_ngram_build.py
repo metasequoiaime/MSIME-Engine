@@ -105,34 +105,19 @@ class BuildNgramTests(unittest.TestCase):
             self.assertTrue((root / "b.bin").is_file())
 
 
-class StageSkipTests(unittest.TestCase):
-    """The corpus is not in the repository, so the stage has to be absent-tolerant even for a release."""
-
-    def test_an_optional_input_is_missing_without_being_a_required_one(self):
-        stage = build_all.Stage(name="probe", description="", steps=(),
-                                optional_paths=("source/no-such-corpus",))
-        self.assertEqual(build_all.missing_optional_inputs(stage), ["source/no-such-corpus"])
-        # Not in missing_inputs: that is what --require-all fails on, and what test_licensing asserts
-        # every stage can satisfy from the repository alone.
-        self.assertEqual(build_all.missing_inputs(stage, Path("/nonexistent")), [])
-        self.assertEqual(build_all.required_paths(stage), [])
-
-    def test_the_ngram_stage_declares_its_corpus_as_optional(self):
+class StageWiringTests(unittest.TestCase):
+    def test_the_stage_fetches_its_own_corpus_before_counting(self):
         stage = build_all.STAGES_BY_NAME["ngram"]
-        self.assertEqual(stage.optional_paths, ("source/ngram-corpus",))
-        self.assertEqual(stage.needs_paths, ())
+        self.assertEqual(stage.steps[0], ("makecikudb/ngramdb/fetch_corpus.py",))
+        self.assertEqual(stage.needs_paths, (), "the corpus arrives by download, not from the checkout")
 
-    @unittest.skipIf((REPO_ROOT / "source" / "ngram-corpus").exists(), "this checkout has fetched the corpus")
-    def test_a_missing_corpus_skips_the_stage_even_with_require_all(self):
-        environment = dict(os.environ)
-        environment.pop("MSIME_DICTIONARY_INCLUDE_UNLICENSED", None)
-        for arguments in ((), ("--require-all",)):
-            with self.subTest(arguments=arguments):
-                completed = subprocess.run(
-                    [sys.executable, str(REPO_ROOT / "build_all.py"), "--only", "ngram", *arguments],
-                    cwd=REPO_ROOT, env=environment, capture_output=True, text=True, check=False)
-                self.assertEqual(completed.returncode, 0, completed.stderr)
-                self.assertIn("[skip] ngram", completed.stdout)
+    def test_the_tables_ship(self):
+        # dictionary/AGENTS.md lists the six places a new artifact has to join; these are the two this
+        # module can see from here. The rest are covered by contracts/dictionary/test_product.py and by
+        # contracts/assets/generate.py --check in CI.
+        for name in ("bigram.bin", "trigram.bin"):
+            self.assertIn(name, build_all.SHIPPING_ARTIFACTS)
+            self.assertIn(name, build_all.STAGES_BY_NAME["ngram"].produces)
 
 
 class CorpusLockTests(unittest.TestCase):
@@ -141,7 +126,9 @@ class CorpusLockTests(unittest.TestCase):
         self.assertEqual(corpus["license"], "CC-BY-SA-4.0")
         self.assertTrue(corpus["base_url"].endswith("/"))
         self.assertTrue(corpus["attribution"])
-        self.assertTrue(corpus["files"], "a pin with no files would skip the stage silently")
+        self.assertTrue(corpus["files"], "a pin with no files would count an empty corpus")
+        self.assertGreaterEqual(corpus["han_characters"], 120_000_000,
+                                "the pin has to carry at least build_ngram's default --max-chars")
         for entry in corpus["files"]:
             self.assertEqual(len(entry["sha1"]), 40, entry["name"])
             self.assertGreater(entry["size"], 0, entry["name"])
