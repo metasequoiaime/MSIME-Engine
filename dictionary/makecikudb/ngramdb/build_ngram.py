@@ -61,10 +61,25 @@ def load_vocabulary(database: Path) -> dict[int, set[str]]:
     return dict(by_length)
 
 
+def corpus_files(inputs: list[Path]) -> list[Path]:
+    """Expand directories so a build stage can name one corpus directory instead of globbing in the caller.
+
+    Sorted, because the counts a table is packed from must not depend on the order a directory happens to be
+    read in: two builds of the same corpus have to produce the same bytes.
+    """
+    files: list[Path] = []
+    for path in inputs:
+        if path.is_dir():
+            files.extend(sorted(child for child in path.rglob("*") if child.is_file()))
+        else:
+            files.append(path)
+    return files
+
+
 def iter_han_runs(inputs: list[Path], max_chars: int):
     """Maximal runs of Han characters, from wiki dumps or plain text, stopping once max_chars have been yielded."""
     produced = 0
-    for path in inputs:
+    for path in corpus_files(inputs):
         opener = bz2.open if path.suffix == ".bz2" else open
         with opener(path, "rt", encoding="utf-8", errors="ignore") as handle:
             buffer = ""
@@ -155,7 +170,8 @@ def fnv1a64(data: bytes) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("inputs", nargs="*", type=Path, help="wiki dump (.bz2) or plain text files; omit with --counts-in")
+    parser.add_argument("inputs", nargs="*", type=Path,
+                        help="wiki dump (.bz2), plain text files, or directories of either; omit with --counts-in")
     parser.add_argument("--dictionary", type=Path, help="path to msime.db; required unless --counts-in is given")
     parser.add_argument("--out", required=True, type=Path, help="packed table to write")
     parser.add_argument("--max-chars", type=int, default=120_000_000, help="stop after this many Han characters")

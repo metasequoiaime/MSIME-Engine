@@ -1,5 +1,7 @@
 **/out
 source/mozc_dictionary_oss/
+# Corpus text for the ngram stage: not in the repository, and large.
+source/ngram-corpus/
 **/__pycache__/
 *.pyc
 .venv/

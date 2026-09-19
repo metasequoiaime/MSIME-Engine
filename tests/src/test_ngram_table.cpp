@@ -1,7 +1,7 @@
 // The packed word-sequence table and the two context terms it adds to the lattice.
 //
 // The hash is recomputed here rather than reused from the implementation on purpose: the table is written by
-// tests/scripts/build_ngram.py, so the file format is a contract between two programs and a test that borrowed
+// dictionary/makecikudb/ngramdb/build_ngram.py, so the file format is a contract between two programs and a test that borrowed
 // the engine's own hash would keep passing if both sides drifted together.
 
 #include "quanpin/ngram_table.h"
