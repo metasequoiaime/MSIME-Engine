@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.24.0...v0.25.0) (2026-09-19)
+
+
+### Features
+
+* **dictionary:** build the lattice ngram tables as a stage ([#169](https://github.com/metasequoiaime/MSIME-Engine/issues/169)) ([e25f2b8](https://github.com/metasequoiaime/MSIME-Engine/commit/e25f2b81692317cfe7a939bd5d41746c19f059b0))
+
 ## [0.24.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.23.0...v0.24.0) (2026-09-19)
 
 
