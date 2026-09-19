@@ -26,14 +26,18 @@
       "path": "bigram.bin",
       "role": "generation-copy",
       "source": "dictionary",
-      "profiles": []
+      "profiles": [
+        "desktop"
+      ]
     },
     {
       "id": "trigram_table",
       "path": "trigram.bin",
       "role": "generation-copy",
       "source": "dictionary",
-      "profiles": []
+      "profiles": [
+        "desktop"
+      ]
     },
     {
       "id": "other_dictionary",

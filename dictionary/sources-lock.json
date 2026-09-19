@@ -12,5 +12,21 @@
   "mozc": {
     "repository": "https://github.com/google/mozc.git",
     "commit": "9fbd649bea4c5e99cd8ad5e487213b26a953a376"
+  },
+  "ngram_corpus": {
+    "source": "zhwiki",
+    "base_url": "https://dumps.wikimedia.org/zhwiki/20260901/",
+    "dump": "20260901",
+    "license": "CC-BY-SA-4.0",
+    "attribution": "中文维基百科 (zhwiki) 20260901 pages-articles dump, https://dumps.wikimedia.org/zhwiki/20260901/",
+    "files": [
+      {
+        "name": "zhwiki-20260901-pages-articles1.xml-p1p187712.bz2",
+        "size": 254212741,
+        "sha1": "ce426a867d72952f189562683f0e2e119dea3845"
+      }
+    ],
+    "han_characters": 134000000,
+    "note": "build_ngram.py stops at --max-chars, 120M Han characters by default, and this one file carries 134M. Raising the cap means pinning more parts of the same dump."
   }
 }

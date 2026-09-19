@@ -60,6 +60,8 @@ SHIPPING_ARTIFACTS = (
     "english.db",
     "others.db",
     "dict_japanese.dat",
+    "bigram.bin",
+    "trigram.bin",
     MOZC_NOTICE_NAME,
 )
 
@@ -78,10 +80,6 @@ class Stage:
     needs_reference: str | None = None
     # Files that must exist before the stage runs, relative to the repository root.
     needs_paths: tuple[str, ...] = field(default=())
-    # Inputs the repository deliberately does not carry, relative to the repository root. A stage
-    # whose only missing inputs are these skips even under --require-all: nothing ships its output
-    # yet, so a release must not fail for want of a file no checkout has.
-    optional_paths: tuple[str, ...] = field(default=())
     # Copy the Mozc licence notice into out/ once the stage has produced the model.
     copies_mozc_notice: bool = False
 
@@ -229,18 +227,17 @@ STAGES: tuple[Stage, ...] = (
         # Last on purpose: the tables are counted with the finished quanpin vocabulary, so a word any
         # earlier stage adds is a word the segmentation can see.
         #
-        # The corpus is not in this repository and is not fetched: it is tens of gigabytes, and which
-        # corpus it is decides what licence the shipped tables carry. Drop the text under
-        # source/ngram-corpus/ and this stage runs; leave it out and the build skips it the same way it
-        # skips the stages whose reference checkouts are absent.
+        # Fetches its own corpus, the way japanese-model fetches Mozc's data: sources-lock.json pins the
+        # zhwiki file, fetch_corpus.py downloads it into source/ngram-corpus/ and checks its SHA-1, and a
+        # file already there is left alone. One file rather than the whole dump because build_ngram stops
+        # at --max-chars: the default is 120M Han characters and this file carries 134M.
         #
-        # bigram.bin and trigram.bin are deliberately absent from SHIPPING_ARTIFACTS,
-        # tools/verify_dictionaries.py and the desktop profile in contracts/assets/assets.json, which
-        # dictionary/AGENTS.md otherwise requires a new artifact to join. Nothing ships them until the
-        # corpus is pinned, and a shipping list naming a file the build cannot produce fails packaging
-        # for everyone. See dictionary/AGENTS.md.
-        description="bigram.bin and trigram.bin, the lattice's context tables (needs source/ngram-corpus/)",
+        # It costs a 254 MB download once and about eleven minutes each build, which is most of what a
+        # full dictionary build takes. `--skip ngram` for a quick local one. Why zhwiki and not C4, and
+        # what shipping these two files obliges: dictionary/AGENTS.md and NOTICE.md.
+        description="bigram.bin and trigram.bin, the lattice's context tables, counted over the pinned corpus",
         steps=(
+            ("makecikudb/ngramdb/fetch_corpus.py",),
             (
                 "makecikudb/ngramdb/build_ngram.py",
                 "--dictionary",
@@ -264,7 +261,6 @@ STAGES: tuple[Stage, ...] = (
             ),
         ),
         produces=("bigram.bin", "trigram.bin"),
-        optional_paths=("source/ngram-corpus",),
     ),
 )
 
@@ -314,9 +310,6 @@ def missing_inputs(stage: Stage, reference_root: Path) -> list[str]:
         missing.append(f"{reference_root / stage.needs_reference} (use --fetch-references)")
     return missing
 
-
-def missing_optional_inputs(stage: Stage) -> list[str]:
-    return [path for path in stage.optional_paths if not (REPO_ROOT / path).exists()]
 
 
 def run_stage(stage: Stage, reference_root: Path) -> None:
@@ -430,12 +423,6 @@ def main() -> int:
         if missing:
             if args.require_all:
                 raise BuildError(f"stage {stage.name} is missing: {', '.join(missing)}")
-            print(f"[skip] {stage.name}: missing {', '.join(missing)}")
-            skipped.append((stage.name, missing))
-            continue
-        # Optional inputs skip the stage without failing a release: see Stage.optional_paths.
-        missing = missing_optional_inputs(stage)
-        if missing:
             print(f"[skip] {stage.name}: missing {', '.join(missing)}")
             skipped.append((stage.name, missing))
             continue
