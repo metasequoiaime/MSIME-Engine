@@ -747,8 +747,43 @@ void test_runtime_isolation()
     }
 }
 
+// The lattice asks for its ngram tables through RuntimePaths::dictionary(), which resolves against
+// the prepared generation rather than the resource directory. Preparation used to copy exactly the
+// two databases, so a table shipped beside them was invisible to the decoder and the context terms
+// scored nothing - shipped and inert, with nothing reporting either.
+void test_generation_tables_are_staged()
+{
+    using namespace metasequoia;
+    const auto root = std::filesystem::temp_directory_path() /
+                      ("msime-ngram-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    test::ScopedDataDirectoryCleanup cleanup(root);
+    const auto resources = root / "resources";
+    make_resources(resources, "你");
+    std::ofstream(resources / assets::bigram_table, std::ios::binary) << "first";
+
+    const auto user = root / "user";
+    auto paths = prepare_runtime_paths(resources, user, root / "cache", "v1");
+    require(std::filesystem::is_regular_file(paths.dictionary(assets::bigram_table)),
+            "A table shipped with the dictionary did not reach the generation");
+    require(bytes(paths.dictionary(assets::bigram_table)) == bytes(resources / assets::bigram_table),
+            "The staged table is not the one the resource set carries");
+    require(!std::filesystem::exists(paths.dictionary(assets::trigram_table)),
+            "A table the resource set does not carry was invented");
+
+    // A build that starts shipping a table must not need a new dictionary generation to deliver it,
+    // and must not disturb the one a user has already learned into.
+    std::ofstream(resources / assets::trigram_table, std::ios::binary) << "third";
+    std::ofstream(resources / assets::bigram_table, std::ios::binary) << "second";
+    paths = prepare_runtime_paths(resources, user, root / "cache", "v1");
+    require(std::filesystem::is_regular_file(paths.dictionary(assets::trigram_table)),
+            "A table added after preparation never reached the prepared generation");
+    require(bytes(paths.dictionary(assets::bigram_table)) == std::string("first"),
+            "Re-preparing a ready generation replaced a table a session may have mapped");
+}
+
 int main()
 {
     test_runtime_isolation();
+    test_generation_tables_are_staged();
     return 0;
 }
