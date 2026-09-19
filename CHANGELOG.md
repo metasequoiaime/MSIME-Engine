@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.24.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.23.0...v0.24.0) (2026-09-19)
+
+
+### Features
+
+* **dictionary:** build custom/words.txt into the quanpin tables ([#166](https://github.com/metasequoiaime/MSIME-Engine/issues/166)) ([5eab393](https://github.com/metasequoiaime/MSIME-Engine/commit/5eab393735cf86ed5ef6014ee8ab1df02e31132f))
+* **input:** expose pinyin segment boundaries ([#163](https://github.com/metasequoiaime/MSIME-Engine/issues/163)) ([5c03928](https://github.com/metasequoiaime/MSIME-Engine/commit/5c03928c89bcac729910683ed86e2c34628473bc))
+* **input:** expose segment boundaries from session facade ([#165](https://github.com/metasequoiaime/MSIME-Engine/issues/165)) ([0531d42](https://github.com/metasequoiaime/MSIME-Engine/commit/0531d4211ab17d3ba43dc8ef86c05ec574b02fa8))
+
+
+### Bug Fixes
+
+* **runtime:** stage the lattice ngram tables into the dictionary generation ([#168](https://github.com/metasequoiaime/MSIME-Engine/issues/168)) ([d45268d](https://github.com/metasequoiaime/MSIME-Engine/commit/d45268d2c516f35c93bbe93477a653ec0a0ceaeb))
+
 ## [0.23.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.22.0...v0.23.0) (2026-09-18)
 
 
