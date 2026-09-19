@@ -78,6 +78,10 @@ class Stage:
     needs_reference: str | None = None
     # Files that must exist before the stage runs, relative to the repository root.
     needs_paths: tuple[str, ...] = field(default=())
+    # Inputs the repository deliberately does not carry, relative to the repository root. A stage
+    # whose only missing inputs are these skips even under --require-all: nothing ships its output
+    # yet, so a release must not fail for want of a file no checkout has.
+    optional_paths: tuple[str, ...] = field(default=())
     # Copy the Mozc licence notice into out/ once the stage has produced the model.
     copies_mozc_notice: bool = False
 
@@ -211,6 +215,48 @@ STAGES: tuple[Stage, ...] = (
         produces=("dict_japanese.dat", MOZC_NOTICE_NAME),
         copies_mozc_notice=True,
     ),
+    Stage(
+        name="ngram",
+        # Last on purpose: the tables are counted with the finished quanpin vocabulary, so a word any
+        # earlier stage adds is a word the segmentation can see.
+        #
+        # The corpus is not in this repository and is not fetched: it is tens of gigabytes, and which
+        # corpus it is decides what licence the shipped tables carry. Drop the text under
+        # source/ngram-corpus/ and this stage runs; leave it out and the build skips it the same way it
+        # skips the stages whose reference checkouts are absent.
+        #
+        # bigram.bin and trigram.bin are deliberately absent from SHIPPING_ARTIFACTS,
+        # tools/verify_dictionaries.py and the desktop profile in contracts/assets/assets.json, which
+        # dictionary/AGENTS.md otherwise requires a new artifact to join. Nothing ships them until the
+        # corpus is pinned, and a shipping list naming a file the build cannot produce fails packaging
+        # for everyone. See dictionary/AGENTS.md.
+        description="bigram.bin and trigram.bin, the lattice's context tables (needs source/ngram-corpus/)",
+        steps=(
+            (
+                "makecikudb/ngramdb/build_ngram.py",
+                "--dictionary",
+                "out/msime.db",
+                "--out",
+                "out/trigram.bin",
+                "--counts-out",
+                "out/ngram-counts.tsv",
+                "--order",
+                "3",
+                "source/ngram-corpus",
+            ),
+            (
+                "makecikudb/ngramdb/build_ngram.py",
+                "--counts-in",
+                "out/ngram-counts.tsv",
+                "--out",
+                "out/bigram.bin",
+                "--order",
+                "2",
+            ),
+        ),
+        produces=("bigram.bin", "trigram.bin"),
+        optional_paths=("source/ngram-corpus",),
+    ),
 )
 
 STAGES_BY_NAME = {stage.name: stage for stage in STAGES}
@@ -258,6 +304,10 @@ def missing_inputs(stage: Stage, reference_root: Path) -> list[str]:
     if stage.needs_reference and not (reference_root / stage.needs_reference).is_dir():
         missing.append(f"{reference_root / stage.needs_reference} (use --fetch-references)")
     return missing
+
+
+def missing_optional_inputs(stage: Stage) -> list[str]:
+    return [path for path in stage.optional_paths if not (REPO_ROOT / path).exists()]
 
 
 def run_stage(stage: Stage, reference_root: Path) -> None:
@@ -371,6 +421,12 @@ def main() -> int:
         if missing:
             if args.require_all:
                 raise BuildError(f"stage {stage.name} is missing: {', '.join(missing)}")
+            print(f"[skip] {stage.name}: missing {', '.join(missing)}")
+            skipped.append((stage.name, missing))
+            continue
+        # Optional inputs skip the stage without failing a release: see Stage.optional_paths.
+        missing = missing_optional_inputs(stage)
+        if missing:
             print(f"[skip] {stage.name}: missing {', '.join(missing)}")
             skipped.append((stage.name, missing))
             continue
