@@ -6,6 +6,8 @@ namespace metasequoia::assets {
 inline constexpr int contract_version = 1;
 inline constexpr char main_dictionary[] = "msime.db";
 inline constexpr char english_dictionary[] = "english.db";
+inline constexpr char bigram_table[] = "bigram.bin";
+inline constexpr char trigram_table[] = "trigram.bin";
 inline constexpr char other_dictionary[] = "others.db";
 inline constexpr char japanese_model[] = "dict_japanese.dat";
 inline constexpr char japanese_notice[] = "mozc_dictionary_oss_README.txt";

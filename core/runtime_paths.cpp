@@ -53,6 +53,40 @@ void copy_database(const std::filesystem::path &source, const std::filesystem::p
     if (copied != SQLITE_DONE || finished != SQLITE_OK)
         throw std::runtime_error("Unable to copy runtime dictionary: " + path_to_utf8(source));
 }
+
+// Tables the lattice reads through RuntimePaths::dictionary(). They are built from one dictionary
+// generation's vocabulary, so they belong beside that generation rather than in the resource
+// directory, and a resource set that carries none simply leaves the decoder without them.
+constexpr const char *kGenerationCopies[] = {assets::bigram_table, assets::trigram_table};
+
+// Rename into place rather than writing the target directly: a session may already have the
+// previous file mapped, and a half-written table under an mmap is a crash rather than a miss.
+void copy_generation_file(const std::filesystem::path &source, const std::filesystem::path &target)
+{
+    const auto incoming = target.parent_path() / (target.filename().string() + ".incoming");
+    std::error_code error;
+    std::filesystem::remove(incoming, error);
+    std::filesystem::copy_file(source, incoming, std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::rename(incoming, target);
+}
+
+// Copy the optional tables the resource set carries. Called for a generation being staged and for
+// one already prepared: the second case is what stops a table added by a later build from staying
+// invisible until the dictionary generation itself changes.
+void stage_generation_copies(const std::filesystem::path &resources, const std::filesystem::path &generation,
+                             bool replace_existing)
+{
+    for (const auto *name : kGenerationCopies)
+    {
+        const auto source = resources / name;
+        if (!std::filesystem::is_regular_file(source))
+            continue;
+        const auto target = generation / name;
+        if (!replace_existing && std::filesystem::exists(target))
+            continue;
+        copy_generation_file(source, target);
+    }
+}
 } // namespace
 
 RuntimePaths RuntimePaths::legacy()
@@ -113,6 +147,7 @@ RuntimePaths prepare_runtime_paths(const std::filesystem::path &resources, const
                                                     path_to_utf8(result.dictionary(assets::english_dictionary)));
         if (replay.failed || !replay.error.empty())
             throw std::runtime_error("Runtime dictionary replay failed: " + replay.error);
+        stage_generation_copies(resources, result.dictionaries, false);
         return result;
     }
     const auto stage = result.dictionaries.parent_path() / (content_id + ".incoming");
@@ -124,6 +159,7 @@ RuntimePaths prepare_runtime_paths(const std::filesystem::path &resources, const
     {
         for (const auto *name : {assets::main_dictionary, assets::english_dictionary})
             copy_database(resources / name, stage / name);
+        stage_generation_copies(resources, stage, true);
         const auto replay = user_dictionary::replay(path_to_utf8(result.user(assets::user_journal)),
                                                     path_to_utf8(stage / assets::main_dictionary),
                                                     path_to_utf8(stage / assets::english_dictionary));

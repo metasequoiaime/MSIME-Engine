@@ -22,6 +22,20 @@
       ]
     },
     {
+      "id": "bigram_table",
+      "path": "bigram.bin",
+      "role": "generation-copy",
+      "source": "dictionary",
+      "profiles": []
+    },
+    {
+      "id": "trigram_table",
+      "path": "trigram.bin",
+      "role": "generation-copy",
+      "source": "dictionary",
+      "profiles": []
+    },
+    {
       "id": "other_dictionary",
       "path": "others.db",
       "role": "resource",
