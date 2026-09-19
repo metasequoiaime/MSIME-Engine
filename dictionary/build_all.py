@@ -108,6 +108,15 @@ STAGES: tuple[Stage, ...] = (
         ),
     ),
     Stage(
+        name="custom-words",
+        # Runs straight after quanpin: later stages read the finished quanpin tables, and
+        # clean_ecdict.py weights Chinese terms from them.
+        description="Hand-maintained entries from custom/words.txt, merged into the quanpin tables",
+        steps=(("makecikudb/quanpindb/makedb/multi_table_has_jp/insert_custom_words.py",),),
+        produces=("msime.db",),
+        needs_paths=("custom/words.txt",),
+    ),
+    Stage(
         name="wubi",
         description="86 wubi table in msime.db",
         steps=(

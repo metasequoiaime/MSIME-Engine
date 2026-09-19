@@ -37,3 +37,5 @@
 酸秀才	suan'xiu'cai	1
 云风	yun'feng	1
 劣祖劣宗	lie'zu'lie'zong	1
+未来可期	wei'lai'ke'qi	5000
+扛把子	kang'ba'zi	10000
