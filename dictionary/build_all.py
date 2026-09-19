@@ -229,10 +229,10 @@ STAGES: tuple[Stage, ...] = (
         # Last on purpose: the tables are counted with the finished quanpin vocabulary, so a word any
         # earlier stage adds is a word the segmentation can see.
         #
-        # The corpus is not in this repository and is not fetched: it is tens of gigabytes, and which
-        # corpus it is decides what licence the shipped tables carry. Drop the text under
-        # source/ngram-corpus/ and this stage runs; leave it out and the build skips it the same way it
-        # skips the stages whose reference checkouts are absent.
+        # The corpus is not in this repository: it is tens of gigabytes. makecikudb/ngramdb/fetch_corpus.py
+        # downloads the pinned zhwiki dump named by sources-lock.json into source/ngram-corpus/ and checks
+        # every file's SHA-1. Without it the build skips this stage the way it skips the stages whose
+        # reference checkouts are absent. Why zhwiki and not C4: dictionary/AGENTS.md.
         #
         # bigram.bin and trigram.bin are deliberately absent from SHIPPING_ARTIFACTS,
         # tools/verify_dictionaries.py and the desktop profile in contracts/assets/assets.json, which

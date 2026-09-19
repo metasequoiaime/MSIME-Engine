@@ -51,9 +51,11 @@ python build_profile.py --profile desktop --verify
 
 不加 `--fetch-references` 时依赖它们的 stage 会被跳过而不是报错，方便本地做部分构建；发布构建用 `--require-all` 让缺失直接失败。
 
-`ngram` stage 读第三份仓外数据，但不由 `--fetch-references` 拉：整句词格的上下文表要的是几十 GB 的中文语料，而且**用哪份语料决定了发布出去的表带什么授权**，这是产品决定不是构建细节。把语料文本（`.txt` 或 wiki dump 的 `.bz2`）放进 `source/ngram-corpus/`，stage 就会跑；不放就跳过，和缺少 reference 的 stage 一样。
+`ngram` stage 读第三份仓外数据，但不由 `--fetch-references` 拉：整句词格的上下文表要统计几十 GB 中文语料，用 `makecikudb/ngramdb/fetch_corpus.py` 按 `sources-lock.json` 的 `ngram_corpus` 下载到 `source/ngram-corpus/`，逐个文件校验 SHA-1。语料不在就跳过这个 stage，`--require-all` 也跳过。
 
-已知的两个候选，取舍要一起决定：zhwiki 是 CC-BY-SA，表是它的衍生数据库，share-alike 会跟着发布走；C4 中文部分是 ODC-BY，只要求署名，而且组织已经在用它收割评测集（见客户端 `resources/eval/sentences-v2.tsv` 的署名行）。定下来之后把语料连同它的固定版本和授权写进 `sources-lock.json`，并按 `NOTICE.md` 的既有格式补署名。
+**语料固定为中文维基百科 20260901 的 pages-articles dump（CC-BY-SA 4.0），不是 C4 中文部分**，理由是测量而不是授权：评测收割集 `sentences-v2.tsv` 本身就是从 C4 收割的，拿 C4 统计上下文等于让解码器把唯一的硬基准当训练集看，之后所有权重调整都会测在被污染的集合上。授权一侧两者都可接受：前端以 GPL-3.0 分发，BY-SA 4.0 单向兼容 GPL-3.0，署名见 `NOTICE.md`。
+
+Wikimedia 只保留最近几期 dump，固定的那期迟早 404。那不是静默失败：下载器会带着取不到的 URL 停下来，重新固定意味着把新一期的文件清单写进 lock 并有意识地重建表。
 
 日语整句模型的 Mozc 原始数据由 `build_sentence_model.py --download` 自己拉。**它的 `README.txt` 含 IPAdic / ICOT / 冲绳授权声明，发布二进制模型时必须一并分发**，`japanese-model` stage 会把它复制成 `out/mozc_dictionary_oss_README.txt`。
 

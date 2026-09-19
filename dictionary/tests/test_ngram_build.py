@@ -1,3 +1,4 @@
+import json
 import os
 import sqlite3
 import struct
@@ -10,6 +11,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BUILDER = REPO_ROOT / "makecikudb" / "ngramdb" / "build_ngram.py"
 sys.path.insert(0, str(BUILDER.parent))
+sys.path.insert(0, str(REPO_ROOT))
+import build_all  # noqa: E402
 from build_ngram import MAGIC, VERSION, corpus_files  # noqa: E402
 
 # The engine maps this file; tests/src/test_ngram_table.cpp reads the same layout from the other side.
@@ -105,20 +108,44 @@ class BuildNgramTests(unittest.TestCase):
 class StageSkipTests(unittest.TestCase):
     """The corpus is not in the repository, so the stage has to be absent-tolerant even for a release."""
 
-    def run_stage(self, *arguments: str) -> subprocess.CompletedProcess:
+    def test_an_optional_input_is_missing_without_being_a_required_one(self):
+        stage = build_all.Stage(name="probe", description="", steps=(),
+                                optional_paths=("source/no-such-corpus",))
+        self.assertEqual(build_all.missing_optional_inputs(stage), ["source/no-such-corpus"])
+        # Not in missing_inputs: that is what --require-all fails on, and what test_licensing asserts
+        # every stage can satisfy from the repository alone.
+        self.assertEqual(build_all.missing_inputs(stage, Path("/nonexistent")), [])
+        self.assertEqual(build_all.required_paths(stage), [])
+
+    def test_the_ngram_stage_declares_its_corpus_as_optional(self):
+        stage = build_all.STAGES_BY_NAME["ngram"]
+        self.assertEqual(stage.optional_paths, ("source/ngram-corpus",))
+        self.assertEqual(stage.needs_paths, ())
+
+    @unittest.skipIf((REPO_ROOT / "source" / "ngram-corpus").exists(), "this checkout has fetched the corpus")
+    def test_a_missing_corpus_skips_the_stage_even_with_require_all(self):
         environment = dict(os.environ)
         environment.pop("MSIME_DICTIONARY_INCLUDE_UNLICENSED", None)
-        return subprocess.run([sys.executable, str(REPO_ROOT / "build_all.py"), "--only", "ngram", *arguments],
-                              cwd=REPO_ROOT, env=environment, capture_output=True, text=True, check=False)
-
-    def test_a_missing_corpus_skips_the_stage_even_with_require_all(self):
-        self.assertFalse((REPO_ROOT / "source" / "ngram-corpus").exists(),
-                         "this test describes a checkout without a corpus")
         for arguments in ((), ("--require-all",)):
             with self.subTest(arguments=arguments):
-                completed = self.run_stage(*arguments)
+                completed = subprocess.run(
+                    [sys.executable, str(REPO_ROOT / "build_all.py"), "--only", "ngram", *arguments],
+                    cwd=REPO_ROOT, env=environment, capture_output=True, text=True, check=False)
                 self.assertEqual(completed.returncode, 0, completed.stderr)
                 self.assertIn("[skip] ngram", completed.stdout)
+
+
+class CorpusLockTests(unittest.TestCase):
+    def test_the_pinned_corpus_is_complete_enough_to_fetch_and_attribute(self):
+        corpus = json.loads((REPO_ROOT / "sources-lock.json").read_text(encoding="utf-8"))["ngram_corpus"]
+        self.assertEqual(corpus["license"], "CC-BY-SA-4.0")
+        self.assertTrue(corpus["base_url"].endswith("/"))
+        self.assertTrue(corpus["attribution"])
+        self.assertTrue(corpus["files"], "a pin with no files would skip the stage silently")
+        for entry in corpus["files"]:
+            self.assertEqual(len(entry["sha1"]), 40, entry["name"])
+            self.assertGreater(entry["size"], 0, entry["name"])
+            self.assertNotIn("/", entry["name"], "a file name has to stay inside the destination")
 
 
 if __name__ == "__main__":
