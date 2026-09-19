@@ -12,5 +12,64 @@
   "mozc": {
     "repository": "https://github.com/google/mozc.git",
     "commit": "9fbd649bea4c5e99cd8ad5e487213b26a953a376"
+  },
+  "ngram_corpus": {
+    "source": "zhwiki",
+    "base_url": "https://dumps.wikimedia.org/zhwiki/20260901/",
+    "dump": "20260901",
+    "license": "CC-BY-SA-4.0",
+    "attribution": "中文维基百科 (zhwiki) 20260901 pages-articles dump, https://dumps.wikimedia.org/zhwiki/20260901/",
+    "files": [
+      {
+        "name": "zhwiki-20260901-pages-articles1.xml-p1p187712.bz2",
+        "size": 254212741,
+        "sha1": "ce426a867d72952f189562683f0e2e119dea3845"
+      },
+      {
+        "name": "zhwiki-20260901-pages-articles2.xml-p187713p630160.bz2",
+        "size": 309782979,
+        "sha1": "86508abf20f534d3a40da4b83d8849a416233e41"
+      },
+      {
+        "name": "zhwiki-20260901-pages-articles3.xml-p630161p1389648.bz2",
+        "size": 388629475,
+        "sha1": "8b1dae1b6baf3c68e71a2914cece26bab6ef4e80"
+      },
+      {
+        "name": "zhwiki-20260901-pages-articles4.xml-p1389649p2889648.bz2",
+        "size": 301365419,
+        "sha1": "326d4641d756007e0eaa153254a6356ffa4dbd5b"
+      },
+      {
+        "name": "zhwiki-20260901-pages-articles4.xml-p2889649p3391029.bz2",
+        "size": 146157990,
+        "sha1": "71668d24e53904800c99674fa5785edf47253178"
+      },
+      {
+        "name": "zhwiki-20260901-pages-articles5.xml-p3391030p4891029.bz2",
+        "size": 326577230,
+        "sha1": "bdf07e9a881141e830a37ef83687d806680104f4"
+      },
+      {
+        "name": "zhwiki-20260901-pages-articles5.xml-p4891030p5596379.bz2",
+        "size": 204315471,
+        "sha1": "3a305f82ee9b088d1d72a304df75935346b6eb26"
+      },
+      {
+        "name": "zhwiki-20260901-pages-articles6.xml-p5596380p7096379.bz2",
+        "size": 484814299,
+        "sha1": "18173b677bf05f0c2f1030428984ec8da0ef9804"
+      },
+      {
+        "name": "zhwiki-20260901-pages-articles6.xml-p7096380p8596379.bz2",
+        "size": 588048076,
+        "sha1": "05f2a47097c0bd3a4b5d82716c82446a041d3c51"
+      },
+      {
+        "name": "zhwiki-20260901-pages-articles6.xml-p8596380p9595625.bz2",
+        "size": 394010361,
+        "sha1": "e057235a1ce0b8827363cbafc9a55bc9eb862400"
+      }
+    ]
   }
 }
