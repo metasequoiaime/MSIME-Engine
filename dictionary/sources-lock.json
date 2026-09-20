@@ -7,6 +7,11 @@
     "rime-jp_sela": {
       "repository": "https://github.com/Selaube/rime-jp_sela.git",
       "commit": "898e09cb5e0bd3e02216165e52fef67f5a597590"
+    },
+    "rime-ice": {
+      "repository": "https://github.com/iDvel/rime-ice.git",
+      "commit": "9e66b0729083b37d217312294f6d516c8d7234be",
+      "note": "source/BaseDictIce.txt 与 cn/BaseDictIceV1.txt 的来源。这条锁是补记的：此前它是唯一没有被记录提交的中文词库来源，于是没有任何办法判断树里那份是从哪个版本导出的，也就发现不了它与上游的偏差。按这个提交比对，BaseDictIce.txt 有 28185 条上游不存在的词条，另有 8328 条权重与上游不同。"
     }
   },
   "mozc": {

@@ -7,10 +7,18 @@
 以下是 5 个中文词库。
 
 - `BaseDict.txt` 词库来自[这里](https://github.com/wuhgit/CustomPinyinDictionary)，取的是 `2023-09-28(No.82)` 这个版本，条目目前有 `1415159` 个条目。
-- `BaseDictIce.txt` 词库来自[这里](https://github.com/iDvel/rime-ice)
+- `BaseDictIce.txt` 词库来自[这里](https://github.com/iDvel/rime-ice)，锁定的提交记在 `sources-lock.json`。
 - `SampleIMESimplifiedQuanPin.txt` 词库来自[这里](https://github.com/microsoft/Windows-classic-samples/tree/main/Samples/IME/cpp/SampleIME/Dictionary)。
 
-上面三个都是原封不动搬过来的。
+上面三个原则上是原样搬过来的，但 `BaseDictIce.txt` 实际不是：按 `sources-lock.json` 锁定的上游提交逐条比对，它有 28185 条上游不存在的词条（占 3.2%），另有 8328 条权重与上游不同。这些多出来的条目里混着两类东西——一类是上游没收的真词（地名、品牌，例如清远、萍乡、达能），另一类是语料切分留下的碎片，例如「米高」（50215，切自「一米高」「三米高」）、「钟的」（70455，切自「一分钟的」）、「之事」（181575，切自「不平之事」）。碎片不是词，却带着被累加出来的高权重，直接挤进首屏候选。
+
+已确认的碎片列在 `tools/segmentation_fragments.txt`，并由 `tools/verify_no_fragments.py` 挡住回归：
+
+```bash
+python3 tools/verify_no_fragments.py
+```
+
+这份文件的真实来源仍然没有查清——上游从来没有过「清远」「米高」这些条目，所以它不可能只是某个旧版本的 rime-ice。在查清之前，不要再往这三个文件里写「原样搬运」。
 
 - `SingleChars.txt` 来自[这里](https://github.com/iDvel/rime-ice)。但是，经过了我的处理，把一些原来不对的拼音，比如，绿(lv)给使用这个[仓库](https://github.com/mozillazg/pinyin-data/blob/master/pinyin.txt)中的数据纠正了过来，保留了原有的雾凇的 8105 简体常用字的同时，对新加入的没有权重的字作了去重，去重的逻辑是把在 8105 中存在的条目给去掉。
 - `FanyExtDict.txt` 我自己根据上面的基础添加的一些不与上面的词库重复的一些条目的词库。
