@@ -201,10 +201,16 @@ std::vector<WordItem> NineKeySession::english_candidates()
     // Prefix matches belong in the list -- a nine-key code is also the start of longer words -- but
     // not ahead of the word the code spells exactly. Ranked on frequency alone, typing 65 for "ok"
     // led with "old", which is simply the more common word and not the one being asked for.
+    //
+    // A word the frequency table scores at zero does not get that privilege. Spelling the code
+    // exactly is evidence the user meant it only when the word is one people type: 64426 is 你好,
+    // and `ogham` -- the name of an early Irish alphabet -- is the only five-letter English word
+    // those keys can spell, so it won this comparison against every commoner prefix match and led
+    // the English list outright.
     const auto typed = digits_.size();
     std::stable_sort(words.begin(), words.end(), [typed](const WordItem &a, const WordItem &b) {
-        const bool a_exact = a.word.size() == typed;
-        const bool b_exact = b.word.size() == typed;
+        const bool a_exact = a.word.size() == typed && a.weight > 0;
+        const bool b_exact = b.word.size() == typed && b.weight > 0;
         if (a_exact != b_exact)
             return a_exact;
         return a.weight != b.weight ? a.weight > b.weight : a.word.size() < b.word.size();
@@ -290,7 +296,11 @@ void NineKeySession::refresh()
     auto english = english_candidates();
     if (!english.empty())
     {
-        const auto slot = std::min<std::size_t>(1, candidates_.size());
+        // Second place is ahead of every pinyin reading but the first, which is worth it for a word
+        // the user is plainly spelling and not for one the frequency table has never seen. A
+        // zero-weight word still belongs in the list -- the digits do spell it -- at the end of it.
+        const auto slot =
+            english.front().weight > 0 ? std::min<std::size_t>(1, candidates_.size()) : candidates_.size();
         candidates_.insert(candidates_.begin() + static_cast<std::ptrdiff_t>(slot), english.front());
         candidates_.insert(candidates_.end(), std::make_move_iterator(english.begin() + 1),
                            std::make_move_iterator(english.end()));
