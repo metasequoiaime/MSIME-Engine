@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.27.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.27.0...v0.27.1) (2026-09-20)
+
+
+### Bug Fixes
+
+* **dictionary:** drop segmentation fragments that reach the first candidate page ([bc46734](https://github.com/metasequoiaime/MSIME-Engine/commit/bc4673416c732dad2cb50429444ac3aaba6dc62a))
+* **dictionary:** 删掉挤进首屏的分词碎片，并锁定 rime-ice 来源 ([67fd083](https://github.com/metasequoiaime/MSIME-Engine/commit/67fd083a4639a965e7a033cdbf53aa48c8c29af7))
+
 ## [0.27.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.26.1...v0.27.0) (2026-09-20)
 
 
