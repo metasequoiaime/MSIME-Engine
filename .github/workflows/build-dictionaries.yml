@@ -107,7 +107,7 @@ jobs:
             echo
             echo '| File | Size |'
             echo '| --- | --- |'
-            for artifact in msime.db english.db others.db dict_japanese.dat mozc_dictionary_oss_README.txt; do
+            for artifact in msime.db english.db others.db dict_japanese.dat bigram.bin trigram.bin mozc_dictionary_oss_README.txt; do
               printf '| %s | %s |\n' "$artifact" "$(du -h "out/desktop/$artifact" | cut -f1)"
             done
             echo
@@ -125,6 +125,8 @@ jobs:
             dictionary/out/desktop/english.db
             dictionary/out/desktop/others.db
             dictionary/out/desktop/dict_japanese.dat
+            dictionary/out/desktop/bigram.bin
+            dictionary/out/desktop/trigram.bin
             dictionary/out/desktop/mozc_dictionary_oss_README.txt
             dictionary/out/desktop/SHA256SUMS.txt
             dictionary/out/desktop/dictionary-manifest.json
@@ -198,5 +200,6 @@ jobs:
             --title "Dictionaries $TAG_NAME" \
             --notes "$notes" \
             out/desktop/msime.db out/desktop/english.db out/desktop/others.db out/desktop/dict_japanese.dat \
+            out/desktop/bigram.bin out/desktop/trigram.bin \
             out/desktop/mozc_dictionary_oss_README.txt out/desktop/SHA256SUMS.txt out/desktop/dictionary-manifest.json \
             out/assets/engine-assets-desktop.zip out/assets/engine-assets-desktop.zip.sha256
