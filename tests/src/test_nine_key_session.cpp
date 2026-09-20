@@ -62,7 +62,8 @@ int main()
                          "CREATE TABLE english_words(word TEXT,display TEXT,weight INTEGER);"
                          "INSERT INTO english_words VALUES('ok','ok',900);"
                          "INSERT INTO english_words VALUES('old','old',1000);"
-                         "INSERT INTO english_words VALUES('older','older',800);",
+                         "INSERT INTO english_words VALUES('older','older',800);"
+                         "INSERT INTO english_words VALUES('ogham','ogham',0);",
                          nullptr, nullptr, nullptr) == SQLITE_OK,
             "populate english fixture");
     sqlite3_close(english);
@@ -77,6 +78,12 @@ int main()
     type(session, "65");
     // old 的词频更高,但 65 正好拼满 ok,先给拼满的那个。
     require(candidate(session, "ok") < candidate(session, "old"), "nine-key english ranks the exact code first");
+    session.command(Command::Cancel);
+    // 64426 是 ni'hao,也是 ogham 唯一能拼出的键序。拼满不等于该给第二格 —— 词频为 0 的词排到最后。
+    type(session, "64426");
+    require(candidate(session, "你好") == 0, "the pinyin reading lost the first slot");
+    require(candidate(session, "ogham") + 1 == session.snapshot().candidates.size(),
+            "a zero-weight english word did not go to the end");
     session.command(Command::Cancel);
     type(session, "64");
     candidate(session, "你");
