@@ -280,9 +280,21 @@ void NineKeySession::refresh()
             candidates_.push_back(std::move(candidate));
         }
     }
-    std::stable_sort(candidates_.begin(), candidates_.end(), [](const auto &a, const auto &b) {
+    // 合成候选与词典词条的 weight 不是同一个尺度：词典的是语料词频，合成整句的是解码得分。两者放在
+    // 一起按 weight 比大小时，吃掉全部按键的「你好哦」(56084) 会压过同样吃掉全部按键的真词「你敢」
+    // (35600)、「你搞」(9350) 和「蜜柑」(7539)。64426 因此出成「你好 / 你好哦 / 你敢哦 / 米糕哦 /
+    // 密函哦 / 你敢」——四个拼出来的东西挤在真词前面，而它们没有一个是词。
+    //
+    // 按来源分档，覆盖按键数相同时词典词条先行。整句输入不受影响：长输入里能吃掉全部按键的词条本来
+    // 就没有，合成候选仍然排第一（96436426 出「我很好」，9664486 出「用户名」）。
+    const auto synthesised = [](CandidateSource source) {
+        return source == CandidateSource::Generated || source == CandidateSource::Fallback;
+    };
+    std::stable_sort(candidates_.begin(), candidates_.end(), [&synthesised](const auto &a, const auto &b) {
         if (a.pinyin.size() != b.pinyin.size())
             return a.pinyin.size() > b.pinyin.size();
+        if (synthesised(a.source) != synthesised(b.source))
+            return !synthesised(a.source);
         if (a.fuzzy != b.fuzzy)
             return !a.fuzzy;
         return a.weight > b.weight;
