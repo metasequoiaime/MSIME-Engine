@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstddef>
 #include <limits>
+#include <map>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -159,6 +160,154 @@ void rescore_with_trigram(std::vector<LatticePath> &paths, const WordLatticeOpti
                      [](const LatticePath &a, const LatticePath &b) { return a.log_prob > b.log_prob; });
 }
 
+// Best score the lattice can give one specific sentence, on the same terms it scores its own paths.
+//
+// The Google-Pinyin fallback and the lattice each produce a whole sentence, and they used to be ordered by
+// which source they came from rather than by how good they are. Scoring the fallback over the same graph
+// makes the two comparable: same edge weights, same phrase bonus, same context terms. Returns nothing when
+// the dictionary cannot spell that sentence at all, which is often exactly why the fallback exists.
+std::optional<double> score_known_sentence(const std::vector<std::vector<LatticeEdge>> &graph,
+                                           const std::string &sentence, const WordLatticeOptions &options)
+{
+    if (sentence.empty() || graph.empty())
+        return std::nullopt;
+    // One hypothesis per (syllable, characters spelled so far). Two segmentations can reach the same
+    // syllable having produced different numbers of characters, which is why the offset is part of the
+    // key; in practice a column holds one or two of these, so a flat vector beats a map.
+    struct Hypothesis
+    {
+        size_t consumed = 0;
+        double score = kNegInf;
+        int previous_position = -1; // column the hypothesis came from
+        int previous_index = -1;    // and where in it
+        const std::string *word = nullptr;
+    };
+    const size_t n = graph.size();
+    std::vector<std::vector<Hypothesis>> columns(n + 1);
+    columns[0].push_back(Hypothesis{0, 0.0, -1, -1, nullptr});
+    for (size_t pos = 0; pos < n; ++pos)
+    {
+        for (size_t hi = 0; hi < columns[pos].size(); ++hi)
+        {
+            const Hypothesis &hypothesis = columns[pos][hi];
+            if (hypothesis.score == kNegInf)
+                continue;
+            const std::string &previous = hypothesis.word == nullptr ? NgramTable::sentence_start() : *hypothesis.word;
+            for (const auto &edge : graph[pos])
+            {
+                if (edge.word.size() > sentence.size() - hypothesis.consumed ||
+                    sentence.compare(hypothesis.consumed, edge.word.size(), edge.word) != 0)
+                    continue;
+                double score = hypothesis.score + edge.log_prob;
+                if (options.bigram)
+                    score += options.bigram_weight * options.bigram->bonus(previous, edge.word);
+                const size_t consumed = hypothesis.consumed + edge.word.size();
+                auto &column = columns[edge.end];
+                auto slot = std::find_if(column.begin(), column.end(),
+                                         [&](const Hypothesis &h) { return h.consumed == consumed; });
+                const Hypothesis next{consumed, score, static_cast<int>(pos), static_cast<int>(hi), &edge.word};
+                if (slot == column.end())
+                    column.push_back(next);
+                else if (score > slot->score)
+                    *slot = next;
+            }
+        }
+    }
+    const auto &final_column = columns[n];
+    const auto complete = std::find_if(final_column.begin(), final_column.end(), [&](const Hypothesis &h) {
+        return h.consumed == sentence.size() && h.score != kNegInf;
+    });
+    if (complete == final_column.end())
+        return std::nullopt;
+    double score = complete->score;
+    if (!options.trigram || options.trigram_weight == 0.0)
+        return score;
+    // Only the surviving path is walked back, so the search itself never carries a word list around.
+    std::vector<const std::string *> words;
+    for (const Hypothesis *hypothesis = &*complete; hypothesis != nullptr && hypothesis->word != nullptr;)
+    {
+        words.push_back(hypothesis->word);
+        if (hypothesis->previous_position < 0)
+            break;
+        hypothesis = &columns[static_cast<size_t>(hypothesis->previous_position)]
+                             [static_cast<size_t>(hypothesis->previous_index)];
+    }
+    std::reverse(words.begin(), words.end());
+    const std::string &start = NgramTable::sentence_start();
+    double bonus = 0;
+    for (size_t i = 0; i < words.size(); ++i)
+    {
+        const std::string &before = i >= 2 ? *words[i - 2] : start;
+        const std::string &previous = i >= 1 ? *words[i - 1] : start;
+        bonus += options.trigram->bonus(before, previous, *words[i]);
+    }
+    return score + options.trigram_weight * bonus;
+}
+
+// Characters of `text`, one entry per codepoint, so a sentence can be addressed by syllable.
+std::vector<std::string> codepoints_of(const std::string &text)
+{
+    std::vector<std::string> out;
+    for (size_t i = 0; i < text.size();)
+    {
+        const unsigned char lead = static_cast<unsigned char>(text[i]);
+        size_t width = 1;
+        if ((lead & 0xF8) == 0xF0)
+            width = 4;
+        else if ((lead & 0xF0) == 0xE0)
+            width = 3;
+        else if ((lead & 0xE0) == 0xC0)
+            width = 2;
+        width = (std::min)(width, text.size() - i);
+        out.push_back(text.substr(i, width));
+        i += width;
+    }
+    return out;
+}
+
+// The fallback's sentence with one of the lattice's words spliced into it, once per span the two
+// disagree on, paired with how many syllables that span covers.
+//
+// The two sources fail differently: the fallback reads the frame of a long sentence and misses the rare
+// word in it, the lattice finds the word and mangles the frame around it. The repair keeps the frame
+// that is usually right and borrows only the span in dispute. The reverse direction is not offered -
+// taking the lattice's frame is what lattice_outranks_fallback already decides, with its own margin.
+//
+// One syllable is one character here. A span where that does not hold, which is where a dictionary
+// entry carries punctuation or a latin tail, is skipped rather than guessed at.
+std::vector<std::pair<std::string, size_t>> span_swapped_sentences(const LatticePath &path, const std::string &fallback,
+                                                                   size_t syllables)
+{
+    const auto fallback_chars = codepoints_of(fallback);
+    const auto lattice_chars = codepoints_of(path.sentence);
+    if (fallback_chars.size() != syllables || lattice_chars.size() != syllables)
+        return {};
+    std::vector<std::pair<std::string, size_t>> hybrids;
+    size_t start = 0;
+    for (const auto &word : path.words)
+    {
+        const size_t width = codepoints_of(word).size();
+        if (width == 0 || start + width > syllables)
+            break;
+        std::string lattice_span;
+        std::string fallback_span;
+        for (size_t i = start; i < start + width; ++i)
+        {
+            lattice_span += lattice_chars[i];
+            fallback_span += fallback_chars[i];
+        }
+        if (lattice_span != fallback_span)
+        {
+            std::string repaired;
+            for (size_t i = 0; i < syllables; ++i)
+                repaired += (i >= start && i < start + width) ? lattice_chars[i] : fallback_chars[i];
+            hybrids.emplace_back(std::move(repaired), width);
+        }
+        start += width;
+    }
+    return hybrids;
+}
+
 bool covers_all_syllables(const WordItem &item, size_t n_syllables)
 {
     if (n_syllables == 0)
@@ -170,16 +319,10 @@ bool covers_all_syllables(const WordItem &item, size_t n_syllables)
     return false;
 }
 
-} // namespace
-
-std::vector<LatticePath> decode_word_lattice(const Segments &syllables, const WordLatticeLookup &lookup,
-                                             const WordLatticeOptions &options)
+std::vector<LatticePath> decode_from_graph(const std::vector<std::vector<LatticeEdge>> &graph,
+                                           const WordLatticeOptions &options)
 {
-    if (syllables.empty() || !lookup)
-        return {};
-
-    const size_t n = syllables.size();
-    const auto graph = build_graph(syllables, lookup, options);
+    const size_t n = graph.size();
     std::vector<std::vector<Hyp>> columns(n + 1);
     columns[0].push_back(Hyp{0.0, -1, -1, {}, {}});
 
@@ -255,18 +398,65 @@ std::vector<LatticePath> decode_word_lattice(const Segments &syllables, const Wo
     return paths;
 }
 
+} // namespace
+
+std::vector<LatticePath> decode_word_lattice(const Segments &syllables, const WordLatticeLookup &lookup,
+                                             const WordLatticeOptions &options)
+{
+    if (syllables.empty() || !lookup)
+        return {};
+    return decode_from_graph(build_graph(syllables, lookup, options), options);
+}
+
 void merge_lattice_candidates(std::vector<WordItem> &candidates, const Segments &syllables,
                               const WordLatticeLookup &lookup, const std::string &typed_pinyin,
-                              const WordLatticeOptions &options)
+                              const WordLatticeOptions &options, const std::string &fallback_sentence,
+                              WholeSentenceComparison *comparison)
 {
     if (!lookup || syllables.size() < 3)
         return;
     if (!has_only_complete_pinyin_segments(syllables))
         return;
 
-    auto paths = decode_word_lattice(syllables, lookup, options);
+    // One graph for both: decoding the lattice and scoring the fallback have to see the same edges, and
+    // building it twice would double the dictionary lookups this path is mostly made of.
+    const auto graph = build_graph(syllables, lookup, options);
+    auto paths = decode_from_graph(graph, options);
     if (paths.empty())
         return;
+    if (comparison != nullptr)
+    {
+        comparison->decoded = true;
+        comparison->lattice_score = paths.front().log_prob;
+        comparison->syllables = syllables.size();
+        // Nothing to arbitrate when the two sources already agree, and that is the common case on the
+        // short compositions most keystrokes produce. Scoring it anyway spent a constrained decode per
+        // keystroke to re-derive a tie.
+        if (!fallback_sentence.empty() && fallback_sentence != paths.front().sentence)
+        {
+            comparison->fallback_score = score_known_sentence(graph, fallback_sentence, options);
+            // A sentence that takes the frame from one source and the disputed span from the other can
+            // beat both, and on a long input it usually is the answer: the fallback reads the frame and
+            // misses the rare word, the lattice finds the word and mangles the frame.
+            std::unordered_set<std::string> seen{paths.front().sentence, fallback_sentence};
+            for (auto &[hybrid, span] : span_swapped_sentences(paths.front(), fallback_sentence, syllables.size()))
+            {
+                if (!seen.insert(hybrid).second)
+                    continue;
+                const auto score = score_known_sentence(graph, hybrid, options);
+                if (!score.has_value())
+                    continue;
+                // Charged per swapped syllable rather than per sentence: a one-word repair to a long
+                // sentence should not have to clear the bar a whole rewrite does.
+                if (!comparison->best_hybrid_score.has_value() || *score > *comparison->best_hybrid_score)
+                {
+                    comparison->best_hybrid_score = score;
+                    comparison->best_hybrid = hybrid;
+                    comparison->best_hybrid_span = span;
+                }
+            }
+        }
+    }
     // Searching several paths and showing one is the point of `emit`: the alternatives exist so the trigram has
     // something to reorder, not so the candidate page fills with near-duplicate sentences.
     if (options.emit > 0 && paths.size() > static_cast<size_t>(options.emit))
