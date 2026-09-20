@@ -75,15 +75,25 @@ struct WordLatticeOptions
     int max_phrase_syllables = 7;
     // Heuristic unigram normalizer vs phrase-length bonus. Single-char
     // msime.db weights are corpus counts; phrase weights are a smaller scale.
-    // Not calibrated on the full dictionary.
+    //
+    // The bonus was 3.0, which was never measured against the eval sets - it was a plausible number
+    // for a term whose only job was to stop the decoder spelling a sentence out character by
+    // character. Swept through the client's convert_eval with the ngram tables present, whole-sentence
+    // top-1 rises monotonically up to 20 and stops moving after it: sentences-v1 0.850 -> 0.900,
+    // sentences-v2 0.125 -> 0.189, quanpin-words-v1 unchanged at 0.768. Raising it further trades
+    // sentences-v1 away for nothing.
     double unigram_z = 1e6;
-    double phrase_length_bonus = 3.0;
+    double phrase_length_bonus = 20.0;
     // Borrowed, not owned: one table is shared by every session and outlives them.
     const NgramTable *bigram = nullptr;
     const NgramTable *trigram = nullptr;
-    // How much each context term is allowed to move a path. Calibrated on
-    // tests/scripts/build_eval_set.py output; see tests/src/eval_sentences.cpp.
-    double bigram_weight = 1.0;
+    // How much each context term is allowed to move a path. See tests/src/eval_sentences.cpp, and the
+    // sweep recorded above: at bonus 20 the bigram term is worth doubling - sentences-v2 top-1 0.173
+    // -> 0.189 and MRR 0.393 -> 0.401, sentences-v1 unchanged - while 3.0 starts trading page
+    // coverage for it. The trigram weight moved nothing at any value tried, which is what a term that
+    // only fires on a third word of history looks like on sets this short; it stays at 1.0 rather
+    // than being tuned to a number the measurement cannot support.
+    double bigram_weight = 2.0;
     double trigram_weight = 1.0;
     // How many of the decoded paths reach the candidate list. 0 emits all of
     // them, which is what a caller measuring the decoder wants; a caller
