@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.27.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.26.1...v0.27.0) (2026-09-20)
+
+
+### Features
+
+* **quanpin:** arbitrate the two whole sentences, and repair the better one ([43add2c](https://github.com/metasequoiaime/MSIME-Engine/commit/43add2c81928ca2246b46b82653589a88063f1b8))
+* **quanpin:** order the two whole sentences by score, not by source ([72bb5ca](https://github.com/metasequoiaime/MSIME-Engine/commit/72bb5caaf9785b583862f65b3599ae10c697d8e0))
+* **quanpin:** repair the fallback sentence with the span the lattice reads better ([92529a6](https://github.com/metasequoiaime/MSIME-Engine/commit/92529a6d9b0ade6f864336e00d01af71d85d60b5))
+
+
+### Bug Fixes
+
+* **nine-key:** keep a zero-weight english word out of second place ([8371604](https://github.com/metasequoiaime/MSIME-Engine/commit/8371604d63d31341f3dc19ee50c2d33ff0784ae6))
+* **nine-key:** keep a zero-weight english word out of second place ([538a0a7](https://github.com/metasequoiaime/MSIME-Engine/commit/538a0a79ea4098768a19410703fa85a15758b7f6))
+
 ## [0.26.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.26.0...v0.26.1) (2026-09-20)
 
 
