@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.27.2](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.27.1...v0.27.2) (2026-09-20)
+
+
+### Bug Fixes
+
+* **nine-key:** stop synthesised candidates from outranking real words ([64f9c38](https://github.com/metasequoiaime/MSIME-Engine/commit/64f9c38086f0a7b1806d540f1ba0d84e7da6db4e))
+* **nine-key:** 词典词条不再被合成候选压到下面 ([77bf1ae](https://github.com/metasequoiaime/MSIME-Engine/commit/77bf1aeafaaa3829a6aa514d52c424310d9012d3))
+
 ## [0.27.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.27.0...v0.27.1) (2026-09-20)
 
 
