@@ -84,6 +84,27 @@ int main()
     require(candidate(session, "你好") == 0, "the pinyin reading lost the first slot");
     require(candidate(session, "ogham") + 1 == session.snapshot().candidates.size(),
             "a zero-weight english word did not go to the end");
+    // 合成候选（整句 Generated / 回退 Fallback）与词典词条的 weight 不是同一个尺度，一起按 weight 排
+    // 会让拼出来的东西压过真词：64426 曾出成「你好 / 你好哦 / 你敢哦 / 米糕哦 / 密函哦 / 你敢」，前面
+    // 四个合成的没有一个是词，真词「你敢」「你搞」「蜜柑」全被压在下面。合成的一旦开始，后面就不该再
+    // 冒出词典词条。
+    {
+        const auto view = session.snapshot();
+        const auto synthesised = [](CandidateSource source) {
+            return source == CandidateSource::Generated || source == CandidateSource::Fallback;
+        };
+        std::size_t first_synthesised = view.candidate_sources.size();
+        for (std::size_t i = 0; i < view.candidate_sources.size(); ++i)
+            if (synthesised(view.candidate_sources[i]))
+            {
+                first_synthesised = i;
+                break;
+            }
+        for (std::size_t i = first_synthesised; i < view.candidate_sources.size(); ++i)
+            require(view.candidate_sources[i] != CandidateSource::Database &&
+                        view.candidate_sources[i] != CandidateSource::UserDatabase,
+                    "a dictionary entry was ranked below a synthesised candidate");
+    }
     session.command(Command::Cancel);
     type(session, "64");
     candidate(session, "你");
