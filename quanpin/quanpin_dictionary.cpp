@@ -426,12 +426,26 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
                                                                           lattice_options.span_limit),
                                           segmentation.empty() ? raw_input : segmentation, lattice_options,
                                           google_sentence, &sentences);
+        // A sentence neither source produced on its own, assembled from one source's frame and the
+        // other's disputed span. It only exists when it outscored both, so it goes in front of them.
+        if (sentences.hybrid_leads(lattice_options.repair_margin) &&
+            std::none_of(result.begin(), result.end(),
+                         [&](const WordItem &item) { return item.word == sentences.best_hybrid; }))
+        {
+            const auto at = static_cast<std::ptrdiff_t>(
+                quanpin::whole_sentence_insert_position(result, segments.size()));
+            result.insert(result.begin() + at,
+                          WordItem(segmentation.empty() ? raw_input : segmentation, sentences.best_hybrid,
+                                   static_cast<std::int64_t>(*sentences.best_hybrid_score * 1000.0),
+                                   CandidateSource::Generated, segmentation));
+        }
         // The fallback used to be pushed back in front of the lattice unconditionally, which is an
         // argument about sources rather than about sentences: it wins every input where it exists,
         // including the ones where the lattice read the sentence correctly and it did not. Now both
         // are scored on the same terms and the better one leads; a fallback the dictionary cannot
         // spell has no score, and keeps the seat it always had.
-        if (!google_sentence.empty() && !sentences.lattice_outranks_fallback(lattice_options.fallback_margin))
+        if (!google_sentence.empty() && !sentences.lattice_outranks_fallback(lattice_options.fallback_margin) &&
+            !sentences.hybrid_leads(lattice_options.repair_margin))
         {
             const auto google = std::find_if(result.begin(), result.end(), [&](const WordItem &item) {
                 return item.word == google_sentence && item.source == CandidateSource::Fallback;

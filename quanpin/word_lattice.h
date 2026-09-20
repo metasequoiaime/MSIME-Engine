@@ -100,6 +100,12 @@ struct WordLatticeOptions
     // them, which is what a caller measuring the decoder wants; a caller
     // feeding a candidate page wants 1.
     int emit = 0;
+    // How far, per swapped syllable, a repaired sentence has to beat the one it repaired. Swept on the
+    // eval sets with the frame margin below at 4.0: at 4.0 repairs fire too readily and sentences-v1
+    // drops 70.0% -> 66.7%, at 8.0 and above the repair that fixes the reported sentence stops firing.
+    // 6.0 leaves sentences-v1 untouched, takes sentences-v2 46.2% -> 46.5% and its page 56.1% -> 57.7%,
+    // and is what puts 我们的目标是做成开源社区的扛把子 in front of 抗八字.
+    double repair_margin = 6.0;
     // How far, per syllable, the lattice's sentence has to beat the Google-Pinyin one before it takes
     // the leading seat. See WholeSentenceComparison::lattice_outranks_fallback.
     //
@@ -127,6 +133,14 @@ struct WholeSentenceComparison
     // Syllables the two sentences cover, so the margin below can be read per syllable.
     size_t syllables = 0;
 
+    // The best sentence assembled from one source's frame and the other's disputed span, when one of
+    // those beat both originals. Empty when the two sources agree, when neither can be spelled, or
+    // when no swap scored better than what it was made from.
+    std::string best_hybrid;
+    std::optional<double> best_hybrid_score;
+    // Syllables the repair replaced, which is what its margin is charged on.
+    size_t best_hybrid_span = 0;
+
     // Whether the lattice's own sentence is enough better than the fallback to take its place.
     //
     // A bare `>` would always be true: the lattice score is the maximum over every path, and a
@@ -137,6 +151,16 @@ struct WholeSentenceComparison
     {
         return decoded && fallback_score.has_value() &&
                lattice_score > *fallback_score + margin_per_syllable * static_cast<double>(syllables);
+    }
+
+    // A repair earns the leading seat by beating the sentence it repaired, charged on the span it
+    // replaced. Comparing it to the lattice score instead would never fire: that score is the maximum
+    // over every path, and a repair the graph can spell is one of them.
+    bool hybrid_leads(double margin_per_syllable) const
+    {
+        return decoded && best_hybrid_score.has_value() && fallback_score.has_value() &&
+               *best_hybrid_score >
+                   *fallback_score + margin_per_syllable * static_cast<double>(best_hybrid_span);
     }
 };
 
