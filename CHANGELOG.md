@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.1](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.26.0...v0.26.1) (2026-09-20)
+
+
+### Performance Improvements
+
+* **quanpin:** retune the lattice's phrase and context weights ([c8d1bd5](https://github.com/metasequoiaime/MSIME-Engine/commit/c8d1bd57a26a24b4166aef1158521e2fd9d4eb68))
+
 ## [0.26.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.25.0...v0.26.0) (2026-09-20)
 
 
