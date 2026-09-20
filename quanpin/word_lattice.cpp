@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstddef>
 #include <limits>
+#include <map>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -159,6 +160,72 @@ void rescore_with_trigram(std::vector<LatticePath> &paths, const WordLatticeOpti
                      [](const LatticePath &a, const LatticePath &b) { return a.log_prob > b.log_prob; });
 }
 
+// Best score the lattice can give one specific sentence, on the same terms it scores its own paths.
+//
+// The Google-Pinyin fallback and the lattice each produce a whole sentence, and they used to be ordered by
+// which source they came from rather than by how good they are. Scoring the fallback over the same graph
+// makes the two comparable: same edge weights, same phrase bonus, same context terms. Returns nothing when
+// the dictionary cannot spell that sentence at all, which is often exactly why the fallback exists.
+std::optional<double> score_known_sentence(const std::vector<std::vector<LatticeEdge>> &graph,
+                                           const std::string &sentence, const WordLatticeOptions &options)
+{
+    if (sentence.empty() || graph.empty())
+        return std::nullopt;
+    struct Partial
+    {
+        double score = kNegInf;
+        std::vector<std::string> words;
+    };
+    const size_t n = graph.size();
+    // Keyed by how much of the sentence the hypothesis has already spelled: two segmentations can reach the
+    // same syllable having produced different numbers of characters.
+    std::vector<std::map<size_t, Partial>> reached(n + 1);
+    reached[0][0] = Partial{0.0, {}};
+    for (size_t pos = 0; pos < n; ++pos)
+    {
+        for (const auto &[consumed, partial] : reached[pos])
+        {
+            if (partial.score == kNegInf)
+                continue;
+            const std::string &previous = partial.words.empty() ? NgramTable::sentence_start() : partial.words.back();
+            for (const auto &edge : graph[pos])
+            {
+                if (edge.word.size() > sentence.size() - consumed ||
+                    sentence.compare(consumed, edge.word.size(), edge.word) != 0)
+                    continue;
+                double score = partial.score + edge.log_prob;
+                if (options.bigram)
+                    score += options.bigram_weight * options.bigram->bonus(previous, edge.word);
+                auto &slot = reached[edge.end][consumed + edge.word.size()];
+                if (score > slot.score)
+                {
+                    slot.score = score;
+                    slot.words = partial.words;
+                    slot.words.push_back(edge.word);
+                }
+            }
+        }
+    }
+    const auto complete = reached[n].find(sentence.size());
+    if (complete == reached[n].end() || complete->second.score == kNegInf)
+        return std::nullopt;
+    double score = complete->second.score;
+    if (options.trigram && options.trigram_weight != 0.0)
+    {
+        const std::string &start = NgramTable::sentence_start();
+        const auto &words = complete->second.words;
+        double bonus = 0;
+        for (size_t i = 0; i < words.size(); ++i)
+        {
+            const std::string &before = i >= 2 ? words[i - 2] : start;
+            const std::string &previous = i >= 1 ? words[i - 1] : start;
+            bonus += options.trigram->bonus(before, previous, words[i]);
+        }
+        score += options.trigram_weight * bonus;
+    }
+    return score;
+}
+
 bool covers_all_syllables(const WordItem &item, size_t n_syllables)
 {
     if (n_syllables == 0)
@@ -170,16 +237,10 @@ bool covers_all_syllables(const WordItem &item, size_t n_syllables)
     return false;
 }
 
-} // namespace
-
-std::vector<LatticePath> decode_word_lattice(const Segments &syllables, const WordLatticeLookup &lookup,
-                                             const WordLatticeOptions &options)
+std::vector<LatticePath> decode_from_graph(const std::vector<std::vector<LatticeEdge>> &graph,
+                                           const WordLatticeOptions &options)
 {
-    if (syllables.empty() || !lookup)
-        return {};
-
-    const size_t n = syllables.size();
-    const auto graph = build_graph(syllables, lookup, options);
+    const size_t n = graph.size();
     std::vector<std::vector<Hyp>> columns(n + 1);
     columns[0].push_back(Hyp{0.0, -1, -1, {}, {}});
 
@@ -255,18 +316,40 @@ std::vector<LatticePath> decode_word_lattice(const Segments &syllables, const Wo
     return paths;
 }
 
+} // namespace
+
+std::vector<LatticePath> decode_word_lattice(const Segments &syllables, const WordLatticeLookup &lookup,
+                                             const WordLatticeOptions &options)
+{
+    if (syllables.empty() || !lookup)
+        return {};
+    return decode_from_graph(build_graph(syllables, lookup, options), options);
+}
+
 void merge_lattice_candidates(std::vector<WordItem> &candidates, const Segments &syllables,
                               const WordLatticeLookup &lookup, const std::string &typed_pinyin,
-                              const WordLatticeOptions &options)
+                              const WordLatticeOptions &options, const std::string &fallback_sentence,
+                              WholeSentenceComparison *comparison)
 {
     if (!lookup || syllables.size() < 3)
         return;
     if (!has_only_complete_pinyin_segments(syllables))
         return;
 
-    auto paths = decode_word_lattice(syllables, lookup, options);
+    // One graph for both: decoding the lattice and scoring the fallback have to see the same edges, and
+    // building it twice would double the dictionary lookups this path is mostly made of.
+    const auto graph = build_graph(syllables, lookup, options);
+    auto paths = decode_from_graph(graph, options);
     if (paths.empty())
         return;
+    if (comparison != nullptr)
+    {
+        comparison->decoded = true;
+        comparison->lattice_score = paths.front().log_prob;
+        comparison->syllables = syllables.size();
+        if (!fallback_sentence.empty())
+            comparison->fallback_score = score_known_sentence(graph, fallback_sentence, options);
+    }
     // Searching several paths and showing one is the point of `emit`: the alternatives exist so the trigram has
     // something to reorder, not so the candidate page fills with near-duplicate sentences.
     if (options.emit > 0 && paths.size() > static_cast<size_t>(options.emit))

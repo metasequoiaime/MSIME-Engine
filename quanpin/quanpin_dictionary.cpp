@@ -419,12 +419,19 @@ std::vector<WordItem> QuanpinDictionary::query_series(const std::string &raw_inp
         }
 
         const auto lattice_options = quanpin::make_sentence_lattice_options(paths_, sentence_alternatives_);
+        quanpin::WholeSentenceComparison sentences;
         quanpin::merge_lattice_candidates(result, segments,
                                           quanpin::make_lattice_db_lookup(db_, statement_cache_,
                                                                           quanpin::QuerySource::Quanpin,
                                                                           lattice_options.span_limit),
-                                          segmentation.empty() ? raw_input : segmentation, lattice_options);
-        if (!google_sentence.empty())
+                                          segmentation.empty() ? raw_input : segmentation, lattice_options,
+                                          google_sentence, &sentences);
+        // The fallback used to be pushed back in front of the lattice unconditionally, which is an
+        // argument about sources rather than about sentences: it wins every input where it exists,
+        // including the ones where the lattice read the sentence correctly and it did not. Now both
+        // are scored on the same terms and the better one leads; a fallback the dictionary cannot
+        // spell has no score, and keeps the seat it always had.
+        if (!google_sentence.empty() && !sentences.lattice_outranks_fallback(lattice_options.fallback_margin))
         {
             const auto google = std::find_if(result.begin(), result.end(), [&](const WordItem &item) {
                 return item.word == google_sentence && item.source == CandidateSource::Fallback;

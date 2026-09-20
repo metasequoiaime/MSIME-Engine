@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -99,6 +100,14 @@ struct WordLatticeOptions
     // them, which is what a caller measuring the decoder wants; a caller
     // feeding a candidate page wants 1.
     int emit = 0;
+    // How far, per syllable, the lattice's sentence has to beat the Google-Pinyin one before it takes
+    // the leading seat. See WholeSentenceComparison::lattice_outranks_fallback.
+    //
+    // Swept on the eval sets: 0 hands the seat over whenever the graph can spell the fallback at all,
+    // which costs sentences-v1 71.7% -> 58.3%; past 5 the lattice stops winning anything. Between 3.5
+    // and 4 sentences-v1 is untouched and sentences-v2 goes 34.6% -> 45.8%, measured on the decoder
+    // harness where neither number is softened by the reranker.
+    double fallback_margin = 4.0;
 };
 
 using WordLatticeLookup = std::function<std::vector<LatticeLexeme>(const Segments &span)>;
@@ -106,9 +115,37 @@ using WordLatticeLookup = std::function<std::vector<LatticeLexeme>(const Segment
 std::vector<LatticePath> decode_word_lattice(const Segments &syllables, const WordLatticeLookup &lookup,
                                              const WordLatticeOptions &options = {});
 
+// What the merge learned about the two whole-sentence sources, so the caller can order them without
+// decoding a second time. `fallback_score` is empty when the dictionary cannot spell that sentence at
+// all, which is the usual reason the Google-Pinyin answer exists in the first place.
+struct WholeSentenceComparison
+{
+    bool decoded = false;
+    double lattice_score = 0.0;
+    std::optional<double> fallback_score;
+
+    // Syllables the two sentences cover, so the margin below can be read per syllable.
+    size_t syllables = 0;
+
+    // Whether the lattice's own sentence is enough better than the fallback to take its place.
+    //
+    // A bare `>` would always be true: the lattice score is the maximum over every path, and a
+    // fallback the graph can spell is one of those paths, so it can never score higher. What the
+    // comparison can say is by how much, and `margin_per_syllable` is where that becomes a decision -
+    // see WordLatticeOptions::fallback_margin for what it is worth.
+    bool lattice_outranks_fallback(double margin_per_syllable) const
+    {
+        return decoded && fallback_score.has_value() &&
+               lattice_score > *fallback_score + margin_per_syllable * static_cast<double>(syllables);
+    }
+};
+
 void merge_lattice_candidates(std::vector<WordItem> &candidates, const Segments &syllables,
                               const WordLatticeLookup &lookup, const std::string &typed_pinyin,
-                              const WordLatticeOptions &options = {});
+                              const WordLatticeOptions &options = {},
+                              // Scored against the decoded paths on the same terms when given.
+                              const std::string &fallback_sentence = {},
+                              WholeSentenceComparison *comparison = nullptr);
 
 // Index of the first row a synthesised whole sentence may take, which is after the leading run of
 // exact full-cover Database/UserDatabase hits. Both whole-sentence sources share it so neither can
