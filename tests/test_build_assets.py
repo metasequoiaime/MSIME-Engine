@@ -10,6 +10,11 @@ ROOT = Path(__file__).resolve().parents[1]
 import sys
 sys.path.insert(0, str(ROOT))
 import build_assets as assets
+from contracts.assets.product import DICTIONARY_FILES
+
+# Derived rather than listed, so a file joining the dictionary product does not need this fixture
+# edited in lockstep. bigram.bin and trigram.bin were added without it and the packaging tests broke.
+PRODUCT_FILES = sorted(DICTIONARY_FILES - {'dictionary-manifest.json'})
 
 
 class AssetsTests(unittest.TestCase):
@@ -19,10 +24,8 @@ class AssetsTests(unittest.TestCase):
         self.directory = Path(self.temporary.name)
         self.product = self.directory / 'dictionary'
         self.product.mkdir()
-        names = ('msime.db', 'english.db', 'others.db', 'dict_japanese.dat',
-                 'mozc_dictionary_oss_README.txt')
         entries = {}
-        for name in names:
+        for name in PRODUCT_FILES:
             data = b'MSJPDT1\0fixture' if name.endswith('.dat') else b'fixture'
             (self.product / name).write_bytes(data)
             entries[name] = {'size': len(data), 'sha256': assets.sha256(data)}
