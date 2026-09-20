@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.26.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.25.0...v0.26.0) (2026-09-20)
+
+
+### Features
+
+* **dictionary:** pin zhwiki as the corpus the ngram stage counts ([ab368e5](https://github.com/metasequoiaime/MSIME-Engine/commit/ab368e563ce9c1c0632c7dd2f848c6bc5b009f90))
+* **dictionary:** pin zhwiki as the ngram corpus, and ship the tables ([5edb8d0](https://github.com/metasequoiaime/MSIME-Engine/commit/5edb8d07e6c94edd76e4484ff9a61b999fe833a3))
+* **dictionary:** ship the lattice context tables ([2ffe22d](https://github.com/metasequoiaime/MSIME-Engine/commit/2ffe22d06cee28f74656fad3c9c5a8d48a558753))
+
+
+### Bug Fixes
+
+* **ci:** allow the uncommitted ngram corpus path, and reflow the test comment ([ec7ebcf](https://github.com/metasequoiaime/MSIME-Engine/commit/ec7ebcfa91d06ae38eba496d286d0aa2ebbe3d5c))
+* **tests:** derive the packaging fixture's product files from the assets contract ([1126175](https://github.com/metasequoiaime/MSIME-Engine/commit/112617584ee4ea20682aa6bd7a201712c97baa37))
+
 ## [0.25.0](https://github.com/metasequoiaime/MSIME-Engine/compare/v0.24.0...v0.25.0) (2026-09-19)
 
 
