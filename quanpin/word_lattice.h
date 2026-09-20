@@ -159,8 +159,7 @@ struct WholeSentenceComparison
     bool hybrid_leads(double margin_per_syllable) const
     {
         return decoded && best_hybrid_score.has_value() && fallback_score.has_value() &&
-               *best_hybrid_score >
-                   *fallback_score + margin_per_syllable * static_cast<double>(best_hybrid_span);
+               *best_hybrid_score > *fallback_score + margin_per_syllable * static_cast<double>(best_hybrid_span);
     }
 };
 
@@ -168,8 +167,7 @@ void merge_lattice_candidates(std::vector<WordItem> &candidates, const Segments 
                               const WordLatticeLookup &lookup, const std::string &typed_pinyin,
                               const WordLatticeOptions &options = {},
                               // Scored against the decoded paths on the same terms when given.
-                              const std::string &fallback_sentence = {},
-                              WholeSentenceComparison *comparison = nullptr);
+                              const std::string &fallback_sentence = {}, WholeSentenceComparison *comparison = nullptr);
 
 // Index of the first row a synthesised whole sentence may take, which is after the leading run of
 // exact full-cover Database/UserDatabase hits. Both whole-sentence sources share it so neither can

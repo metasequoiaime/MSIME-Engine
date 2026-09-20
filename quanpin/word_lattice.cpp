@@ -178,8 +178,8 @@ std::optional<double> score_known_sentence(const std::vector<std::vector<Lattice
     {
         size_t consumed = 0;
         double score = kNegInf;
-        int previous_position = -1;  // column the hypothesis came from
-        int previous_index = -1;     // and where in it
+        int previous_position = -1; // column the hypothesis came from
+        int previous_index = -1;    // and where in it
         const std::string *word = nullptr;
     };
     const size_t n = graph.size();
@@ -192,8 +192,7 @@ std::optional<double> score_known_sentence(const std::vector<std::vector<Lattice
             const Hypothesis &hypothesis = columns[pos][hi];
             if (hypothesis.score == kNegInf)
                 continue;
-            const std::string &previous =
-                hypothesis.word == nullptr ? NgramTable::sentence_start() : *hypothesis.word;
+            const std::string &previous = hypothesis.word == nullptr ? NgramTable::sentence_start() : *hypothesis.word;
             for (const auto &edge : graph[pos])
             {
                 if (edge.word.size() > sentence.size() - hypothesis.consumed ||
@@ -276,8 +275,7 @@ std::vector<std::string> codepoints_of(const std::string &text)
 //
 // One syllable is one character here. A span where that does not hold, which is where a dictionary
 // entry carries punctuation or a latin tail, is skipped rather than guessed at.
-std::vector<std::pair<std::string, size_t>> span_swapped_sentences(const LatticePath &path,
-                                                                   const std::string &fallback,
+std::vector<std::pair<std::string, size_t>> span_swapped_sentences(const LatticePath &path, const std::string &fallback,
                                                                    size_t syllables)
 {
     const auto fallback_chars = codepoints_of(fallback);
