@@ -60,12 +60,20 @@ QUANPIN_MINIMUM_ROWS = 1_000_000 if COMPLETE else 800_000
 JAPANESE_MODEL_MAGIC = b"MSJPDT1\0"
 JAPANESE_MODEL_MINIMUM_BYTES = 32 * 1024 * 1024
 
+# The lattice's context tables. No schema either: check the packer's magic, the version the reader
+# accepts, and that the entry count in the header is a table rather than a stub. A corpus pass that
+# reads nothing still writes a valid 16-byte header, which is exactly the accident worth catching.
+NGRAM_TABLES = ("bigram.bin", "trigram.bin")
+NGRAM_MAGIC = b"MSNG"
+NGRAM_VERSION = 1
+NGRAM_MINIMUM_ENTRIES = 100_000
+
 # The model is derived from Mozc's OSS dictionary, so its notice has to ship alongside it.
 # Losing this file would ship the model without its IPAdic / ICOT / Okinawa attribution.
 MOZC_NOTICE_NAME = "mozc_dictionary_oss_README.txt"
 MOZC_NOTICE_REQUIRED_TERMS = ("IPAdic", "ICOT", "Okinawa")
 
-EXPECTED_CHECKSUM_ENTRIES = 5
+EXPECTED_CHECKSUM_ENTRIES = 7
 
 
 def fail(message: str, failures: list[str]) -> None:
@@ -132,6 +140,27 @@ def check_japanese_model(failures: list[str]) -> None:
     print(f"ok   dict_japanese.dat = {size / 1048576:.1f} MB")
 
 
+def check_ngram_tables(failures: list[str]) -> None:
+    for name in NGRAM_TABLES:
+        path = OUT_DIR / name
+        if not path.is_file():
+            fail(f"{name} is missing", failures)
+            continue
+        with path.open("rb") as stream:
+            header = stream.read(16)
+        if len(header) < 16 or header[:4] != NGRAM_MAGIC:
+            fail(f"{name} starts with {header[:4]!r}, expected {NGRAM_MAGIC!r}", failures)
+            continue
+        version = int.from_bytes(header[4:8], "little")
+        entries = int.from_bytes(header[8:12], "little")
+        if version != NGRAM_VERSION:
+            fail(f"{name} is version {version}, the engine reads {NGRAM_VERSION}", failures)
+        elif entries < NGRAM_MINIMUM_ENTRIES:
+            fail(f"{name} holds {entries} entries, expected at least {NGRAM_MINIMUM_ENTRIES}", failures)
+        else:
+            print(f"ok   {name} = {entries} entries, {path.stat().st_size / 1048576:.1f} MB")
+
+
 def check_mozc_notice(failures: list[str]) -> None:
     path = OUT_DIR / MOZC_NOTICE_NAME
     if not path.is_file():
@@ -162,6 +191,7 @@ def main() -> int:
     check_row_counts(failures)
     check_quanpin(failures)
     check_japanese_model(failures)
+    check_ngram_tables(failures)
     check_mozc_notice(failures)
     check_checksums(failures)
 

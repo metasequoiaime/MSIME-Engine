@@ -22,8 +22,9 @@ ROOT = Path(__file__).resolve().parents[1]
 NOTICE = ROOT / "NOTICE.md"
 
 # Cited on purpose while absent from the tree. en/oaldpe.mdx is the commercial dictionary body the
-# notice records as removed.
-ALLOWED_MISSING = {"en/oaldpe.mdx"}
+# notice records as removed. source/ngram-corpus/ is the zhwiki dump makecikudb/ngramdb/fetch_corpus.py
+# downloads at build time; it is cited for attribution and deliberately never committed.
+ALLOWED_MISSING = {"en/oaldpe.mdx", "source/ngram-corpus/"}
 
 # Paths appear as inline code spans. Directories are cited with a trailing slash.
 CITATION = re.compile(r"`((?:cn|en|source|kaomoji|emoji|symbols|mix|makecikudb|tools)/[A-Za-z0-9_./-]*)`")

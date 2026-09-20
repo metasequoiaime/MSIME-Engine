@@ -30,7 +30,9 @@ python build_profile.py --profile desktop --verify
 
 `tools/verify_dictionaries.py` 的行数下限刻意设得远低于当前值，日常增删词条不会触发，它拦的是「表空了」这类事故。
 
-**`ngram` stage 是这条规则目前唯一的例外，而且是有意的。** `bigram.bin` / `trigram.bin` 不在 `SHIPPING_ARTIFACTS`、不在 `tools/verify_dictionaries.py`、在 `contracts/assets/assets.json` 里的 profile 列表是空的 —— 因为语料还没定（见下节），没有语料这个 stage 就不产出，而发布清单里写一个构建产不出来的文件会让所有人的打包直接失败。定了语料、stage 能稳定产出之后，这三处要一起补上，同时把 workflow 的上传和发布列表跟上。
+`bigram.bin` / `trigram.bin` 就是按这条规则接上去的：`SHIPPING_ARTIFACTS`、`tools/verify_dictionaries.py`（查 `MSNG` 魔数、版本和条目数下限）、`contracts/assets/assets.json` 的 desktop profile、`contracts/dictionary/product.py` 的 `DESKTOP_FILES`、以及 workflow 的摘要表、上传列表和发布列表，六处一起改。
+
+**`DESKTOP_FILES` 是跨仓契约**：平台仓 vendored 的那份 `contracts/dictionary/product.py` 没跟上时，会直接拒收新的词库产物。这是有意的失败 —— 这两张表属于词库代际，宿主不认识它们就会装出一个解码器读起来不完整的代际。发布新词库前先让平台仓重新 vendor 契约。
 
 ## 全拼分表命名（跨仓硬约定）
 
@@ -51,9 +53,13 @@ python build_profile.py --profile desktop --verify
 
 不加 `--fetch-references` 时依赖它们的 stage 会被跳过而不是报错，方便本地做部分构建；发布构建用 `--require-all` 让缺失直接失败。
 
-`ngram` stage 读第三份仓外数据，但不由 `--fetch-references` 拉：整句词格的上下文表要的是几十 GB 的中文语料，而且**用哪份语料决定了发布出去的表带什么授权**，这是产品决定不是构建细节。把语料文本（`.txt` 或 wiki dump 的 `.bz2`）放进 `source/ngram-corpus/`，stage 就会跑；不放就跳过，和缺少 reference 的 stage 一样。
+`ngram` stage 读第三份仓外数据，但不由 `--fetch-references` 拉，而是自己下载 —— 和 `japanese-model` 拉 Mozc 数据同一个做法：`makecikudb/ngramdb/fetch_corpus.py` 按 `sources-lock.json` 的 `ngram_corpus` 下载到 `source/ngram-corpus/`，逐个文件校验 SHA-1，已经在的不重下。
 
-已知的两个候选，取舍要一起决定：zhwiki 是 CC-BY-SA，表是它的衍生数据库，share-alike 会跟着发布走；C4 中文部分是 ODC-BY，只要求署名，而且组织已经在用它收割评测集（见客户端 `resources/eval/sentences-v2.tsv` 的署名行）。定下来之后把语料连同它的固定版本和授权写进 `sources-lock.json`，并按 `NOTICE.md` 的既有格式补署名。
+固定的是 dump 里的**一个文件**（254 MB），不是整期 3.4 GB：`build_ngram.py` 默认 `--max-chars` 是 1.2 亿汉字，而这个文件有 1.34 亿，多下的部分一个字也读不到。要调高上限就得往 lock 里补同一期的其他分卷。代价是每次构建多 254 MB 下载和约十一分钟统计 —— 本地想快就 `--skip ngram`。
+
+**语料固定为中文维基百科 20260901 的 pages-articles dump（CC-BY-SA 4.0），不是 C4 中文部分**，理由是测量而不是授权：评测收割集 `sentences-v2.tsv` 本身就是从 C4 收割的，拿 C4 统计上下文等于让解码器把唯一的硬基准当训练集看，之后所有权重调整都会测在被污染的集合上。授权一侧两者都可接受：前端以 GPL-3.0 分发，BY-SA 4.0 单向兼容 GPL-3.0，署名见 `NOTICE.md`。
+
+Wikimedia 只保留最近几期 dump，固定的那期迟早 404。那不是静默失败：下载器会带着取不到的 URL 停下来，重新固定意味着把新一期的文件清单写进 lock 并有意识地重建表。
 
 日语整句模型的 Mozc 原始数据由 `build_sentence_model.py --download` 自己拉。**它的 `README.txt` 含 IPAdic / ICOT / 冲绳授权声明，发布二进制模型时必须一并分发**，`japanese-model` stage 会把它复制成 `out/mozc_dictionary_oss_README.txt`。
 
