@@ -185,8 +185,7 @@ class InputSession
     // key are alternatives to each other, and a prefix is not an alternative to a full answer. The
     // consumer cannot derive it — the candidate's own character count agrees with this only while a
     // key has one segmentation, and `xian` reads as both 现 and 西安.
-    bool selection_completes_composition(const std::string &selected_pinyin,
-                                         const std::string &selected_word) const;
+    bool selection_completes_composition(const std::string &selected_pinyin, const std::string &selected_word) const;
     CloudQueryState get_cloud_query_state() const;
     CreatingWordProgress update_creating_word_progress(const std::string &current_pinyin,
                                                        const std::string &current_word,
