@@ -466,6 +466,42 @@ int InputSession::cache_dynamic_candidate(const std::string &pinyin, const std::
     return cache_result;
 }
 
+bool InputSession::selection_completes_composition(const std::string &selected_pinyin,
+                                                   const std::string &selected_word) const
+{
+    // Japanese and native wubi selections always finish: the corresponding branches of
+    // advance_composition_after_selection return before continues_composition is ever set.
+    if (is_japanese() || wubi_candidates_are_native())
+        return true;
+
+    if (is_shuangpin())
+    {
+        const auto base = ResolveShuangpinCompositionBase(request(), shuangpin_profile_);
+        const size_t word_pinyin_length = HelpcodeUtils::count_han_chars(selected_word) * 2;
+        const size_t total_input_length = base.effective_raw_input.size();
+        if (base.helpcode_length > 0)
+        {
+            const size_t required_length = word_pinyin_length + base.helpcode_length;
+            return !(required_length < total_input_length && word_pinyin_length < total_input_length);
+        }
+        // With no helpcode the pure pinyin is the whole effective input.
+        size_t consumed_length = remove_delimiters(selected_pinyin).size();
+        if (consumed_length == 0 || consumed_length > total_input_length)
+            consumed_length = (std::min)(word_pinyin_length, total_input_length);
+        return !(consumed_length < total_input_length);
+    }
+
+    const std::string selected_pure_pinyin = remove_delimiters(selected_pinyin);
+    const std::string raw_input_without_helpcodes =
+        quanpin::strip_active_helpcodes(request().raw_input, request().raw_input_with_cases);
+    const std::string raw_input_with_cases_without_helpcodes =
+        quanpin::strip_active_helpcodes_with_cases(request().raw_input, request().raw_input_with_cases);
+    const size_t consumed_raw_length =
+        shuangpin::raw_length_for_effective_prefix(raw_input_with_cases_without_helpcodes, selected_pure_pinyin.size());
+    return !(!selected_pure_pinyin.empty() && selected_pure_pinyin.size() < request().normalized_input.size() &&
+             consumed_raw_length < raw_input_without_helpcodes.size());
+}
+
 InputSession::SelectionTransition InputSession::advance_composition_after_selection(
     const std::string &selected_pinyin, const std::string &selected_word, const std::string &selected_canonical_pinyin)
 {
@@ -499,9 +535,7 @@ InputSession::SelectionTransition InputSession::advance_composition_after_select
         size_t consumed_length = remove_delimiters(selected_pinyin).size();
         if (base.helpcode_length > 0)
         {
-            const size_t required_length = word_pinyin_length + base.helpcode_length;
-            transition.continues_composition =
-                required_length < total_input_length && word_pinyin_length < total_input_length;
+            transition.continues_composition = !selection_completes_composition(selected_pinyin, selected_word);
 
             if (transition.continues_composition)
             {
@@ -525,7 +559,7 @@ InputSession::SelectionTransition InputSession::advance_composition_after_select
                 consumed_length = (std::min)(word_pinyin_length, base.effective_raw_input.size());
             }
 
-            transition.continues_composition = consumed_length < transition.full_pure_pinyin.size();
+            transition.continues_composition = !selection_completes_composition(selected_pinyin, selected_word);
 
             if (transition.continues_composition)
             {
@@ -562,9 +596,7 @@ InputSession::SelectionTransition InputSession::advance_composition_after_select
     size_t consumed_raw_length =
         shuangpin::raw_length_for_effective_prefix(raw_input_with_cases_without_helpcodes, selected_pure_pinyin.size());
 
-    transition.continues_composition = !selected_pure_pinyin.empty() &&
-                                       selected_pure_pinyin.size() < transition.full_pure_pinyin.size() &&
-                                       consumed_raw_length < raw_input_without_helpcodes.size();
+    transition.continues_composition = !selection_completes_composition(selected_pinyin, selected_word);
 
     if (transition.continues_composition)
     {

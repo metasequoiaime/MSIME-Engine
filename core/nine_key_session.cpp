@@ -519,6 +519,12 @@ SessionSnapshot NineKeySession::snapshot() const
     result.candidate_annotations.reserve(result.candidates.size());
     for (const auto &candidate : result.candidates)
         result.candidate_annotations.push_back(candidate.corrected_from);
+    // The grid consumes digits rather than letters, so the test is the one `select` performs:
+    // `digits_.erase(0, candidate.pinyin.size())` empties the buffer exactly when the candidate's
+    // code covers everything still typed.
+    result.candidate_answers_key.reserve(result.candidates.size());
+    for (const auto &candidate : result.candidates)
+        result.candidate_answers_key.push_back(candidate.pinyin.size() >= digits_.size());
     result.nine_key_spellings = spellings_;
     return result;
 }

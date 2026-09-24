@@ -217,8 +217,14 @@ SessionSnapshot Session::snapshot() const
         view.preedit = session.get_pinyin_segmentation_with_cases();
     view.answered_by_pinyin_fallback = session.answered_by_pinyin_fallback();
     view.candidate_sources.reserve(view.candidates.size());
+    view.candidate_answers_key.reserve(view.candidates.size());
     for (const auto &candidate : view.candidates)
+    {
         view.candidate_sources.push_back(candidate.source);
+        // `pinyin` rather than `canonical_pinyin`: the former is what composition advancement
+        // consumes, which is the question being asked.
+        view.candidate_answers_key.push_back(session.selection_completes_composition(candidate.pinyin, candidate.word));
+    }
     view.candidate_annotations = session.candidate_annotations();
     return view;
 }
