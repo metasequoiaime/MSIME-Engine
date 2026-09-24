@@ -17,6 +17,8 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace
 {
@@ -282,6 +284,44 @@ int run_test()
             const auto punctuation = unlearned.handle_punctuation(',');
             require(punctuation.commit == "特乐，" && !unlearned.has_composition(),
                     "Punctuation failed to finish the remaining portable composition atomically.");
+        }
+        {
+            // `selection_completes_composition` is read by consumers that rank candidates against each
+            // other, and its only justification is that it predicts what selecting the candidate would
+            // actually do. So it is checked against that rather than against an expected value: for
+            // every candidate of a three-syllable key, the prediction must match whether the
+            // composition really finished. `xi'te'le` is used because it has both kinds — 西 answers
+            // one syllable and leaves `te'le` behind, a full-cover sentence answers all three.
+            //
+            // A length test cannot stand in here. 西 is one character and so is a full answer to a
+            // one-syllable key; what separates them is how much of the key was consumed.
+            std::vector<std::pair<std::string, std::string>> probe;
+            {
+                metasequoia::InputSession scout(SchemeType::Quanpin, true, false, true, false);
+                type(scout, "xi'te'le");
+                for (const auto &candidate : scout.candidates())
+                    probe.emplace_back(candidate.pinyin, candidate.word);
+            }
+            require(!probe.empty(), "The three-syllable key produced no candidates to check the predicate against.");
+            bool saw_prefix = false;
+            bool saw_full_cover = false;
+            for (const auto &[pinyin, word] : probe)
+            {
+                // Learning is off in this constructor, so each iteration sees the same candidate list
+                // rather than one the previous selection taught the dictionary.
+                metasequoia::InputSession session(SchemeType::Quanpin, true, false, true, false);
+                type(session, "xi'te'le");
+                const bool predicted = session.selection_completes_composition(pinyin, word);
+                const auto index = candidate_index(session, word);
+                (void)session.select_candidate(index);
+                const bool actually_completed = !session.has_composition();
+                require(predicted == actually_completed,
+                        "selection_completes_composition disagreed with what selecting that candidate did.");
+                saw_prefix = saw_prefix || !actually_completed;
+                saw_full_cover = saw_full_cover || actually_completed;
+            }
+            require(saw_prefix && saw_full_cover,
+                    "The predicate was only exercised in one direction, so agreement proves nothing.");
         }
         {
             // A whole-sentence candidate produced by the lattice is a real pinyin selection, so it has to

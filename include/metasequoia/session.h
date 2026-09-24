@@ -60,6 +60,15 @@ struct SessionSnapshot
     std::vector<CandidateSource> candidate_sources;
     // Display annotations aligned with candidates (helpcodes or correction hints).
     std::vector<std::string> candidate_annotations;
+    // Whether each candidate answers the whole key, in candidate order. False for a prefix or a
+    // predictive completion that runs past the key — selecting one of those leaves input behind.
+    //
+    // A consumer that ranks candidates against each other needs this and cannot work it out:
+    // candidates are alternatives only when they answer the same key, and character count says so
+    // only while a key has one segmentation. `xian` reads as 现 and as 西安, both answering it. The
+    // engine already decides this to advance the composition, so it is reported rather than
+    // re-derived.
+    std::vector<bool> candidate_answers_key;
 };
 
 // Stable platform entry point. One host serializes calls to its session; distinct sessions

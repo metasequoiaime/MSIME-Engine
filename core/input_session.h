@@ -174,6 +174,18 @@ class InputSession
     SelectionTransition advance_composition_after_selection(const std::string &selected_pinyin,
                                                             const std::string &selected_word,
                                                             const std::string &selected_canonical_pinyin);
+    // Whether selecting this candidate would finish the composition rather than leave input to
+    // answer — that is, whether it covers the whole key.
+    //
+    // The same decision `advance_composition_after_selection` makes, lifted out of it so that it can
+    // be asked about a candidate that has not been selected. That method now calls this rather than
+    // repeating the condition, because two copies of a rule this load-bearing drift.
+    //
+    // It is exposed because a reranker needs it per candidate: only candidates that answer the same
+    // key are alternatives to each other, and a prefix is not an alternative to a full answer. The
+    // consumer cannot derive it — the candidate's own character count agrees with this only while a
+    // key has one segmentation, and `xian` reads as both 现 and 西安.
+    bool selection_completes_composition(const std::string &selected_pinyin, const std::string &selected_word) const;
     CloudQueryState get_cloud_query_state() const;
     CreatingWordProgress update_creating_word_progress(const std::string &current_pinyin,
                                                        const std::string &current_word,
